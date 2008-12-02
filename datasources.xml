@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cf:DataSources xmlns:cf="http://www.sg.ethz.ch/research/cuttlefish/datasources.xsd"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.sg.ethz.ch/research/cuttlefish/datasources.xsd datasources.xsd ">
+	<Source id="sim1" name="test simulation" class="ch.ethz.sg.cuttlefish.networks.TestSimulation">
+		<Argument name="test">Argument</Argument>
+		<Argument name="alpha">10.0</Argument></Source>
+</cf:DataSources>
