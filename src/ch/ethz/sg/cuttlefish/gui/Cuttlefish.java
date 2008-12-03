@@ -24,7 +24,9 @@ import java.io.File;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-
+/**
+ * Class of the General User Interface for cuttlefish
+ */
 public class Cuttlefish extends JFrame {
 
 	private static final long serialVersionUID = 1L;
@@ -35,13 +37,21 @@ public class Cuttlefish extends JFrame {
 
 	private File configFile;
 
+	/**
+	 * main method for the execiton of cuttlefish
+	 * @param args program call argument: filename of the configuration file in xml format
+	 * @return void
+	 */
 	public static void main(String[] args){
 		
 		Frame f = new Cuttlefish(args[0]);
 		f.setVisible(true);
 	}
 	
-	
+	/**
+	 * Constructor for cuttlefish
+	 * @param string filename of configuration file
+	 */
 	public Cuttlefish(String string) {
 		super();
 		configFile = new File(string);
@@ -50,7 +60,6 @@ public class Cuttlefish extends JFrame {
 
 	/**
 	 * This method initializes this
-	 * 
 	 * @return void
 	 */
 	private void initialize() {
@@ -63,7 +72,6 @@ public class Cuttlefish extends JFrame {
 
 	/**
 	 * This method initializes jContentPane
-	 * 
 	 * @return javax.swing.JPanel
 	 */
 	private JPanel getJContentPane() {
@@ -77,7 +85,6 @@ public class Cuttlefish extends JFrame {
 
 	/**
 	 * This method initializes networkBrowserPanel	
-	 * 	
 	 * @return ch.ethz.sg.jung.visualisation.NetworkBrowserPanel	
 	 */
 	private CuttlefishPanel getNetworkBrowserPanel() {

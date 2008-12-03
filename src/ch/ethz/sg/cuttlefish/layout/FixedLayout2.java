@@ -40,11 +40,21 @@ public class FixedLayout2 extends AbstractLayout implements Layout, LayoutMutabl
 
 	private Hashtable<String, Coordinates> positionTable = new  Hashtable<String, Coordinates>();
 	
+	/**
+	 * Constructor for the fixed layout of a given graph
+	 * @param g graph to generate the fixed layout
+	 */
 	public FixedLayout2(Graph g){
 		super(g);
 		//readPositionFile(positionFile);
 	}
 
+	/**
+	 * Reads a file with the initial positions of the nodes, in a coordinate
+	 * pairs format, storing them locally in a position table
+	 * @param positionFile open file where to read the positions
+	 * @throws Exception
+	 */
 	public void readPositionFile(File positionFile) throws Exception {
 		BufferedReader input = new BufferedReader(new FileReader(positionFile));
 		String line;
@@ -59,11 +69,14 @@ public class FixedLayout2 extends AbstractLayout implements Layout, LayoutMutabl
 
 	@Override
 	public void advancePositions() {
-		
-
 	}
 
 	@Override
+	/**
+	 * Sets the location of a vertex given its coordintates from the list
+	 * @param vertex Vertex to place on the layout
+	 * @return void
+	 */
 	protected void initialize_local_vertex(Vertex vertex) {
 		
 		Coordinates c = getCoordinates(vertex);
