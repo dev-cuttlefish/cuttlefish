@@ -79,6 +79,9 @@ import edu.uci.ics.jung.visualization.control.CrossoverScalingControl;
 import edu.uci.ics.jung.visualization.control.DefaultModalGraphMouse;
 import edu.uci.ics.jung.visualization.control.ScalingControl;
 
+/**
+ * Class for the main JPanel of cuttlefish
+ */
 @SuppressWarnings("serial")
 public class CuttlefishPanel extends JPanel implements ItemListener,INetworkBrowser{
 
@@ -109,7 +112,8 @@ public class CuttlefishPanel extends JPanel implements ItemListener,INetworkBrow
 	private JCheckBox layoutCheckBox = null;
 	private JButton writeLayoutButton = null;
 	/**
-	 * This is the default constructor
+	 * This is the default constructor, initializes the rendering and the viewer
+	 * @param configfile open file with the configuration
 	 */
 	public CuttlefishPanel(File configFile) {
 		super();
@@ -279,8 +283,9 @@ public class CuttlefishPanel extends JPanel implements ItemListener,INetworkBrow
 	
 	
 	/**
-	 * This method initializes this
-	 * 
+	 * This method initializes this, creating the GraphMouse, the DocumentFactory 
+	 * and loading the information contained in the configuration file
+	 * @param configFile open file with the configuration
 	 * @return void
 	 */
 	private void initialize(File configFile) {
@@ -391,9 +396,8 @@ public class CuttlefishPanel extends JPanel implements ItemListener,INetworkBrow
 	}
 
 	/**
-	 * This method initializes jButton	
-	 * 	
-	 * @return javax.swing.JButton	
+	 * Getter for JUNG's VisualizationViewer, creating it if it does not exist
+	 * @return VisualizationViewer	
 	 */
 	private VisualizationViewer getVisualizationViewer() {
 		if (visualizationViewer == null) {
@@ -407,12 +411,22 @@ public class CuttlefishPanel extends JPanel implements ItemListener,INetworkBrow
 		return visualizationViewer;
 	}
 
+	/**
+	 * Gives the position file of the argument list
+	 * @return File object with the position file
+	 */
 	public File getPositionFile(){
 		String base = getArgument("layoutFolder");
 		File positionData = new File((base == null ? "" : base) + network.getName()+".pos");
 		return positionData;
 	}
 	
+	/**
+	 * Starts a dynamic or a static layout for the network
+	 * @param isDynamic boolean to determine the dynamics of the network, 
+	 * with ARF or a fixed layout
+	 * @return void
+	 */
 	public void setLayout(boolean isDynamic){
 		
 		
@@ -445,11 +459,14 @@ public class CuttlefishPanel extends JPanel implements ItemListener,INetworkBrow
 		//System.out.println("VV restarted");
 	}
 
+	/**
+	 * Setter for the network subject of cuttlefish
+	 * @param network Network object to use in cuttlefish
+	 * @return void
+	 */
 	public void setNetwork(BrowsableNetwork network) {
 		this.network = network;
 		System.out.println("Set network " + network.getName() + " (" + network.getVertices().size() + " nodes)");
-		
-		
 		
 		setLayout(false);
 		
@@ -462,6 +479,10 @@ public class CuttlefishPanel extends JPanel implements ItemListener,INetworkBrow
 
 
 
+	/**
+	 * Updates the network information of all the widgets in the list
+	 * @return void
+	 */
 	private void updateWidgets() {
 		for(BrowserWidget widget: widgetTable.values()){
 			//System.out.println("updating " + widget.getId());
@@ -483,6 +504,10 @@ public class CuttlefishPanel extends JPanel implements ItemListener,INetworkBrow
 		refreshAnnotations();
 	}
 
+	/**
+	 * Getter for the network
+	 * @return DirectedSparseGraph network in use in CuttleFish
+	 */
 	public DirectedSparseGraph getNetwork() {
 		return network;
 	}
@@ -552,7 +577,6 @@ public class CuttlefishPanel extends JPanel implements ItemListener,INetworkBrow
 		
 	}
 
-
 	public void refreshAnnotations() {
 		
 		//network.colorAll(Color.DARK_GRAY);
@@ -573,17 +597,13 @@ public class CuttlefishPanel extends JPanel implements ItemListener,INetworkBrow
 		return configuration;
 	}
 
-
-
 	public void onNetworkChange() {
 		System.out.println("Network changed " + network.getName());
 		layout.update();
 		refreshAnnotations();
 		
 	}
-
-
-
+	
 	public String getArgument(String name) {
 		return arguments.get(name);
 	}
