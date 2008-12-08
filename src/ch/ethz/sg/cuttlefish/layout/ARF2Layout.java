@@ -51,12 +51,12 @@ public class ARF2Layout extends AbstractLayout implements Layout, LayoutMutable 
     private int updatesPerFrame = 1;
 
     /**
-     * the parameter a controlls the attraction between connected nodes. 
+     * the parameter a controls the attraction between connected nodes. 
      */
     private double a = 3;
         
     /**
-     * ??? is a scaling factor for the atractive term. Connected as well as unconnected nodes are affected.
+     * ??? is a scaling factor for the attractive term. Connected as well as unconnected nodes are affected.
      */
     private double attraction = 0.2;
     
@@ -66,7 +66,7 @@ public class ARF2Layout extends AbstractLayout implements Layout, LayoutMutable 
     private double b = 8;
     
     /**
-     * deltaT controlls the calculation precission: smaller deltaT results in higher precission
+     * deltaT controls the calculation precision: smaller deltaT results in higher precission
      */
     private double deltaT = 2;
 
@@ -114,7 +114,7 @@ public class ARF2Layout extends AbstractLayout implements Layout, LayoutMutable 
     }
 
     /**
-     * Genrates a new Layout for graph g. if incremental is false the layout will not be interactive.
+     * Generates a new Layout for graph g. if incremental is false the layout will not be interactive.
      * @param g
      * @param incremental
      */

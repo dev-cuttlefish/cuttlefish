@@ -1,0 +1,34 @@
+<project name="cuttlefish" default="dist" basedir=".">
+    <description>
+        simple example build file
+    </description>
+  <!-- set global properties for this build -->
+  <property name="src" location="src"/>
+  <property name="javadoc" location="doc"/>
+  <property name="lib" location="lib"/>
+  <property name="build" location="bin"/>
+  <property name="dist"  location="dist"/>
+
+  <target name="init">
+    <!-- Create the time stamp -->
+    <tstamp/>
+    <!-- Create the build directory structure used by compile -->
+    <mkdir dir="${build}"/>
+  </target>
+
+  <target name="compile" depends="init"
+        description="compile the source " >
+    <!-- Compile the java code from ${src} into ${build} -->
+    <javac srcdir="${src}" destdir="${build}"/>
+  </target>
+
+  <target name="dist" depends="compile"
+        description="generate the distribution" >
+    <!-- Create the distribution directory -->
+    <mkdir dir="${dist}"/>
+
+    <!-- Put everything in ${build} into the MyProject-${DSTAMP}.jar file -->
+    <jar jarfile="${dist}/cuttlefish-${DSTAMP}.jar" basedir="${build}"/>
+  </target>
+		
+</project>
