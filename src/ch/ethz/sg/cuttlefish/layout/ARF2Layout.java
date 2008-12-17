@@ -20,20 +20,18 @@
 
 package ch.ethz.sg.cuttlefish.layout;
 
+import java.awt.geom.Point2D;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 
-import ch.ethz.sg.cuttlefish.misc.SGUserData;
+import ch.ethz.sg.cuttlefish.misc.Vertex;
 
-import edu.uci.ics.jung.graph.Edge;
+import edu.uci.ics.jung.algorithms.layout.AbstractLayout;
+import edu.uci.ics.jung.algorithms.layout.Layout;
+import edu.uci.ics.jung.algorithms.util.IterativeContext;
 import edu.uci.ics.jung.graph.Graph;
-import edu.uci.ics.jung.graph.Vertex;
-import edu.uci.ics.jung.utils.UserData;
-import edu.uci.ics.jung.visualization.AbstractLayout;
-import edu.uci.ics.jung.visualization.Coordinates;
-import edu.uci.ics.jung.visualization.Layout;
-import edu.uci.ics.jung.visualization.LayoutMutable;
 
 /**
  * @author markus michael geipel
@@ -43,8 +41,8 @@ import edu.uci.ics.jung.visualization.LayoutMutable;
  * See http://www.sg.ethz.ch/research/ for details
  */
 
-public class ARF2Layout extends AbstractLayout implements Layout, LayoutMutable {
-
+public class ARF2Layout<V,E> extends AbstractLayout<V,E> implements Layout<V,E>, IterativeContext {
+	
     /**
      * number of position updates before the graph is rendered 
      */
@@ -104,11 +102,10 @@ public class ARF2Layout extends AbstractLayout implements Layout, LayoutMutable 
 	private boolean verbose =false;
 	
     /**
-     * Genrates a new Layout for graph g
+     * Generates a new Layout for graph g
      * @param g
      */
-    public ARF2Layout(Graph g) {
-
+    public ARF2Layout(Graph<V,E> g) {
         super(g);
        // update();
     }
@@ -118,7 +115,7 @@ public class ARF2Layout extends AbstractLayout implements Layout, LayoutMutable 
      * @param g
      * @param incremental
      */
-    public ARF2Layout(Graph g, boolean incremental) {
+    public ARF2Layout(Graph<V,E> g, boolean incremental) {
 
         super(g);
         this.incremental  = incremental;
@@ -126,35 +123,27 @@ public class ARF2Layout extends AbstractLayout implements Layout, LayoutMutable 
         	update();
         }
     }
-    
-    /* (non-Javadoc)
-     * @see edu.uci.ics.jung.visualization.AbstractLayout#initialize_local_vertex(edu.uci.ics.jung.graph.Vertex)
-     */
-    @Override
-    protected void initialize_local_vertex(Vertex v) {
-
-    }
-    
-    /* (non-Javadoc)
-     * @see edu.uci.ics.jung.visualization.AbstractLayout#advancePositions()
-     */
-    @Override
+        
     public void advancePositions() {
-     	
 
     	try{
-
 	        for (int i = 0; i < updatesPerFrame; i++) {
-	        	for (Object o : getVisibleVertices()) {
+	        	for (V o : getVertices()) {
 	                Vertex v = (Vertex) o;
 	                if(!isFixed(v)){
-		                Coordinates c = getCoordinates(v);
-		                if(c != null){
-			                Coordinates f = getForceforNode(v);
-			                double deltaIndividual = v.degree() > 1 ? deltaT / Math.pow(v.degree(), 0.4) : deltaT;
-			                f.mult(deltaIndividual, deltaIndividual);
-			                c.add(f.getX(), f.getY());
-
+	                	Point2D oldPoint = locations.get((V) v);
+	                	if(oldPoint != null){
+	                		ArrayList<Double> force = getForceforNode(v);
+	                		double forceX = force.get(0);
+	                		double forceY = force.get(1);
+	                        double deltaIndividual = getGraph().degree((V) v) > 1 ? deltaT / Math.pow(getGraph().degree((V) v), 0.4) : deltaT;
+			                
+	                        forceX *= deltaIndividual;
+	                        forceY *= deltaIndividual;
+			                
+	                        Point2D point = new Point2D.Double(oldPoint.getX() + forceX,
+	                        		oldPoint.getY() + forceY);
+							locations.put((V) v, point);
 		                }
 	                }
 	            }
@@ -174,18 +163,21 @@ public class ARF2Layout extends AbstractLayout implements Layout, LayoutMutable 
     	double x = Double.MAX_VALUE;
     	double y = Double.MIN_VALUE;
     	
-    	for (Object o : getVisibleVertices()) {
+    	for (Object o : getVertices()) {
             Vertex v = (Vertex) o;
-            Coordinates c = getCoordinates(v);
             x = Math.min(x, c.x);
             y = Math.min(y, c.y);
         }
     	
-    	for (Object o : getVisibleVertices()) {
+    	for (Object o : getVertices()) {
             Vertex v = (Vertex) o;
             Coordinates c = getCoordinates(v);
-            c.addX(-x + x0);
-            c.addY(-y + y0);
+            c.add(-x + x0, -y + y0);
+            v.setPosX(c.getX());
+            v.setPosY(c.getY());
+            
+            Point2D point = new Point2D.Double(v.getPosX(), v.getPosY());
+            locations.put((V) v, point);
         }
     }
   
@@ -195,7 +187,7 @@ public class ARF2Layout extends AbstractLayout implements Layout, LayoutMutable 
 	 * @return if the FIXED marker is set
 	 */
 	private boolean isFixed(Vertex v) {
-		return v.getUserDatum(FIXED) != null;
+		return v.isFixed();
 	}
 
 	/**
@@ -213,7 +205,7 @@ public class ARF2Layout extends AbstractLayout implements Layout, LayoutMutable 
      */
     private Coordinates getForceforNode(Vertex node) {
 
-        double numNodes = getVisibleVertices().size();
+        double numNodes = getVertices().size();
        // double aIndivisual = node.degree() > 1 ? 1+((a-1)/node.degree()) : a;
         	
         Coordinates mDot = new Coordinates();
@@ -223,7 +215,7 @@ public class ARF2Layout extends AbstractLayout implements Layout, LayoutMutable 
         	return mDot;
         }
  
-        for (Object o : getVisibleVertices()) {
+        for (Object o : getVertices()) {
             Vertex otherNode = (Vertex) o;
             if (node != otherNode) {
                 Coordinates otherNodeX = getCoordinates(otherNode);
@@ -268,12 +260,11 @@ public class ARF2Layout extends AbstractLayout implements Layout, LayoutMutable 
      * @return the newly assigned position
      */
     public Coordinates assignPositionToVertex(Vertex vertex, Coordinates p) {
-    	Coordinates c = getCoordinates(vertex);
-		//if(c == null){
-		//	c = getRandomPoint();
-		//	vertex.addUserDatum(getBaseKey(), c , UserData.CLONE);
-		//}
-		c.setLocation(p);
+    
+    	vertex.setPosY(p.getY());
+    	vertex.setPosX(p.getX());
+    	Point2D point = new Point2D.Double(p.getY(), p.getX());
+    	locations.put((V) vertex, point);   	
     	return p;
     }
     
@@ -286,15 +277,14 @@ public class ARF2Layout extends AbstractLayout implements Layout, LayoutMutable 
 	@SuppressWarnings("unchecked")
 	public Coordinates assignPositionToVertex(Vertex vertex) {
 		Set<Vertex> nvertices = new HashSet<Vertex>();
-		for (Vertex vertex2 : (Set<Vertex> )vertex.getNeighbors()) {
+		for (Vertex vertex2 : (Set<Vertex> ) getGraph().getNeighbors((V) vertex)) {
 			if(getCoordinates(vertex2) != null){
 				nvertices.add(vertex2);
 			}
 		}
 		Coordinates c = getCoordinates(vertex);
 		if(c == null){
-			c = getRandomPoint(((int)Math.sqrt(getVisibleVertices().size())*50)+1);
-			vertex.addUserDatum(getBaseKey(),c , UserData.REMOVE);
+			c = getRandomPoint(((int)Math.sqrt(getVertices().size())*50)+1);
 		}
 
 		if(nvertices.size() > 0){
@@ -350,9 +340,7 @@ public class ARF2Layout extends AbstractLayout implements Layout, LayoutMutable 
      */
     @SuppressWarnings("unchecked")
 	public void update() {
-    	initializeLocations();
-
-    	
+    	initializeLocations(); 	
     	
     	if(!incremental){
     		if(verbose){
@@ -373,7 +361,7 @@ public class ARF2Layout extends AbstractLayout implements Layout, LayoutMutable 
 			}
 			advancePositions();
 		}*/
-			double threshold = (double)getVisibleVertices().size() * epsilon;
+			double threshold = (double)getVertices().size() * epsilon;
 			int count = 0;
 			while(error > threshold && count < maxRelayouts){
 				if(verbose || !verbose){
@@ -486,6 +474,28 @@ public class ARF2Layout extends AbstractLayout implements Layout, LayoutMutable 
 		}
   
 		
+	}
+
+	@Override
+	public void initialize() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void reset() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public boolean done() {
+		return false;
+	}
+
+	@Override
+	public void step() {
+		advancePositions();
 	}
 	
 

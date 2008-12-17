@@ -17,83 +17,47 @@
  */
 package ch.ethz.sg.cuttlefish.layout;
 
+import java.awt.geom.Point2D;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.util.Hashtable;
 
-import ch.ethz.sg.cuttlefish.misc.SGUserData;
+import edu.uci.ics.jung.algorithms.layout.AbstractLayout;
+import edu.uci.ics.jung.algorithms.layout.Layout;
 import edu.uci.ics.jung.graph.Graph;
-import edu.uci.ics.jung.graph.Vertex;
-import edu.uci.ics.jung.utils.UserData;
-import edu.uci.ics.jung.visualization.AbstractLayout;
-import edu.uci.ics.jung.visualization.Coordinates;
-import edu.uci.ics.jung.visualization.Layout;
-import edu.uci.ics.jung.visualization.LayoutMutable;
+import ch.ethz.sg.cuttlefish.misc.Vertex;
 
-public class FixedLayout2 extends AbstractLayout implements Layout, LayoutMutable {
+public class FixedLayout2<V,E> extends AbstractLayout<Vertex,E> implements Layout<Vertex,E> {
 
-	@Override
-	public Object getBaseKey() {
-		return SGUserData.POSITION;
-	}
-
-	private Hashtable<String, Coordinates> positionTable = new  Hashtable<String, Coordinates>();
+	
+	private File positionFile;
 	
 	/**
 	 * Constructor for the fixed layout of a given graph
 	 * @param g graph to generate the fixed layout
 	 */
-	public FixedLayout2(Graph g){
+	public FixedLayout2(Graph<Vertex,E> g){
 		super(g);
-		//readPositionFile(positionFile);
+	}
+	/**
+	 * Constructor for the fixed layout of a given graph
+	 * @param g graph to generate the fixed layout
+	 */
+	public FixedLayout2(Graph<Vertex,E> g, File positionFile){
+		super(g);
+		this.positionFile = positionFile;
 	}
 
 	/**
-	 * Reads a file with the initial positions of the nodes, in a coordinate
-	 * pairs format, storing them locally in a position table
+	 * sets the file with the initial positions of the nodes, without reading them
+	 * yet
 	 * @param positionFile open file where to read the positions
 	 * @throws Exception
 	 */
-	public void readPositionFile(File positionFile) throws Exception {
-		BufferedReader input = new BufferedReader(new FileReader(positionFile));
-		String line;
-		while ((line = input.readLine()) != null) {
-			String[] parts = line.split(" ");
-			Double x = new Double(parts[1]);
-			Double y = new Double(parts[2]);
-			Coordinates c = new Coordinates(x.doubleValue(), y.doubleValue());
-			positionTable.put(parts[0], c);
-		}
+	public void setPositionFile(File positionFile){
+		this.positionFile = positionFile;
 	}
-
-	@Override
-	public void advancePositions() {
-	}
-
-	@Override
-	/**
-	 * Sets the location of a vertex given its coordintates from the list
-	 * @param vertex Vertex to place on the layout
-	 * @return void
-	 */
-	protected void initialize_local_vertex(Vertex vertex) {
-		
-		Coordinates c = getCoordinates(vertex);
-		if(c == null){
-			c = new Coordinates();
-			vertex.addUserDatum(getBaseKey(), c, UserData.REMOVE);
-		}
-		
-		String id = (String) vertex.getUserDatum(SGUserData.ID);
-		if(id!=null){
-			Coordinates c1 = positionTable.get(id);
-			if(c1!=null){
-				c.setLocation(c1);
-			}
-		}
-	}
-
+	
 	public boolean incrementsAreDone() {
 		return true;
 	}
@@ -102,13 +66,48 @@ public class FixedLayout2 extends AbstractLayout implements Layout, LayoutMutabl
 		return false;
 	}
 
-	public Hashtable<String, Coordinates> getPositionTable() {
-		return positionTable;
+	public void update() {
+		initialize();
 	}
 
-	public void update() {
-		initializeLocations();
+	@Override
+	public void initialize() {		
 		
+		BufferedReader input;
+		try {
+			input = new BufferedReader(new FileReader(positionFile));
+			String line;
+			while ((line = input.readLine()) != null) {
+				String[] parts = line.split(" ");
+				Double x = new Double(parts[1]);
+				Double y = new Double(parts[2]);
+				Point2D p = new Point2D.Double(x,y);
+				locations.put(new Vertex(Integer.parseInt(parts[0])), p);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("Error initializing from positions file");
+		}
+
+	}
+
+	@Override
+	public void reset(){
+		BufferedReader input;
+		try {
+			input = new BufferedReader(new FileReader(positionFile));
+			String line;
+			while ((line = input.readLine()) != null) {
+				String[] parts = line.split(" ");
+				Double x = new Double(parts[1]);
+				Double y = new Double(parts[2]);
+				Point2D p = new Point2D.Double(x,y);
+				locations.put(new Vertex(Integer.parseInt(parts[0])), p);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("Error resetting from positions file");
+		}
 	}
 
 }
