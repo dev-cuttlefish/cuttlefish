@@ -26,17 +26,14 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Set;
 
+import edu.uci.ics.jung.algorithms.layout.Layout;
+import edu.uci.ics.jung.graph.DirectedSparseGraph;
 import edu.uci.ics.jung.graph.Graph;
-import edu.uci.ics.jung.graph.Vertex;
-import edu.uci.ics.jung.graph.impl.DirectedSparseEdge;
-import edu.uci.ics.jung.graph.impl.DirectedSparseGraph;
-import edu.uci.ics.jung.graph.impl.DirectedSparseVertex;
-import edu.uci.ics.jung.utils.UserData;
-import edu.uci.ics.jung.visualization.Layout;
 
 public class Utils {
 	
@@ -68,29 +65,27 @@ public class Utils {
 	}
 	*/
 	@SuppressWarnings({ "unchecked", "unchecked" })
-	public static void graphToDot(Graph graph, PrintStream ps){
+	public static void graphToDot(Graph<Vertex,Edge> graph, PrintStream ps){
 		
 		  ps.println("digraph g {");
           ps.println("node [style=filled, color=black, fillcolor=gray, shape=circle, label=\"\", height=.15, width=.15]");
           
-          for (DirectedSparseVertex vertex : (Set<DirectedSparseVertex>)graph.getVertices()) {
-        	  ps.println(vertex.toString() + "[label=\"" + vertex.getUserDatum(SGUserData.LABEL) + "\"]");
+          for (Vertex vertex : graph.getVertices()) {
+        	  ps.println(vertex.toString() + "[label=\"" + vertex.getLabel() + "\"]");
           }
-          for (DirectedSparseEdge edge : (Set<DirectedSparseEdge>)graph.getEdges()) {
-        	 
-        	  ps.println( edge.getSource().toString()+ "->" + edge.getDest().toString());
+          for (Edge edge :graph.getEdges()) {
+        	  ps.println( graph.getSource(edge)+ "->" + graph.getDest(edge).toString());
           }
           ps.println("}");
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static int[][] graphToAdjacencyMatrix(Graph graph){
+	public static int[][] graphToAdjacencyMatrix(Graph<Vertex,Edge> graph){
 		int size = graph.getVertices().size();
 		
-		Set<Vertex> verticeSet = graph.getVertices();
 		Vertex[] vertices = new Vertex[size];
 		int c = 0;
-		for (Vertex vertex : verticeSet) {
+		for (Vertex vertex : graph.getVertices()) {
 			vertices[c++] = vertex;
 		}
 		
@@ -98,11 +93,9 @@ public class Utils {
 		for (int i = 0; i < matrix.length; i++) {
 			matrix[i] = new int[size];
 			for (int j = 0; j < matrix[i].length; j++) {
-				
-				
 				//matrix[i][j]= vertices[j].findEdge(vertices[i]) != null ? 1 : 0;
-				
-				matrix[i][j]= ( ( vertices[j].findEdge(vertices[i]) != null ) || ( vertices[i].findEdge(vertices[j]) != null ) ) ? 1 : 0;
+				matrix[i][j]= ( ( graph.findEdge(vertices[j], vertices[i]) != null ) 
+						|| (graph.findEdge(vertices[i], vertices[j]) != null ) ) ? 1 : 0;
 				
 			}
 		}
@@ -153,24 +146,23 @@ public class Utils {
 	     
 	}
 	
-	public static DirectedSparseGraph matrixToGraph(double[][] matrix){
-		DirectedSparseGraph graph = new DirectedSparseGraph();
+	public static DirectedSparseGraph<Vertex, Edge> matrixToGraph(double[][] matrix){
+		DirectedSparseGraph<Vertex, Edge> graph = new DirectedSparseGraph<Vertex,Edge>();
 		if(matrix.length != matrix[0].length){
 			return null;
 		}
 		
-		DirectedSparseVertex[] vertices = new DirectedSparseVertex[matrix.length];
+		Vertex[] vertices = new Vertex[matrix.length];
 		for (int i = 0; i < vertices.length; i++) {
-			vertices[i] = new DirectedSparseVertex();
+			vertices[i] = new Vertex(i);
 			graph.addVertex(vertices[i]);
 		}
 		
 		for (int i = 0; i < matrix.length; i++) {
 			for (int j = 0; j < matrix[i].length; j++) {
 				if(matrix[i][j] != 0.0){
-					DirectedSparseEdge edge = new DirectedSparseEdge(vertices[i], vertices[j]);
-					graph.addEdge(edge);
-					edge.addUserDatum(SGUserData.WEIGHT, new Double(matrix[i][j]), UserData.CLONE );
+					Edge edge = new Edge();
+					graph.addEdge(edge,vertices[i], vertices[j]);
 				}
 			}
 		}
@@ -178,49 +170,45 @@ public class Utils {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static void deleteDoubleEdges(DirectedSparseGraph graph){
-		HashSet<DirectedSparseEdge> toDelete = new HashSet<DirectedSparseEdge>();
-		for (DirectedSparseEdge edge1 : (Set<DirectedSparseEdge>) graph.getEdges()) {
-			for (DirectedSparseEdge edge2 : (Set<DirectedSparseEdge>)graph.getEdges()) {
-				if(edge1.getSource() == edge2.getDest() 
-						&& edge2.getSource() == edge1.getDest()
+	public static void deleteDoubleEdges(DirectedSparseGraph<Vertex,Edge> graph){
+		HashSet<Edge> toDelete = new HashSet<Edge>();
+		for (Edge edge1 : graph.getEdges()) {
+			for (Edge edge2 : graph.getEdges()) {
+				if(graph.getSource(edge1) == graph.getDest(edge2) 
+						&& graph.getSource(edge2) == graph.getDest(edge1)
 						&& !toDelete.contains(edge1)
-						&& edge1.getSource().toString().compareTo(edge1.getDest().toString()) > 0){
+						&& graph.getSource(edge1).toString().compareTo(graph.getDest(edge1).toString()) > 0){
 					toDelete.add(edge1);
 				}
 			}
 		}
 		System.out.println(toDelete.size());
-		for (DirectedSparseEdge edge : toDelete) {
+		for (Edge edge : toDelete) {
 			System.out.println(graph.getEdges().contains(edge));
-			graph.removeEdge(edge);
-			
-		}
-	
-		
+			graph.removeEdge(edge);	
+		}	
 	}
 	
 	@SuppressWarnings("unchecked")
-	static public void writePositions(Graph graph, PrintStream p, Layout layout){
+	static public void writePositions(Graph<Vertex,Edge> graph, PrintStream p, Layout<Vertex,Edge> layout){
    
 		double x0 = Double.MAX_VALUE; 
 		double y0 = Double.MAX_VALUE;
 		double x  = Double.MIN_VALUE;
 		double y  = Double.MIN_VALUE;
-		Set<Vertex> vertices = graph.getVertices();
+		Collection<Vertex> vertices =  graph.getVertices();
 		
 		for (Vertex vertex : vertices) {
-            Point2D c = layout.getLocation(vertex);
+            Point2D c = layout.transform(vertex);
             x0 = Math.min(x0, c.getX());
             y0 = Math.min(y0, c.getY());
             x = Math.max(x, c.getX());
             y = Math.max(y, c.getY());
         }
 		
-		
 		for (Vertex vertex : vertices) {
-			Point2D coordinates = layout.getLocation(vertex);
-			String id = (String) vertex.getUserDatum(SGUserData.ID);
+			Point2D coordinates = layout.transform(vertex);
+			Integer id = vertex.getId();
 			if(id!=null){
 				p.println(
 					id + " "+(coordinates.getX()-x0)+" "+
@@ -229,69 +217,50 @@ public class Utils {
 		}
 	}
 	
-	static public void exportGraphToPSTricks(Graph graph, PrintStream p, Layout layout){
+	static public void exportGraphToPSTricks(Graph<Vertex,Edge> graph, PrintStream p, Layout<Vertex,Edge> layout){
 		exportGraphToPSTricks(graph, p, layout, true);
 	}
 	
-	static private void writeVertexColorTable(Set<Vertex> vertices, PrintStream p){
+	static private void writeVertexColorTable(Collection<Vertex> vertices, PrintStream p){
 		for (Vertex vertex : vertices) {
-			Object o;
-			o = vertex.getUserDatum(SGUserData.FILLCOLOR);
-			if (o instanceof Color) {
-				Color cColor = (Color) o;
-				
+			
+			Color fColor = new Color(Integer.parseInt(vertex.getFillColor()));
 				p.println("\\definecolor{"+ vertex.toString()+"FILL}{rgb}{"
-					+(cColor.getRed()/255.0)+","
-					+(cColor.getGreen()/255.0)+","
-					+(cColor.getBlue()/255.0)+"}");
+					+(fColor.getRed()/255.0)+","
+					+(fColor.getGreen()/255.0)+","
+					+(fColor.getBlue()/255.0)+"}");
 		
-			}
-			o = vertex.getUserDatum(SGUserData.COLOR);
-			if (o instanceof Color) {
-				Color cColor = (Color) o;
-				
-				p.println("\\definecolor{"+ vertex.toString()+"LINE}{rgb}{"
-					+(cColor.getRed()/255.0)+","
-					+(cColor.getGreen()/255.0)+","
-					+(cColor.getBlue()/255.0)+"}");
-		
-			}
+			Color cColor = new Color(Integer.parseInt(vertex.getColor()));
+			p.println("\\definecolor{"+ vertex.toString()+"COLOR}{rgb}{"
+				+(cColor.getRed()/255.0)+","
+				+(cColor.getGreen()/255.0)+","
+				+(cColor.getBlue()/255.0)+"}");
 			
 		}
 	}
 	
-	static private void exportVertex(Vertex vertex, Layout layout, double f, PrintStream p, boolean detail){
-		Point2D coordinates = layout.getLocation(vertex);
-			
-		
+	static private void exportVertex(Vertex vertex, Layout<Vertex,Edge> layout, double f, PrintStream p, boolean detail){
+		Point2D coordinates = layout.transform(vertex);
 
 		String fillColor="std";
 		String color="black";
 		String width="1";
 		
-		Object o = vertex.getUserDatum(SGUserData.FILLCOLOR);
-		
 		if(detail){
-			if (o instanceof Color) {
-				fillColor=vertex.toString()+"FILL";
-			}
+			fillColor=vertex.getFillColor();
+			color=vertex.getColor();
 		}
 		
 		Integer intSize=10;
-		o = vertex.getUserDatum(SGUserData.RADIUS);
-		if (o instanceof Integer) {
-			intSize = (Integer) o/2;
-			
+		Double r = vertex.getRadius();
+		if (r != null) {
+			intSize = new Integer((int) Math.floor(r/2));
 		}
-		if(detail){
-			o = vertex.getUserDatum(SGUserData.COLOR);
-			if (o instanceof Color) {
-				color=vertex.toString()+"LINE";
-			}
-		}
-		o= vertex.getUserDatum(SGUserData.WIDTH);
-		if (o instanceof Integer) {
-			Integer iWidth = (Integer) o;
+		
+		
+		Double w = vertex.getWidth();
+		if (w != null) {
+			Integer iWidth = new Integer((int) Math.floor(w));
 			width = iWidth.toString();
 		}
 	
@@ -304,7 +273,7 @@ public class Utils {
 				"radius="+(intSize*f)+"]("+
 				(coordinates.getX()*f)+","+
 				(coordinates.getY()*f) +"){"+vertex.toString()+"}");
-		String label = (String)vertex.getUserDatum(SGUserData.LABEL);
+		String label = vertex.getLabel();
 		
 		
 		if(detail && label != null){
@@ -318,17 +287,17 @@ public class Utils {
 	}
 	
 	@SuppressWarnings("unchecked")
-	static public void exportGraphToPSTricks(Graph graph, PrintStream p, Layout layout, boolean frame){
+	static public void exportGraphToPSTricks(Graph<Vertex,Edge> graph, PrintStream p, Layout<Vertex,Edge> layout, boolean frame){
     	
 		double x0 = Double.MAX_VALUE; 
 		double y0 = Double.MAX_VALUE;
 		double x  = Double.MIN_VALUE;
 		double y  = Double.MIN_VALUE;
-		Set<Vertex> vertices = graph.getVertices();
+		Collection<Vertex> vertices = graph.getVertices();
 		float f = 0.5f;
 		
 		for (Vertex vertex : vertices) {
-            Point2D c = layout.getLocation(vertex);
+            Point2D c = layout.transform(vertex);
             x0 = Math.min(x0, c.getX());
             y0 = Math.min(y0, c.getY());
             x = Math.max(x, c.getX());
@@ -365,9 +334,9 @@ public class Utils {
 			exportVertex(vertex, layout, f, p, false);
 		}
 			
-		Set<DirectedSparseEdge> edges = graph.getEdges();
-		for (DirectedSparseEdge edge : edges) {
-			exportEdge(edge, layout, f, p);
+		Collection<Edge> edges = graph.getEdges();
+		for (Edge edge : edges) {
+			exportEdge(edge, graph,layout, f, p);
 		
 		}
 		
@@ -382,37 +351,33 @@ public class Utils {
 		}
 	}
 
-	private static void exportEdge(DirectedSparseEdge edge, Layout layout,
+	private static void exportEdge(Edge edge, Graph<Vertex,Edge> graph, Layout<Vertex,Edge> layout,
 			float f, PrintStream p) {
 		String scolor= "black";
-		Object color = edge.getUserDatum(SGUserData.COLOR);
 
-		if (color instanceof Color) {
-			Color cColor = (Color) color;
-			p.println("\\definecolor{temp}{rgb}{"
+		Color cColor = new Color(Integer.parseInt(edge.getColor()));
+		p.println("\\definecolor{temp}{rgb}{"
 				+(cColor.getRed()/255.0)+","
 				+(cColor.getGreen()/255.0)+","
 				+(cColor.getBlue()/255.0)+"}");
 			scolor = "temp";
-		}	
 		
-		Object o = edge.getUserDatum(SGUserData.WIDTH);
-
+	
 		Double lineWidth = 1.0;
-		if (o instanceof Double) {
-			lineWidth = (Double) o/1.5;
-			
-		}	
-		String source = edge.getSource().toString();
-		String dest = edge.getDest().toString();
+		Double lw = edge.getWidth();
+		if (lw != null)
+			lineWidth = (Double) lw/1.5;
+
+		String source = graph.getSource(edge).toString();
+		String dest = graph.getDest(edge).toString();
 		
 		
 		
 		if(dest.equals(source)){
 			Integer intSize=10;
-			Object size = edge.getSource().getUserDatum(SGUserData.RADIUS);
-			if (size instanceof Integer) {
-				intSize = (Integer) size/2;
+			Double size = graph.getSource(edge).getRadius();
+			if (size != null) {
+				intSize = (Integer) (new Integer((int)Math.floor(size)))/2;
 				
 			}
 			p.println("\\nccircle[linecolor="+scolor+", linewidth="+0.2*lineWidth*f+"]{->}{"+source+"}{"+(intSize+lineWidth)/2.0+"}");
@@ -425,21 +390,21 @@ public class Utils {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static void writeEdgeList(DirectedSparseGraph graph, PrintStream ps) {
+	public static void writeEdgeList(DirectedSparseGraph<Vertex,Edge> graph, PrintStream ps) {
 		Hashtable<Vertex, Integer> table = new Hashtable<Vertex, Integer>();
 		int count=0;
-		for(Vertex v: (Set<Vertex>)graph.getVertices()){
+		for(Vertex v: graph.getVertices()){
 			table.put(v, count);
 			count++;
 		}
-		for(DirectedSparseEdge e: (Set<DirectedSparseEdge>)graph.getEdges()){
-			ps.println(table.get(e.getSource()) + "\t"+table.get(e.getDest()));
+		for(Edge e: graph.getEdges()){
+			ps.println(table.get(graph.getSource(e)) + "\t"+table.get(graph.getDest(e)));
 		}
 		
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static void writeAdjacencyList(DirectedSparseGraph graph, PrintStream ps) {
+	public static void writeAdjacencyList(DirectedSparseGraph<Vertex,Edge> graph, PrintStream ps) {
 		Hashtable<Integer, Vertex> table = new Hashtable< Integer, Vertex>();
 		Hashtable<Vertex, Integer> rtable = new Hashtable<Vertex, Integer>();
 		int count=0;
@@ -451,8 +416,8 @@ public class Utils {
 		
 		for(int i = 0; i < table.size(); i++){
 			Vertex v = table.get(i);
-			ps.print(v.getSuccessors().size() + "\t");
-			for(Vertex vn: (Set<Vertex>)v.getSuccessors()){
+			ps.print(graph.getSuccessors(v).size() + "\t");
+			for(Vertex vn: graph.getSuccessors(v)){
 				ps.print(rtable.get(vn)+"\t");
 			}
 			ps.println();

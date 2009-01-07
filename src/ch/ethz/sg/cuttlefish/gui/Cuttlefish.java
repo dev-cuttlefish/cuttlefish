@@ -38,7 +38,7 @@ public class Cuttlefish extends JFrame {
 	private File configFile;
 
 	/**
-	 * main method for the execiton of cuttlefish
+	 * main method for the execution of cuttlefish
 	 * @param args program call argument: filename of the configuration file in xml format
 	 * @return void
 	 */

@@ -59,20 +59,12 @@ import org.xml.sax.SAXException;
 
 import ch.ethz.sg.cuttlefish.layout.ARF2Layout;
 import ch.ethz.sg.cuttlefish.layout.FixedLayout2;
-import ch.ethz.sg.cuttlefish.misc.SGUserData;
 import ch.ethz.sg.cuttlefish.misc.Utils;
 import ch.ethz.sg.cuttlefish.misc.XMLUtil;
 import ch.ethz.sg.cuttlefish.networks.BrowsableNetwork;
 
 import edu.uci.ics.jung.graph.*;
-import edu.uci.ics.jung.graph.decorators.*;
-import edu.uci.ics.jung.graph.impl.*;
 
-
-import edu.uci.ics.jung.visualization.ArrowFactory;
-import edu.uci.ics.jung.visualization.LayoutMutable;
-import edu.uci.ics.jung.visualization.PluggableRenderer;
-import edu.uci.ics.jung.visualization.ShapePickSupport;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 import edu.uci.ics.jung.visualization.VisualizationViewer.GraphMouse;
 import edu.uci.ics.jung.visualization.control.CrossoverScalingControl;
