@@ -21,15 +21,14 @@
 package ch.ethz.sg.cuttlefish.layout;
 
 import java.awt.geom.Point2D;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 
 import ch.ethz.sg.cuttlefish.misc.Vertex;
+import ch.ethz.sg.cuttlefish.misc.Edge;
 
 import edu.uci.ics.jung.algorithms.layout.AbstractLayout;
-import edu.uci.ics.jung.algorithms.layout.Layout;
 import edu.uci.ics.jung.algorithms.util.IterativeContext;
 import edu.uci.ics.jung.graph.Graph;
 
@@ -41,7 +40,7 @@ import edu.uci.ics.jung.graph.Graph;
  * See http://www.sg.ethz.ch/research/ for details
  */
 
-public class ARF2Layout<V,E> extends AbstractLayout<V,E> implements Layout<V,E>, IterativeContext {
+public class ARF2Layout<V,E> extends AbstractLayout<V,E> implements IterativeContext {
 	
     /**
      * number of position updates before the graph is rendered 
@@ -124,7 +123,8 @@ public class ARF2Layout<V,E> extends AbstractLayout<V,E> implements Layout<V,E>,
         }
     }
         
-    public void advancePositions() {
+    @SuppressWarnings("unchecked")
+	public void advancePositions() {
 
     	try{
 	        for (int i = 0; i < updatesPerFrame; i++) {
@@ -133,9 +133,9 @@ public class ARF2Layout<V,E> extends AbstractLayout<V,E> implements Layout<V,E>,
 	                if(!isFixed(v)){
 	                	Point2D oldPoint = locations.get((V) v);
 	                	if(oldPoint != null){
-	                		ArrayList<Double> force = getForceforNode(v);
-	                		double forceX = force.get(0);
-	                		double forceY = force.get(1);
+	                		Point2D force = getForceforNode(v);
+	                		double forceX = force.getX();
+	                		double forceY = force.getY();
 	                        double deltaIndividual = getGraph().degree((V) v) > 1 ? deltaT / Math.pow(getGraph().degree((V) v), 0.4) : deltaT;
 			                
 	                        forceX *= deltaIndividual;
@@ -159,25 +159,22 @@ public class ARF2Layout<V,E> extends AbstractLayout<V,E> implements Layout<V,E>,
      * @param x0 
      * @param y0 
      */
-    public void align(double x0, double y0){
+    @SuppressWarnings("unchecked")
+	public void align(double x0, double y0){
     	double x = Double.MAX_VALUE;
-    	double y = Double.MIN_VALUE;
+    	double y = Double.MAX_VALUE;
     	
     	for (Object o : getVertices()) {
             Vertex v = (Vertex) o;
-            x = Math.min(x, c.x);
-            y = Math.min(y, c.y);
+            x = Math.min(x, locations.get((V) v).getX());
+            y = Math.min(y, locations.get((V) v).getY());
         }
     	
     	for (Object o : getVertices()) {
             Vertex v = (Vertex) o;
-            Coordinates c = getCoordinates(v);
-            c.add(-x + x0, -y + y0);
-            v.setPosX(c.getX());
-            v.setPosY(c.getY());
-            
-            Point2D point = new Point2D.Double(v.getPosX(), v.getPosY());
-            locations.put((V) v, point);
+            Point2D c = locations.get((V) v);
+            c.setLocation(c.getX()-x + x0, c.getY() - y + y0);
+            locations.put((V) v, c);
         }
     }
   
@@ -194,8 +191,8 @@ public class ARF2Layout<V,E> extends AbstractLayout<V,E> implements Layout<V,E>,
 	 * 
 	 * @return a random position in within the unit square
 	 */
-	private Coordinates getRandomPoint(int scale) {
-        return new Coordinates(rnd.nextDouble()*scale, rnd.nextDouble()*scale);
+	private Point2D getRandomPoint(int scale) {
+        return new Point2D.Double(rnd.nextDouble()*scale, rnd.nextDouble()*scale);
     }
 
     /**
@@ -203,50 +200,56 @@ public class ARF2Layout<V,E> extends AbstractLayout<V,E> implements Layout<V,E>,
      * @param node
      * @return force vector
      */
-    private Coordinates getForceforNode(Vertex node) {
+    @SuppressWarnings("unchecked")
+	private Point2D getForceforNode(Vertex node) {
 
         double numNodes = getVertices().size();
        // double aIndivisual = node.degree() > 1 ? 1+((a-1)/node.degree()) : a;
-        	
-        Coordinates mDot = new Coordinates();
-        Coordinates x = getCoordinates(node);
-       
-        if (x.distance(new Coordinates(0.0, 0.0)) == 0.0) {
+        
+        Point2D origin = new Point2D.Double(0.0, 0.0);
+        Point2D mDot = new Point2D.Double();
+        Point2D locNode = locations.get((V) node);
+      
+        if (locNode.distance(origin) == 0.0) {
         	return mDot;
         }
- 
+        // CAUTION: difference between double variables can be different than 0 even if equal
+        
         for (Object o : getVertices()) {
             Vertex otherNode = (Vertex) o;
             if (node != otherNode) {
-                Coordinates otherNodeX = getCoordinates(otherNode);
-                if (otherNodeX == null || otherNodeX.distance(new Coordinates(0.0, 0.0)) == 0.0) {
+                Point2D otherNodeX = locations.get((V) otherNode);
+                if (otherNodeX == null || otherNodeX.distance(origin) == 0.0) {
                 	continue;
                 }
                 
-                Coordinates temp = new Coordinates(otherNodeX);
-                temp.add(-x.getX(), -x.getY());
+                Point2D temp = (Point2D) otherNodeX.clone();
+                temp.setLocation(temp.getX() -locNode.getX(), temp.getY() -locNode.getY());
 
                 
-                double mult = isEdgeInGraph(node, otherNode) ? a : 1;
+                double factor = isEdgeInGraph(node, otherNode) ? a : 1;
 
-                mult *= attraction / Math.sqrt(numNodes);
+                factor *= attraction / Math.sqrt(numNodes);
 
-                Coordinates add = new Coordinates(temp);
-                add.mult(mult, mult);
-                mDot.add(add.getX(), add.getY());
+                Point2D desp = (Point2D) temp.clone();
+                
+                desp.setLocation(desp.getX() * factor, desp.getY() * factor);
+                
+                mDot.setLocation(mDot.getX() + desp.getX(), mDot.getY() + desp.getY());
 
-                mult = 1 / temp.distance(new Coordinates(0.0, 0.0));
-                add = new Coordinates(temp);
-                add.mult(mult, mult);
-                add.mult(b, b);
-                mDot.add(-add.getX(), -add.getY());
+                factor = 1 / temp.distance(origin);
+                desp = (Point2D) temp.clone();
+
+                desp.setLocation(desp.getX() * factor, desp.getY() * factor);
+                desp.setLocation(desp.getX() * b, desp.getY() * b);
+                mDot.setLocation(mDot.getX() - desp.getX(),mDot.getX() - desp.getY());
 
             }
         }
         
-        if (incremental && mDot.distance(new Coordinates(0.0, 0.0)) > forceCutoff) {
-            double mult = forceCutoff / mDot.distance(new Coordinates(0.0, 0.0));
-            mDot.mult(mult, mult);
+        if (incremental && mDot.distance(origin) > forceCutoff) {
+            double factor = forceCutoff / mDot.distance(origin);
+            mDot.setLocation(mDot.getX() * factor, mDot.getY() * factor);
         }
         
         return mDot;
@@ -259,30 +262,30 @@ public class ARF2Layout<V,E> extends AbstractLayout<V,E> implements Layout<V,E>,
      * @param p
      * @return the newly assigned position
      */
-    public Coordinates assignPositionToVertex(Vertex vertex, Coordinates p) {
-    
-    	vertex.setPosY(p.getY());
-    	vertex.setPosX(p.getX());
-    	Point2D point = new Point2D.Double(p.getY(), p.getX());
-    	locations.put((V) vertex, point);   	
+    @SuppressWarnings("unchecked")
+	public Point2D assignPositionToVertex(Vertex vertex, Point2D p) {
+       	locations.put((V) vertex, p);   	
     	return p;
     }
     
+    public Point2D transform(V vertex) {
+    	return locations.get(vertex);
+    }
     
 	/**
-	 * Assigns a position to the vertex
+	 * calculates position to the vertex
 	 * @param vertex
 	 * @return the newly assigned position
 	 */
 	@SuppressWarnings("unchecked")
-	public Coordinates assignPositionToVertex(Vertex vertex) {
+	public Point2D assignPositionToVertex(Vertex vertex) {
 		Set<Vertex> nvertices = new HashSet<Vertex>();
 		for (Vertex vertex2 : (Set<Vertex> ) getGraph().getNeighbors((V) vertex)) {
-			if(getCoordinates(vertex2) != null){
+			if(locations.get((V) vertex2) != null){
 				nvertices.add(vertex2);
 			}
 		}
-		Coordinates c = getCoordinates(vertex);
+		Point2D c = locations.get((V) vertex);
 		if(c == null){
 			c = getRandomPoint(((int)Math.sqrt(getVertices().size())*50)+1);
 		}
@@ -290,13 +293,14 @@ public class ARF2Layout<V,E> extends AbstractLayout<V,E> implements Layout<V,E>,
 		if(nvertices.size() > 0){
 			c = getRandomPoint(1);
 			for (Vertex vertex2 : nvertices) {
-				Coordinates c2 = getCoordinates(vertex2);
-				c.add(c2.getX(), c2.getY());
+				Point2D c2 = locations.get((V) vertex2);
+				c.setLocation(c.getX() + c2.getX(),c.getY() +  c2.getY());
 			}
-			double mult = 1.0 / (double) nvertices.size();
-			c.mult(mult, mult);
+			double factor = 1.0 / (double) nvertices.size();
+			c.setLocation(c.getX() * factor, c.getY() * factor);
 		}
-		return c;
+		
+		return assignPositionToVertex(vertex, c);
 	}
 
 	/**
@@ -305,20 +309,21 @@ public class ARF2Layout<V,E> extends AbstractLayout<V,E> implements Layout<V,E>,
 	 * @param node2
 	 * @return true if node and node2 are connected
 	 */
+	@SuppressWarnings("unchecked")
 	private boolean isEdgeInGraph(Vertex node, Vertex node2) {
 
-		Edge e = node.findEdge(node2);
+		E e = getGraph().findEdge((V) node, (V) node2);
+		
 		if(e==null){
-			e =	node2.findEdge(node);
+			e = getGraph().findEdge((V) node2, (V) node);
 		}
+		
 		if(e!=null){
-			return e.getUserDatum(SGUserData.EXCLUDE)==null;
+			return (!((Edge)e).isExcluded());
 		}else{
 			return false;
 		}
-		
-        //return (node.findEdge(node2) != null || node2.findEdge(node) != null);
-  
+
     }
 
     /* (non-Javadoc)
@@ -338,9 +343,7 @@ public class ARF2Layout<V,E> extends AbstractLayout<V,E> implements Layout<V,E>,
     /* (non-Javadoc)
      * @see edu.uci.ics.jung.visualization.LayoutMutable#update()
      */
-    @SuppressWarnings("unchecked")
 	public void update() {
-    	initializeLocations(); 	
     	
     	if(!incremental){
     		if(verbose){
@@ -454,27 +457,6 @@ public class ARF2Layout<V,E> extends AbstractLayout<V,E> implements Layout<V,E>,
 		this.verbose = verbose;
 	}
 
-	@Override
-	public Object getBaseKey() {
-		return SGUserData.POSITION;
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	protected void initializeLocations() {
-		System.out.println("Init positions");
-      	Set<Vertex> vetices = getGraph().getVertices();
-    	for (Vertex vertex : vetices) {
-      		
-    		Coordinates coord = (Coordinates) vertex.getUserDatum(getBaseKey());
-            if (coord == null) {
-            	assignPositionToVertex(vertex);
-            	//System.out.println(vertex + " added");
-            }
-		}
-  
-		
-	}
 
 	@Override
 	public void initialize() {

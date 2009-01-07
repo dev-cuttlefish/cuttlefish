@@ -2,10 +2,7 @@ package ch.ethz.sg.cuttlefish.misc;
 
 import java.util.ArrayList;
 
-import edu.uci.ics.jung.graph.Vertex;
-import edu.uci.ics.jung.graph.impl.DirectedSparseEdge;
-import edu.uci.ics.jung.graph.impl.DirectedSparseGraph;
-import edu.uci.ics.jung.graph.impl.DirectedSparseVertex;
+import edu.uci.ics.jung.graph.DirectedSparseGraph;
 
 public class TestGraph extends DirectedSparseGraph {
 

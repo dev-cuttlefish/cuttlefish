@@ -6,11 +6,10 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Set;
 
-import edu.uci.ics.jung.graph.Vertex;
-import edu.uci.ics.jung.graph.impl.DirectedSparseEdge;
-import edu.uci.ics.jung.graph.impl.DirectedSparseGraph;
-import edu.uci.ics.jung.graph.impl.DirectedSparseVertex;
-import edu.uci.ics.jung.utils.UserData;
+import ch.ethz.sg.cuttlefish.misc.Vertex;
+import ch.ethz.sg.cuttlefish.misc.Edge;
+import edu.uci.ics.jung.graph.DirectedSparseGraph;
+import edu.uci.ics.jung.graph.Graph;
 
 public class StronglyConnectedComponentCompressor {
 	public static final String LEVEL = "__"+Class.class.toString() + "_level";
@@ -20,7 +19,7 @@ public class StronglyConnectedComponentCompressor {
 	Set<Vertex> verteces = new HashSet<Vertex>();
 	
 	Set<Vertex> currentComponent;
-	private DirectedSparseGraph graph;
+	private DirectedSparseGraph<Vertex,Edge> graph;
 
 
 	
@@ -28,30 +27,42 @@ public class StronglyConnectedComponentCompressor {
 	public static void main(String[] args){
 		DirectedSparseGraph graph = new TestGraph();
 		StronglyConnectedComponentCompressor compressor = new StronglyConnectedComponentCompressor(graph);
-		compressor.compress();
-		//for(Vertex v: (Set<Vertex>)graph.getVertices()){
-			//System.out.println(v + " cluster="+v.getUserDatum(StronglyConnectedComponentCompressor.CLUSTER));
-		//}
-		for(Vertex vertex: (Set<Vertex>)graph.getVertices()){
-			System.out.println(vertex.getUserDatum(StronglyConnectedComponentCompressor.CLUSTER)+": "+vertex + "->" + vertex.getUserDatum(compressor) );
-		}
+		Set<Set<Vertex>> components =   compressor.compress();
 		
+		int compInd = 0;
+		for (Set<Vertex> comp : components){
+			compInd++;
+			for (Vertex v : comp){
+				System.out.println(v + " component="+compInd);
+			}
+		}
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static List<Vertex> topologicalSort(DirectedSparseGraph graph){
+	public static List<Vertex> topologicalSort(DirectedSparseGraph<Vertex, Edge> graph){
 		ArrayList<Vertex> list = new ArrayList<Vertex>();
-		Hashtable<String, Vertex> vertexMap = new Hashtable<String, Vertex>();
+		Hashtable<Integer, Vertex> vertexMap = new Hashtable<Integer, Vertex>();
 			for(Vertex v: (Set<Vertex>)graph.getVertices()){
-				String key = (String) v.getUserDatum(SGUserData.ID);
-				if(key==null){
-					v.addUserDatum(SGUserData.ID, v.toString(), UserData.SHARED);
-					key = v.toString();
-				}
+				Integer key =  v.getId();
+//				if(key==null){
+//					v.addUserDatum(SGUserData.ID, v.toString(), UserData.SHARED);
+//					key = v.toString();
+//				}
 				vertexMap.put(key, v);
 			}
 			
-			DirectedSparseGraph clonedGraph = (DirectedSparseGraph) graph.copy();
+			
+			// we clone the graph by hand
+			DirectedSparseGraph clonedGraph = new DirectedSparseGraph<Vertex, Edge>();
+			
+			for (Vertex vertex : graph.getVertices()){
+				clonedGraph.addVertex(vertex);
+			}
+			for (Edge edge : graph.getEdges()){
+				clonedGraph.addVertex(edge);
+			}
+			
+			
 			StronglyConnectedComponentCompressor compressor = new StronglyConnectedComponentCompressor(clonedGraph);
 			compressor.compress();
 			
@@ -63,24 +74,22 @@ public class StronglyConnectedComponentCompressor {
 				//System.out.println(level+""+ clonedGraph.getVertices());
 				
 				Set<Vertex> sources = getSourceVertices(clonedGraph);
-				clonedGraph.removeVertices(sources);
+				
+				for (Vertex rVert : sources)
+					clonedGraph.removeVertex(rVert);
 				List<Vertex> tempList = compressor.expand(sources);
-				if(size == clonedGraph.numVertices()){
+				if(size == clonedGraph.getVertexCount()){
 					System.out.println("ERROR:" + clonedGraph.getVertices());
 					break;
 				}
-				size = clonedGraph.numVertices();
+				size = clonedGraph.getVertexCount();
 				
 				for(Vertex v:tempList){
-					Vertex realVertex = vertexMap.get(v.getUserDatum(SGUserData.ID)); 
-					realVertex.addUserDatum(StronglyConnectedComponentCompressor.LEVEL, new Integer(level), UserData.CLONE);
-					realVertex.addUserDatum(StronglyConnectedComponentCompressor.CLUSTER, v.getUserDatum(StronglyConnectedComponentCompressor.CLUSTER), UserData.CLONE);
+					Vertex realVertex = vertexMap.get(v.getId()); 
 					list.add(realVertex);
 				}
 				level++;
 			}
-			
-	
 		
 		System.gc();
 		return list;
