@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<cf:Configuration
+	xmlns:cf="http://www.sg.ethz.ch/research/cuttlefish/configuration.xsd"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.sg.ethz.ch/research/cuttlefish/configuration.xsd src/ch/ethz/sg/cuttlefish/resources/configuration.xsd ">
+	<GUI>
+		<Tab id="data" condition="*" name="data">
+			<Widget id="import" name="import"
+				class="ch.ethz.sg.cuttlefish.gui.widgets.DataSourcePanel">
+				<Argument name="sources">datasources.xml</Argument>
+			</Widget>
+			<Widget id="export" name="export"
+				class="ch.ethz.sg.cuttlefish.gui.widgets.ExportPanel" />
+			<Widget id="animation" name="animation"
+				class="ch.ethz.sg.cuttlefish.gui.widgets.AnimationPanel">
+				<Argument name="folder">animations</Argument></Widget>
+		</Tab>
+
+		<Tab id="network" condition="*" name="network">
+			<Widget id="metrics" name="metrics"
+				class="ch.ethz.sg.cuttlefish.gui.widgets.NetworkMetricPanel" />
+			<Widget id="edges" name="edges"
+				class="ch.ethz.sg.cuttlefish.gui.widgets.EdgePanel" />
+			<Widget id="date" name="date"
+				class="ch.ethz.sg.cuttlefish.gui.widgets.DatePanel" />
+		</Tab>
+
+
+		<Tab name="simulation"
+			condition="ch.ethz.sg.cuttlefish.networks.ISimulation"
+			id="simulation">
+			<Widget name="control"
+				class="ch.ethz.sg.cuttlefish.gui.widgets.SimulationPanel"
+				id="control" />
+		</Tab>
+	</GUI>
+	<Arguments>
+
+	</Arguments>
+</cf:Configuration>
