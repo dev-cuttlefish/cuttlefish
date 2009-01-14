@@ -24,8 +24,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 public class XMLUtil {
-	
-		
 		static public Hashtable<String, String> getArguments(Node source) {
 			Hashtable<String, String> argumentTable = new Hashtable<String, String>();
 			NodeList arguments = source.getChildNodes();
@@ -44,7 +42,5 @@ public class XMLUtil {
            	   	 
               }
 			return argumentTable;
-		}	
-		
-	
+		}		
 }
