@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cf:DataSources xmlns:cf="http://www.sg.ethz.ch/research/cuttlefish/datasources.xsd"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.sg.ethz.ch/research/cuttlefish/datasources.xsd datasources.xsd ">
+	
+	<Source id="file" name="read from file" class="ch.ethz.sg.Main.NetworkReader">
+		<Argument name="src">file</Argument>
+	</Source>
+	
+	<Source id="db" name="read from db" class="ch.ethz.sg.Main.NetworkReader">
+		<Argument name="src">db</Argument>
+	</Source>
+		
+</cf:DataSources>
