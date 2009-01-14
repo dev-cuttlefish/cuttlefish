@@ -23,7 +23,9 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 
 public abstract class TemporalNetwork extends BrowsableNetwork {
-	 private ArrayList<Date> dates;
+	 
+	private static final long serialVersionUID = 1L;
+	private ArrayList<Date> dates;
 	 //private int dateIndex= -1;
 	 private int dateIndex= 0;
 	private String dateCondition = " 1 ";

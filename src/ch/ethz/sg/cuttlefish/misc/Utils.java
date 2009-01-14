@@ -64,7 +64,6 @@ public class Utils {
 		}
 	}
 	*/
-	@SuppressWarnings({ "unchecked", "unchecked" })
 	public static void graphToDot(Graph<Vertex,Edge> graph, PrintStream ps){
 		
 		  ps.println("digraph g {");
@@ -224,13 +223,13 @@ public class Utils {
 	static private void writeVertexColorTable(Collection<Vertex> vertices, PrintStream p){
 		for (Vertex vertex : vertices) {
 			
-			Color fColor = new Color(Integer.parseInt(vertex.getFillColor()));
+			Color fColor = vertex.getFillColor();
 				p.println("\\definecolor{"+ vertex.toString()+"FILL}{rgb}{"
 					+(fColor.getRed()/255.0)+","
 					+(fColor.getGreen()/255.0)+","
 					+(fColor.getBlue()/255.0)+"}");
 		
-			Color cColor = new Color(Integer.parseInt(vertex.getColor()));
+			Color cColor = vertex.getColor();
 			p.println("\\definecolor{"+ vertex.toString()+"COLOR}{rgb}{"
 				+(cColor.getRed()/255.0)+","
 				+(cColor.getGreen()/255.0)+","
@@ -247,8 +246,8 @@ public class Utils {
 		String width="1";
 		
 		if(detail){
-			fillColor=vertex.getFillColor();
-			color=vertex.getColor();
+			fillColor=vertex.getFillColor().toString();
+			color=vertex.getColor().toString();
 		}
 		
 		Integer intSize=10;

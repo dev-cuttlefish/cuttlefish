@@ -12,7 +12,7 @@ import edu.uci.ics.jung.graph.DirectedSparseGraph;
 import edu.uci.ics.jung.graph.Graph;
 
 public class StronglyConnectedComponentCompressor {
-	public static final String LEVEL = "__"+Class.class.toString() + "_level";
+/*	public static final String LEVEL = "__"+Class.class.toString() + "_level";
 
 	public static final String CLUSTER = "__"+Class.class.toString() + "_cluster";
 
@@ -230,6 +230,6 @@ public class StronglyConnectedComponentCompressor {
 		//newVertex.setUserDatum(this, vertexSet, UserData.CLONE);
 		newVertex.setUserDatum(this, expand(vertexSet), UserData.CLONE);
 	}
-	
+	*/
 	
 }

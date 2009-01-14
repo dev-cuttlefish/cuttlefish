@@ -25,7 +25,8 @@ import javax.swing.JPanel;
 import ch.ethz.sg.cuttlefish.networks.BrowsableNetwork;
 
 public abstract class BrowserWidget extends JPanel{
-	
+
+	private static final long serialVersionUID = 1L;
 	private boolean isActive=false;
 	private INetworkBrowser browser;
 	private GroupPanel groupPanel = null;

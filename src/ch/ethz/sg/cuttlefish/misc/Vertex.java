@@ -1,17 +1,19 @@
 package ch.ethz.sg.cuttlefish.misc;
 
+import java.awt.Color;
+
 public class Vertex {
 	
 	
 	private int idTemp;
 	private int id;
-	private String label;
-	private String fillColor;
-	private String color;
-	private double weight;
-	private double radius;
+	private String label = null;
+	private Color fillColor = Color.BLACK;
+	private Color color  = Color.BLACK;
+	private double weight = 1;
+	private double radius = 10;
 	private boolean shadowed;
-	private double width;
+	private double width = 1;
 	private boolean excluded;
 	private boolean fixed;
 	
@@ -19,6 +21,10 @@ public class Vertex {
 		this.id = id;
 	}
 	
+	public Vertex() {
+		this.id = -1;  //Anonymous vertex
+	}
+
 	/**
 	 * @param idTemp the idTemp to set
 	 */
@@ -58,25 +64,25 @@ public class Vertex {
 	/**
 	 * @param fillColor the fillColor to set
 	 */
-	public void setFillColor(String fillColor) {
+	public void setFillColor(Color fillColor) {
 		this.fillColor = fillColor;
 	}
 	/**
 	 * @return the fillColor
 	 */
-	public String getFillColor() {
+	public Color getFillColor() {
 		return fillColor;
 	}
 	/**
 	 * @param color the color to set
 	 */
-	public void setColor(String color) {
+	public void setColor(Color color) {
 		this.color = color;
 	}
 	/**
 	 * @return the color
 	 */
-	public String getColor() {
+	public Color getColor() {
 		return color;
 	}
 	/**

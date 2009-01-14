@@ -111,6 +111,7 @@ public class SimulationPanel extends BrowserWidget {
 	                        	   isRunning = true;
 	                        	   while(isRunning){
 	                        		   isRunning = ((ISimulation)getNetwork()).update(sleepTime);
+	                        		   System.out.println("RunChange");
 	                        		   getBrowser().onNetworkChange();
 	                        		   
 	                        		   try {
@@ -142,6 +143,7 @@ public class SimulationPanel extends BrowserWidget {
 			jButton2.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
 					((ISimulation)getNetwork()).update(sleepTime);
+					System.out.println("StepChange");
 					getBrowser().onNetworkChange();
 					
 				}
@@ -162,6 +164,7 @@ public class SimulationPanel extends BrowserWidget {
 			jButton3.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
 					((ISimulation)getNetwork()).reset();
+					System.out.println("ResetChange");
 					getBrowser().onNetworkChange();
 				}
 			});

@@ -24,16 +24,14 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.util.Set;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 
 import ch.ethz.sg.cuttlefish.gui.BrowserWidget;
-import ch.ethz.sg.cuttlefish.misc.SGUserData;
-import edu.uci.ics.jung.graph.impl.DirectedSparseEdge;
-import edu.uci.ics.jung.utils.UserData;
+import ch.ethz.sg.cuttlefish.misc.Edge;
+import ch.ethz.sg.cuttlefish.networks.BrowsableNetwork;
 
 public class EdgePanel extends BrowserWidget implements ItemListener{
 
@@ -196,23 +194,20 @@ public class EdgePanel extends BrowserWidget implements ItemListener{
 		getBrowser().refreshAnnotations();
 	}
 	
-	
-	
-	@SuppressWarnings("unchecked")
 	private void colorEdges(){
 		int maxDegree = getNetwork().getMaxDegree();
 		double factor = 255.0 / maxDegree;
 		System.out.println(factor);
 
+		BrowsableNetwork g = getNetwork();
 		
-		
-		for(DirectedSparseEdge e: (Set<DirectedSparseEdge>)getNetwork().getEdges()){
+		for(Edge e: g.getEdges()){
 			
 			int degree;
 			if(getDegreeMode() == EdgePanel.INDEGREE){
-				degree = e.getDest().degree();
+				degree = g.degree(g.getDest(e));
 			}else{
-				degree = e.getSource().degree();
+				degree = g.degree(g.getSource(e));
 			}
 			int red;	
 			if(getFunction() == EdgePanel.LOG){
@@ -225,10 +220,7 @@ public class EdgePanel extends BrowserWidget implements ItemListener{
 			Color color;
 			
 				color = new Color(red,0,255-red);
-				e.setUserDatum(SGUserData.COLOR, color, UserData.REMOVE);
-			
-			
-			
+				e.setColor(color.toString());
 		}
 		//getBrowser().repaintViewer();
 	}
