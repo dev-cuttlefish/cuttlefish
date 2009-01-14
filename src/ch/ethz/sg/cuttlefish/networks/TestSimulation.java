@@ -18,30 +18,28 @@
 
 package ch.ethz.sg.cuttlefish.networks;
 
-import edu.uci.ics.jung.graph.Edge;
-import edu.uci.ics.jung.graph.impl.DirectedSparseEdge;
-import edu.uci.ics.jung.graph.impl.DirectedSparseVertex;
+import ch.ethz.sg.cuttlefish.misc.Edge;
+import ch.ethz.sg.cuttlefish.misc.Vertex;
 
 public class TestSimulation extends BrowsableNetwork implements ISimulation {
 
-	private DirectedSparseVertex lastInsert = null;
-	
-	
+	private static final long serialVersionUID = 1L;
+	private Vertex lastInsert = null;
 	
 	public void reset() {
 		lastInsert = null;
-		removeAllEdges();
-		removeAllVertices();
+		for (Edge edge : super.getEdges())
+			super.removeEdge(edge);
+		for (Vertex vertex : super.getVertices())
+			super.removeVertex(vertex);
 	}
 
 	public boolean update(long passedTime) {
-		
-		DirectedSparseVertex v = new DirectedSparseVertex();
-		
+		Vertex v = new Vertex();
 		addVertex(v);
 		if(lastInsert!=null){
-			Edge e = new DirectedSparseEdge(v, lastInsert);
-			addEdge(e);
+			Edge e = new Edge();
+			super.addEdge(e, v, lastInsert);
 		}
 		lastInsert = v;
 		return true;

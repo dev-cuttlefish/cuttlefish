@@ -22,12 +22,14 @@ import java.io.File;
 
 import org.w3c.dom.Document;
 
+import ch.ethz.sg.cuttlefish.misc.Edge;
+import ch.ethz.sg.cuttlefish.misc.Vertex;
 import ch.ethz.sg.cuttlefish.networks.BrowsableNetwork;
-import edu.uci.ics.jung.visualization.LayoutMutable;
+import edu.uci.ics.jung.algorithms.layout.Layout;
 
 public interface INetworkBrowser {
 	
-	public LayoutMutable getNetworkLayout();
+	public Layout<Vertex,Edge> getNetworkLayout();
 
 	public void repaintViewer();
 

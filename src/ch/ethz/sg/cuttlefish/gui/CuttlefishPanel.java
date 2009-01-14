@@ -52,6 +52,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
+import org.apache.commons.collections15.Transformer;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -59,10 +60,14 @@ import org.xml.sax.SAXException;
 
 import ch.ethz.sg.cuttlefish.layout.ARF2Layout;
 import ch.ethz.sg.cuttlefish.layout.FixedLayout2;
+import ch.ethz.sg.cuttlefish.misc.Edge;
 import ch.ethz.sg.cuttlefish.misc.Utils;
+import ch.ethz.sg.cuttlefish.misc.Vertex;
 import ch.ethz.sg.cuttlefish.misc.XMLUtil;
 import ch.ethz.sg.cuttlefish.networks.BrowsableNetwork;
 
+import edu.uci.ics.jung.algorithms.layout.Layout;
+import edu.uci.ics.jung.algorithms.util.IterativeContext;
 import edu.uci.ics.jung.graph.*;
 
 import edu.uci.ics.jung.visualization.VisualizationViewer;
@@ -70,18 +75,18 @@ import edu.uci.ics.jung.visualization.VisualizationViewer.GraphMouse;
 import edu.uci.ics.jung.visualization.control.CrossoverScalingControl;
 import edu.uci.ics.jung.visualization.control.DefaultModalGraphMouse;
 import edu.uci.ics.jung.visualization.control.ScalingControl;
+import edu.uci.ics.jung.visualization.picking.ShapePickSupport;
 
 /**
  * Class for the main JPanel of cuttlefish
  */
-@SuppressWarnings("serial")
 public class CuttlefishPanel extends JPanel implements ItemListener,INetworkBrowser{
 
+	private static final long serialVersionUID = 1L;
 //	DefaultModalGraphMouse gm = new DefaultModalGraphMouse();  //  @jve:decl-index=0:
 	private BrowsableNetwork network = null;  //  @jve:decl-index=0:
-	private LayoutMutable layout = null;
-	private PluggableRenderer renderer = new PluggableRenderer();
-	private VisualizationViewer visualizationViewer = null;
+	private Layout<Vertex,Edge> layout = null;
+	private VisualizationViewer<Vertex,Edge> visualizationViewer = null;
 	private final ScalingControl scaler = new CrossoverScalingControl();  //  @jve:decl-index=0:
 	private JTabbedPane menuPane = null;
 	//private double scale=1.0;  //  @jve:decl-index=0:
@@ -93,7 +98,7 @@ public class CuttlefishPanel extends JPanel implements ItemListener,INetworkBrow
 	private Hashtable<String, BrowserWidget> widgetTable = new Hashtable<String, BrowserWidget>();
 	private ArrayList<BrowserTab> tabArray = new ArrayList<BrowserTab>();  //  @jve:decl-index=0:
 	private Document configuration;  //  @jve:decl-index=0:
-	private DefaultModalGraphMouse graphMouse;  //  @jve:decl-index=0:
+	private DefaultModalGraphMouse<Vertex,Edge> graphMouse;  //  @jve:decl-index=0:
 	private JButton jButton = null;
 	private JButton jButton1 = null;
 	private JButton jButton2 = null;
@@ -110,165 +115,44 @@ public class CuttlefishPanel extends JPanel implements ItemListener,INetworkBrow
 	public CuttlefishPanel(File configFile) {
 		super();
 		initialize(configFile);
-		//getZoomSliderPanel().setZoom(0.5);
-		/*			
-		renderer.setEdgeStringer(new EdgeStringer(){
-			public String getLabel(ArchetypeEdge e) {
-				return ""+ e.getUserDatum("weight");
-			}
-		});
-*/		
-		///*
-		renderer.setEdgeStrokeFunction(new EdgeStrokeFunction(){
-			public Stroke getStroke(Edge e) {
-			Object o = e.getUserDatum(SGUserData.WEIGHT);
-			if (o instanceof Double) {
-				Double weight = (Double) o;
-				return new BasicStroke((float) (weight*10));
-			}
-				return new BasicStroke(1);
-			}
-
-
-		});
-//*/		
 		
-		renderer.setVertexShapeFunction(new VertexShapeFunction(){
-			
-    		private final Ellipse2D theEllipse = new Ellipse2D.Float();
-
-			public Shape getShape(Vertex v) {
-				Object o = v.getUserDatum(SGUserData.RADIUS);
-				if (o instanceof Integer) {
-					Integer radius = (Integer)o;
-					theEllipse.setFrameFromCenter(0, 0, radius, radius);
-				}else{
-					theEllipse.setFrameFromCenter(0, 0, 10, 10);
-				}
-				return theEllipse;
-			}
-			
-		});
+		Transformer<Vertex, Shape> vertexShapeTransformer = new Transformer<Vertex, Shape>() {			
+			public Shape transform(Vertex vertex) {
+				Ellipse2D ellipse = new Ellipse2D.Float();
+				ellipse.setFrameFromCenter(0,0,vertex.getRadius(),vertex.getRadius());
+				return ellipse; } };
 		
-		renderer.setEdgePaintFunction(new EdgePaintFunction(){
-			
-			public Paint getDrawPaint(Edge e) {
-				Object o = e.getUserDatum(SGUserData.COLOR);
-				if (o instanceof Color) {
-					Color color = (Color) o;
-					return color;
-				}else{
-					return Color.black;
-				}
-			
-			}
-
-			public Paint getFillPaint(Edge e) {
-				// TODO Auto-generated method stub
-				return null;
-			}
-			
-		});
+		Transformer<Edge, Paint> edgePaintTransformer = new Transformer<Edge, Paint>(){
+			public Paint transform(Edge edge) {
+				return new Color(Integer.parseInt(edge.getColor())); } };
 		
-		renderer.setVertexStringer(new VertexStringer(){
-
-			public String getLabel(ArchetypeVertex v) {
-
-				Object o = v.getUserDatum(SGUserData.LABEL);
-				if (o != null && o instanceof String) {
-					String label = (String) o;
-					return label;
-				}
-				return null;
-
-			}
-		});
-		
-		renderer.setEdgeStrokeFunction(new EdgeStrokeFunction(){
-
-			public Stroke getStroke(Edge e) {
-				Double  thickness = 1.0;
-				Object o = e.getUserDatum(SGUserData.WIDTH);
-				if (o instanceof Double ) {
-					thickness = (Double ) o;
-				}
-				BasicStroke stroke = new BasicStroke(thickness.intValue());
-				return stroke;
-			}
+		Transformer<Vertex,String> vertexLabelTransformer = new Transformer<Vertex,String>(){
+			public String transform(Vertex vertex) {
+				return vertex.getLabel(); } };
 			
-		});
-
-		renderer.setEdgeArrowFunction(new EdgeArrowFunction(){
-
-			public Shape getArrow(Edge e) {
-				Double thickness = 1.0;
-				Object o = e.getUserDatum(SGUserData.WIDTH);
-				if (o instanceof Double ) {
-					thickness = (Double ) o;
-					//thickness ++;
-				}
-				thickness +=2;
-				//return ArrowFactory.getNotchedArrow((int)(Math.log(thickness)+1)*4, (int)(Math.log(thickness)+1)*4, (int)(Math.log(thickness)+1)*1);
-				//return ArrowFactory.getNotchedArrow((int)(thickness*2), (int)(thickness*2), (int)(thickness*0.5));
-				return ArrowFactory.getWedgeArrow( 0, 0 );
-			}
+		Transformer<Edge,Stroke> edgeStrokeTransformer = new Transformer<Edge, Stroke>() {
+			public Stroke transform(Edge edge) {
+				return new BasicStroke(new Double(edge.getWidth()).intValue()); } };
 			
-		});
-		
-		
-		renderer.setVertexStrokeFunction(new VertexStrokeFunction(){
-
-			public Stroke getStroke(Vertex v) {
-				Integer thickness = 1;
-				Object o = v.getUserDatum(SGUserData.WIDTH);
-				if (o instanceof Integer) {
-					thickness = (Integer) o;
-				}
-				BasicStroke stroke = new BasicStroke(thickness);
-				return stroke;
-			}
+		Transformer<Vertex, Stroke> vertexStrokeTransformer = new Transformer<Vertex, Stroke>(){
+			public Stroke transform(Vertex vertex) {
+				return new BasicStroke(new Double(vertex.getWidth()).intValue()); } };
 			
-		});
+		Transformer<Vertex, Paint> vertexPaintTransformer = new Transformer<Vertex, Paint>(){
+			public Paint transform(Vertex vertex) {
+				return vertex.getFillColor(); } };
 		
-		renderer.setVertexPaintFunction(
-				new PickableVertexPaintFunction(
-					visualizationViewer.getPickedState(), 
-					new Color(0,0,0), 
-					new Color(150,150,150), 
-					new Color(150,150,255)){
-
-						@Override
-						public Paint getFillPaint(Vertex v) {
-							Object o = v.getUserDatum(SGUserData.FILLCOLOR);
-							if (o instanceof Color) {
-								Color color = (Color) o;
-								return color;
-							}else{
-								return super.getFillPaint(v);
-							}
-
-							
-						}
-
-						@Override
-						public Paint getDrawPaint(Vertex v) {
-							Object o = v.getUserDatum(SGUserData.COLOR);
-							if (o instanceof Color) {
-								Color color = (Color) o;
-								return color;
-							}else{
-								return super.getDrawPaint(v);
-							}
-						}
-						
-						
-					
-				});
-		
+				
+		visualizationViewer.getRenderContext().setVertexShapeTransformer(vertexShapeTransformer);
+		visualizationViewer.getRenderContext().setEdgeFillPaintTransformer(edgePaintTransformer);		
+		visualizationViewer.getRenderContext().setVertexLabelTransformer(vertexLabelTransformer);
+		visualizationViewer.getRenderContext().setEdgeStrokeTransformer(edgeStrokeTransformer);
+		visualizationViewer.getRenderContext().setVertexStrokeTransformer(vertexStrokeTransformer);
+		visualizationViewer.getRenderContext().setVertexFillPaintTransformer(vertexPaintTransformer);
 		//visualizationViewer.setGraphMouse(gm);
-		visualizationViewer.setPickSupport(new ShapePickSupport());
+		visualizationViewer.setPickSupport(new ShapePickSupport<Vertex,Edge>(visualizationViewer));
         visualizationViewer.setGraphMouse(graphMouse);
-        visualizationViewer.getPickedState().addItemListener(this);
+        visualizationViewer.getPickedVertexState().addItemListener(this);
 		
 	}
 	
@@ -287,7 +171,7 @@ public class CuttlefishPanel extends JPanel implements ItemListener,INetworkBrow
 		this.setBackground(Color.gray);
 		
         //visualizationViewer.setPickSupport(new ShapePickSupport());
-        graphMouse = new DefaultModalGraphMouse();
+        graphMouse = new DefaultModalGraphMouse<Vertex,Edge>();
         //visualizationViewer.setGraphMouse(gm);
         
 		
@@ -391,13 +275,13 @@ public class CuttlefishPanel extends JPanel implements ItemListener,INetworkBrow
 	 * Getter for JUNG's VisualizationViewer, creating it if it does not exist
 	 * @return VisualizationViewer	
 	 */
-	private VisualizationViewer getVisualizationViewer() {
+	private VisualizationViewer<Vertex,Edge> getVisualizationViewer() {
 		if (visualizationViewer == null) {
-			visualizationViewer = new VisualizationViewer(layout, renderer);
+			visualizationViewer = new VisualizationViewer<Vertex,Edge>(layout);
 			//visualizationViewer.setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));
 			visualizationViewer.setBackground(Color.white);
 			
-			GraphMouse graphMouse = new DefaultModalGraphMouse();
+			GraphMouse graphMouse = new DefaultModalGraphMouse<Vertex,Edge>();
 			visualizationViewer.setGraphMouse(graphMouse );
 		}
 		return visualizationViewer;
@@ -427,8 +311,8 @@ public class CuttlefishPanel extends JPanel implements ItemListener,INetworkBrow
 		
 		if(!isDynamic){
 			try{
-				FixedLayout2 fixed = new FixedLayout2(network);
-				fixed.readPositionFile(positionData);
+				FixedLayout2<Vertex,Edge> fixed = new FixedLayout2<Vertex,Edge>(network);
+				fixed.setPositionFile(positionData);
 				layout = fixed;
 				getLayoutCheckBox().setSelected(false);
 			}catch(Exception e){
@@ -437,7 +321,7 @@ public class CuttlefishPanel extends JPanel implements ItemListener,INetworkBrow
 		}
 		
 		if(layout == null){
-			ARF2Layout arf = new ARF2Layout(network);
+			ARF2Layout<Vertex, Edge> arf = new ARF2Layout<Vertex, Edge>(network);
 			arf.setForceCutoff(100);
 			arf.setAttraction(0.15);
 			layout = arf;
@@ -445,9 +329,8 @@ public class CuttlefishPanel extends JPanel implements ItemListener,INetworkBrow
 		}
 		System.out.println("Set layout to " + layout.getClass());
 		
-		getVisualizationViewer().stop();
+		getVisualizationViewer().repaint();
 		getVisualizationViewer().setGraphLayout(layout);
-		getVisualizationViewer().restart();
 		//System.out.println("VV restarted");
 	}
 
@@ -460,11 +343,10 @@ public class CuttlefishPanel extends JPanel implements ItemListener,INetworkBrow
 		this.network = network;
 		System.out.println("Set network " + network.getName() + " (" + network.getVertices().size() + " nodes)");
 		
-		setLayout(false);
+		setLayout(true);
 		
 		network.init();
 		
-		layout.update();
 		refreshAnnotations();
 		updateWidgets();
 	}
@@ -500,7 +382,7 @@ public class CuttlefishPanel extends JPanel implements ItemListener,INetworkBrow
 	 * Getter for the network
 	 * @return DirectedSparseGraph network in use in CuttleFish
 	 */
-	public DirectedSparseGraph getNetwork() {
+	public DirectedSparseGraph<Vertex,Edge> getNetwork() {
 		return network;
 	}
 
@@ -559,7 +441,7 @@ public class CuttlefishPanel extends JPanel implements ItemListener,INetworkBrow
 		return viewPanel;
 	}
 
-	public LayoutMutable getNetworkLayout() {
+	public Layout<Vertex,Edge> getNetworkLayout() {
 		return layout;
 	}
 
@@ -572,7 +454,6 @@ public class CuttlefishPanel extends JPanel implements ItemListener,INetworkBrow
 	public void refreshAnnotations() {
 		
 		//network.colorAll(Color.DARK_GRAY);
-		network.removeAnnotations();
 		for(BrowserWidget widget: widgetTable.values()){
 			if((!widget.isClickable() || widget.isActive())&&widget.getNetwork()!=null){
 				widget.updateAnnotations();
@@ -591,7 +472,7 @@ public class CuttlefishPanel extends JPanel implements ItemListener,INetworkBrow
 
 	public void onNetworkChange() {
 		System.out.println("Network changed " + network.getName());
-		layout.update();
+		((IterativeContext)layout).step();
 		refreshAnnotations();
 		
 	}
@@ -762,15 +643,13 @@ public class CuttlefishPanel extends JPanel implements ItemListener,INetworkBrow
 
 
 	public void resumeLayout() {
-		visualizationViewer.stop();
-		
+//		visualizationViewer.stop();	
 	}
 
 
 
 	public void stopLayout() {
-		visualizationViewer.restart();
-		
+//		visualizationViewer.restart();	
 	}
 
 

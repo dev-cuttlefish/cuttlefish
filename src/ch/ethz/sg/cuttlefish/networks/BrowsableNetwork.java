@@ -19,24 +19,26 @@
 package ch.ethz.sg.cuttlefish.networks;
 
 import java.awt.Color;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Hashtable;
 import java.util.Set;
 
-import ch.ethz.sg.cuttlefish.misc.SGUserData;
-import edu.uci.ics.jung.graph.Edge;
-import edu.uci.ics.jung.graph.Vertex;
-import edu.uci.ics.jung.graph.impl.DirectedSparseGraph;
-import edu.uci.ics.jung.utils.UserData;
-import edu.uci.ics.jung.utils.UserDataContainer;
+import ch.ethz.sg.cuttlefish.misc.Edge;
+import ch.ethz.sg.cuttlefish.misc.Vertex;
 
-public class BrowsableNetwork extends DirectedSparseGraph {
+import edu.uci.ics.jung.graph.DirectedSparseGraph;
+
+
+
+public class BrowsableNetwork extends DirectedSparseGraph<Vertex, Edge> {
+	
+	//default value for serialization in serialVersionUID
+	private static final long serialVersionUID = 1L;
 	
 	private String name=this.getClass().getName();
 	private Hashtable<String, String> arguments = new Hashtable<String, String>();
 	private ArrayList<String> annotations = loadAnnotations();
-	
 	
 	public void init(){
 	}
@@ -46,26 +48,8 @@ public class BrowsableNetwork extends DirectedSparseGraph {
 	
 	private final ArrayList<String> loadAnnotations() {
 		ArrayList<String> annotations = new ArrayList<String>();
-		
-		Field[] fields = SGUserData.class.getDeclaredFields();
-		for(Field field : fields){
-			try {
-				Object o = field.get(SGUserData.class);
-				if (o instanceof String) {
-					String value = (String) o;
-					if(value.startsWith("__G_")){
-						annotations.add(value);
-					//	System.out.println(value);
-					}
-				}
-			} catch (IllegalArgumentException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
+		//TODO: add reflection and extension on Vertices
+		annotations.add("label");
 		return annotations;
 	}
 
@@ -86,39 +70,35 @@ public class BrowsableNetwork extends DirectedSparseGraph {
 		this.name = name;
 	}
 	
-	@SuppressWarnings("unchecked")
 	public final int getMaxDegree() {
 		int degree=0;
-		for(Vertex v: (Set<Vertex>) getVertices()){
-			degree = Math.max(degree, v.degree());
+		for(Vertex v: getVertices()){
+			degree = Math.max(degree, super.degree(v));
 		}
 		return degree;
 	}
 	
-	@SuppressWarnings("unchecked")
 	public final void colorAll(Color color) {
-		for(Vertex vertex: (Set<Vertex>)getVertices()){
-			vertex.setUserDatum(SGUserData.FILLCOLOR, color, UserData.REMOVE);
+		for(Vertex vertex: getVertices()){
+			vertex.setFillColor(color);
 		}
 	}
 	protected final void setColor(Vertex v, Color c2){
 		if(v!=null){
-			v.setUserDatum(SGUserData.FILLCOLOR, c2, UserData.REMOVE);
+			v.setFillColor(c2);
 		}
 	}
 	
 	
 	protected final void addColor(Vertex v, Color c2){
 		if(v!=null){
-			Color c = new Color(0,0,0);
-			Object o =  v.getUserDatum(SGUserData.FILLCOLOR);
-			if (o!=null && o instanceof Color) {
-				c = (Color) o;
-				
-			}
-	
-			Color nc = maxColor(c2, c);
-			v.setUserDatum(SGUserData.FILLCOLOR, nc, UserData.REMOVE);
+			Color c = v.getFillColor();
+			Color nc;
+			if (c != null)
+				nc = maxColor(c2, c);
+			else
+				nc = c2;
+			v.setFillColor(nc);
 		}
 	}
 	
@@ -129,72 +109,36 @@ public class BrowsableNetwork extends DirectedSparseGraph {
 		
 		return new Color(red, green, blue);
 	}
-
-	@SuppressWarnings("unchecked")
-	
-	
-	
-	private final void removeAnnotation(UserDataContainer c, Object key){
-	
-		if(c.getUserDatum(key)!=null && c.getUserDatumCopyAction(key) == UserData.REMOVE){
-			c.removeUserDatum(key);
-		}
-	}
-	
-	@SuppressWarnings("unchecked")
-	public final void removeAnnotations() {
-
-		
-		
-		for(Vertex vertex: (Set<Vertex>)getVertices()){
-			for(String key:annotations){
-				removeAnnotation(vertex, key);
-			}
-		}
-		for(Edge edge: (Set<Edge>)getEdges()){
-			for(String key:annotations){
-				removeAnnotation(edge, key);
-			}
-		}
-		
-	}
 	
 	protected final void setShadowed(Vertex v, boolean b){
-		if(b){
-			v.setUserDatum(SGUserData.SHADOWED, true, UserData.REMOVE);
-		}else{
-			v.removeUserDatum(SGUserData.SHADOWED);
-		}
+			v.setShadowed(b);
 	}
 	
-	@SuppressWarnings("unchecked")
 	public final void copyIDsToLabels(){
 		for(Vertex vertex: (Set<Vertex>)getVertices()){
-			vertex.setUserDatum(SGUserData.LABEL, vertex.getUserDatum(SGUserData.ID), UserData.REMOVE);
-		}
-		
+			vertex.setLabel(new Integer(vertex.getId()).toString());
+		}	
 	}
 
-	@SuppressWarnings("unchecked")
 	public void applyShadows() {
-		for(Vertex vertex: (Set<Vertex>)getVertices()){
-			if(vertex.getUserDatum(SGUserData.SHADOWED)!=null){
+		for(Vertex vertex: getVertices()){
+			if(vertex.isShadowed()){
 				//System.out.println("shadowing "+vertex);
 				Color shadowColor = Color.white;
-				Object o = vertex.getUserDatum(SGUserData.FILLCOLOR);
-				if (o instanceof Color) {
-					shadowColor = (Color) o;
-				}
+				Color c = vertex.getFillColor();
+				if (c!= null)
+					shadowColor = c;
+				
 				shadowColor = new Color(shadowColor.getRed(),shadowColor.getGreen(), shadowColor.getBlue(), 200);
-					
-				vertex.setUserDatum(SGUserData.FILLCOLOR, Color.LIGHT_GRAY, UserData.REMOVE);
-				vertex.setUserDatum(SGUserData.RADIUS, 5, UserData.REMOVE);
-				vertex.setUserDatum(SGUserData.COLOR, Color.LIGHT_GRAY, UserData.REMOVE);
-				vertex.removeUserDatum(SGUserData.LABEL);
-				Set<Edge> edges = vertex.getIncidentEdges();
+				
+				vertex.setFillColor(Color.LIGHT_GRAY);
+				vertex.setRadius(5);
+				vertex.setFillColor(Color.LIGHT_GRAY);
+				
+				Collection<Edge> edges = super.getIncidentEdges(vertex);
 				for(Edge edge: edges){
-					edge.setUserDatum(SGUserData.COLOR, Color.LIGHT_GRAY, UserData.REMOVE);
-					edge.setUserDatum(SGUserData.WIDTH, 0.5, UserData.REMOVE);
+					edge.setColor(Color.LIGHT_GRAY.toString());
+					edge.setWidth(0.5);
 				}
 			}
 		}		
