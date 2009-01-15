@@ -10,29 +10,18 @@
 				class="ch.ethz.sg.cuttlefish.gui.widgets.DataSourcePanel">
 				<Argument name="sources">datasources.xml</Argument>
 			</Widget>
-			<Widget id="export" name="export"
-				class="ch.ethz.sg.cuttlefish.gui.widgets.ExportPanel" />
-			<Widget id="animation" name="animation"
-				class="ch.ethz.sg.cuttlefish.gui.widgets.AnimationPanel">
-				<Argument name="folder">animations</Argument></Widget>
 		</Tab>
 
 		<Tab id="network" condition="*" name="network">
-			<Widget id="metrics" name="metrics"
-				class="ch.ethz.sg.cuttlefish.gui.widgets.NetworkMetricPanel" />
-			<Widget id="edges" name="edges"
-				class="ch.ethz.sg.cuttlefish.gui.widgets.EdgePanel" />
-			<Widget id="date" name="date"
-				class="ch.ethz.sg.cuttlefish.gui.widgets.DatePanel" />
 		</Tab>
 
 
-		<Tab name="simulation"
+		<Tab name="Simulation"
 			condition="ch.ethz.sg.cuttlefish.networks.ISimulation"
-			id="simulation">
+			id="Simulation">
 			<Widget name="control"
 				class="ch.ethz.sg.cuttlefish.gui.widgets.SimulationPanel"
-				id="control" />
+				id="control" /><Widget name="Mouse" class="ch.ethz.sg.cuttlefish.gui.widgets.MousePanel" id="Mouse"></Widget>
 		</Tab>
 	</GUI>
 	<Arguments>
