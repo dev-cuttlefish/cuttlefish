@@ -354,7 +354,7 @@ public class Utils {
 			float f, PrintStream p) {
 		String scolor= "black";
 
-		Color cColor = new Color(Integer.parseInt(edge.getColor()));
+		Color cColor = edge.getColor();
 		p.println("\\definecolor{temp}{rgb}{"
 				+(cColor.getRed()/255.0)+","
 				+(cColor.getGreen()/255.0)+","

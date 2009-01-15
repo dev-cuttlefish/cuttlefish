@@ -1,12 +1,14 @@
 package ch.ethz.sg.cuttlefish.misc;
 
+import java.awt.Color;
+
 public class Edge {
 	
 	
 	private int idTemp;
 	private int id;
 	private String label;
-	private String color;
+	private Color color;
 	private double weight;
 	private double width;
 	private boolean excluded;
@@ -53,13 +55,13 @@ public class Edge {
 	/**
 	 * @param color the color to set
 	 */
-	public void setColor(String color) {
+	public void setColor(Color color) {
 		this.color = color;
 	}
 	/**
 	 * @return the color
 	 */
-	public String getColor() {
+	public Color getColor() {
 		return color;
 	}
 	/**

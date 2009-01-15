@@ -26,6 +26,7 @@ import ch.ethz.sg.cuttlefish.misc.Edge;
 import ch.ethz.sg.cuttlefish.misc.Vertex;
 import ch.ethz.sg.cuttlefish.networks.BrowsableNetwork;
 import edu.uci.ics.jung.algorithms.layout.Layout;
+import edu.uci.ics.jung.visualization.control.EditingModalGraphMouse;
 
 public interface INetworkBrowser {
 	
@@ -48,4 +49,6 @@ public interface INetworkBrowser {
 	
 	public File getPositionFile();
 	public void setLayout(boolean isDynamic);
+	
+	public EditingModalGraphMouse<Vertex, Edge> getMouse();
 }
