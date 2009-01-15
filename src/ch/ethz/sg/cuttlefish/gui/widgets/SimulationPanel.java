@@ -18,6 +18,9 @@
 
 package ch.ethz.sg.cuttlefish.gui.widgets;
 
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+
 import javax.swing.JButton;
 
 import ch.ethz.sg.cuttlefish.gui.BrowserWidget;
@@ -52,10 +55,15 @@ public class SimulationPanel extends BrowserWidget {
 	 * 
 	 */
 	private void initialize() {
-        this.add(getJButton3(), null);
-        this.add(getStopButton(), null);
-        this.add(getRunButton(), null);
-        this.add(getJButton2(), null);
+		GridBagConstraints gridBagConstraints1 = new GridBagConstraints();
+		gridBagConstraints1.anchor = GridBagConstraints.CENTER;
+		gridBagConstraints1.fill = GridBagConstraints.VERTICAL;
+		
+		this.setLayout(new GridBagLayout());
+        this.add(getJButton3(), gridBagConstraints1);
+        this.add(getStopButton(), gridBagConstraints1);
+        this.add(getRunButton(), gridBagConstraints1);
+        this.add(getJButton2(), gridBagConstraints1);
 			
 	}
 
@@ -111,7 +119,6 @@ public class SimulationPanel extends BrowserWidget {
 	                        	   isRunning = true;
 	                        	   while(isRunning){
 	                        		   isRunning = ((ISimulation)getNetwork()).update(sleepTime);
-	                        		   System.out.println("RunChange");
 	                        		   getBrowser().onNetworkChange();
 	                        		   
 	                        		   try {

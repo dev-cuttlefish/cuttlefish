@@ -52,28 +52,28 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
+import org.apache.commons.collections15.Factory;
 import org.apache.commons.collections15.Transformer;
+import org.apache.commons.collections15.functors.InstantiateFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import ch.ethz.sg.cuttlefish.layout.ARF2Layout;
-import ch.ethz.sg.cuttlefish.layout.FixedLayout2;
 import ch.ethz.sg.cuttlefish.misc.Edge;
 import ch.ethz.sg.cuttlefish.misc.Utils;
 import ch.ethz.sg.cuttlefish.misc.Vertex;
 import ch.ethz.sg.cuttlefish.misc.XMLUtil;
 import ch.ethz.sg.cuttlefish.networks.BrowsableNetwork;
 
+import edu.uci.ics.jung.algorithms.layout.CircleLayout;
 import edu.uci.ics.jung.algorithms.layout.Layout;
-import edu.uci.ics.jung.algorithms.util.IterativeContext;
+import edu.uci.ics.jung.algorithms.layout.SpringLayout;
 import edu.uci.ics.jung.graph.*;
 
 import edu.uci.ics.jung.visualization.VisualizationViewer;
-import edu.uci.ics.jung.visualization.VisualizationViewer.GraphMouse;
 import edu.uci.ics.jung.visualization.control.CrossoverScalingControl;
-import edu.uci.ics.jung.visualization.control.DefaultModalGraphMouse;
+import edu.uci.ics.jung.visualization.control.EditingModalGraphMouse;
 import edu.uci.ics.jung.visualization.control.ScalingControl;
 import edu.uci.ics.jung.visualization.picking.ShapePickSupport;
 
@@ -98,22 +98,33 @@ public class CuttlefishPanel extends JPanel implements ItemListener,INetworkBrow
 	private Hashtable<String, BrowserWidget> widgetTable = new Hashtable<String, BrowserWidget>();
 	private ArrayList<BrowserTab> tabArray = new ArrayList<BrowserTab>();  //  @jve:decl-index=0:
 	private Document configuration;  //  @jve:decl-index=0:
-	private DefaultModalGraphMouse<Vertex,Edge> graphMouse;  //  @jve:decl-index=0:
-	private JButton jButton = null;
-	private JButton jButton1 = null;
-	private JButton jButton2 = null;
-	private JButton jButton3 = null;
-	private JPanel zoomPanel = null;
-	private JPanel pickPanel = null;
+	private EditingModalGraphMouse<Vertex,Edge> graphMouse;  //  @jve:decl-index=0:
+//	private JPanel pickPanel = null;
 	private JPanel layoutPanel = null;
 	private JCheckBox layoutCheckBox = null;
 	private JButton writeLayoutButton = null;
+	
+	private class VertexFactory implements Factory<Vertex> {
+		public Vertex create() {
+			return new Vertex();
+		}
+    }
+	private VertexFactory vertexFactory = null;
+   
+    class EdgeFactory implements Factory<Edge> {
+		public Edge create() {
+			return new Edge();
+		}
+    }
+    private EdgeFactory edgeFactory = null;
+		
 	/**
 	 * This is the default constructor, initializes the rendering and the viewer
 	 * @param configfile open file with the configuration
 	 */
 	public CuttlefishPanel(File configFile) {
 		super();
+		
 		initialize(configFile);
 		
 		Transformer<Vertex, Shape> vertexShapeTransformer = new Transformer<Vertex, Shape>() {			
@@ -124,7 +135,7 @@ public class CuttlefishPanel extends JPanel implements ItemListener,INetworkBrow
 		
 		Transformer<Edge, Paint> edgePaintTransformer = new Transformer<Edge, Paint>(){
 			public Paint transform(Edge edge) {
-				return new Color(Integer.parseInt(edge.getColor())); } };
+				return edge.getColor(); } };
 		
 		Transformer<Vertex,String> vertexLabelTransformer = new Transformer<Vertex,String>(){
 			public String transform(Vertex vertex) {
@@ -149,11 +160,10 @@ public class CuttlefishPanel extends JPanel implements ItemListener,INetworkBrow
 		visualizationViewer.getRenderContext().setEdgeStrokeTransformer(edgeStrokeTransformer);
 		visualizationViewer.getRenderContext().setVertexStrokeTransformer(vertexStrokeTransformer);
 		visualizationViewer.getRenderContext().setVertexFillPaintTransformer(vertexPaintTransformer);
-		//visualizationViewer.setGraphMouse(gm);
 		visualizationViewer.setPickSupport(new ShapePickSupport<Vertex,Edge>(visualizationViewer));
         visualizationViewer.setGraphMouse(graphMouse);
         visualizationViewer.getPickedVertexState().addItemListener(this);
-		
+      
 	}
 	
 	
@@ -165,15 +175,16 @@ public class CuttlefishPanel extends JPanel implements ItemListener,INetworkBrow
 	 * @return void
 	 */
 	private void initialize(File configFile) {
-	
-		this.setLayout(new BorderLayout());
-		this.setSize(1096, 200);
-		this.setBackground(Color.gray);
-		
+		 BrowsableNetwork temp = new BrowsableNetwork();
+			//temp.setName(name);
+		this.setNetwork(temp);	
+		vertexFactory = new VertexFactory();
+	    edgeFactory = new EdgeFactory();
+			
+		graphMouse = new EditingModalGraphMouse<Vertex,Edge>(visualizationViewer.getRenderContext(),
+					vertexFactory, edgeFactory);		
+			
         //visualizationViewer.setPickSupport(new ShapePickSupport());
-        graphMouse = new DefaultModalGraphMouse<Vertex,Edge>();
-        //visualizationViewer.setGraphMouse(gm);
-        
 		
         DocumentBuilderFactory factory =
             DocumentBuilderFactory.newInstance();
@@ -262,15 +273,22 @@ public class CuttlefishPanel extends JPanel implements ItemListener,INetworkBrow
    		  System.err.println(e);
    		  System.exit(-1);
         }
+        this.setNetwork(temp);
+	
         
-		BrowsableNetwork temp = new BrowsableNetwork();
-		//temp.setName(name);
-		this.setNetwork(temp);
-		this.add(getVisualizationViewer(), BorderLayout.CENTER);
+    	this.setLayout(new BorderLayout());
+		this.setSize(1096, 200);
+		this.setBackground(Color.gray);
+		
+    	this.add(getVisualizationViewer(), BorderLayout.CENTER);
+    	
 		this.add(getMenuPane(), BorderLayout.NORTH);
 		this.add(getViewPanel(), BorderLayout.SOUTH);
 	}
 
+	public EditingModalGraphMouse<Vertex, Edge> getMouse(){
+		return graphMouse;
+	}
 	/**
 	 * Getter for JUNG's VisualizationViewer, creating it if it does not exist
 	 * @return VisualizationViewer	
@@ -280,9 +298,7 @@ public class CuttlefishPanel extends JPanel implements ItemListener,INetworkBrow
 			visualizationViewer = new VisualizationViewer<Vertex,Edge>(layout);
 			//visualizationViewer.setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));
 			visualizationViewer.setBackground(Color.white);
-			
-			GraphMouse graphMouse = new DefaultModalGraphMouse<Vertex,Edge>();
-			visualizationViewer.setGraphMouse(graphMouse );
+			visualizationViewer.setGraphMouse(graphMouse);
 		}
 		return visualizationViewer;
 	}
@@ -311,8 +327,7 @@ public class CuttlefishPanel extends JPanel implements ItemListener,INetworkBrow
 		
 		if(!isDynamic){
 			try{
-				FixedLayout2<Vertex,Edge> fixed = new FixedLayout2<Vertex,Edge>(network);
-				fixed.setPositionFile(positionData);
+				Layout<Vertex,Edge> fixed = new CircleLayout<Vertex,Edge>(network);
 				layout = fixed;
 				getLayoutCheckBox().setSelected(false);
 			}catch(Exception e){
@@ -321,9 +336,9 @@ public class CuttlefishPanel extends JPanel implements ItemListener,INetworkBrow
 		}
 		
 		if(layout == null){
-			ARF2Layout<Vertex, Edge> arf = new ARF2Layout<Vertex, Edge>(network);
-			arf.setForceCutoff(100);
-			arf.setAttraction(0.15);
+			Layout<Vertex, Edge> arf = new SpringLayout<Vertex, Edge>(network);
+			//arf.setForceCutoff(100);
+			//arf.setAttraction(0.15);
 			layout = arf;
 			getLayoutCheckBox().setSelected(true);
 		}
@@ -431,9 +446,8 @@ public class CuttlefishPanel extends JPanel implements ItemListener,INetworkBrow
 			viewPanel.setBackground(Color.DARK_GRAY);
 			viewPanel.add(getJToggleButton(), null);
 			viewPanel.add(getLayoutPanel(), null);
-			viewPanel.add(getPickPanel(), null);
+			//viewPanel.add(getPickPanel(), null);
 			//viewPanel.add(graphMouse.getModeComboBox());
-			viewPanel.add(getZoomPanel(), null);
 			//graphMouse.getModeComboBox().setPreferredSize(new Dimension());
 			
 			
@@ -472,7 +486,6 @@ public class CuttlefishPanel extends JPanel implements ItemListener,INetworkBrow
 
 	public void onNetworkChange() {
 		System.out.println("Network changed " + network.getName());
-		((IterativeContext)layout).step();
 		refreshAnnotations();
 		
 	}
@@ -481,113 +494,12 @@ public class CuttlefishPanel extends JPanel implements ItemListener,INetworkBrow
 		return arguments.get(name);
 	}
 
-
-
-	/**
-	 * This method initializes jButton	
-	 * 	
-	 * @return javax.swing.JButton	
-	 */
-	private JButton getJButton() {
-		if (jButton == null) {
-			jButton = new JButton();
-			jButton.setText("-");
-			jButton.addActionListener(new java.awt.event.ActionListener() {
-				public void actionPerformed(java.awt.event.ActionEvent e) {
-					scaler.scale(visualizationViewer, 0.9f, visualizationViewer.getCenter());
-				}
-			});
-		}
-		return jButton;
-	}
-
-
-
-	/**
-	 * This method initializes jButton1	
-	 * 	
-	 * @return javax.swing.JButton	
-	 */
-	private JButton getJButton1() {
-		if (jButton1 == null) {
-			jButton1 = new JButton();
-			jButton1.setText("+");
-			jButton1.addActionListener(new java.awt.event.ActionListener() {
-				public void actionPerformed(java.awt.event.ActionEvent e) {
-					scaler.scale(visualizationViewer, 1.1f, visualizationViewer.getCenter());
-				}
-			});
-		}
-		return jButton1;
-	}
-
-
-
-	/**
-	 * This method initializes jButton2	
-	 * 	
-	 * @return javax.swing.JButton	
-	 */
-	private JButton getJButton2() {
-		if (jButton2 == null) {
-			jButton2 = new JButton();
-			jButton2.setText("--");
-			jButton2.addActionListener(new java.awt.event.ActionListener() {
-				public void actionPerformed(java.awt.event.ActionEvent e) {
-					scaler.scale(visualizationViewer, 0.5f, visualizationViewer.getCenter());
-				}
-			});
-		}
-		return jButton2;
-	}
-
-
-	/**
-	 * This method initializes jButton3	
-	 * 	
-	 * @return javax.swing.JButton	
-	 */
-	private JButton getJButton3() {
-		if (jButton3 == null) {
-			jButton3 = new JButton();
-			jButton3.setText("++");
-			jButton3.addActionListener(new java.awt.event.ActionListener() {
-				public void actionPerformed(java.awt.event.ActionEvent e) {
-					scaler.scale(visualizationViewer, 2.0f, visualizationViewer.getCenter());
-				}
-			});
-		}
-		return jButton3;
-	}
-
-
-
-	/**
-	 * This method initializes zoomPanel	
-	 * 	
-	 * @return javax.swing.JPanel	
-	 */
-	private JPanel getZoomPanel() {
-		if (zoomPanel == null) {
-			zoomPanel = new JPanel();
-			zoomPanel.setLayout(new GridBagLayout());
-			zoomPanel.add(getJButton2(), new GridBagConstraints());
-			zoomPanel.add(getJButton(), new GridBagConstraints());
-			zoomPanel.add(getJButton1(), new GridBagConstraints());
-			zoomPanel.add(getJButton3(), new GridBagConstraints());
-			zoomPanel.setBackground(Color.gray);
-		}
-		return zoomPanel;
-	}
-
-
-
 	/**
 	 * This method initializes pickPanel	
 	 * 	
 	 * @return javax.swing.JPanel	
 	 */
-	private JPanel getPickPanel() {
+/*	private JPanel getPickPanel() {
 		if (pickPanel == null) {
 			pickPanel = new JPanel();
 			pickPanel.setLayout(new GridBagLayout());
@@ -595,7 +507,7 @@ public class CuttlefishPanel extends JPanel implements ItemListener,INetworkBrow
 			pickPanel.setBackground(Color.GRAY);
 		}
 		return pickPanel;
-	}
+	}*/
 
 
 
