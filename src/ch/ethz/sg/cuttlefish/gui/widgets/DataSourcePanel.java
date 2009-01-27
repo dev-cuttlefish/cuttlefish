@@ -166,13 +166,6 @@ public class DataSourcePanel extends BrowserWidget {
 		return jComboBox;
 	}
 
-
-
-
-
-
-
-
 	@Override		
 	public void init() {
 		try {  
