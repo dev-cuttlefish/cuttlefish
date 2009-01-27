@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<cf:Configuration
+	xmlns:cf="http://www.sg.ethz.ch/research/cuttlefish/configuration.xsd"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.sg.ethz.ch/research/cuttlefish/configuration.xsd src/ch/ethz/sg/cuttlefish/resources/configuration.xsd ">
+	<GUI>
+		<Tab id="data" condition="*" name="data">
+			<Widget id="import" name="import"
+				class="ch.ethz.sg.cuttlefish.gui.widgets.DataSourcePanel">
+				<Argument name="sources">datasources.xml</Argument>
+			</Widget>
+		</Tab>
+
+		<Tab id="network" condition="*" name="network">
+		</Tab>
+
+
+		<Tab name="Simulation"
+			condition="ch.ethz.sg.cuttlefish.networks.ISimulation"
+			id="Simulation">
+			<Widget name="control"
+				class="ch.ethz.sg.cuttlefish.gui.widgets.SimulationPanel"
+				id="control" /><Widget name="Mouse" class="ch.ethz.sg.cuttlefish.gui.widgets.MousePanel" id="Mouse"></Widget>
+		</Tab>
+	</GUI>
+	<Arguments>
+
+	</Arguments>
+</cf:Configuration>
