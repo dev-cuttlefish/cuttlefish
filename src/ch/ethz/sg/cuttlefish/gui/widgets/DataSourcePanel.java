@@ -1,8 +1,10 @@
 /*
-    
-    Copyright (C) 2008  Markus Michael Geipel
+  
+    Copyright (C) 2009  Markus Michael Geipel, David Garcia Becerra
 
-    This program is free software: you can redistribute it and/or modify
+	This file is part of Cuttlefish.
+	
+ 	Cuttlefish is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
@@ -14,7 +16,8 @@
 
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
+ 
+*/
 
 package ch.ethz.sg.cuttlefish.gui.widgets;
 
@@ -22,6 +25,9 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -34,6 +40,7 @@ import javax.xml.validation.SchemaFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 import ch.ethz.sg.cuttlefish.gui.BrowserWidget;
 import ch.ethz.sg.cuttlefish.misc.XMLUtil;
@@ -169,15 +176,26 @@ public class DataSourcePanel extends BrowserWidget {
 	@Override		
 	public void init() {
 		try {  
+
+		    Schema schema;
 			DocumentBuilderFactory factory =
 	        DocumentBuilderFactory.newInstance();
 	        factory.setValidating(false);  
 	        factory.setNamespaceAware(true);
-	       File schemaFile = new File(this.getClass().getResource("/ch/ethz/sg/cuttlefish/resources/datasources.xsd").getFile());
-	        Schema schema = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI).newSchema(schemaFile);
-	       factory.setSchema(schema);
 	        
-	        
+	    	InputStream schemaStream = this.getClass().getResourceAsStream("/ch/ethz/sg/cuttlefish/resources/datasources.xsd");
+	   		File schemaFile = new File("sources_aux.xsd");
+	   		OutputStream auxStream = new FileOutputStream(schemaFile);
+	   		byte buf[]=new byte[1024];
+	        int len;
+	        while((len=schemaStream.read(buf))>0)
+	        	auxStream.write(buf,0,len);
+	   		auxStream.close();
+	   		schemaStream.close();
+	   		schema = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI).newSchema(schemaFile);
+	   		factory.setSchema(schema);
+	   		schemaFile.deleteOnExit();
+	   		
 	        DocumentBuilder builder = factory.newDocumentBuilder();
 	        
 	        System.out.println("loading sources from " + getArgument("sources"));

@@ -1,8 +1,10 @@
 /*
+  
+    Copyright (C) 2009  Markus Michael Geipel, David Garcia Becerra
 
-    Copyright (C) 2008  Markus Michael Geipel
-
-    This program is free software: you can redistribute it and/or modify
+	This file is part of Cuttlefish.
+	
+ 	Cuttlefish is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
@@ -14,27 +16,22 @@
 
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
+ 
+*/
 
 package ch.ethz.sg.cuttlefish.gui;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.Frame;
 import java.io.File;
 
 import javax.swing.JFrame;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
 import javax.swing.JPanel;
-
-import edu.uci.ics.jung.visualization.control.EditingModalGraphMouse;
-import edu.uci.ics.jung.visualization.control.ModalGraphMouse;
 /**
  * Class of the General User Interface for cuttlefish
  */
 public class Cuttlefish extends JFrame {
-
+	
 	private static final long serialVersionUID = 1L;
 
 	private JPanel jContentPane = null;
@@ -49,8 +46,11 @@ public class Cuttlefish extends JFrame {
 	 * @return void
 	 */
 	public static void main(String[] args){
-		
-		Frame f = new Cuttlefish(args[0]);
+		Frame f;
+		if (args.length == 0)
+			f = new Cuttlefish("configuration.xml");
+		else
+			f = new Cuttlefish(args[0]);
 		f.setVisible(true);
 	}
 	
