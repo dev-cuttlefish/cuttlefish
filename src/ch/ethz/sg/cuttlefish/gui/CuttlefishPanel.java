@@ -685,8 +685,8 @@ public void setLayout(String selectedLayout){
 	layout = newLayout;
 	System.out.println("Set layout to " + layout.getClass());
 	
-	getVisualizationViewer().repaint();
 	getVisualizationViewer().setGraphLayout(layout);
+	getVisualizationViewer().repaint();
 	//System.out.println("VV restarted");
 }
 
