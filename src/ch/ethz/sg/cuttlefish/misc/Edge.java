@@ -29,10 +29,13 @@ public class Edge {
 	private int idTemp;
 	private int id;
 	private String label;
-	private Color color;
+	private Color color = null;
 	private double weight;
-	private double width;
-	private boolean excluded;
+	private double width = 1;
+	private boolean excluded = false;
+	private String shape = "curved";
+	private String var1 = null;
+	private String var2 = null;
 	
 	public Edge(){
 	}
@@ -83,6 +86,8 @@ public class Edge {
 	 * @return the color
 	 */
 	public Color getColor() {
+		if (color == null)
+			return new Color(0,0,0);
 		return color;
 	}
 	/**
@@ -125,5 +130,47 @@ public class Edge {
 	/**
 	 * @param fixed the fixed to set
 	 */
+
+	/**
+	 * @param shape the shape to set
+	 */
+	public void setShape(String shape) {
+		this.shape = shape;
+	}
+
+	/**
+	 * @return the shape
+	 */
+	public String getShape() {
+		return shape;
+	}
+
+	/**
+	 * @param var1 the var1 to set
+	 */
+	public void setVar1(String var1) {
+		this.var1 = var1;
+	}
+
+	/**
+	 * @return the var1
+	 */
+	public String getVar1() {
+		return var1;
+	}
+
+	/**
+	 * @param var2 the var2 to set
+	 */
+	public void setVar2(String var2) {
+		this.var2 = var2;
+	}
+
+	/**
+	 * @return the var2
+	 */
+	public String getVar2() {
+		return var2;
+	}
 
 }

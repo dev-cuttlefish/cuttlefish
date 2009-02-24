@@ -2,7 +2,10 @@
 <cf:DataSources xmlns:cf="http://www.sg.ethz.ch/research/cuttlefish/datasources.xsd"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.sg.ethz.ch/research/cuttlefish/datasources.xsd datasources.xsd ">
-	<Source id="sim1" name="test simulation" class="ch.ethz.sg.cuttlefish.networks.TestSimulation">
+	<Source id="sim1" name="Test Simulation" class="ch.ethz.sg.cuttlefish.networks.TestSimulation">
 		<Argument name="test">Argument</Argument>
 		<Argument name="alpha">10.0</Argument></Source>
+	<Source id="pajekNet" name="Pajek load" class="ch.ethz.sg.cuttlefish.networks.PajekNetwork"></Source>
+	<Source id="graphML" name="GraphML load" class="ch.ethz.sg.cuttlefish.networks.GraphMLNetwork"></Source>
+	<Source id="userNetwork" name="Load User Network" class="ch.ethz.sg.cuttlefish.networks.UserNetwork"></Source>
 </cf:DataSources>

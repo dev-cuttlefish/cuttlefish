@@ -250,21 +250,37 @@ public class Utils {
 		String width="1";
 		
 		if(detail){
-			fillColor=vertex.getFillColor().toString();
-			color=vertex.getColor().toString();
+			Color cColor = vertex.getFillColor();
+			if (cColor != null)
+			{
+				p.println("\\definecolor{ftemp}{rgb}{"
+			
+					+(cColor.getRed()/255.0)+","
+					+(cColor.getGreen()/255.0)+","
+					+(cColor.getBlue()/255.0)+"}");
+				fillColor = "ftemp";
+			}	
+			cColor = vertex.getColor();
+			if (cColor != null)
+			{
+				p.println("\\definecolor{ctemp}{rgb}{"	
+					+(cColor.getRed()/255.0)+","
+					+(cColor.getGreen()/255.0)+","
+					+(cColor.getBlue()/255.0)+"}");
+				color = "ctemp";
+			}		
 		}
 		
 		Integer intSize=10;
-		Double r = vertex.getRadius();
+		Double r = vertex.getSize();
 		if (r != null) {
 			intSize = new Integer((int) Math.floor(r/2));
 		}
 		
 		
-		Double w = vertex.getWidth();
+		Integer w = vertex.getWidth();
 		if (w != null) {
-			Integer iWidth = new Integer((int) Math.floor(w));
-			width = iWidth.toString();
+			width = w.toString();
 		}
 	
 		
@@ -329,12 +345,8 @@ public class Utils {
 		double rim=40.0;
 		p.println("\\begin{pspicture}("+(int)(x0*f-rim)+","+(int)(y0*f-rim)+")("+(int)(x*f+rim)+","+(int)(y*f+rim)+")");
 		
-	
-		
-		
-		
 		for (Vertex vertex : vertices) {
-			exportVertex(vertex, layout, f, p, false);
+			exportVertex(vertex, layout, f, p, true);
 		}
 			
 		Collection<Edge> edges = graph.getEdges();
@@ -343,9 +355,9 @@ public class Utils {
 		
 		}
 		
-		for (Vertex vertex : vertices) {
-			exportVertex(vertex, layout, f, p, true);
-		}
+//		for (Vertex vertex : vertices) {
+//			exportVertex(vertex, layout, f, p, true);
+//		}
 
 		p.println("\\end{pspicture}");
 		
@@ -359,12 +371,15 @@ public class Utils {
 		String scolor= "black";
 
 		Color cColor = edge.getColor();
-		p.println("\\definecolor{temp}{rgb}{"
+		if (cColor != null)
+		{
+			p.println("\\definecolor{temp}{rgb}{"
+		
 				+(cColor.getRed()/255.0)+","
 				+(cColor.getGreen()/255.0)+","
 				+(cColor.getBlue()/255.0)+"}");
 			scolor = "temp";
-		
+		}
 	
 		Double lineWidth = 1.0;
 		Double lw = edge.getWidth();
@@ -378,7 +393,7 @@ public class Utils {
 		
 		if(dest.equals(source)){
 			Integer intSize=10;
-			Double size = graph.getSource(edge).getRadius();
+			Double size = graph.getSource(edge).getSize();
 			if (size != null) {
 				intSize = (Integer) (new Integer((int)Math.floor(size)))/2;
 				

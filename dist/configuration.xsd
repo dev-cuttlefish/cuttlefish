@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+	targetNamespace="http://www.sg.ethz.ch/research/cuttlefish/configuration.xsd"
+	xmlns:cf="http://www.sg.ethz.ch/research/cuttlefish/configuration.xsd">
+
+
+
+	<xs:element name="Configuration">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="GUI" minOccurs="1" maxOccurs="1">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="Tab" minOccurs="0"
+								maxOccurs="unbounded">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="Widget"
+											minOccurs="0" maxOccurs="unbounded">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element
+														name="Argument" minOccurs="0" maxOccurs="unbounded">
+														<xs:complexType>
+															<xs:simpleContent>
+																<xs:extension
+																	base="xs:string">
+																	<xs:attribute
+																		name="name" type="xs:string" use="required" />
+																</xs:extension>
+															</xs:simpleContent>
+														</xs:complexType>
+													</xs:element>
+												</xs:sequence>
+												<xs:attribute
+													name="name" type="xs:string" use="required" />
+												<xs:attribute
+													name="class" type="xs:string" use="required" />
+												<xs:attribute name="id"
+													type="xs:ID" use="required" />
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+									<xs:attribute name="name"
+										type="xs:string" use="required" />
+									<xs:attribute name="condition"
+										type="xs:string" use="required" />
+									<xs:attribute name="id" type="xs:ID"
+										use="required" />
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="Arguments" minOccurs="1"
+					maxOccurs="1">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="Argument" minOccurs="0"
+								maxOccurs="unbounded">
+								<xs:complexType>
+									<xs:simpleContent>
+										<xs:extension
+											base="xs:string">
+											<xs:attribute name="name"
+												type="xs:string" use="required" />
+										</xs:extension>
+									</xs:simpleContent>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

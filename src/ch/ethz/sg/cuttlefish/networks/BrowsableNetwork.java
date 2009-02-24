@@ -135,7 +135,7 @@ public class BrowsableNetwork extends DirectedSparseGraph<Vertex, Edge> {
 				shadowColor = new Color(shadowColor.getRed(),shadowColor.getGreen(), shadowColor.getBlue(), 200);
 				
 				vertex.setFillColor(Color.LIGHT_GRAY);
-				vertex.setRadius(5);
+				vertex.setSize(5);
 				vertex.setFillColor(Color.LIGHT_GRAY);
 				
 				Collection<Edge> edges = super.getIncidentEdges(vertex);

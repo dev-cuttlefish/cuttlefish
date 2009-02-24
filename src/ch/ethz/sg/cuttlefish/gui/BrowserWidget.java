@@ -68,7 +68,7 @@ public abstract class BrowserWidget extends JPanel{
 				
 				this.setVisible(true);
 				onNetworkSet();
-				//System.out.println(getId() + "\t X");
+			//	System.out.println(getId() + "\t X");
 				
 			} catch (Exception e) {
 				this.setVisible(false);
@@ -87,7 +87,8 @@ public abstract class BrowserWidget extends JPanel{
 		return network;
 	}
 	
-	protected void onNetworkSet(){}
+	protected void onNetworkSet(){
+	}
 	
 	public final boolean isActive() {
 		return isActive;

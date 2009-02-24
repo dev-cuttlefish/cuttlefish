@@ -28,20 +28,27 @@ public class Vertex {
 	
 	private int idTemp;
 	private int id;
+	private int width = 1;
 	private String label = null;
 	private Color fillColor = Color.BLACK;
 	private Color color  = Color.BLACK;
-	private double weight = 1;
-	private double radius = 10;
-	private boolean shadowed;
-	private double width = 1;
-	private boolean excluded;
-	private boolean fixed;
+	private double size = 10;
+	private boolean shadowed = false;
+	private String shape = "circle";
+	private String var1 = null;
+	private String var2 = null;
+	private boolean excluded = false;
+	private boolean fixed = false;
 	
 	public Vertex(int id){
 		this.id = id;
 	}
-	
+
+	public Vertex(int id, String label){
+		this.id = id;
+		this.label = label;
+	}
+
 	public Vertex() {
 		this.id = -1;  //Anonymous vertex
 	}
@@ -107,30 +114,6 @@ public class Vertex {
 		return color;
 	}
 	/**
-	 * @param weight the weight to set
-	 */
-	public void setWeight(double weight) {
-		this.weight = weight;
-	}
-	/**
-	 * @return the weight
-	 */
-	public double getWeight() {
-		return weight;
-	}
-	/**
-	 * @param radius the radius to set
-	 */
-	public void setRadius(double radius) {
-		this.radius = radius;
-	}
-	/**
-	 * @return the radius
-	 */
-	public double getRadius() {
-		return radius;
-	}
-	/**
 	 * @param shadowed the shadowed to set
 	 */
 	public void setShadowed(boolean shadowed) {
@@ -142,18 +125,7 @@ public class Vertex {
 	public boolean isShadowed() {
 		return shadowed;
 	}
-	/**
-	 * @param width the width to set
-	 */
-	public void setWidth(double width) {
-		this.width = width;
-	}
-	/**
-	 * @return the width
-	 */
-	public double getWidth() {
-		return width;
-	}
+
 	/**
 	 * @param excluded the excluded to set
 	 */
@@ -177,6 +149,51 @@ public class Vertex {
 	 */
 	public boolean isFixed() {
 		return fixed;
+	}
+	public double getSize() {
+		return size;
+	}
+
+	public void setSize(double size) {
+		this.size = size;
+	}
+
+	public String getShape() {
+		return shape;
+	}
+
+	public void setShape(String shape) {
+		this.shape = shape;
+	}
+
+	public String getVar1() {
+		return var1;
+	}
+
+	public void setVar1(String var1) {
+		this.var1 = var1;
+	}
+
+	public String getVar2() {
+		return var2;
+	}
+
+	public void setVar2(String var2) {
+		this.var2 = var2;
+	}
+
+	/**
+	 * @param width the width to set
+	 */
+	public void setWidth(int width) {
+		this.width = width;
+	}
+
+	/**
+	 * @return the width
+	 */
+	public int getWidth() {
+		return width;
 	}
 
 

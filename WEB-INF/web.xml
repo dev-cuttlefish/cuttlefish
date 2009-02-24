@@ -1,0 +1,7 @@
+<web-app xmlns="http://caucho.com/ns/resin">
+  <servlet servlet-name="CuttleFish"
+           servlet-class="ch.ethz.sg.cuttlefish.gui.Cuttlefish"/>
+
+  <servlet-mapping url-pattern="/Cuttlefish"
+                   servlet-name="Cuttlefish"/>
+</web-app>
