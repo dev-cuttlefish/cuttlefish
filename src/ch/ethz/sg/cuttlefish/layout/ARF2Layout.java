@@ -29,6 +29,7 @@ import java.util.Set;
 
 import ch.ethz.sg.cuttlefish.misc.Edge;
 import ch.ethz.sg.cuttlefish.misc.Vertex;
+import ch.ethz.sg.cuttlefish.networks.BrowsableNetwork;
 
 import edu.uci.ics.jung.algorithms.layout.AbstractLayout;
 import edu.uci.ics.jung.algorithms.util.IterativeContext;
@@ -68,6 +69,10 @@ private double b = 8;
  */
 private double deltaT = 2;
 
+private boolean done = false;
+
+private int maxUpdates = 50;
+int countUpdates = 0;
 /**
  * A marker used to tag nodes that shall not be moved
  */
@@ -128,6 +133,17 @@ public ARF2Layout(Graph<V,E> g, boolean incremental) {
     }
 }
 
+public void complete(int n) {
+	done = false;
+	for (int i = 1; i <= n; i++)
+	{
+		System.out.println("i: " + i);
+		step();
+	}
+	done = true;
+	
+}
+
 /* (non-Javadoc)
  * @see edu.uci.ics.jung.visualization.AbstractLayout#initialize_local_vertex(edu.uci.ics.jung.graph.Vertex)
  */
@@ -186,6 +202,7 @@ public void align(double x0, double y0){
         Point2D c = transform((V)v);
         c.setLocation(c.getX() - x + x0, c.getY() - y + y0 );
     	locations.put((V) v, c);
+
     }
 }
 
@@ -314,6 +331,23 @@ public Point2D assignPositionToVertex(Vertex vertex) {
 	return c;
 }
 
+public void updateVertices(){
+	Set<Vertex> nvertices = new HashSet<Vertex>();
+	for (Vertex vertex2 : (Collection<Vertex> )getGraph().getVertices()) {
+		if(!visualizedVertices.contains(vertex2)){
+			nvertices.add(vertex2);
+			visualizedVertices.add(vertex2);
+		}
+	}
+	Point2D c;
+	if(nvertices.size() > 0){
+		for (Vertex vertex2 : nvertices) {
+			c = getRandomPoint(((int)Math.sqrt(getVertices().size())*50)+1);
+			locations.put((V)vertex2, c);
+		}
+	}
+}
+
 /**
  * Checks for the existence of edges
  * @param node
@@ -356,7 +390,7 @@ public boolean incrementsAreDone() {
  */
 @SuppressWarnings("unchecked")
 public void update() {
-	
+	updateVertices();
 	for (Vertex v : (Collection<Vertex>) getGraph().getVertices())
 		assignPositionToVertex(v);
 	
@@ -472,6 +506,14 @@ public void setVerbose(boolean verbose) {
 	this.verbose = verbose;
 }
 
+public void setMaxUpdates(int maxUpdates){
+	this.maxUpdates = maxUpdates;
+}
+
+public int getMaxUpdates(){
+	return maxUpdates;
+}
+
 @SuppressWarnings("unchecked")
 @Override
 public void initialize() {
@@ -480,7 +522,6 @@ public void initialize() {
 	for (Vertex v : (Collection<Vertex>) getGraph().getVertices())
 	{
 		randomPoint = getRandomPoint(((int)Math.sqrt(getVertices().size())*50)+1);
-		System.out.println("RANDOM POINT: " + randomPoint.getX() + ", " + randomPoint.getY());
 		locations.put((V) v, randomPoint);
 	}
 	update();
@@ -488,19 +529,25 @@ public void initialize() {
 
 @Override
 public void reset() {
-	// TODO Auto-generated method stub
+	done = false;
+	visualizedVertices.clear();
+	update();
 }
 
 @Override
 public boolean done() {
-	// TODO Auto-generated method stub
-	return false;
+	return done;
 }
 
 @Override
 public void step() {
+
+	countUpdates++;
+	done = (countUpdates > maxUpdates);
+		
 	update();
-	advancePositions();
+	if (!done)
+		advancePositions();
 }
 
 

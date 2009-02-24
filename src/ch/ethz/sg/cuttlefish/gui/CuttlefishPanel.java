@@ -37,6 +37,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.geom.Ellipse2D;
+import java.awt.geom.GeneralPath;
+import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -68,10 +70,13 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import ch.ethz.sg.cuttlefish.gui.widgets.MousePanel;
 import ch.ethz.sg.cuttlefish.layout.ARF2Layout;
 import ch.ethz.sg.cuttlefish.misc.Edge;
+import ch.ethz.sg.cuttlefish.misc.EdgeFactory;
 import ch.ethz.sg.cuttlefish.misc.Utils;
 import ch.ethz.sg.cuttlefish.misc.Vertex;
+import ch.ethz.sg.cuttlefish.misc.VertexFactory;
 import ch.ethz.sg.cuttlefish.misc.XMLUtil;
 import ch.ethz.sg.cuttlefish.networks.BrowsableNetwork;
 
@@ -118,18 +123,8 @@ private JCheckBox layoutCheckBox = null;
 private JComboBox layoutComboBox = null;
 private JButton writeLayoutButton = null;
 
-private class VertexFactory implements Factory<Vertex> {
-	public Vertex create() {
-		return new Vertex();
-	}
-}
 private VertexFactory vertexFactory = null;
 
-class EdgeFactory implements Factory<Edge> {
-	public Edge create() {
-		return new Edge();
-	}
-}
 private EdgeFactory edgeFactory = null;
 	
 /**
@@ -143,18 +138,34 @@ public CuttlefishPanel(File configFile) {
 	
 	Transformer<Vertex, Shape> vertexShapeTransformer = new Transformer<Vertex, Shape>() {			
 		public Shape transform(Vertex vertex) {
-			Ellipse2D ellipse = new Ellipse2D.Float();
-			ellipse.setFrameFromCenter(0,0,vertex.getRadius(),vertex.getRadius());
-			return ellipse; } };
+			if (vertex.getShape().startsWith("square")){
+				Rectangle2D rectangle = new Rectangle2D.Float();
+				rectangle.setFrameFromCenter(0,0,vertex.getSize(),vertex.getSize());
+				return rectangle;
+			}
+			else
+			{
+				Ellipse2D ellipse = new Ellipse2D.Float();
+				ellipse.setFrameFromCenter(0,0,vertex.getSize(),vertex.getSize());
+				return ellipse; 
+			}
+		} };
 	
 	Transformer<Edge, Paint> edgePaintTransformer = new Transformer<Edge, Paint>(){
 		public Paint transform(Edge edge) {
 			return edge.getColor(); } };
-	
+
+	Transformer<Edge, String> edgeWeightTransformer = new Transformer<Edge, String>(){
+		public String transform(Edge edge) {
+			Double d = new Double(edge.getWeight());
+			d = 100*d;
+			d = Math.rint(d) / (100.0);
+			return d.toString(); } };
+
 	Transformer<Vertex,String> vertexLabelTransformer = new Transformer<Vertex,String>(){
 		public String transform(Vertex vertex) {
 			return vertex.getLabel(); } };
-		
+			
 	Transformer<Edge,Stroke> edgeStrokeTransformer = new Transformer<Edge, Stroke>() {
 		public Stroke transform(Edge edge) {
 			return new BasicStroke(new Double(edge.getWidth()).intValue()); } };
@@ -165,11 +176,11 @@ public CuttlefishPanel(File configFile) {
 		
 	Transformer<Vertex, Paint> vertexPaintTransformer = new Transformer<Vertex, Paint>(){
 		public Paint transform(Vertex vertex) {
-			return vertex.getFillColor(); } };
-	
+			return vertex.getFillColor(); } };			
 			
 	visualizationViewer.getRenderContext().setVertexShapeTransformer(vertexShapeTransformer);
-	visualizationViewer.getRenderContext().setEdgeFillPaintTransformer(edgePaintTransformer);		
+	visualizationViewer.getRenderContext().setEdgeDrawPaintTransformer(edgePaintTransformer);		
+	visualizationViewer.getRenderContext().setEdgeLabelTransformer(edgeWeightTransformer);
 	visualizationViewer.getRenderContext().setVertexLabelTransformer(vertexLabelTransformer);
 	visualizationViewer.getRenderContext().setEdgeStrokeTransformer(edgeStrokeTransformer);
 	visualizationViewer.getRenderContext().setVertexStrokeTransformer(vertexStrokeTransformer);
@@ -390,6 +401,8 @@ public void setNetwork(BrowsableNetwork network) {
 	else if (layout.getGraph() != network)
 		layout.setGraph(network);
 	
+	if (layout instanceof ARF2Layout)
+		((ARF2Layout<Vertex,Edge>) layout).setMaxUpdates(network.getVertexCount());
 	network.init();
 	
 	refreshAnnotations();
@@ -404,7 +417,7 @@ public void setNetwork(BrowsableNetwork network) {
  */
 private void updateWidgets() {
 	for(BrowserWidget widget: widgetTable.values()){
-		//System.out.println("updating " + widget.getId());
+		System.out.println("updating " + widget.getId());
 		widget.setNetwork(network);
 		
 	}
@@ -477,8 +490,8 @@ private JPanel getViewPanel() {
 		viewPanel.add(getJToggleButton(), null);
 		viewPanel.add(getLayoutPanel(), null);
 		//viewPanel.add(getPickPanel(), null);
-		//viewPanel.add(graphMouse.getModeComboBox());
 		//graphMouse.getModeComboBox().setPreferredSize(new Dimension());
+		viewPanel.add(graphMouse.getModeComboBox());
 		
 		
 	}
@@ -516,7 +529,18 @@ public Document getConfiguration() {
 
 public void onNetworkChange() {
 	System.out.println("Network changed " + network.getName());
-	refreshAnnotations();
+	 
+	if (layout instanceof ARF2Layout)
+		{
+			setLayout("ARFLayout");
+		}
+	else
+	{
+		layout.setGraph(getNetwork());
+		layout.initialize();
+		getVisualizationViewer().setGraphLayout(layout);
+		getVisualizationViewer().repaint();
+	}
 	
 }
 
@@ -636,7 +660,7 @@ public void stopLayout() {
 private JButton getWriteLayoutButton() {
 	if (writeLayoutButton == null) {
 		writeLayoutButton = new JButton();
-		writeLayoutButton.setText("save layout");
+		writeLayoutButton.setText("Save Layout");
 		writeLayoutButton.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent e) {
 				try {
@@ -668,7 +692,10 @@ public void setLayout(String selectedLayout){
 	Layout<Vertex,Edge> newLayout = null;
 	
 	if (selectedLayout.equals("ARFLayout"))
+	{
 		newLayout = new ARF2Layout<Vertex,Edge>(getNetwork());
+		((ARF2Layout<Vertex,Edge>)newLayout).setMaxUpdates(getNetwork().getVertexCount());		
+	}
 	if (selectedLayout.equals("SpringLayout"))
 		newLayout = new SpringLayout2<Vertex, Edge>(getNetwork());
 	if (selectedLayout.equals("Kamada-Kawai"))
@@ -681,7 +708,6 @@ public void setLayout(String selectedLayout){
 		newLayout = new CircleLayout<Vertex, Edge>(getNetwork());
 		((CircleLayout)newLayout).setRadius(getNetwork().getVertexCount() * 10);
 	}
-	
 	layout = newLayout;
 	System.out.println("Set layout to " + layout.getClass());
 	
