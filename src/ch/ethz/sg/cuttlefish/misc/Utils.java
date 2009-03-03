@@ -242,8 +242,9 @@ public class Utils {
 		}
 	}
 	
-	static private void exportVertex(Vertex vertex, Layout<Vertex,Edge> layout, double f, PrintStream p, boolean detail){
-		Point2D coordinates = layout.transform(vertex);
+	static private void exportVertex(Vertex vertex, double x, double y, double f, PrintStream p, boolean detail){
+		
+	//	Point2D coordinates = layout.transform(vertex);
 
 		String fillColor="std";
 		String color="black";
@@ -283,24 +284,37 @@ public class Utils {
 			width = w.toString();
 		}
 	
-		
-		p.println("\\Cnode[" +
-				"fillstyle=solid, " +
-				"fillcolor="+fillColor+", " +
-				"linecolor=" +color+", " +
-				"linewidth=" +width+", " +
-				"radius="+(intSize*f)+"]("+
-				(coordinates.getX()*f)+","+
-				(coordinates.getY()*f) +"){"+vertex.toString()+"}");
+		if (vertex.getShape().equals("square"))
+		{
+			p.println("\\fnode[" +
+					"fillstyle=solid, " +
+					"fillcolor="+fillColor+", " +
+					"linecolor=" +color+", " +
+					"linewidth=" +width+", " +
+					"framesize="+(intSize*f*2)+"]("+
+					(x*f)+","+
+					(y*f) +"){"+vertex.toString()+"}");
+		}
+		else
+		{
+			p.println("\\Cnode[" +
+					"fillstyle=solid, " +
+					"fillcolor="+fillColor+", " +
+					"linecolor=" +color+", " +
+					"linewidth=" +width+", " +
+					"radius="+(intSize*f)+"]("+
+					(x*f)+","+
+					(y*f) +"){"+vertex.toString()+"}");
+		}
+
 		String label = vertex.getLabel();
-		
-		
+
 		if(detail && label != null){
 			label = label.replace("_", "\\_").replace("&", "\\&");
 			
 			p.println("\\rput[l]("+
-					((coordinates.getX()+ 15)*f)+","+
-					(coordinates.getY()*f) +"){\\textsf{\\tiny "+label+"}}");
+					((x+ 15)*f)+","+
+					(y*f) +"){\\textsf{\\tiny "+label+"}}");
 		}
 
 	}
@@ -313,7 +327,7 @@ public class Utils {
 		double x  = Double.MIN_VALUE;
 		double y  = Double.MIN_VALUE;
 		Collection<Vertex> vertices = graph.getVertices();
-		float f = 0.5f;
+		float f = 1f;
 		
 		for (Vertex vertex : vertices) {
             Point2D c = layout.transform(vertex);
@@ -346,8 +360,11 @@ public class Utils {
 		p.println("\\begin{pspicture}("+(int)(x0*f-rim)+","+(int)(y0*f-rim)+")("+(int)(x*f+rim)+","+(int)(y*f+rim)+")");
 		
 		for (Vertex vertex : vertices) {
-			exportVertex(vertex, layout, f, p, true);
+			Point2D c = layout.transform(vertex);
+			exportVertex(vertex, c.getX(), y - c.getY() + y0, f, p, true);
 		}
+		
+		p.println("\\psset{arcangle=-8}");
 			
 		Collection<Edge> edges = graph.getEdges();
 		for (Edge edge : edges) {
@@ -403,7 +420,9 @@ public class Utils {
 			p.println("\\ncarc[linecolor="+scolor+", linewidth="+0.2*lineWidth*f+"]{->}{"+source+"}{"+dest+"}");
 		}
 	
-		// TODO Auto-generated method stub
+		double weight = edge.getWeight();
+		
+		p.println("\\ncput{\\textsf{\\tiny "+weight+"}}");
 		
 	}
 
