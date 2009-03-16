@@ -42,7 +42,7 @@ import edu.uci.ics.jung.graph.Graph;
 * An implementation of the ARF Layouter. 
 * See http://www.sg.ethz.ch/research/ for details
 */
-public class ARF2Layout<V,E> extends AbstractLayout<V,E> implements IterativeContext {
+public class WeightedARF2Layout<V,E> extends AbstractLayout<V,E> implements IterativeContext {
 
 /**
  * number of position updates before the graph is rendered 
@@ -52,7 +52,7 @@ private int updatesPerFrame = 1;
 /**
  * the parameter a controls the attraction between connected nodes. 
  */
-private double a = 3;
+private double a = 100;
     
 /**
  * ??? is a scaling factor for the attractive term. Connected as well as unconnected nodes are affected.
@@ -112,7 +112,7 @@ private Collection<Vertex> visualizedVertices = new HashSet<Vertex>();
  * Genrates a new Layout for graph g
  * @param g
  */
-public ARF2Layout(Graph<V,E> g) {
+public WeightedARF2Layout(Graph<V,E> g) {
 
     super(g);
    // update();
@@ -123,7 +123,7 @@ public ARF2Layout(Graph<V,E> g) {
  * @param g
  * @param incremental
  */
-public ARF2Layout(Graph<V,E> g, boolean incremental) {
+public WeightedARF2Layout(Graph<V,E> g, boolean incremental) {
 
     super(g);
     this.incremental  = incremental;
@@ -253,7 +253,8 @@ private Point2D getForceforNode(Vertex node) {
             Point2D temp = (Point2D) otherNodeX.clone();
             temp.setLocation(temp.getX() - x.getX(), temp.getY() - x.getY());
            
-            double multiplier = isEdgeInGraph(node, otherNode) ? a : 1;
+            Edge e = (Edge)getGraph().findEdge((V)node,(V)otherNode);
+            double multiplier = isEdgeInGraph(node, otherNode) ? (a * e.getWeight()) : 1;
 
             multiplier *= attraction / Math.sqrt(numNodes);
 

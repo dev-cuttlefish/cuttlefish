@@ -22,6 +22,9 @@
 package ch.ethz.sg.cuttlefish.misc;
 
 import java.awt.Color;
+import java.awt.Shape;
+import java.awt.geom.Ellipse2D;
+import java.awt.geom.Rectangle2D;
 
 public class Vertex {
 	
@@ -34,7 +37,7 @@ public class Vertex {
 	private Color color  = Color.BLACK;
 	private double size = 10;
 	private boolean shadowed = false;
-	private String shape = "circle";
+	private Shape shape = null;
 	private String var1 = null;
 	private String var2 = null;
 	private boolean excluded = false;
@@ -42,15 +45,24 @@ public class Vertex {
 	
 	public Vertex(int id){
 		this.id = id;
+		Ellipse2D ellipse = new Ellipse2D.Float();
+		ellipse.setFrameFromCenter(0,0,size,size);
+		shape = ellipse;
 	}
 
 	public Vertex(int id, String label){
 		this.id = id;
 		this.label = label;
+		Ellipse2D ellipse = new Ellipse2D.Float();
+		ellipse.setFrameFromCenter(0,0,size,size);
+		shape = ellipse;
 	}
 
 	public Vertex() {
 		this.id = -1;  //Anonymous vertex
+		Ellipse2D ellipse = new Ellipse2D.Float();
+		ellipse.setFrameFromCenter(0,0,size,size);
+		shape = ellipse;
 	}
 
 	/**
@@ -158,11 +170,27 @@ public class Vertex {
 		this.size = size;
 	}
 
-	public String getShape() {
+	public Shape getShape() {
 		return shape;
 	}
 
-	public void setShape(String shape) {
+	public void setShape(String shapeString) {
+		Shape newShape;
+		if (shapeString.startsWith("square")){
+			Rectangle2D rectangle = new Rectangle2D.Float();
+			rectangle.setFrameFromCenter(0,0,size,size);
+			newShape = rectangle;
+		}
+		else
+		{
+			Ellipse2D ellipse = new Ellipse2D.Float();
+			ellipse.setFrameFromCenter(0,0,size,size);
+			newShape = ellipse; 
+		}
+		this.shape = newShape;
+	}
+	
+	public void setShape(Shape shape) {
 		this.shape = shape;
 	}
 

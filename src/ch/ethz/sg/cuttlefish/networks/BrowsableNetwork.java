@@ -31,10 +31,11 @@ import ch.ethz.sg.cuttlefish.misc.Edge;
 import ch.ethz.sg.cuttlefish.misc.Vertex;
 
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
+import edu.uci.ics.jung.graph.SparseGraph;
 
 
 
-public class BrowsableNetwork extends DirectedSparseGraph<Vertex, Edge> {
+public class BrowsableNetwork extends SparseGraph<Vertex, Edge> {
 	
 	//default value for serialization in serialVersionUID
 	private static final long serialVersionUID = 1L;

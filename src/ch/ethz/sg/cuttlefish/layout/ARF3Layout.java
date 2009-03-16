@@ -23,7 +23,9 @@ package ch.ethz.sg.cuttlefish.layout;
 
 import java.awt.geom.Point2D;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
@@ -42,7 +44,7 @@ import edu.uci.ics.jung.graph.Graph;
 * An implementation of the ARF Layouter. 
 * See http://www.sg.ethz.ch/research/ for details
 */
-public class ARF2Layout<V,E> extends AbstractLayout<V,E> implements IterativeContext {
+public class ARF3Layout<V,E> extends AbstractLayout<V,E> implements IterativeContext {
 
 /**
  * number of position updates before the graph is rendered 
@@ -112,7 +114,7 @@ private Collection<Vertex> visualizedVertices = new HashSet<Vertex>();
  * Genrates a new Layout for graph g
  * @param g
  */
-public ARF2Layout(Graph<V,E> g) {
+public ARF3Layout(Graph<V,E> g) {
 
     super(g);
    // update();
@@ -123,7 +125,7 @@ public ARF2Layout(Graph<V,E> g) {
  * @param g
  * @param incremental
  */
-public ARF2Layout(Graph<V,E> g, boolean incremental) {
+public ARF3Layout(Graph<V,E> g, boolean incremental) {
 
     super(g);
     this.incremental  = incremental;
@@ -160,6 +162,20 @@ public void advancePositions() {
 	try{
 
         for (int i = 0; i < updatesPerFrame; i++) {
+        	
+        	
+        	Map <V, Point2D> nodeForces = new HashMap<V,Point2D>();	
+       
+        	for (E e : getGraph().getEdges())
+        	{
+        		V v1 = getGraph().getSource(e);
+        		V v2 = getGraph().getDest(e);
+        		
+        		Point2D c1 = transform(v1);
+        		Point2D c2 = transform(v2);
+        		
+        	}
+        	
         	for (Object o : getVertices()) {
                 Vertex v = (Vertex) o;
                 if(!isFixed(v)){
@@ -252,7 +268,8 @@ private Point2D getForceforNode(Vertex node) {
             
             Point2D temp = (Point2D) otherNodeX.clone();
             temp.setLocation(temp.getX() - x.getX(), temp.getY() - x.getY());
-           
+
+            
             double multiplier = isEdgeInGraph(node, otherNode) ? a : 1;
 
             multiplier *= attraction / Math.sqrt(numNodes);
