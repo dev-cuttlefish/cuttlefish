@@ -8,4 +8,5 @@
 	<Source id="pajekNet" name="Pajek load" class="ch.ethz.sg.cuttlefish.networks.PajekNetwork"></Source>
 	<Source id="graphML" name="GraphML load" class="ch.ethz.sg.cuttlefish.networks.GraphMLNetwork"></Source>
 	<Source id="userNetwork" name="Load User Network" class="ch.ethz.sg.cuttlefish.networks.UserNetwork"></Source>
+	<Source id="cxfNetwork" name="Load cxf network" class="ch.ethz.sg.cuttlefish.networks.CxfNetwork"></Source>
 </cf:DataSources>
