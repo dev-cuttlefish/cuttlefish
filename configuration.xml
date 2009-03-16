@@ -31,6 +31,9 @@
 			<Widget name="Load GraphML File" class="ch.ethz.sg.cuttlefish.gui.widgets.GraphMLPanel" id="GraphMLPanel"></Widget></Tab>
 		<Tab name="User Network" id="UserNetwork" condition="ch.ethz.sg.cuttlefish.networks.UserNetwork">
 			<Widget name="Load cff File" class="ch.ethz.sg.cuttlefish.gui.widgets.UserNetworkPanel" id="UserNetworkPanel"></Widget></Tab>
+		<Tab name="Cxf Network" id="CxfNetwork" condition="ch.ethz.sg.cuttlefish.networks.CxfNetwork">
+			<Widget name="Load cxf file" class="ch.ethz.sg.cuttlefish.gui.widgets.CxfNetworkPanel" id="CxfNetworkPanel"></Widget>
+		</Tab>
 	</GUI>
 	<Arguments>
 
