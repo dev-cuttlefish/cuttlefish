@@ -38,6 +38,7 @@ import java.util.Set;
 import edu.uci.ics.jung.algorithms.layout.Layout;
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
 import edu.uci.ics.jung.graph.Graph;
+import edu.uci.ics.jung.graph.SparseGraph;
 
 public class Utils {
 	
@@ -355,13 +356,14 @@ public class Utils {
 				+(std.getGreen()/255.0)+","
 				+(std.getBlue()/255.0)+"}");
 		
-		p.println("\\psset{unit=0.2mm}");
+		p.println("\\psset{unit=1mm}");
 		double rim=40.0;
 		p.println("\\begin{pspicture}("+(int)(x0*f-rim)+","+(int)(y0*f-rim)+")("+(int)(x*f+rim)+","+(int)(y*f+rim)+")");
 		
 		for (Vertex vertex : vertices) {
 			Point2D c = layout.transform(vertex);
-			exportVertex(vertex, c.getX(), y - c.getY() + y0, f, p, true);
+			//exportVertex(vertex, c.getX() + x0, y - c.getY() + y0, f, p, true);
+			exportVertex(vertex, c.getX() , c.getY(), 1, p, true);
 		}
 		
 		p.println("\\psset{arcangle=-8}");
@@ -427,7 +429,7 @@ public class Utils {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static void writeEdgeList(DirectedSparseGraph<Vertex,Edge> graph, PrintStream ps) {
+	public static void writeEdgeList(SparseGraph<Vertex,Edge> graph, PrintStream ps) {
 		Hashtable<Vertex, Integer> table = new Hashtable<Vertex, Integer>();
 		int count=0;
 		for(Vertex v: graph.getVertices()){

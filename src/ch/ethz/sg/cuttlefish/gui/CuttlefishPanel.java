@@ -72,6 +72,7 @@ import org.xml.sax.SAXException;
 
 import ch.ethz.sg.cuttlefish.gui.widgets.MousePanel;
 import ch.ethz.sg.cuttlefish.layout.ARF2Layout;
+import ch.ethz.sg.cuttlefish.layout.WeightedARF2Layout;
 import ch.ethz.sg.cuttlefish.misc.Edge;
 import ch.ethz.sg.cuttlefish.misc.EdgeFactory;
 import ch.ethz.sg.cuttlefish.misc.Utils;
@@ -92,6 +93,7 @@ import edu.uci.ics.jung.graph.*;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 import edu.uci.ics.jung.visualization.control.CrossoverScalingControl;
 import edu.uci.ics.jung.visualization.control.EditingModalGraphMouse;
+import edu.uci.ics.jung.visualization.control.ModalGraphMouse;
 import edu.uci.ics.jung.visualization.control.ScalingControl;
 import edu.uci.ics.jung.visualization.picking.ShapePickSupport;
 
@@ -136,54 +138,40 @@ public CuttlefishPanel(File configFile) {
 	
 	initialize(configFile);
 	
-	Transformer<Vertex, Shape> vertexShapeTransformer = new Transformer<Vertex, Shape>() {			
+	/*Transformer<Vertex, Shape> vertexShapeTransformer = new Transformer<Vertex, Shape>() {			
 		public Shape transform(Vertex vertex) {
-			if (vertex.getShape().startsWith("square")){
-				Rectangle2D rectangle = new Rectangle2D.Float();
-				rectangle.setFrameFromCenter(0,0,vertex.getSize(),vertex.getSize());
-				return rectangle;
-			}
-			else
-			{
-				Ellipse2D ellipse = new Ellipse2D.Float();
-				ellipse.setFrameFromCenter(0,0,vertex.getSize(),vertex.getSize());
-				return ellipse; 
-			}
-		} };
+			return vertex.getShape();} };
 	
 	Transformer<Edge, Paint> edgePaintTransformer = new Transformer<Edge, Paint>(){
 		public Paint transform(Edge edge) {
 			return edge.getColor(); } };
 
-	Transformer<Edge, String> edgeWeightTransformer = new Transformer<Edge, String>(){
+	Transformer<Edge, String> edgeLabelTransformer = new Transformer<Edge, String>(){
 		public String transform(Edge edge) {
-			Double d = new Double(edge.getWeight());
-			d = 100*d;
-			d = Math.rint(d) / (100.0);
-			return d.toString(); } };
+			return edge.getLabel();} };*/
 
 	Transformer<Vertex,String> vertexLabelTransformer = new Transformer<Vertex,String>(){
 		public String transform(Vertex vertex) {
 			return vertex.getLabel(); } };
-			
+	/*		
 	Transformer<Edge,Stroke> edgeStrokeTransformer = new Transformer<Edge, Stroke>() {
 		public Stroke transform(Edge edge) {
 			return new BasicStroke(new Double(edge.getWidth()).intValue()); } };
 		
 	Transformer<Vertex, Stroke> vertexStrokeTransformer = new Transformer<Vertex, Stroke>(){
 		public Stroke transform(Vertex vertex) {
-			return new BasicStroke(new Double(vertex.getWidth()).intValue()); } };
+			return new BasicStroke(new Double(vertex.getWidth()).intValue()); } };*/
 		
 	Transformer<Vertex, Paint> vertexPaintTransformer = new Transformer<Vertex, Paint>(){
 		public Paint transform(Vertex vertex) {
 			return vertex.getFillColor(); } };			
 			
-	visualizationViewer.getRenderContext().setVertexShapeTransformer(vertexShapeTransformer);
+/*	visualizationViewer.getRenderContext().setVertexShapeTransformer(vertexShapeTransformer);
 	visualizationViewer.getRenderContext().setEdgeDrawPaintTransformer(edgePaintTransformer);		
-	visualizationViewer.getRenderContext().setEdgeLabelTransformer(edgeWeightTransformer);
+	visualizationViewer.getRenderContext().setEdgeLabelTransformer(edgeLabelTransformer);*/
 	visualizationViewer.getRenderContext().setVertexLabelTransformer(vertexLabelTransformer);
-	visualizationViewer.getRenderContext().setEdgeStrokeTransformer(edgeStrokeTransformer);
-	visualizationViewer.getRenderContext().setVertexStrokeTransformer(vertexStrokeTransformer);
+/*	visualizationViewer.getRenderContext().setEdgeStrokeTransformer(edgeStrokeTransformer);
+	visualizationViewer.getRenderContext().setVertexStrokeTransformer(vertexStrokeTransformer);*/
 	visualizationViewer.getRenderContext().setVertexFillPaintTransformer(vertexPaintTransformer);
 	visualizationViewer.setPickSupport(new ShapePickSupport<Vertex,Edge>(visualizationViewer));
     visualizationViewer.setGraphMouse(graphMouse);
@@ -208,6 +196,7 @@ private void initialize(File configFile) {
 		
 	graphMouse = new EditingModalGraphMouse<Vertex,Edge>(visualizationViewer.getRenderContext(),
 				vertexFactory, edgeFactory);		
+	graphMouse.setMode(ModalGraphMouse.Mode.TRANSFORMING);
 		
     //visualizationViewer.setPickSupport(new ShapePickSupport());
 	
@@ -440,7 +429,7 @@ public void itemStateChanged(ItemEvent arg0) {
  * Getter for the network
  * @return DirectedSparseGraph network in use in CuttleFish
  */
-public DirectedSparseGraph<Vertex,Edge> getNetwork() {
+public SparseGraph<Vertex,Edge> getNetwork() {
 	return network;
 }
 
@@ -591,7 +580,7 @@ private JPanel getLayoutPanel() {
  */
 private JComboBox getLayoutComboBox() {
 	
-	String[] layoutNames = {"ARFLayout", "SpringLayout", "Kamada-Kawai", 
+	String[] layoutNames = {"WeightedARFLayout", "ARFLayout", "SpringLayout", "Kamada-Kawai", 
 			"Fruchterman-Reingold", "ISOMLayout", "CircleLayout"};
 	
 	
@@ -695,6 +684,11 @@ public void setLayout(String selectedLayout){
 	{
 		newLayout = new ARF2Layout<Vertex,Edge>(getNetwork());
 		((ARF2Layout<Vertex,Edge>)newLayout).setMaxUpdates(getNetwork().getVertexCount());		
+	}
+	if (selectedLayout.equals("WeightedARFLayout"))
+	{
+		newLayout = new WeightedARF2Layout<Vertex,Edge>(getNetwork());
+		((WeightedARF2Layout<Vertex,Edge>)newLayout).setMaxUpdates(getNetwork().getVertexCount());		
 	}
 	if (selectedLayout.equals("SpringLayout"))
 		newLayout = new SpringLayout2<Vertex, Edge>(getNetwork());
