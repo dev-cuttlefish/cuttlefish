@@ -138,7 +138,7 @@ public CuttlefishPanel(File configFile) {
 	
 	initialize(configFile);
 	
-	/*Transformer<Vertex, Shape> vertexShapeTransformer = new Transformer<Vertex, Shape>() {			
+	Transformer<Vertex, Shape> vertexShapeTransformer = new Transformer<Vertex, Shape>() {			
 		public Shape transform(Vertex vertex) {
 			return vertex.getShape();} };
 	
@@ -148,30 +148,30 @@ public CuttlefishPanel(File configFile) {
 
 	Transformer<Edge, String> edgeLabelTransformer = new Transformer<Edge, String>(){
 		public String transform(Edge edge) {
-			return edge.getLabel();} };*/
+			return edge.getLabel();} };
 
 	Transformer<Vertex,String> vertexLabelTransformer = new Transformer<Vertex,String>(){
 		public String transform(Vertex vertex) {
 			return vertex.getLabel(); } };
-	/*		
+	
 	Transformer<Edge,Stroke> edgeStrokeTransformer = new Transformer<Edge, Stroke>() {
 		public Stroke transform(Edge edge) {
 			return new BasicStroke(new Double(edge.getWidth()).intValue()); } };
 		
 	Transformer<Vertex, Stroke> vertexStrokeTransformer = new Transformer<Vertex, Stroke>(){
 		public Stroke transform(Vertex vertex) {
-			return new BasicStroke(new Double(vertex.getWidth()).intValue()); } };*/
+			return new BasicStroke(new Double(vertex.getWidth()).intValue()); } };
 		
 	Transformer<Vertex, Paint> vertexPaintTransformer = new Transformer<Vertex, Paint>(){
 		public Paint transform(Vertex vertex) {
 			return vertex.getFillColor(); } };			
 			
-/*	visualizationViewer.getRenderContext().setVertexShapeTransformer(vertexShapeTransformer);
+	visualizationViewer.getRenderContext().setVertexShapeTransformer(vertexShapeTransformer);
 	visualizationViewer.getRenderContext().setEdgeDrawPaintTransformer(edgePaintTransformer);		
-	visualizationViewer.getRenderContext().setEdgeLabelTransformer(edgeLabelTransformer);*/
+	visualizationViewer.getRenderContext().setEdgeLabelTransformer(edgeLabelTransformer);
 	visualizationViewer.getRenderContext().setVertexLabelTransformer(vertexLabelTransformer);
-/*	visualizationViewer.getRenderContext().setEdgeStrokeTransformer(edgeStrokeTransformer);
-	visualizationViewer.getRenderContext().setVertexStrokeTransformer(vertexStrokeTransformer);*/
+	visualizationViewer.getRenderContext().setEdgeStrokeTransformer(edgeStrokeTransformer);
+	visualizationViewer.getRenderContext().setVertexStrokeTransformer(vertexStrokeTransformer);
 	visualizationViewer.getRenderContext().setVertexFillPaintTransformer(vertexPaintTransformer);
 	visualizationViewer.setPickSupport(new ShapePickSupport<Vertex,Edge>(visualizationViewer));
     visualizationViewer.setGraphMouse(graphMouse);
