@@ -70,6 +70,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import ch.ethz.sg.cuttlefish.gui.mouse.PopupMousePlugin;
 import ch.ethz.sg.cuttlefish.gui.widgets.MousePanel;
 import ch.ethz.sg.cuttlefish.layout.ARF2Layout;
 import ch.ethz.sg.cuttlefish.layout.WeightedARF2Layout;
