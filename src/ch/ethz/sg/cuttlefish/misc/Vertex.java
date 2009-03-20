@@ -25,6 +25,7 @@ import java.awt.Color;
 import java.awt.Shape;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
+import java.awt.geom.RectangularShape;
 
 public class Vertex {
 	
@@ -168,6 +169,7 @@ public class Vertex {
 
 	public void setSize(double size) {
 		this.size = size;
+		((RectangularShape) this.shape).setFrameFromCenter(0,0,size,size);
 	}
 
 	public Shape getShape() {

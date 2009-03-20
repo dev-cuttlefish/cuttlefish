@@ -165,13 +165,18 @@ public CuttlefishPanel(File configFile) {
 	Transformer<Vertex, Paint> vertexPaintTransformer = new Transformer<Vertex, Paint>(){
 		public Paint transform(Vertex vertex) {
 			return vertex.getFillColor(); } };			
-			
+
+	Transformer<Vertex, Paint> vertexBorderTransformer = new Transformer<Vertex, Paint>(){
+		public Paint transform(Vertex vertex) {
+			return vertex.getColor(); } };			
+
 	visualizationViewer.getRenderContext().setVertexShapeTransformer(vertexShapeTransformer);
 	visualizationViewer.getRenderContext().setEdgeDrawPaintTransformer(edgePaintTransformer);		
 	visualizationViewer.getRenderContext().setEdgeLabelTransformer(edgeLabelTransformer);
 	visualizationViewer.getRenderContext().setVertexLabelTransformer(vertexLabelTransformer);
 	visualizationViewer.getRenderContext().setEdgeStrokeTransformer(edgeStrokeTransformer);
 	visualizationViewer.getRenderContext().setVertexStrokeTransformer(vertexStrokeTransformer);
+	visualizationViewer.getRenderContext().setVertexDrawPaintTransformer(vertexBorderTransformer);
 	visualizationViewer.getRenderContext().setVertexFillPaintTransformer(vertexPaintTransformer);
 	visualizationViewer.setPickSupport(new ShapePickSupport<Vertex,Edge>(visualizationViewer));
     visualizationViewer.setGraphMouse(graphMouse);

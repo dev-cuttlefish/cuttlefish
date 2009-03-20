@@ -33,6 +33,7 @@
 			<Widget name="Load cff File" class="ch.ethz.sg.cuttlefish.gui.widgets.UserNetworkPanel" id="UserNetworkPanel"></Widget></Tab>
 		<Tab name="Cxf Network" id="CxfNetwork" condition="ch.ethz.sg.cuttlefish.networks.CxfNetwork">
 			<Widget name="Load cxf file" class="ch.ethz.sg.cuttlefish.gui.widgets.CxfNetworkPanel" id="CxfNetworkPanel"></Widget>
+			<Widget name="Load cef instructions" class="ch.ethz.sg.cuttlefish.gui.widgets.CefInstructionPanel" id="InstructionPanel"></Widget>
 		</Tab>
 	</GUI>
 	<Arguments>
