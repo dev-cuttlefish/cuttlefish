@@ -86,17 +86,18 @@ public class CxfNetwork extends BrowsableNetwork implements ISimulation{
 	
 	public void load(File graphFile){
 		
-		for (Edge e : getEdges())
-			removeEdge(e);
-		for (Vertex v : getVertices())
-			removeVertex(v);
-	    directed = true;
+		hash = new HashMap<Integer,Vertex>();
+		directed = true;
 		hideVertexLabels = false;
 		hideEdgeLabels = false;
 		lineNum = 1;
 		line = null;
 		
-		hash = new HashMap<Integer,Vertex>();
+		for (Edge e : getEdges())
+			removeEdge(e);
+		for (Vertex v : getVertices())
+			removeVertex(v);
+	    
 		
 		try {
 			fr = new FileReader(graphFile);
