@@ -133,16 +133,6 @@ public WeightedARF2Layout(Graph<V,E> g, boolean incremental) {
     }
 }
 
-public void complete(int n) {
-	done = false;
-	for (int i = 1; i <= n; i++)
-	{
-		System.out.println("i: " + i);
-		step();
-	}
-	done = true;
-	
-}
 
 /* (non-Javadoc)
  * @see edu.uci.ics.jung.visualization.AbstractLayout#initialize_local_vertex(edu.uci.ics.jung.graph.Vertex)
@@ -156,7 +146,6 @@ protected void initialize_local_vertex(Vertex v) {
  */
 @SuppressWarnings("unchecked")
 public void advancePositions() {
-
 	try{
 
         for (int i = 0; i < updatesPerFrame; i++) {
@@ -187,6 +176,7 @@ public void advancePositions() {
  */
 @SuppressWarnings("unchecked")
 public void align(double x0, double y0){
+	
 	double x = Double.MAX_VALUE;
 	double y = Double.MAX_VALUE;
 	
@@ -201,8 +191,6 @@ public void align(double x0, double y0){
         Vertex v = (Vertex) o;
         Point2D c = transform((V)v);
         c.setLocation(c.getX() - x + x0, c.getY() - y + y0 );
-    	locations.put((V) v, c);
-
     }
 }
 
@@ -252,7 +240,7 @@ private Point2D getForceforNode(Vertex node) {
             
             Point2D temp = (Point2D) otherNodeX.clone();
             temp.setLocation(temp.getX() - x.getX(), temp.getY() - x.getY());
-           
+
             Edge e = (Edge)getGraph().findEdge((V)node,(V)otherNode);
             double multiplier = isEdgeInGraph(node, otherNode) ? (a * e.getWeight()) : 1;
 
@@ -288,12 +276,7 @@ private Point2D getForceforNode(Vertex node) {
 @SuppressWarnings("unchecked")
 public Point2D assignPositionToVertex(Vertex vertex, Point2D p) {
 	Point2D c = transform((V)vertex);
-	//if(c == null){
-	//	c = getRandomPoint();
-	//	vertex.addUserDatum(getBaseKey(), c , UserData.CLONE);
-	//}
 	c.setLocation(p);
-	locations.put((V) vertex, c);
 	return p;
 }
 
@@ -305,38 +288,28 @@ public Point2D assignPositionToVertex(Vertex vertex, Point2D p) {
  */
 @SuppressWarnings("unchecked")
 public Point2D assignPositionToVertex(Vertex vertex) {
-
-	Set<Vertex> nvertices = new HashSet<Vertex>();
-	for (Vertex vertex2 : (Collection<Vertex> )getGraph().getNeighbors((V) vertex)) {
-		if(!visualizedVertices.contains(vertex2)){
-			nvertices.add(vertex2);
-			visualizedVertices.add(vertex2);
-		}
-	}
-	Point2D c = transform((V) vertex);
-	if(c == null){
+	Point2D c;
+	
+	if (!visualizedVertices.contains(vertex))
+	{	
+		System.out.println("newVertex");
 		c = getRandomPoint(((int)Math.sqrt(getVertices().size())*50)+1);
+		locations.put((V)vertex, c);
+		visualizedVertices.add(vertex);
+		System.out.println("new Vertex");
+		done = false;
+		countUpdates = 0;
 	}
-
-	if(nvertices.size() > 0){
-		c = getRandomPoint(((int)Math.sqrt(getVertices().size())*50)+1);
-		for (Vertex vertex2 : nvertices) {
-			Point2D c2 = transform((V)vertex2);
-			c.setLocation(c.getX() + c2.getX(), c.getY() + c2.getY());
-			locations.put((V)vertex2, c);
-		}
-		double mult = 1.0 / (double) nvertices.size();
-		c.setLocation(c.getX() * mult, c.getY() * mult);
-	}
+	else
+		c = transform((V)vertex);
 	return c;
 }
 
 public void updateVertices(){
 	Set<Vertex> nvertices = new HashSet<Vertex>();
 	for (Vertex vertex2 : (Collection<Vertex> )getGraph().getVertices()) {
-		if(!visualizedVertices.contains(vertex2)){
+		if(! visualizedVertices.contains(vertex2)){
 			nvertices.add(vertex2);
-			visualizedVertices.add(vertex2);
 		}
 	}
 	Point2D c;
@@ -345,6 +318,9 @@ public void updateVertices(){
 			c = getRandomPoint(((int)Math.sqrt(getVertices().size())*50)+1);
 			locations.put((V)vertex2, c);
 		}
+		done = false;
+		System.out.println("new Vertex");
+		countUpdates = 0;
 	}
 }
 
@@ -390,9 +366,11 @@ public boolean incrementsAreDone() {
  */
 @SuppressWarnings("unchecked")
 public void update() {
-	updateVertices();
+
 	for (Vertex v : (Collection<Vertex>) getGraph().getVertices())
 		assignPositionToVertex(v);
+	
+	updateVertices();
 	
 	if(!incremental){
 		if(verbose){
@@ -417,7 +395,7 @@ private void layout() {
 		int count = 0;
 		while(error > threshold && count < maxRelayouts){
 			if(verbose || !verbose){
-				System.out.println("relayout: " + (maxRelayouts-count));
+			//	System.out.println("relayout: " + (maxRelayouts-count));
 			}
 			advancePositions();
 			count ++;
@@ -514,6 +492,10 @@ public int getMaxUpdates(){
 	return maxUpdates;
 }
 
+public void resetUpdates(){
+	countUpdates = 0;
+}
+
 @SuppressWarnings("unchecked")
 @Override
 public void initialize() {
@@ -523,6 +505,7 @@ public void initialize() {
 	{
 		randomPoint = getRandomPoint(((int)Math.sqrt(getVertices().size())*50)+1);
 		locations.put((V) v, randomPoint);
+		visualizedVertices.add(v);
 	}
 	update();
 }
@@ -536,18 +519,20 @@ public void reset() {
 
 @Override
 public boolean done() {
-	return done;
+	return false;
 }
 
 @Override
 public void step() {
-
+	System.out.println("step");
 	countUpdates++;
+	System.out.println("count: " + countUpdates + " max: " + maxUpdates);
 	done = (countUpdates > maxUpdates);
-		
-	update();
 	if (!done)
+	{
+		update();
 		advancePositions();
+	}
 }
 
 

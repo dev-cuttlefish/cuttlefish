@@ -30,7 +30,8 @@ import javax.swing.JFileChooser;
 
 
 import ch.ethz.sg.cuttlefish.gui.BrowserWidget;
-import ch.ethz.sg.cuttlefish.networks.CxfNetwork;
+import ch.ethz.sg.cuttlefish.networks.InteractiveCxfNetwork;
+import ch.ethz.sg.cuttlefish.networks.StaticCxfNetwork;
 import ch.ethz.sg.cuttlefish.networks.UserNetwork;
 
 public class CxfNetworkPanel extends BrowserWidget {
@@ -50,7 +51,7 @@ public class CxfNetworkPanel extends BrowserWidget {
 	public CxfNetworkPanel() {
 		super();
 		initialize();
-		setNetworkClass(CxfNetwork.class);
+		setNetworkClass(StaticCxfNetwork.class);
 	}
 
 	/**
@@ -92,7 +93,7 @@ public class CxfNetworkPanel extends BrowserWidget {
 
 		            if (returnVal == JFileChooser.APPROVE_OPTION) {
 		                File file = fc.getSelectedFile();
-		                CxfNetwork cxfNet = (CxfNetwork) getNetwork();
+		                StaticCxfNetwork cxfNet = (StaticCxfNetwork) getNetwork();
 		                cxfNet.load(file);
 		                setNetwork(cxfNet);
 		                getBrowser().onNetworkChange();

@@ -42,7 +42,7 @@ public class BrowsableNetwork extends SparseGraph<Vertex, Edge> {
 	
 	private String name=this.getClass().getName();
 	private Hashtable<String, String> arguments = new Hashtable<String, String>();
-
+	private boolean incremental = false;
 	
 	public void init(){
 	}
@@ -149,5 +149,15 @@ public class BrowsableNetwork extends SparseGraph<Vertex, Edge> {
 		
 	}
 
+	public boolean isIncremental()
+	{
+		return incremental;
+	}
+	
+	public void setIncremental(boolean inc)
+	{
+		System.out.println("IS INCREMENTAAAAL");
+		incremental = inc;
+	}
 
 }

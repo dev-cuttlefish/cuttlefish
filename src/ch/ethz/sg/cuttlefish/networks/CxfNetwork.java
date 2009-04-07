@@ -41,7 +41,7 @@ import ch.ethz.sg.cuttlefish.misc.Vertex;
 import edu.uci.ics.jung.graph.SparseGraph;
 import edu.uci.ics.jung.graph.util.EdgeType;
 
-public class CxfNetwork extends BrowsableNetwork implements ISimulation{
+public class CxfNetwork extends BrowsableNetwork {
 
 	private static final long serialVersionUID = 1L;
 	
@@ -54,7 +54,7 @@ public class CxfNetwork extends BrowsableNetwork implements ISimulation{
 	String line = null;
 	int instructionIndex = 0;
 	
-	private class Token{
+	class Token{
 		
 		String type = null;
 		
@@ -145,132 +145,10 @@ public class CxfNetwork extends BrowsableNetwork implements ISimulation{
 		
 	}
 	
-	
-	
-	public void loadInstructions(File instructionsFile)
-	{
-		
-		try {
-			fr = new FileReader(instructionsFile);
-		} catch (FileNotFoundException e) {
-			System.out.println("INSTRUCTIONS FILE NOT FOUND");
-			e.printStackTrace();
-		}
-		
-		br = new BufferedReader(fr);
-	
-		Token token;
-		instructionTokens = new ArrayList<Token>();
-		
-		while ((token = getNextToken()) != null)
-			instructionTokens.add(token);
-		
-		return;
-	}
-
-	
-	private void execute(Token token)
-	{
-	
-		if (token.type.equalsIgnoreCase("addNode"))
-		{
-			if (hash.containsKey(token.id))
-				System.out.println("WARNING: trying to add an existing node -- Use editNode");
-			else
-			{
-				Vertex v = createVertex(token);
-				hash.put(token.id, v);
-				addVertex(v);
-			}
-		}
-		else if (token.type.equalsIgnoreCase("removeNode"))
-		{
-			if (hash.containsKey(token.id))
-			{
-				Vertex v = hash.get(token.id);
-				
-				if (directed)
-				{
-					for (Edge e : getOutEdges(v))
-						removeEdge(e);
-					for (Edge e : getInEdges(v))
-						removeEdge(e);
-				}
-				else
-					for (Edge e : getIncidentEdges(v))
-						removeEdge(e);
-				removeVertex(v);
-				hash.remove(token.id);
-			}
-				
-		}
-		else if (token.type.equalsIgnoreCase("editNode"))
-		{
-			if (hash.containsKey(token.id))
-			{
-				Vertex v = hash.get(token.id);
-				editVertex(v,token);
-			}
-			else
-				System.out.println("WARNING: editing an inexistent node --- use addNode");
-			
-		}
-		else if (token.type.equalsIgnoreCase("addEdge"))
-		{
-			if (hash.containsKey(token.id_source) && hash.containsKey(token.id_dest))
-			{
-				Vertex vSource = hash.get(token.id_source);
-				Vertex vDest = hash.get(token.id_dest);
-				if (findEdge(vSource, vDest) != null)
-					System.out.println("WARNING: the edge ("+token.id_source +
-							","+token.id_dest +") already existed -- use editEdge");
-				addEdge(createEdge(token), vSource, vDest);
-			}
-			else
-				System.out.println("WARNING: one of the endpoints of the added edge ("+token.id_source +
-						","+token.id_dest +") does not exist");
-		}
-		else if (token.type.equalsIgnoreCase("removeEdge"))
-		{
-			if (hash.containsKey(token.id_source) && hash.containsKey(token.id_dest))
-			{
-				Vertex vSource = hash.get(token.id_source);
-				Vertex vDest = hash.get(token.id_dest);
-				Edge e;
-				if ((e = findEdge(vSource, vDest)) != null)
-					removeEdge(e);
-		}
-			else
-				System.out.println("WARNING: one of the endpoints of the removing edge ("+token.id_source +
-						","+token.id_dest +") does not exist");
-		}
-		else if (token.type.equalsIgnoreCase("editEdge"))
-		{
-			if (hash.containsKey(token.id_source) && hash.containsKey(token.id_dest))
-			{
-				Vertex vSource = hash.get(token.id_source);
-				Vertex vDest = hash.get(token.id_dest);
-				Edge e;
-				if ((e = findEdge(vSource, vDest)) != null)
-					editEdge(e,token);
-				else
-					System.out.println("WARNING: the edited edge ("+token.id_source +
-							","+token.id_dest +") didn't exist -- use addEdge");
-		}
-			else
-				System.out.println("WARNING: one of the endpoints of the editing edge ("+token.id_source +
-						","+token.id_dest +") does not exist");
-		}
-		return;
-	}
-	
-	
-	
-	
 	  private static final String QUOTES = "}";
 	  private static final String WHITESPACES = " \t\r\n";
 	
-	private Token getNextToken(){
+	Token getNextToken(){
 		Token token = new Token();
 		try {
 			if (line == null)
@@ -485,7 +363,7 @@ public class CxfNetwork extends BrowsableNetwork implements ISimulation{
 	}
 
 	
-	private Vertex createVertex(Token token){
+	Vertex createVertex(Token token){
 		Vertex v = new Vertex(token.id);
 		
 		if (token.label != null)
@@ -506,25 +384,7 @@ public class CxfNetwork extends BrowsableNetwork implements ISimulation{
 		return v;
 	}
 	
-	private void editVertex(Vertex v, Token token){
-		if (token.label != null)
-			v.setLabel(token.label);
-		if (token.size != null)
-			v.setSize(token.size);
-		if (token.shape != null)
-			v.setShape(token.shape);
-		if (token.color != null)
-			v.setFillColor(token.color);
-		if (token.borderColor != null)
-			v.setColor(token.borderColor);
-		if (token.var1 != null)
-			v.setVar1(token.var1);
-		if (token.var2 != null)
-			v.setVar2(token.var2);
-		return;
-	}
-	
-	private Edge createEdge(Token token){
+	Edge createEdge(Token token){
 		Edge e = new Edge();
 		if (token.weight != null)
 			e.setWeight(token.weight);
@@ -541,24 +401,6 @@ public class CxfNetwork extends BrowsableNetwork implements ISimulation{
 		
 		return e;
 	}
-	
-	private void editEdge(Edge e, Token token){
-		if (token.weight != null)
-			e.setWeight(token.weight);
-		if (token.label != null)
-			e.setLabel(token.label);
-		if (token.size != null)
-			e.setWidth(token.size);
-		if (token.color != null)
-			e.setColor(token.color);
-		if (token.var1 != null)
-			e.setVar1(token.var1);
-		if (token.var2 != null)
-			e.setVar2(token.var2);
-
-		return;
-	}
-	
 	
 	public static void main(String argv[]){
 		CxfNetwork network = new CxfNetwork();
@@ -589,35 +431,5 @@ public class CxfNetwork extends BrowsableNetwork implements ISimulation{
 		}
 		
 		
-	}
-
-	@Override
-	public void reset() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public boolean update(long passedTime) {
-
-		Token token = instructionTokens.get(instructionIndex);
-		
-		if (token.freeze)
-		{
-			while ((instructionIndex < instructionTokens.size()) && (!token.commit))
-			{
-				token = instructionTokens.get(instructionIndex);
-				execute(token);
-				instructionIndex++;
-			}
-			
-		}
-		else
-		{
-			execute(token);
-			instructionIndex++;
-		}
-		
-		return (instructionIndex >= instructionTokens.size());
 	}
 }

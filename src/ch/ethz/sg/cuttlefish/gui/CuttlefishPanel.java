@@ -354,7 +354,6 @@ public File getPositionFile(){
  */
 public void setLayout(boolean isDynamic){
 	
-	
 	File positionData = getPositionFile();
 	layout = null;
 	
@@ -397,7 +396,8 @@ public void setNetwork(BrowsableNetwork network) {
 		layout.setGraph(network);
 	
 	if (layout instanceof ARF2Layout)
-		((ARF2Layout<Vertex,Edge>) layout).setMaxUpdates(network.getVertexCount());
+		if (((ARF2Layout<Vertex,Edge>)layout).getMaxUpdates() < getNetwork().getVertexCount())
+			((ARF2Layout<Vertex,Edge>)layout).setMaxUpdates(getNetwork().getVertexCount());		
 	network.init();
 	
 	refreshAnnotations();
@@ -524,19 +524,28 @@ public Document getConfiguration() {
 
 public void onNetworkChange() {
 	System.out.println("Network changed " + network.getName());
-	 
+	
+	
 	if (layout instanceof ARF2Layout)
-		{
-			setLayout("ARFLayout");
-		}
-	else
+	{
+		((ARF2Layout)layout).step();
+		((ARF2Layout)layout).resetUpdates();
+		getVisualizationViewer().repaint();
+	}
+	if (layout instanceof WeightedARF2Layout)
+	{
+		((WeightedARF2Layout)layout).step();
+//		((WeightedARF2Layout)layout).resetUpdates();
+		getVisualizationViewer().repaint();
+	}
+/*	else
 	{
 		layout.setGraph(getNetwork());
 		layout.initialize();
 		getVisualizationViewer().setGraphLayout(layout);
 		getVisualizationViewer().repaint();
 	}
-	
+	**/
 }
 
 public String getArgument(String name) {
@@ -688,8 +697,9 @@ public void setLayout(String selectedLayout){
 	
 	if (selectedLayout.equals("ARFLayout"))
 	{
-		newLayout = new ARF2Layout<Vertex,Edge>(getNetwork());
-		((ARF2Layout<Vertex,Edge>)newLayout).setMaxUpdates(getNetwork().getVertexCount());		
+		newLayout = new ARF2Layout<Vertex,Edge>(getNetwork(), ((BrowsableNetwork)getNetwork()).isIncremental());
+		if (((ARF2Layout<Vertex,Edge>)newLayout).getMaxUpdates() < getNetwork().getVertexCount())
+			((ARF2Layout<Vertex,Edge>)newLayout).setMaxUpdates(getNetwork().getVertexCount());		
 	}
 	if (selectedLayout.equals("WeightedARFLayout"))
 	{
