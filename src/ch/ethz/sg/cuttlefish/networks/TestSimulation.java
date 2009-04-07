@@ -30,6 +30,7 @@ public class TestSimulation extends BrowsableNetwork implements ISimulation {
 	private Vertex lastInsert = null;
 	
 	public void reset() {
+		setIncremental(true);
 		lastInsert = null;
 		for (Edge edge : super.getEdges())
 			super.removeEdge(edge);
@@ -39,6 +40,7 @@ public class TestSimulation extends BrowsableNetwork implements ISimulation {
 	}
 
 	public boolean update(long passedTime) {
+		setIncremental(true);
 		Vertex v = new Vertex();
 		addVertex(v);
 		if(lastInsert!=null){

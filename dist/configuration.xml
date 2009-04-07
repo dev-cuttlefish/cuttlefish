@@ -31,10 +31,12 @@
 			<Widget name="Load GraphML File" class="ch.ethz.sg.cuttlefish.gui.widgets.GraphMLPanel" id="GraphMLPanel"></Widget></Tab>
 		<Tab name="User Network" id="UserNetwork" condition="ch.ethz.sg.cuttlefish.networks.UserNetwork">
 			<Widget name="Load cff File" class="ch.ethz.sg.cuttlefish.gui.widgets.UserNetworkPanel" id="UserNetworkPanel"></Widget></Tab>
-		<Tab name="Cxf Network" id="CxfNetwork" condition="ch.ethz.sg.cuttlefish.networks.CxfNetwork">
-			<Widget name="Load cxf file" class="ch.ethz.sg.cuttlefish.gui.widgets.CxfNetworkPanel" id="CxfNetworkPanel"></Widget>
+		<Tab name="Interactive cxf Network" id="InteractiveCxfNetwork" condition="ch.ethz.sg.cuttlefish.networks.InteractiveCxfNetwork">
+			<Widget name="Load cxf file" class="ch.ethz.sg.cuttlefish.gui.widgets.InteractiveCxfNetworkPanel" id="ICxfNetworkPanel"></Widget>
 			<Widget name="Load cef instructions" class="ch.ethz.sg.cuttlefish.gui.widgets.CefInstructionPanel" id="InstructionPanel"></Widget>
 		</Tab>
+		<Tab name="Static cxf Network" id="CxfNetwork" condition="ch.ethz.sg.cuttlefish.networks.StaticCxfNetwork">
+			<Widget name="Load cxf file" class="ch.ethz.sg.cuttlefish.gui.widgets.CxfNetworkPanel" id="CxfNetworkPanel"></Widget></Tab>
 	</GUI>
 	<Arguments>
 
