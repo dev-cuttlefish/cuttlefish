@@ -20,19 +20,28 @@ package ch.ethz.sg.cuttlefish.gui.widgets;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Image;
 import java.awt.Insets;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.PrintStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
+import javax.imageio.ImageIO;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 
 import ch.ethz.sg.cuttlefish.gui.BrowserWidget;
+import com.sun.image.codec.jpeg.*;
+import com.sun.imageio.plugins.png.PNGImageWriter;
+import com.sun.imageio.plugins.png.PNGImageWriterSpi;
+
 import ch.ethz.sg.cuttlefish.misc.Utils;
 import ch.ethz.sg.cuttlefish.networks.TemporalNetwork;
 
@@ -44,6 +53,7 @@ public class ExportPanel extends BrowserWidget  {
 	private JButton pstricksButton = null;
 	private JButton adjlistButton = null;
 	private JButton edgelistButton = null;
+	private JButton snapshotButton = null;
 	private JTextField jTextField = null;
 	private JLabel jLabel = null;
 
@@ -105,7 +115,7 @@ public class ExportPanel extends BrowserWidget  {
 		this.setSize(287, 230);
 		this.setLayout(new GridBagLayout());
 		//this.setBorder(BorderFactory.createTitledBorder(null, "export", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, null, null));
-		this.add(getDotButton(), gridBagConstraints);
+		this.add(getSnapshotButton(), gridBagConstraints);
 		this.add(getPstricksButton(), gridBagConstraints2);
 		this.add(getAdjlistButton(), gridBagConstraints1);
 		this.add(getEdgelistButton(), gridBagConstraints11);
@@ -133,6 +143,25 @@ public class ExportPanel extends BrowserWidget  {
 		return dotButton;
 	}
 
+	/**
+	 * This method initializes snapshotButton	
+	 * 	
+	 * @return javax.swing.JButton	
+	 */
+	private JButton getSnapshotButton() {
+		if (snapshotButton == null) {
+			snapshotButton = new JButton();
+			snapshotButton.setText("snapshot");
+			snapshotButton.addActionListener(new java.awt.event.ActionListener() {
+				public void actionPerformed(java.awt.event.ActionEvent e) {
+						exportToJpg();
+				}
+			});
+		}
+		return snapshotButton;
+	}
+
+	
 	/**
 	 * This method initializes pstricksButton	
 	 * 	
@@ -185,6 +214,25 @@ public class ExportPanel extends BrowserWidget  {
 		return adjlistButton;
 	}
 
+	
+	public void exportToJpg() {
+		
+		BufferedImage img = getBrowser().getSnapshot();
+	    
+	    try {
+	       OutputStream out = new FileOutputStream(getNetwork().getName()+".jpg");
+	   
+	       JPEGImageEncoder encoder = JPEGCodec.createJPEGEncoder(out);
+	       JPEGEncodeParam param = JPEGCodec.getDefaultJPEGEncodeParam(img);
+	       param.setQuality(1.0f,true);
+	       encoder.setJPEGEncodeParam(param);
+	       encoder.encode(img,param);
+	       out.close();
+	     } catch (Exception e) {
+	       System.out.println(e); 
+	     }
+		
+	}
 	
 	
 	public void exportToDot() {

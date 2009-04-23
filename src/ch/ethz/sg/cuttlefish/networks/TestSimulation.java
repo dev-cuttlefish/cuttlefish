@@ -21,6 +21,9 @@
 
 package ch.ethz.sg.cuttlefish.networks;
 
+import java.util.Collection;
+import java.util.ConcurrentModificationException;
+
 import ch.ethz.sg.cuttlefish.misc.Edge;
 import ch.ethz.sg.cuttlefish.misc.Vertex;
 
@@ -34,9 +37,17 @@ public class TestSimulation extends BrowsableNetwork implements ISimulation {
 		lastInsert = null;
 		for (Edge edge : super.getEdges())
 			super.removeEdge(edge);
-		for (Vertex vertex : super.getVertices())
-			super.removeVertex(vertex);
 
+		Collection<Vertex> vertices = super.getVertices();
+		while (!vertices.isEmpty())
+		{ 
+			try{
+				for (Vertex vertex : vertices)
+					super.removeVertex(vertex);
+			}
+			catch (ConcurrentModificationException e)
+			{}
+		}
 	}
 
 	public boolean update(long passedTime) {
@@ -48,6 +59,6 @@ public class TestSimulation extends BrowsableNetwork implements ISimulation {
 			super.addEdge(e, v, lastInsert);
 		}
 		lastInsert = v;
-		return true;
+		return (getVertexCount() < 30);
 	}
 }

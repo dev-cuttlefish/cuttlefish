@@ -29,6 +29,8 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -53,7 +55,7 @@ public class CxfNetwork extends BrowsableNetwork {
 	int lineNum = 0;
 	String line = null;
 	int instructionIndex = 0;
-	
+	File graphFile;
 	class Token{
 		
 		String type = null;
@@ -86,6 +88,7 @@ public class CxfNetwork extends BrowsableNetwork {
 	
 	public void load(File graphFile){
 		
+		this.graphFile = graphFile;
 		hash = new HashMap<Integer,Vertex>();
 		directed = true;
 		hideVertexLabels = false;
@@ -95,9 +98,19 @@ public class CxfNetwork extends BrowsableNetwork {
 		
 		for (Edge e : getEdges())
 			removeEdge(e);
-		for (Vertex v : getVertices())
-			removeVertex(v);
-	    
+		
+		Collection<Vertex> vertices = getVertices();
+		
+		while (!vertices.isEmpty())
+		{
+			try{
+			for (Vertex v : vertices)
+				removeVertex(v);
+			}
+			catch (ConcurrentModificationException e){
+				
+			}
+		}
 		
 		try {
 			fr = new FileReader(graphFile);
@@ -143,6 +156,10 @@ public class CxfNetwork extends BrowsableNetwork {
 		
 		line = null;
 		
+	}
+	
+	public void reload(){
+		load(graphFile);
 	}
 	
 	  private static final String QUOTES = "}";

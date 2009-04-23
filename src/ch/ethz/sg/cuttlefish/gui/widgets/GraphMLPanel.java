@@ -90,7 +90,8 @@ public class GraphMLPanel extends BrowserWidget {
 
 		            if (returnVal == JFileChooser.APPROVE_OPTION) {
 		                File file = fc.getSelectedFile();
-		                GraphMLNetwork pNet = (GraphMLNetwork) getNetwork();
+		    		    fc.setCurrentDirectory( new File(System.getProperty("user.dir")));
+		    			GraphMLNetwork pNet = (GraphMLNetwork) getNetwork();
 		                pNet.load(file);
 		                setNetwork(pNet);
 		                getBrowser().onNetworkChange();

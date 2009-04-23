@@ -24,7 +24,9 @@ package ch.ethz.sg.cuttlefish.networks;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.ConcurrentModificationException;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.Set;
 
 import ch.ethz.sg.cuttlefish.misc.Edge;
@@ -32,6 +34,7 @@ import ch.ethz.sg.cuttlefish.misc.Vertex;
 
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
 import edu.uci.ics.jung.graph.SparseGraph;
+import edu.uci.ics.jung.visualization.VisualizationViewer;
 
 
 
@@ -68,6 +71,33 @@ public class BrowsableNetwork extends SparseGraph<Vertex, Edge> {
 	public final String getName(){
 		return name;
 		
+	}
+	
+	public Edge getRandomEdge(){
+		int edgeIndex = (int) (Math.random() * getEdgeCount());
+		Edge ret = null;
+		Iterator<Edge> itEdge = getEdges().iterator();
+		if (edgeIndex == 0)
+			return itEdge.next();
+		while ((edgeIndex >= 0) && itEdge.hasNext())
+			ret = itEdge.next();
+		return ret;
+	}
+	
+	public void clearGraph(){
+		for (Edge edge : super.getEdges())
+			super.removeEdge(edge);
+
+		Collection<Vertex> vertices = super.getVertices();
+		while (!vertices.isEmpty())
+		{ 
+			try{
+				for (Vertex vertex : vertices)
+					super.removeVertex(vertex);
+			}
+			catch (ConcurrentModificationException e)
+			{}
+		}
 	}
 	
 	public final void setName(String name){
@@ -156,8 +186,7 @@ public class BrowsableNetwork extends SparseGraph<Vertex, Edge> {
 	
 	public void setIncremental(boolean inc)
 	{
-		System.out.println("IS INCREMENTAAAAL");
 		incremental = inc;
 	}
-
+	
 }

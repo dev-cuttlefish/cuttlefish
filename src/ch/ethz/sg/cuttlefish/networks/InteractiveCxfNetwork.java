@@ -43,9 +43,6 @@ import edu.uci.ics.jung.graph.util.EdgeType;
 
 public class InteractiveCxfNetwork extends CxfNetwork implements ISimulation{
 	
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 
 	public InteractiveCxfNetwork(){
@@ -243,8 +240,8 @@ public class InteractiveCxfNetwork extends CxfNetwork implements ISimulation{
 
 	@Override
 	public void reset() {
-		// TODO Auto-generated method stub
-		
+		instructionIndex = 0;
+		reload();
 	}
 
 	@Override
@@ -262,12 +259,11 @@ public class InteractiveCxfNetwork extends CxfNetwork implements ISimulation{
 			}
 			
 		}
-		else
+		else if (instructionIndex < instructionTokens.size())
 		{
 			execute(token);
 			instructionIndex++;
 		}
-		
-		return (instructionIndex >= instructionTokens.size());
+		return (instructionIndex < instructionTokens.size());
 	}
 }

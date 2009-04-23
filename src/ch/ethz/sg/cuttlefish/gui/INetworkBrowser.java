@@ -21,6 +21,7 @@
 
 package ch.ethz.sg.cuttlefish.gui;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 
 import org.w3c.dom.Document;
@@ -55,4 +56,6 @@ public interface INetworkBrowser {
 	public void setLayout(String selectedLayout);
 	
 	public EditingModalGraphMouse<Vertex, Edge> getMouse();
+	
+	public BufferedImage getSnapshot();
 }

@@ -23,7 +23,9 @@ package ch.ethz.sg.cuttlefish.layout;
 
 import java.awt.geom.Point2D;
 import java.util.Collection;
+import java.util.ConcurrentModificationException;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Random;
 import java.util.Set;
 
@@ -228,9 +230,14 @@ private Point2D getForceforNode(Vertex node) {
     	return mDot;
     }
 
-    for (Object o : getVertices()) {
-        Vertex otherNode = (Vertex) o;
-        if (node != otherNode) {
+    Collection<V> vertices = getVertices();
+    Iterator<V> it = vertices.iterator();
+    while (it.hasNext()) {
+    	Vertex otherNode;
+		try{
+			otherNode = (Vertex) it.next();
+		 
+    	if (node != otherNode) {
             Point2D otherNodeX = transform((V) otherNode);
             if (otherNodeX == null || otherNodeX.distance(origin) == 0.0) {
             	continue;
@@ -253,6 +260,9 @@ private Point2D getForceforNode(Vertex node) {
             
             mDot.setLocation(mDot.getX() - addition.getX(), mDot.getY() - addition.getY());            
        }
+		}
+		catch (ConcurrentModificationException e){}
+       
     }
     
     if (incremental && mDot.distance(origin) > forceCutoff) {
@@ -519,9 +529,9 @@ public boolean done() {
 
 @Override
 public void step() {
-	System.out.println("step");
+//	System.out.println("step");
 	countUpdates++;
-	System.out.println("count: " + countUpdates + " max: " + maxUpdates);
+//	System.out.println("count: " + countUpdates + " max: " + maxUpdates);
 	done = (countUpdates > maxUpdates);
 		
 	if (!done)

@@ -87,6 +87,7 @@ public class PajekPanel extends BrowserWidget {
 			loadButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
 				    JFileChooser fc = getFileChooser();
+				    fc.setCurrentDirectory( new File(System.getProperty("user.dir")));
 					int returnVal = fc.showOpenDialog(PajekPanel.this);
 
 		            if (returnVal == JFileChooser.APPROVE_OPTION) {
