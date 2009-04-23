@@ -28,6 +28,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Image;
 import java.awt.Insets;
 import java.awt.Paint;
 import java.awt.Shape;
@@ -39,6 +40,8 @@ import java.awt.event.ItemListener;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
+import java.awt.Graphics2D;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -182,7 +185,7 @@ public CuttlefishPanel(File configFile) {
 	visualizationViewer.setPickSupport(new ShapePickSupport<Vertex,Edge>(visualizationViewer));
     visualizationViewer.setGraphMouse(graphMouse);
     visualizationViewer.getPickedVertexState().addItemListener(this);
-
+    visualizationViewer.setDoubleBuffered(true);
 }
 
 
@@ -525,7 +528,6 @@ public Document getConfiguration() {
 public void onNetworkChange() {
 	System.out.println("Network changed " + network.getName());
 	
-	
 	if (layout instanceof ARF2Layout)
 	{
 		((ARF2Layout)layout).step();
@@ -595,7 +597,7 @@ private JPanel getLayoutPanel() {
  */
 private JComboBox getLayoutComboBox() {
 	
-	String[] layoutNames = {"WeightedARFLayout", "ARFLayout", "SpringLayout", "Kamada-Kawai", 
+	String[] layoutNames = {"ARFLayout", "WeightedARFLayout", "SpringLayout", "Kamada-Kawai", 
 			"Fruchterman-Reingold", "ISOMLayout", "CircleLayout"};
 	
 	
@@ -724,6 +726,21 @@ public void setLayout(String selectedLayout){
 	getVisualizationViewer().setGraphLayout(layout);
 	getVisualizationViewer().repaint();
 	//System.out.println("VV restarted");
+}
+
+
+
+@Override
+public BufferedImage getSnapshot() {
+	
+	 Dimension size = visualizationViewer.getSize();
+     BufferedImage img = new BufferedImage(size.width, size.height,
+       BufferedImage.TYPE_INT_RGB);
+	 
+     Graphics2D g2 = img.createGraphics();
+	 visualizationViewer.paint(g2);
+	 return img;
+
 }
 
 

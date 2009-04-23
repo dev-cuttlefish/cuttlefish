@@ -49,7 +49,9 @@ public class PajekNetwork extends BrowsableNetwork {
 		for (Vertex v : getVertices())
 			v.setLabel(pReader.getVertexLabeller().transform(v));
 
-		for (Edge e : getEdges())
-			e.setWeight(pReader.getEdgeWeightTransformer().transform(e).doubleValue());
+		if (pReader.getEdgeWeightTransformer() != null)
+			for (Edge e : getEdges())
+				if (pReader.getEdgeWeightTransformer().transform(e) != null)
+					e.setWeight(pReader.getEdgeWeightTransformer().transform(e).doubleValue());
 	}
 }

@@ -173,9 +173,13 @@ public class SimulationPanel extends BrowserWidget {
 			jButton3.setText("reset");
 			jButton3.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
+					isRunning = false;
+					thread = null;
 					((ISimulation)getNetwork()).reset();
 					System.out.println("ResetChange");
 					getBrowser().onNetworkChange();
+					getRunButton().setEnabled(true);
+					getStopButton().setEnabled(false);
 				}
 			});
 		}
