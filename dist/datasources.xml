@@ -12,4 +12,5 @@
 	<Source id="sim1" name="Test Simulation" class="ch.ethz.sg.cuttlefish.networks.TestSimulation">
 		<Argument name="test">Argument</Argument>
 		<Argument name="alpha">10.0</Argument></Source>
+	<Source id="sim2" name="BA Simulation" class="ch.ethz.sg.cuttlefish.networks.BASimulation"></Source>
 </cf:DataSources>
