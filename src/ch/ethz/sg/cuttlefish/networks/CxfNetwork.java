@@ -151,7 +151,7 @@ public class CxfNetwork extends BrowsableNetwork {
 			Vertex source = hash.get(t.id_source);
 			Vertex dest = hash.get(t.id_dest);
 			System.out.println("adding edge ("+ source.getId() + "," + dest.getId()+")");
-			addEdge(e, source, dest);
+			addEdge(e, source, dest, et);
 		}
 		
 		line = null;
@@ -269,7 +269,11 @@ public class CxfNetwork extends BrowsableNetwork {
 		    				System.out.println("WARNING: two identifiers for the same node: " + (lineNum-1));
 		    		}
 		    		else if (field.startsWith("label"))  
+		    		{
+		    			while (field.indexOf('}') < 0)
+		    				field = field.concat(" " + it.next());
 		    			token.label = field.substring(field.indexOf('{')+1,field.indexOf('}'));
+		    		}
 		    		else if (field.startsWith("color"))
 		    		{
 		    			int pos = field.indexOf('{')+1;
@@ -314,7 +318,11 @@ public class CxfNetwork extends BrowsableNetwork {
 	    				token.id_dest = Integer.parseInt(field.substring(field.indexOf(',')+1, field.indexOf(')')));
 		    		}
 		    		else if (field.startsWith("label"))  
+		    		{		
+		    			while (field.indexOf('}') < 0)
+		    				field = field.concat(" " + it.next());
 		    			token.label = field.substring(field.indexOf('{')+1,field.indexOf('}'));
+		    		}
 		    		else if (field.startsWith("weight"))
 		    			token.weight = new Double(Double.parseDouble(field.substring(field.indexOf('{')+1,field.indexOf('}'))));
 				    else if (field.startsWith("width"))
