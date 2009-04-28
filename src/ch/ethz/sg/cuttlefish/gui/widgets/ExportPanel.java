@@ -43,6 +43,7 @@ import com.sun.imageio.plugins.png.PNGImageWriter;
 import com.sun.imageio.plugins.png.PNGImageWriterSpi;
 
 import ch.ethz.sg.cuttlefish.misc.Utils;
+import ch.ethz.sg.cuttlefish.misc.Utils2;
 import ch.ethz.sg.cuttlefish.networks.TemporalNetwork;
 
 
@@ -200,8 +201,8 @@ public class ExportPanel extends BrowserWidget  {
 						PrintStream p = new PrintStream(new File("adjlists/" + getNetwork().getName()+"_adjmatrix.dat"));
 						//Utils.writeAdjacencyList(getNetwork(), p);
 						
-						int[][] myAdjMatrix = Utils.graphToAdjacencyMatrix( getNetwork() );
-						Utils.printMatrix( myAdjMatrix , p );
+						int[][] myAdjMatrix = Utils2.graphToAdjacencyMatrix( getNetwork() );
+						Utils2.printMatrix( myAdjMatrix , p );
 						
 					} catch (FileNotFoundException e1) {
 						e1.printStackTrace();
@@ -238,7 +239,7 @@ public class ExportPanel extends BrowserWidget  {
 	public void exportToDot() {
 		try {
 			PrintStream p = new PrintStream(new File(getNetwork().getName()+".dot"));
-			Utils.graphToDot(getNetwork(), p);
+			Utils2.graphToDot(getNetwork(), p);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
@@ -252,14 +253,14 @@ public class ExportPanel extends BrowserWidget  {
 			String fileName = null;
 			if(getNetwork() instanceof TemporalNetwork && ((TemporalNetwork)getNetwork()).getDate() != null){
 				DateFormat format = new SimpleDateFormat("yyyy");//DateFormat format = new SimpleDateFormat("yyyy-MM-dd_HHmm_ss");
-				fileName = "pics/"+getNetwork().getName()+ format.format(((TemporalNetwork)getNetwork()).getDate()) + ".tex";
+				fileName = getNetwork().getName()+ format.format(((TemporalNetwork)getNetwork()).getDate()) + ".tex";
 				
 			}else{
-				fileName = "pics/"+getNetwork().getName()+".tex";
+				fileName = getNetwork().getName()+".tex";
 			}
 			System.out.println("exporting to " + fileName);
 			File f = new File(fileName);
-		//	f.createNewFile();
+			//f.createNewFile();
 			PrintStream p = new PrintStream(f);
 			Utils.exportGraphToPSTricks(getNetwork(), p, getBrowser().getNetworkLayout());
 		} catch (Exception e) {
@@ -272,7 +273,7 @@ public class ExportPanel extends BrowserWidget  {
 	public void exportToPos() {
 		try {
 			PrintStream p = new PrintStream(getBrowser().getPositionFile());
-			Utils.writePositions(getNetwork(), p, getBrowser().getNetworkLayout());
+			Utils2.writePositions(getNetwork(), p, getBrowser().getNetworkLayout());
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
@@ -298,7 +299,7 @@ public class ExportPanel extends BrowserWidget  {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
 					try {
 						PrintStream p = new PrintStream(new File("edgelists/" + getNetwork().getName()+".edgelist"));
-						Utils.writeEdgeList(getNetwork(), p);
+						Utils2.writeEdgeList(getNetwork(), p);
 					} catch (FileNotFoundException e1) {
 						e1.printStackTrace();
 					}

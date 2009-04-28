@@ -34,6 +34,12 @@ import ch.ethz.sg.cuttlefish.misc.Vertex;
 import ch.ethz.sg.cuttlefish.networks.BrowsableNetwork;
 
 import edu.uci.ics.jung.algorithms.layout.AbstractLayout;
+import edu.uci.ics.jung.algorithms.layout.FRLayout2;
+import edu.uci.ics.jung.algorithms.layout.ISOMLayout;
+import edu.uci.ics.jung.algorithms.layout.KKLayout;
+import edu.uci.ics.jung.algorithms.layout.Layout;
+import edu.uci.ics.jung.algorithms.layout.SpringLayout;
+import edu.uci.ics.jung.algorithms.layout.SpringLayout2;
 import edu.uci.ics.jung.algorithms.util.IterativeContext;
 import edu.uci.ics.jung.graph.Graph;
 
@@ -54,7 +60,7 @@ private int updatesPerFrame = 1;
 /**
  * the parameter a controls the attraction between connected nodes. 
  */
-private double a = 100;
+private double a = 3;
     
 /**
  * ??? is a scaling factor for the attractive term. Connected as well as unconnected nodes are affected.
@@ -110,6 +116,8 @@ private boolean verbose =false;
 
 private Collection<Vertex> visualizedVertices = new HashSet<Vertex>();
 
+private Layout<Vertex,Edge> initial_positions = null;
+
 /**
  * Genrates a new Layout for graph g
  * @param g
@@ -117,6 +125,8 @@ private Collection<Vertex> visualizedVertices = new HashSet<Vertex>();
 public WeightedARF2Layout(Graph<V,E> g) {
 
     super(g);
+    initialize();
+    
    // update();
 }
 
@@ -129,6 +139,17 @@ public WeightedARF2Layout(Graph<V,E> g, boolean incremental) {
 
     super(g);
     this.incremental  = incremental;
+    initialize();
+    if(!incremental){
+    	update();
+    }
+}
+
+public WeightedARF2Layout(Graph<V,E> g, boolean incremental, Layout<Vertex,Edge> init) {
+
+    super(g);
+    this.incremental  = incremental;
+    initial_positions = init;
     initialize();
     if(!incremental){
     	update();
@@ -178,7 +199,6 @@ public void advancePositions() {
  */
 @SuppressWarnings("unchecked")
 public void align(double x0, double y0){
-	
 	double x = Double.MAX_VALUE;
 	double y = Double.MAX_VALUE;
 	
@@ -231,38 +251,41 @@ private Point2D getForceforNode(Vertex node) {
     if (x.distance(origin) == 0.0) {
     	return mDot;
     }
+
     Collection<V> vertices = getVertices();
     Iterator<V> it = vertices.iterator();
     while (it.hasNext()) {
     	Vertex otherNode;
 		try{
 			otherNode = (Vertex) it.next();
-			if (node != otherNode) {
-	            Point2D otherNodeX = transform((V) otherNode);
-	            if (otherNodeX == null || otherNodeX.distance(origin) == 0.0) {
-	            	continue;
-	            }
-	            
-	            Point2D temp = (Point2D) otherNodeX.clone();
-	            temp.setLocation(temp.getX() - x.getX(), temp.getY() - x.getY());
-	
-	            Edge e = (Edge)getGraph().findEdge((V)node,(V)otherNode);
-	            double multiplier = isEdgeInGraph(node, otherNode) ? (a * e.getWeight()) : 1;
-	
-	            multiplier *= attraction / Math.sqrt(numNodes);
-	
-	            Point2D addition = (Point2D) temp.clone();
-	            addition.setLocation(addition.getX() * multiplier, addition.getY() * multiplier);
-	            mDot.setLocation(mDot.getX() + addition.getX(), mDot.getY() + addition.getY());
-	            
-	            multiplier = 1 / temp.distance(origin);
-	            addition = (Point2D) temp.clone();
-	            addition.setLocation(addition.getX() * multiplier * b, addition.getY() * multiplier * b);
-	            
-	            mDot.setLocation(mDot.getX() - addition.getX(), mDot.getY() - addition.getY());            
-	       }
+		 
+    	if (node != otherNode) {
+            Point2D otherNodeX = transform((V) otherNode);
+            if (otherNodeX == null || otherNodeX.distance(origin) == 0.0) {
+            	continue;
+            }
+            
+            Point2D temp = (Point2D) otherNodeX.clone();
+            temp.setLocation(temp.getX() - x.getX(), temp.getY() - x.getY());
+  
+            Edge e = (Edge)getGraph().findEdge((V)node,(V)otherNode);
+            double multiplier = isEdgeInGraph(node, otherNode) ? (a * e.getWeight()) : 1;
+
+            multiplier *= attraction / Math.sqrt(numNodes);
+
+            Point2D addition = (Point2D) temp.clone();
+            addition.setLocation(addition.getX() * multiplier, addition.getY() * multiplier);
+            mDot.setLocation(mDot.getX() + addition.getX(), mDot.getY() + addition.getY());
+            
+            multiplier = 1 / temp.distance(origin);
+            addition = (Point2D) temp.clone();
+            addition.setLocation(addition.getX() * multiplier * b, addition.getY() * multiplier * b);
+            
+            mDot.setLocation(mDot.getX() - addition.getX(), mDot.getY() - addition.getY());            
+       }
 		}
 		catch (ConcurrentModificationException e){}
+       
     }
     
     if (incremental && mDot.distance(origin) > forceCutoff) {
@@ -299,11 +322,9 @@ public Point2D assignPositionToVertex(Vertex vertex) {
 	
 	if (!visualizedVertices.contains(vertex))
 	{	
-		System.out.println("newVertex");
 		c = getRandomPoint(((int)Math.sqrt(getVertices().size())*50)+1);
 		locations.put((V)vertex, c);
 		visualizedVertices.add(vertex);
-		System.out.println("new Vertex");
 		done = false;
 		countUpdates = 0;
 	}
@@ -313,6 +334,7 @@ public Point2D assignPositionToVertex(Vertex vertex) {
 }
 
 public void updateVertices(){
+	
 	Set<Vertex> nvertices = new HashSet<Vertex>();
 	for (Vertex vertex2 : (Collection<Vertex> )getGraph().getVertices()) {
 		if(! visualizedVertices.contains(vertex2)){
@@ -326,7 +348,6 @@ public void updateVertices(){
 			locations.put((V)vertex2, c);
 		}
 		done = false;
-		System.out.println("new Vertex");
 		countUpdates = 0;
 	}
 }
@@ -402,7 +423,7 @@ private void layout() {
 		int count = 0;
 		while(error > threshold && count < maxRelayouts){
 			if(verbose || !verbose){
-			//	System.out.println("relayout: " + (maxRelayouts-count));
+		//		System.out.println("relayout: " + (maxRelayouts-count));
 			}
 			advancePositions();
 			count ++;
@@ -506,14 +527,28 @@ public void resetUpdates(){
 @SuppressWarnings("unchecked")
 @Override
 public void initialize() {
-	
-	Point2D randomPoint;
-	for (Vertex v : (Collection<Vertex>) getGraph().getVertices())
+	if (initial_positions != null)
 	{
-		randomPoint = getRandomPoint(((int)Math.sqrt(getVertices().size())*50)+1);
-		locations.put((V) v, randomPoint);
-		visualizedVertices.add(v);
+		for (Vertex v : (Collection<Vertex>) getGraph().getVertices())
+		{
+		// randomized initialization	
+			locations.put((V) v, initial_positions.transform(v));
+			visualizedVertices.add(v);
+		}
 	}
+	else
+	{
+		Point2D randomPoint;
+		
+		for (Vertex v : (Collection<Vertex>) getGraph().getVertices())
+		{
+		// randomized initialization	
+			randomPoint = getRandomPoint(((int)Math.sqrt(getVertices().size())*50)+1);
+			locations.put((V) v, randomPoint);
+			visualizedVertices.add(v);
+		}
+	}
+	
 	update();
 }
 
@@ -535,6 +570,7 @@ public void step() {
 	countUpdates++;
 //	System.out.println("count: " + countUpdates + " max: " + maxUpdates);
 	done = (countUpdates > maxUpdates);
+		
 	if (!done)
 	{
 		update();

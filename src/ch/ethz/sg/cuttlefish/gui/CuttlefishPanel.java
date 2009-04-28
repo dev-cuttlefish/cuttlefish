@@ -79,7 +79,7 @@ import ch.ethz.sg.cuttlefish.layout.ARF2Layout;
 import ch.ethz.sg.cuttlefish.layout.WeightedARF2Layout;
 import ch.ethz.sg.cuttlefish.misc.Edge;
 import ch.ethz.sg.cuttlefish.misc.EdgeFactory;
-import ch.ethz.sg.cuttlefish.misc.Utils;
+import ch.ethz.sg.cuttlefish.misc.Utils2;
 import ch.ethz.sg.cuttlefish.misc.Vertex;
 import ch.ethz.sg.cuttlefish.misc.VertexFactory;
 import ch.ethz.sg.cuttlefish.misc.XMLUtil;
@@ -178,6 +178,7 @@ public CuttlefishPanel(File configFile) {
 	visualizationViewer.getRenderContext().setEdgeDrawPaintTransformer(edgePaintTransformer);		
 	visualizationViewer.getRenderContext().setEdgeLabelTransformer(edgeLabelTransformer);
 	visualizationViewer.getRenderContext().setVertexLabelTransformer(vertexLabelTransformer);
+	visualizationViewer.getRenderContext().setLabelOffset(20);
 	visualizationViewer.getRenderContext().setEdgeStrokeTransformer(edgeStrokeTransformer);
 	visualizationViewer.getRenderContext().setVertexStrokeTransformer(vertexStrokeTransformer);
 	visualizationViewer.getRenderContext().setVertexDrawPaintTransformer(vertexBorderTransformer);
@@ -597,7 +598,7 @@ private JPanel getLayoutPanel() {
  */
 private JComboBox getLayoutComboBox() {
 	
-	String[] layoutNames = {"ARFLayout", "WeightedARFLayout", "SpringLayout", "Kamada-Kawai", 
+	String[] layoutNames = {"ARFLayout", "ResetARF", "WeightedARFLayout", "SpringLayout", "Kamada-Kawai", 
 			"Fruchterman-Reingold", "ISOMLayout", "CircleLayout"};
 	
 	
@@ -609,7 +610,10 @@ private JComboBox getLayoutComboBox() {
 		layoutComboBox.addActionListener(new ActionListener(){
 
 			public void actionPerformed(ActionEvent e) {
-				setLayout((String)layoutComboBox.getSelectedItem());
+				if ((String)layoutComboBox.getSelectedItem() == "ResetARF")
+					setLayout("ARFLayout");	
+				else
+					setLayout((String)layoutComboBox.getSelectedItem());
 			}
 			
 		});
@@ -671,7 +675,7 @@ private JButton getWriteLayoutButton() {
 			public void actionPerformed(java.awt.event.ActionEvent e) {
 				try {
 					PrintStream p = new PrintStream(getPositionFile());
-					Utils.writePositions(getNetwork(), p, getNetworkLayout());
+					Utils2.writePositions(getNetwork(), p, getNetworkLayout());
 				} catch (FileNotFoundException ex) {
 					ex.printStackTrace();
 				}
@@ -698,15 +702,16 @@ public void setLayout(String selectedLayout){
 	Layout<Vertex,Edge> newLayout = null;
 	
 	if (selectedLayout.equals("ARFLayout"))
-	{
-		newLayout = new ARF2Layout<Vertex,Edge>(getNetwork(), ((BrowsableNetwork)getNetwork()).isIncremental());
+	{	
+		newLayout = new ARF2Layout<Vertex,Edge>(getNetwork(), ((BrowsableNetwork)getNetwork()).isIncremental(),layout);
 		if (((ARF2Layout<Vertex,Edge>)newLayout).getMaxUpdates() < getNetwork().getVertexCount())
 			((ARF2Layout<Vertex,Edge>)newLayout).setMaxUpdates(getNetwork().getVertexCount());		
 	}
 	if (selectedLayout.equals("WeightedARFLayout"))
 	{
-		newLayout = new WeightedARF2Layout<Vertex,Edge>(getNetwork());
-		((WeightedARF2Layout<Vertex,Edge>)newLayout).setMaxUpdates(getNetwork().getVertexCount());		
+		newLayout = new WeightedARF2Layout<Vertex,Edge>(getNetwork(), ((BrowsableNetwork)getNetwork()).isIncremental(),layout);
+		if (((WeightedARF2Layout<Vertex,Edge>)newLayout).getMaxUpdates() < getNetwork().getVertexCount())
+			((WeightedARF2Layout<Vertex,Edge>)newLayout).setMaxUpdates(getNetwork().getVertexCount());		
 	}
 	if (selectedLayout.equals("SpringLayout"))
 		newLayout = new SpringLayout2<Vertex, Edge>(getNetwork());
@@ -722,9 +727,12 @@ public void setLayout(String selectedLayout){
 	}
 	layout = newLayout;
 	System.out.println("Set layout to " + layout.getClass());
-	
+
 	getVisualizationViewer().setGraphLayout(layout);
+	
 	getVisualizationViewer().repaint();
+	
+	
 	//System.out.println("VV restarted");
 }
 
