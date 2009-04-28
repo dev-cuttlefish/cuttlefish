@@ -34,6 +34,12 @@ import ch.ethz.sg.cuttlefish.misc.Vertex;
 import ch.ethz.sg.cuttlefish.networks.BrowsableNetwork;
 
 import edu.uci.ics.jung.algorithms.layout.AbstractLayout;
+import edu.uci.ics.jung.algorithms.layout.FRLayout2;
+import edu.uci.ics.jung.algorithms.layout.ISOMLayout;
+import edu.uci.ics.jung.algorithms.layout.KKLayout;
+import edu.uci.ics.jung.algorithms.layout.Layout;
+import edu.uci.ics.jung.algorithms.layout.SpringLayout;
+import edu.uci.ics.jung.algorithms.layout.SpringLayout2;
 import edu.uci.ics.jung.algorithms.util.IterativeContext;
 import edu.uci.ics.jung.graph.Graph;
 
@@ -110,6 +116,8 @@ private boolean verbose =false;
 
 private Collection<Vertex> visualizedVertices = new HashSet<Vertex>();
 
+private Layout<Vertex,Edge> initial_positions = null;
+
 /**
  * Genrates a new Layout for graph g
  * @param g
@@ -117,6 +125,8 @@ private Collection<Vertex> visualizedVertices = new HashSet<Vertex>();
 public ARF2Layout(Graph<V,E> g) {
 
     super(g);
+    initialize();
+    
    // update();
 }
 
@@ -134,6 +144,18 @@ public ARF2Layout(Graph<V,E> g, boolean incremental) {
     	update();
     }
 }
+
+public ARF2Layout(Graph<V,E> g, boolean incremental, Layout<Vertex,Edge> init) {
+
+    super(g);
+    this.incremental  = incremental;
+    initial_positions = init;
+    initialize();
+    if(!incremental){
+    	update();
+    }
+}
+
 
 /* (non-Javadoc)
  * @see edu.uci.ics.jung.visualization.AbstractLayout#initialize_local_vertex(edu.uci.ics.jung.graph.Vertex)
@@ -504,14 +526,28 @@ public void resetUpdates(){
 @SuppressWarnings("unchecked")
 @Override
 public void initialize() {
-	
-	Point2D randomPoint;
-	for (Vertex v : (Collection<Vertex>) getGraph().getVertices())
+	if (initial_positions != null)
 	{
-		randomPoint = getRandomPoint(((int)Math.sqrt(getVertices().size())*50)+1);
-		locations.put((V) v, randomPoint);
-		visualizedVertices.add(v);
+		for (Vertex v : (Collection<Vertex>) getGraph().getVertices())
+		{
+		// randomized initialization	
+			locations.put((V) v, initial_positions.transform(v));
+			visualizedVertices.add(v);
+		}
 	}
+	else
+	{
+		Point2D randomPoint;
+		
+		for (Vertex v : (Collection<Vertex>) getGraph().getVertices())
+		{
+		// randomized initialization	
+			randomPoint = getRandomPoint(((int)Math.sqrt(getVertices().size())*50)+1);
+			locations.put((V) v, randomPoint);
+			visualizedVertices.add(v);
+		}
+	}
+	
 	update();
 }
 
