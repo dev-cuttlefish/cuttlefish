@@ -105,8 +105,9 @@ public class Utils {
 		if(detail && label != null){
 			label = label.replace("_", "\\_").replace("&", "\\&");
 			p.println("\\rput[l]("+
-					((coordinates.getX()-5)*f)+","+
-					(((y+rim-coordinates.getY())-10)*f) +"){\\textbf{\\tiny "+label+"}}");
+					(new DecimalFormat("###.#######################").format((coordinates.getX()-5)*f))+","+
+					(new DecimalFormat("###.#######################").format(((y+rim-coordinates.getY())-10)*f)) 
+					+"){\\textbf{\\tiny "+label+"}}");
 		}
 
 	}

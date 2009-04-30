@@ -81,7 +81,7 @@ public class BrowsableNetwork extends SparseGraph<Vertex, Edge> {
 			return itEdge.next();
 		while ((edgeIndex >= 0) && itEdge.hasNext())
 		{
-			edgeIndex++;
+			edgeIndex--;
 			ret = itEdge.next();
 		}
 		return ret;
