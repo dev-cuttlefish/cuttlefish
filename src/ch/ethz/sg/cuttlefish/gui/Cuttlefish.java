@@ -43,10 +43,12 @@ public class Cuttlefish extends JFrame {
 	/**
 	 * main method for the execution of cuttlefish
 	 * @param args program call argument: filename of the configuration file in xml format
+	 * 		  if no xml is in the first argument, "configuration.xml" will be used
 	 * @return void
 	 */
-	public static void main(String[] args){
+	public static void main(String[] args) {
 		Frame f;
+		
 		if (args.length == 0)
 			f = new Cuttlefish("configuration.xml");
 		else
@@ -69,16 +71,15 @@ public class Cuttlefish extends JFrame {
 	 * @return void
 	 */
 	private void initialize() {
-		this.setSize(807, 375);
-		//this.setSize(1400, 980);
+		this.setSize(1000, 700); //The initial size of the user interface is slightly smaller than 1024x768
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setContentPane(getJContentPane());
 		this.setTitle("Cuttlefish");
 	}
 
 	/**
-	 * This method initializes jContentPane
-	 * @return javax.swing.JPanel
+	 * This method initializes jContentPane, adding the network browser
+	 * @return javax.swing.JPanel the panel with the network
 	 */
 	private JPanel getJContentPane() {
 		if (jContentPane == null) {
@@ -91,7 +92,7 @@ public class Cuttlefish extends JFrame {
 
 	/**
 	 * This method initializes networkBrowserPanel	
-	 * @return ch.ethz.sg.jung.visualisation.NetworkBrowserPanel	
+	 * @return ch.ethz.sg.jung.visualisation.NetworkBrowserPanel
 	 */
 	private CuttlefishPanel getNetworkBrowserPanel() {
 		if (networkBrowserPanel == null) {

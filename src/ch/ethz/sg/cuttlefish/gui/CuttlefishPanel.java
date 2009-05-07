@@ -92,8 +92,10 @@ import edu.uci.ics.jung.algorithms.layout.KKLayout;
 import edu.uci.ics.jung.algorithms.layout.Layout;
 import edu.uci.ics.jung.algorithms.layout.SpringLayout;
 import edu.uci.ics.jung.algorithms.layout.SpringLayout2;
+import edu.uci.ics.jung.algorithms.util.IterativeContext;
 import edu.uci.ics.jung.graph.*;
 
+import edu.uci.ics.jung.visualization.RenderContext;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 import edu.uci.ics.jung.visualization.control.CrossoverScalingControl;
 import edu.uci.ics.jung.visualization.control.EditingModalGraphMouse;
@@ -102,35 +104,39 @@ import edu.uci.ics.jung.visualization.control.ScalingControl;
 import edu.uci.ics.jung.visualization.picking.ShapePickSupport;
 
 /**
-* Class for the main JPanel of cuttlefish
+* Class for the main JPanel of cuttlefish where the network and tabs are displayed.
 */
 public class CuttlefishPanel extends JPanel implements ItemListener,INetworkBrowser{
 
 private static final long serialVersionUID = 1L;
-//DefaultModalGraphMouse gm = new DefaultModalGraphMouse();  //  @jve:decl-index=0:
-private BrowsableNetwork network = null;  //  @jve:decl-index=0:
+
+/*Network and layout data*/
+private BrowsableNetwork network = null;
 private Layout<Vertex,Edge> layout = null;
+private String layoutType = null;
 private VisualizationViewer<Vertex,Edge> visualizationViewer = null;
-private final ScalingControl scaler = new CrossoverScalingControl();  //  @jve:decl-index=0:
+
+/*User interface*/
 private JTabbedPane menuPane = null;
-//private double scale=1.0;  //  @jve:decl-index=0:
 private JToggleButton jToggleButton = null;
-private JPanel viewPanel = null;
-private Hashtable<String, String> arguments = new Hashtable<String, String>();
-
-
-private Hashtable<String, BrowserWidget> widgetTable = new Hashtable<String, BrowserWidget>();
-private ArrayList<BrowserTab> tabArray = new ArrayList<BrowserTab>();  //  @jve:decl-index=0:
-private Document configuration;  //  @jve:decl-index=0:
-private EditingModalGraphMouse<Vertex,Edge> graphMouse;  //  @jve:decl-index=0:
-//private JPanel pickPanel = null;
 private JPanel layoutPanel = null;
 private JCheckBox layoutCheckBox = null;
 private JComboBox layoutComboBox = null;
 private JButton writeLayoutButton = null;
+private JButton stopLayoutButton = null;
+private JButton restartLayoutButton = null;
 
+private JPanel viewPanel = null;
+private EditingModalGraphMouse<Vertex,Edge> graphMouse;  
+
+/*Configuration*/
+private Hashtable<String, String> arguments = new Hashtable<String, String>();
+private Hashtable<String, BrowserWidget> widgetTable = new Hashtable<String, BrowserWidget>();
+private ArrayList<BrowserTab> tabArray = new ArrayList<BrowserTab>(); 
+private Document configuration; 
+
+/*Factories*/
 private VertexFactory vertexFactory = null;
-
 private EdgeFactory edgeFactory = null;
 	
 /**
@@ -139,50 +145,59 @@ private EdgeFactory edgeFactory = null;
  */
 public CuttlefishPanel(File configFile) {
 	super();
-	
 	initialize(configFile);
 	
+	
+	RenderContext<Vertex,Edge> renderContext = visualizationViewer.getRenderContext();		
+
+	/*Vertex rendering*/
 	Transformer<Vertex, Shape> vertexShapeTransformer = new Transformer<Vertex, Shape>() {			
 		public Shape transform(Vertex vertex) {
 			return vertex.getShape();} };
-	
-	Transformer<Edge, Paint> edgePaintTransformer = new Transformer<Edge, Paint>(){
-		public Paint transform(Edge edge) {
-			return edge.getColor(); } };
-
-	Transformer<Edge, String> edgeLabelTransformer = new Transformer<Edge, String>(){
-		public String transform(Edge edge) {
-			return edge.getLabel();} };
-
 	Transformer<Vertex,String> vertexLabelTransformer = new Transformer<Vertex,String>(){
 		public String transform(Vertex vertex) {
 			return vertex.getLabel(); } };
-	
-	Transformer<Edge,Stroke> edgeStrokeTransformer = new Transformer<Edge, Stroke>() {
-		public Stroke transform(Edge edge) {
-			return new BasicStroke(new Double(edge.getWidth()).intValue()); } };
-		
 	Transformer<Vertex, Stroke> vertexStrokeTransformer = new Transformer<Vertex, Stroke>(){
 		public Stroke transform(Vertex vertex) {
 			return new BasicStroke(new Double(vertex.getWidth()).intValue()); } };
-		
 	Transformer<Vertex, Paint> vertexPaintTransformer = new Transformer<Vertex, Paint>(){
 		public Paint transform(Vertex vertex) {
-			return vertex.getFillColor(); } };			
-
+			return vertex.getFillColor(); } };
 	Transformer<Vertex, Paint> vertexBorderTransformer = new Transformer<Vertex, Paint>(){
 		public Paint transform(Vertex vertex) {
 			return vertex.getColor(); } };			
 
-	visualizationViewer.getRenderContext().setVertexShapeTransformer(vertexShapeTransformer);
-	visualizationViewer.getRenderContext().setEdgeDrawPaintTransformer(edgePaintTransformer);		
-	visualizationViewer.getRenderContext().setEdgeLabelTransformer(edgeLabelTransformer);
-	visualizationViewer.getRenderContext().setVertexLabelTransformer(vertexLabelTransformer);
-	visualizationViewer.getRenderContext().setLabelOffset(20);
-	visualizationViewer.getRenderContext().setEdgeStrokeTransformer(edgeStrokeTransformer);
-	visualizationViewer.getRenderContext().setVertexStrokeTransformer(vertexStrokeTransformer);
-	visualizationViewer.getRenderContext().setVertexDrawPaintTransformer(vertexBorderTransformer);
-	visualizationViewer.getRenderContext().setVertexFillPaintTransformer(vertexPaintTransformer);
+	//vertex label, shape and border width
+	renderContext.setVertexShapeTransformer(vertexShapeTransformer);
+	renderContext.setVertexLabelTransformer(vertexLabelTransformer);
+	renderContext.setVertexDrawPaintTransformer(vertexBorderTransformer);
+
+	renderContext.setLabelOffset(20); //shift of the vertex label to center the first character under the vertex
+
+	//vertex colors
+	renderContext.setVertexStrokeTransformer(vertexStrokeTransformer);
+	renderContext.setVertexFillPaintTransformer(vertexPaintTransformer);
+	
+			
+	/* edge rendering */
+			
+	Transformer<Edge, Paint> edgePaintTransformer = new Transformer<Edge, Paint>(){
+		public Paint transform(Edge edge) {
+			return edge.getColor(); } };
+	Transformer<Edge, String> edgeLabelTransformer = new Transformer<Edge, String>(){
+		public String transform(Edge edge) {
+			return edge.getLabel();} };
+	Transformer<Edge,Stroke> edgeStrokeTransformer = new Transformer<Edge, Stroke>() {
+		public Stroke transform(Edge edge) {
+			return new BasicStroke(new Double(edge.getWidth()).intValue()); } };
+	
+	renderContext.setEdgeDrawPaintTransformer(edgePaintTransformer);	
+	renderContext.setArrowFillPaintTransformer(edgePaintTransformer);	
+	renderContext.setArrowDrawPaintTransformer(edgePaintTransformer); //arrows are of the same color as the edge
+	renderContext.setEdgeLabelTransformer(edgeLabelTransformer);
+	renderContext.setEdgeStrokeTransformer(edgeStrokeTransformer);
+	
+	/*mouse settings*/
 	visualizationViewer.setPickSupport(new ShapePickSupport<Vertex,Edge>(visualizationViewer));
     visualizationViewer.setGraphMouse(graphMouse);
     visualizationViewer.getPickedVertexState().addItemListener(this);
@@ -199,24 +214,21 @@ public CuttlefishPanel(File configFile) {
  */
 private void initialize(File configFile) {
 	 BrowsableNetwork temp = new BrowsableNetwork();
-		//temp.setName(name);
 	this.setNetwork(temp);	
 	vertexFactory = new VertexFactory();
     edgeFactory = new EdgeFactory();
 		
 	graphMouse = new EditingModalGraphMouse<Vertex,Edge>(visualizationViewer.getRenderContext(),
 				vertexFactory, edgeFactory);		
+	
+	//starting on transforming mode, the most used
 	graphMouse.setMode(ModalGraphMouse.Mode.TRANSFORMING);
-		
-    //visualizationViewer.setPickSupport(new ShapePickSupport());
 	
     DocumentBuilderFactory factory =
         DocumentBuilderFactory.newInstance();
    
     factory.setValidating(false);  
     factory.setNamespaceAware(true);
-   // factory.setSchema(arg0)
-   // System.out.println(this.getClass().getResource("/ch/ethz/sg/cuttlefish/resources/datasources.xsd"));
    
     Schema schema;
 	try {
@@ -348,41 +360,6 @@ public File getPositionFile(){
 	String base = getArgument("layoutFolder");
 	File positionData = new File((base == null ? "" : base) + network.getName()+".pos");
 	return positionData;
-}
-
-/**
- * Starts a dynamic or a static layout for the network
- * @param isDynamic boolean to determine the dynamics of the network, 
- * with ARF or a fixed layout
- * @return void
- */
-public void setLayout(boolean isDynamic){
-	
-	File positionData = getPositionFile();
-	layout = null;
-	
-	if(!isDynamic){
-		try{
-			Layout<Vertex,Edge> fixed = new CircleLayout<Vertex,Edge>(network);
-			layout = fixed;
-			getLayoutCheckBox().setSelected(false);
-		}catch(Exception e){
-			System.out.println("Position file missing for network " +  network.getName() + " ("+positionData+")");
-		}
-	}
-	
-	if(layout == null){
-		Layout<Vertex, Edge> arf = new SpringLayout<Vertex, Edge>(network);
-		//arf.setForceCutoff(100);
-		//arf.setAttraction(0.15);
-		layout = arf;
-		getLayoutCheckBox().setSelected(true);
-	}
-	System.out.println("Set layout to " + layout.getClass());
-	
-	getVisualizationViewer().repaint();
-	getVisualizationViewer().setGraphLayout(layout);
-	//System.out.println("VV restarted");
 }
 
 /**
@@ -555,22 +532,6 @@ public String getArgument(String name) {
 	return arguments.get(name);
 }
 
-/**
- * This method initializes pickPanel	
- * 	
- * @return javax.swing.JPanel	
- */
-/*	private JPanel getPickPanel() {
-	if (pickPanel == null) {
-		pickPanel = new JPanel();
-		pickPanel.setLayout(new GridBagLayout());
-		pickPanel.add(graphMouse.getModeComboBox());
-		pickPanel.setBackground(Color.GRAY);
-	}
-	return pickPanel;
-}*/
-
-
 
 /**
  * This method initializes layoutPanel	
@@ -585,6 +546,8 @@ private JPanel getLayoutPanel() {
 		layoutPanel.add(getLayoutComboBox(), new GridBagConstraints());
 		layoutPanel.setBackground(Color.gray);
 		layoutPanel.add(getWriteLayoutButton(), new GridBagConstraints());
+		layoutPanel.add(getStopLayoutButton(), new GridBagConstraints());
+		layoutPanel.add(getRestartLayoutButton(), new GridBagConstraints());
 	}
 	return layoutPanel;
 }
@@ -598,7 +561,7 @@ private JPanel getLayoutPanel() {
  */
 private JComboBox getLayoutComboBox() {
 	
-	String[] layoutNames = {"ARFLayout", "ResetARF", "WeightedARFLayout", "SpringLayout", "Kamada-Kawai", 
+	String[] layoutNames = {"ARFLayout", "WeightedARFLayout", "SpringLayout", "Kamada-Kawai", 
 			"Fruchterman-Reingold", "ISOMLayout", "CircleLayout"};
 	
 	
@@ -610,10 +573,7 @@ private JComboBox getLayoutComboBox() {
 		layoutComboBox.addActionListener(new ActionListener(){
 
 			public void actionPerformed(ActionEvent e) {
-				if ((String)layoutComboBox.getSelectedItem() == "ResetARF")
-					setLayout("ARFLayout");	
-				else
-					setLayout((String)layoutComboBox.getSelectedItem());
+				setLayout((String)layoutComboBox.getSelectedItem());
 			}
 			
 		});
@@ -651,13 +611,17 @@ private JCheckBox getLayoutCheckBox() {
 
 
 public void resumeLayout() {
-//	visualizationViewer.stop();	
+	
+	setLayout(layoutType);
+	for (Vertex v : getNetwork().getVertices())
+		layout.lock(v, false);	
 }
 
 
 
 public void stopLayout() {
-//	visualizationViewer.restart();	
+	for (Vertex v : getNetwork().getVertices())
+		layout.lock(v, true);
 }
 
 
@@ -686,6 +650,47 @@ private JButton getWriteLayoutButton() {
 }
 
 
+/**
+ * This method initializes stopLayoutButton	
+ * 	
+ * @return javax.swing.JButton	
+ */
+private JButton getStopLayoutButton() {
+	if (stopLayoutButton == null) {
+		stopLayoutButton = new JButton();
+		stopLayoutButton.setText("Stop Layout");
+		stopLayoutButton.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent e) {
+				stopLayout();
+				stopLayoutButton.setEnabled(false);
+				getRestartLayoutButton().setEnabled(true);
+			}
+		});
+	}
+	return stopLayoutButton;
+}
+
+/**
+ * This method initializes restartLayoutButton	
+ * 	
+ * @return javax.swing.JButton	
+ */
+private JButton getRestartLayoutButton() {
+	if (restartLayoutButton == null) {
+		restartLayoutButton = new JButton();
+		restartLayoutButton.setText("Restart Layout");
+		restartLayoutButton.setEnabled(false);
+		restartLayoutButton.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent e) {
+				resumeLayout();
+				restartLayoutButton.setEnabled(false);
+				stopLayoutButton.setEnabled(true);
+			}
+		});
+	}
+	return restartLayoutButton;
+}
+
 
 /**
  * Starts a dynamic or a static layout for the network
@@ -699,6 +704,7 @@ public void setLayout(String selectedLayout){
 	//File positionData = getPositionFile(); 
 	// TODO: create static layout with position file data
 
+	layoutType = selectedLayout;
 	Layout<Vertex,Edge> newLayout = null;
 	
 	if (selectedLayout.equals("ARFLayout"))
