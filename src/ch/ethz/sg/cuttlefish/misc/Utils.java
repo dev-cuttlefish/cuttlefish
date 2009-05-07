@@ -208,7 +208,7 @@ public class Utils {
 			}else{			
 				p.println("\\ncarc[linecolor="+scolor+", linewidth="+
 						(new DecimalFormat("###.#######################").format((lineWidth*f)))
-						+"]{->}{"+source+"}{"+dest+"}");
+						+ ", arrowsize=4pt 4]{->}{"+source+"}{"+dest+"}");
 			}
 		}
 		else
