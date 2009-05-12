@@ -23,6 +23,7 @@
 
 package ch.ethz.sg.cuttlefish.gui;
 
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import ch.ethz.sg.cuttlefish.networks.BrowsableNetwork;
@@ -41,20 +42,26 @@ public class BrowserTab extends JPanel {
 		
 	}
 	
+	/**
+	 * Method that checks that the network fulfills the condition of being the proper class for the tab
+	 * @param network that cuttlefish is treating
+	 * @return
+	 */
+	
 	public boolean checkCondition(BrowsableNetwork network){
 		if(condition==null  || condition.equals("*")){
-			return true;
-		}
-		try{
-			Class<?> clazz = Class.forName(condition);	
-			clazz.cast(network);
-			return true;
-			
-		}catch(Exception e){
-			return false;
-		}
-	}
-
+   			return true;
+   		}
+   		try{
+   			Class<?> clazz = Class.forName(condition);
+   			clazz.cast(network);
+   			return true;
+	    
+   		}catch(Exception e){
+   			return false;
+   		}
+   	}
+	
 
 
 }

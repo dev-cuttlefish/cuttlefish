@@ -36,6 +36,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
+/**
+ * Extension of JPanel that contains a widget to be added to a tab
+ */
 public class GroupPanel extends JPanel implements ItemSelectable{
 
 	private static final long serialVersionUID = 1L;
@@ -54,8 +57,7 @@ public class GroupPanel extends JPanel implements ItemSelectable{
 	}
 
 	/**
-	 * This method initializes this
-	 * 
+	 * This method initializes this with the default user interface options
 	 * @return void
 	 */
 	private void initialize() {
@@ -105,6 +107,11 @@ public class GroupPanel extends JPanel implements ItemSelectable{
 		return contentPanel;
 	}
 	
+	/**
+	 * This method sets the widget represented in this GroupPanel
+	 * @param widget created and ready to display
+	 * @param id identifier of the panel
+	 */
 	public  void setBrowserWidget(BrowserWidget widget, String id){
 		if(this.widget==null){
 			contentPanel.add((Component) widget, BorderLayout.CENTER);
@@ -115,18 +122,33 @@ public class GroupPanel extends JPanel implements ItemSelectable{
 		}
 	}
 	
+	/**
+	 * Sets the label of the panel
+	 * @param label
+	 */
 	public void setLabel(String label){
 		jLabel.setText(label);
 	}
-	
+	/**
+	 * Gives the current label of the panel
+	 * @return String label
+	 */
 	public String getLabel(){
 		return jLabel.getText();
 	}
 
+	/**
+	 * returns whether the widget is active or not
+	 * @return boolean true if the widget was active, false otherwise
+	 */
 	public boolean isActivated() {
 		return widget.isActive();
 	}
 
+	/**
+	 * activates or deactivates the widget in the panel
+	 * @param activated boolean true to activate and false to deactivate
+	 */
 	public void setActivated(boolean activated) {
 		if(widget!=null && widget.isClickable()){
 			widget.setActive(activated);
@@ -140,6 +162,7 @@ public class GroupPanel extends JPanel implements ItemSelectable{
 			if(widget!=null){
 				widget.onActiveChanged();
 			}
+			//notify the listeners over the widet the state change event
 			for(ItemListener listener: listeners){
 				ItemEvent e = new ItemEvent(this,0,widget, isActivated() ? ItemEvent.SELECTED : ItemEvent.DESELECTED);
 				listener.itemStateChanged(e);
@@ -147,31 +170,42 @@ public class GroupPanel extends JPanel implements ItemSelectable{
 		}
 	}
 
-
+	/**
+	 * checks whether the widget can be clicked or not
+	 * @return boolean
+	 */
 	public boolean isClickable() {
 		return widget.isClickable();
 	}
 
-	/*public void setClickable(boolean clickable) {
-		this.clickable = clickable;
-		setActivated(widget.isActive());
-	}*/
-
+	/**
+	 * getter for the higlighting color of the panel
+	 * @return Color
+	 */
 	public Color getHighlightColor() {
 		return highlightColor;
 	}
 
+	/**
+	 * Setter for the highlight color
+	 * @param highlightColor
+	 */
 	public void setHighlightColor(Color highlightColor) {
 		this.highlightColor = highlightColor;
 	}
 
-	
-
+   /**
+    * adds a new itemListener to the listener list
+    * @param ItemListener to be added
+    */
 	public void addItemListener(ItemListener arg0) {
 		listeners.add(arg0);
-		
 	}
 
+	/**
+	 * Gets a list of the active objects (just the widget here)
+	 * @return array with the objects
+	 */
 	public Object[] getSelectedObjects() {
 	
 		if(isActivated()){
@@ -180,6 +214,10 @@ public class GroupPanel extends JPanel implements ItemSelectable{
 		return null;
 	}
 
+	/**
+	 * Listener remover
+	 * @param ItemListener to remove
+	 */
 	public void removeItemListener(ItemListener arg0) {
 		listeners.remove(arg0);
 		

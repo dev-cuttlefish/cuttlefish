@@ -43,8 +43,6 @@ public interface INetworkBrowser {
 	
 	public void refreshAnnotations();
 	
-	public Document getConfiguration();
-	
 	public void onNetworkChange();
 	
 	public String getArgument(String name);
