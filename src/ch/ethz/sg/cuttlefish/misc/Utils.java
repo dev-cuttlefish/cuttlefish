@@ -112,7 +112,7 @@ public class Utils {
 			label = label.replace("_", "\\_").replace("&", "\\&");
 			p.println("\\rput[l]("+
 					(new DecimalFormat("###.#######################").format((coordinates.getX()-5)*f))+","+
-					(new DecimalFormat("###.#######################").format(((y+rim-coordinates.getY())-10)*f)) 
+					(new DecimalFormat("###.#######################").format(((y+rim-coordinates.getY())-(10 +vertex.getSize()/2  ))*f)) 
 					+"){\\textbf{\\tiny "+label+"}}");
 		}
 

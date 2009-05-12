@@ -24,102 +24,176 @@ package ch.ethz.sg.cuttlefish.gui;
 
 import java.util.Hashtable;
 
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import ch.ethz.sg.cuttlefish.networks.BrowsableNetwork;
 
+/**
+ * JPanel that stores a general widget for cuttlefish
+ */
 public abstract class BrowserWidget extends JPanel{
 
 	private static final long serialVersionUID = 1L;
 	private boolean isActive=false;
-	private INetworkBrowser browser;
-	private GroupPanel groupPanel = null;
-	private BrowsableNetwork network = null;
-	private String id;
 	private boolean clickable=false;
-	private Class<?> networkClass = null;
+
+	private String id;
 	private Hashtable<String, String> arguments = new Hashtable<String, String>();
 	
+	private INetworkBrowser browser;
+	private GroupPanel groupPanel = null;
+	
+	private BrowsableNetwork network = null;
+	private Class<?> networkClass = null;
+	
+	/**
+	 * Getter for the Id of the widget
+	 * @return String id of the widget
+	 */
 	public final String getId() {
 		return id;
 	}
+	/**
+	 * Setter for the id of the widget
+	 * @param id to set
+	 */
 	public final void setId(String id) {
 		this.id = id;
 	}
-	
+
+	/**
+	 * Method to query the value of one of the arguments of the widget
+	 * @param name of the parameter
+	 * @return String with the value of the parameter
+	 */
 	public final String getArgument(String name) {
 		return arguments.get(name);
 	}
-	
-	
 
+	/**
+	 * Method that sets the arguments table
+	 * @param arguments Hashtable with the arguments mapping
+	 */
 	protected final void setArguments(Hashtable<String, String> arguments) {
 		this.arguments = arguments;
 	}
 	
 	
+	/**
+	 * Method that sets the network that the widget is related to
+	 * @param network
+	 */
 	public final void setNetwork(BrowsableNetwork network){
 	
-
-	//System.out.println();
 		if(networkClass == null || networkClass.isInstance(network)){
 			try {
 				this.network = network;
 				
 				this.setVisible(true);
 				onNetworkSet();
-			//	System.out.println(getId() + "\t X");
-				
+		
 			} catch (Exception e) {
 				this.setVisible(false);
 				this.network = null;
-				System.err.println(e);
+				JOptionPane.showMessageDialog(null,e.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
+				System.err.println("Error setting the network for a widget");
+				e.printStackTrace();
 				System.out.println(getId() + "\t");
 			}
-		}else{
+		}
+		else {
 			this.setVisible(false);
 			this.network = null;
 		}
 		
 	}
 	
+	/**
+	 * Getter for the network that the widget refers to
+	 * @return network
+	 */
 	public final BrowsableNetwork getNetwork(){
 		return network;
 	}
 	
+	/**
+	 * Method to be called when the network is set
+	 */
 	protected void onNetworkSet(){
 	}
 	
+	/**
+	 * Check method to know whether the widget is active
+	 * @return boolean
+	 */
 	public final boolean isActive() {
 		return isActive;
 	}
 	
+	/**
+	 * Method to activate or deactivate the widget
+	 * @param isActive
+	 */
 	public final void setActive(boolean isActive) {
 		this.isActive = isActive;
 	}
+	
+	/**
+	 * Getter of the networkBrowser interface that the widget is related to
+	 * @return INetworkBrowser
+	 */
 	public INetworkBrowser getBrowser() {
 		return browser;
 	}
+	
+	/**
+	 * Setter for the networkBrowser of the widget
+	 * @param browser
+	 */
 	public void setBrowser(INetworkBrowser browser) {
 		this.browser = browser;
 	}
 	
+	/**
+	 * Method that should be called when a change has taken place
+	 */
 	protected void onActiveChanged(){}
 	
+	/**
+	 * Check method for clickability of the widget
+	 * @return boolean 
+	 */
 	public final boolean isClickable() {
 		return clickable;
 	}
 	
+	/**
+	 * Updater for any annotations existing in the widget
+	 */
 	public void updateAnnotations(){}
 	
+	/**
+	 * Initializer method
+	 */
 	public abstract void init();
 	
+	/**
+	 * Getter for the gropuPanel where the widget is displayed
+	 * @return GroupPanel
+	 */
 	public final GroupPanel getGroupPanel() {
 		return groupPanel;
 	}
+	
+	/**
+	 * Setter for the groupPanel where the widget is displayed
+	 * @param groupPanel
+	 */
 	public final void setGroupPanel(GroupPanel groupPanel) {
 		this.groupPanel = groupPanel;
 	}
+	
 	@Override
 	public void setVisible(boolean aFlag) {
 		if(getGroupPanel()!=null){
@@ -129,12 +203,26 @@ public abstract class BrowserWidget extends JPanel{
 		onActiveChanged();
 	}
 	
+	/**
+	 * Getter for the class of the network that is associated to the widget
+	 * @return Class that instantiates the network
+	 */ 
 	public final Class<?> getNetworkClass() {
 		return networkClass;
 	}
+	
+	/**
+	 * setter for the class of the network associated to the widget
+	 * @param networkClass
+	 */
 	protected final void setNetworkClass(Class<?> networkClass) {
 		this.networkClass = networkClass;
 	}
+	
+	/**
+	 * setter for the clickability of the widget
+	 * @param clickable
+	 */
 	protected final void setClickable(boolean clickable) {
 		this.clickable = clickable;
 	}

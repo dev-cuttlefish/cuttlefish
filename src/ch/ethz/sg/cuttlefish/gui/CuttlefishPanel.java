@@ -28,7 +28,6 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.Image;
 import java.awt.Insets;
 import java.awt.Paint;
 import java.awt.Shape;
@@ -64,6 +63,7 @@ import javax.swing.JToggleButton;
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
@@ -123,7 +123,6 @@ private VisualizationViewer<Vertex,Edge> visualizationViewer = null;
 private JTabbedPane menuPane = null;
 private JToggleButton jToggleButton = null;
 private JPanel layoutPanel = null;
-private JCheckBox layoutCheckBox = null;
 private JComboBox layoutComboBox = null;
 private JButton writeLayoutButton = null;
 private JButton stopLayoutButton = null;
@@ -233,6 +232,7 @@ private void initialize(File configFile) {
     Schema schema;
 	try {
 		 /*We open configuration.xsd as a stream associated to the .jar and we create a local copy conf_aux.xsd*/
+		 /*TODO: make file paths consistent across operating systems: this does not work in windows*/
 		 File schemaFile = Utils.createLocalFile("/ch/ethz/sg/cuttlefish/resources/configuration.xsd", (Object) this);
 		 schema = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI).newSchema(schemaFile);
 		 factory.setSchema(schema);
@@ -243,12 +243,14 @@ private void initialize(File configFile) {
 		saxEx.printStackTrace();
 	} 
  
-    try {
-       DocumentBuilder builder = factory.newDocumentBuilder();
+       DocumentBuilder builder;
+	try {
+	   builder = factory.newDocumentBuilder();
        configuration = builder.parse(configFile);
        Node arguments = configuration.getElementsByTagName("Arguments").item(0);
-	      this.arguments = XMLUtil.getArguments(arguments);
-          
+       this.arguments = XMLUtil.getArguments(arguments);
+       
+       /*Iterate through the tabs, creating them*/
        NodeList tabs = configuration.getElementsByTagName("Tab");
 
        for( int i=0; i<tabs.getLength(); i++ ){
@@ -258,7 +260,6 @@ private void initialize(File configFile) {
     	      panel.setBackground(Color.lightGray);
     	      panel.setLayout(new GridBagLayout());
     	      panel.setName(tab.getAttributes().getNamedItem("name").getNodeValue());
-    	      NodeList widgets = tab.getChildNodes();
     	      
     	      GridBagConstraints boxConstraints = new GridBagConstraints();
   			  boxConstraints.gridx = 0;
@@ -267,51 +268,66 @@ private void initialize(File configFile) {
     	      panel.add(new Box.Filler(new Dimension(0,0), new Dimension(0,125), new Dimension(0,Integer.MAX_VALUE)), boxConstraints);
     	      tabArray.add(panel);
     	      int count = 1;
-    	      for(int j=0; j<widgets.getLength(); j++){
-    	    	  try{
-        	    	  Node widget = widgets.item(j);
+    	      
+    	      /*Iterate through the widgets of the current created tab*/
+      	      NodeList widgets = tab.getChildNodes();
+      	      for(int j=0; j<widgets.getLength(); j++){
+    	    	 	  Node widget = widgets.item(j);
         	    	  if(widget.getNodeName().equals("Widget")){
         	    		  
         	    		  GroupPanel groupPanel = new GroupPanel();
         	    		  groupPanel.addItemListener(this);
         	    		  
         	    		  String className = widget.getAttributes().getNamedItem("class").getNodeValue();
-        	    		  Class<?> clazz = Class.forName(className);
-        	    		  BrowserWidget browserWidget = (BrowserWidget) clazz.newInstance();
-        	  			 
-        	    		  groupPanel.setLabel(widget.getAttributes().getNamedItem("name").getNodeValue());
-        	  			  groupPanel.setBrowserWidget(browserWidget, widget.getAttributes().getNamedItem("id").getNodeValue());
-        	  			  
-        	  			  browserWidget.setBrowser(this);
-        	  			  browserWidget.setArguments(XMLUtil.getArguments(widget));
-        	  			  
-        	  			  GridBagConstraints gridBagConstraints = new GridBagConstraints();
-        	  			  gridBagConstraints.gridx = count++;
-        	  			  gridBagConstraints.fill = GridBagConstraints.BOTH;
-        	  			  gridBagConstraints.insets = new Insets(2, 2, 2, 2);
-        	  			  gridBagConstraints.gridy = 0;
-        	  			  
-        	  			  panel.add(groupPanel, gridBagConstraints);
-        	  			  widgetTable.put(widget.getAttributes().getNamedItem("id").getNodeValue(), browserWidget);
-        	  			  browserWidget.init();
-        	    	  }
-    	    	  }catch(Exception e){
-    	    		  
-    	    		  e.printStackTrace();
-    	    		  
-    	    	  }
-   	    	  
-    	      }
+        	    		  Class<?> clazz;
+        	    		  
+        	    		  try {
+        	    			  clazz = Class.forName(className);
+        	    		 
+        	    			  BrowserWidget browserWidget = (BrowserWidget) clazz.newInstance();
 
+	        	    		  groupPanel.setLabel(widget.getAttributes().getNamedItem("name").getNodeValue());
+	        	  			  groupPanel.setBrowserWidget(browserWidget, widget.getAttributes().getNamedItem("id").getNodeValue());
+	        	  			  
+	        	  			  browserWidget.setBrowser(this);
+	        	  			  browserWidget.setArguments(XMLUtil.getArguments(widget));
+	        	  			  
+	        	  			  GridBagConstraints gridBagConstraints = new GridBagConstraints();
+	        	  			  gridBagConstraints.gridx = count++;
+	        	  			  gridBagConstraints.fill = GridBagConstraints.BOTH;
+	        	  			  gridBagConstraints.insets = new Insets(2, 2, 2, 2);
+	        	  			  gridBagConstraints.gridy = 0;
+	        	  			  
+	        	  			  panel.add(groupPanel, gridBagConstraints);
+	        	  			  widgetTable.put(widget.getAttributes().getNamedItem("id").getNodeValue(), browserWidget);
+	        	  			  browserWidget.init();
+						} catch (ClassNotFoundException classEx) {
+							JOptionPane.showMessageDialog(null,classEx.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
+							System.err.println("Widget class in XML does not exist");
+							classEx.printStackTrace();
+						} catch (Exception instEx /*actually an InstantiationException and IllegalAcessException*/) {
+							JOptionPane.showMessageDialog(null,instEx.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
+							System.err.println("Error instantiating widget");
+							instEx.printStackTrace();
+						} 
+        	    	  }
+    	      }
        }
-       
-	      
-    } catch (Exception e) {
-      System.err.println("Error in the configuration file!");
-		  System.err.println(e);
-		  System.exit(-1);
-    }
-    this.setNetwork(temp);
+	} catch (ParserConfigurationException parsEx) {
+		JOptionPane.showMessageDialog(null,parsEx.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
+		System.err.println("Parser syntax error in configuration XML");
+		parsEx.printStackTrace();
+	} catch (SAXException saxEx) {
+		JOptionPane.showMessageDialog(null,saxEx.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
+		System.err.println("SAX syntax error in configuration XML");
+		saxEx.printStackTrace();
+	} catch (IOException ioEx) {
+		JOptionPane.showMessageDialog(null,ioEx.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
+		System.err.println("Input syntax error in configuration XML");
+		ioEx.printStackTrace();
+	}
+
+	this.setNetwork(temp);
 
     
 	this.setLayout(new BorderLayout());
@@ -324,6 +340,10 @@ private void initialize(File configFile) {
 	this.add(getViewPanel(), BorderLayout.SOUTH);
 }
 
+/**
+ * Getter for the graph mouse associated to the panel
+ * @return EditingModalGraphMouse automatically created by JUNG2.0
+ */
 public EditingModalGraphMouse<Vertex, Edge> getMouse(){
 	return graphMouse;
 }
@@ -332,9 +352,9 @@ public EditingModalGraphMouse<Vertex, Edge> getMouse(){
  * @return VisualizationViewer	
  */
 private VisualizationViewer<Vertex,Edge> getVisualizationViewer() {
+	//Create it if it didn't exist before
 	if (visualizationViewer == null) {
 		visualizationViewer = new VisualizationViewer<Vertex,Edge>(layout);
-		//visualizationViewer.setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));
 		visualizationViewer.setBackground(Color.white);
 		visualizationViewer.setGraphMouse(graphMouse);
 	}
@@ -360,16 +380,17 @@ public void setNetwork(BrowsableNetwork network) {
 	this.network = network;
 	System.out.println("Set network " + network.getName() + " (" + network.getVertices().size() + " nodes)");
 	
+	/*default layout: ARF*/
 	if (layout == null)
 		setLayout("ARFLayout");
-	else if (layout.getGraph() != network)
+	else if (layout.getGraph() != network) //consistency check between layout and network
 		layout.setGraph(network);
-	
-	if (layout instanceof ARF2Layout)
-		if (((ARF2Layout<Vertex,Edge>)layout).getMaxUpdates() < getNetwork().getVertexCount())
+
+	//maxUpdates in ARF2Layout depends on the network size, this way it's updated if the network changes
+	if ((layout instanceof ARF2Layout) && (((ARF2Layout<Vertex,Edge>)layout).getMaxUpdates() < getNetwork().getVertexCount()))
 			((ARF2Layout<Vertex,Edge>)layout).setMaxUpdates(getNetwork().getVertexCount());		
-	network.init();
 	
+	network.init();
 	refreshAnnotations();
 	updateWidgets();
 }
@@ -377,15 +398,12 @@ public void setNetwork(BrowsableNetwork network) {
 
 
 /**
- * Updates the network information of all the widgets in the list
+ * Updates the network information of all the widgets in the list and the affected tabs
  * @return void
  */
 private void updateWidgets() {
-	for(BrowserWidget widget: widgetTable.values()){
-		System.out.println("updating " + widget.getId());
+	for(BrowserWidget widget: widgetTable.values())
 		widget.setNetwork(network);
-		
-	}
 	
 	getMenuPane().removeAll();
 	for(BrowserTab tab: tabArray){
@@ -395,8 +413,10 @@ private void updateWidgets() {
 	}
 }
 
-
-
+/**
+ * updates the annotations of the widgets in case of event
+ * @return void
+ */
 public void itemStateChanged(ItemEvent arg0) {
 	refreshAnnotations();
 }
@@ -410,8 +430,7 @@ public SparseGraph<Vertex,Edge> getNetwork() {
 }
 
 /**
- * This method initializes menuPane	
- * 	
+ * This method initializes and gets the menu panel	
  * @return javax.swing.JTabbedPane	
  */
 private JTabbedPane getMenuPane() {
@@ -424,8 +443,7 @@ private JTabbedPane getMenuPane() {
 }
 
 /**
- * This method initializes jToggleButton	
- * 	
+ * This method initializes and gets jToggleButton	
  * @return javax.swing.JToggleButton	
  */
 private JToggleButton getJToggleButton() {
@@ -443,7 +461,7 @@ private JToggleButton getJToggleButton() {
 }
 
 /**
- * This method initializes viewPanel	
+ * This method initializes and gets the viewPanel	
  * 	
  * @return javax.swing.JPanel	
  */
@@ -454,69 +472,71 @@ private JPanel getViewPanel() {
 		viewPanel.setBackground(Color.DARK_GRAY);
 		viewPanel.add(getJToggleButton(), null);
 		viewPanel.add(getLayoutPanel(), null);
-		//viewPanel.add(getPickPanel(), null);
-		//graphMouse.getModeComboBox().setPreferredSize(new Dimension());
 		viewPanel.add(graphMouse.getModeComboBox());
-		
-		
 	}
 	return viewPanel;
 }
 
+/**
+ * Getter for the network layout to be used in widgets through the interface
+ * @return Layout<Vertex, Edge> general layout being used for the visualization
+ **/
 public Layout<Vertex,Edge> getNetworkLayout() {
 	return layout;
 }
 
-
+/**
+ * Repaints the network viewer
+ * @return void
+ */
 public void repaintViewer() {
-	visualizationViewer.repaint();
-	
+	visualizationViewer.repaint();	
 }
 
+/**
+ * Updates the annotations of the widgets, the network and repaints the visualization
+ * @return void
+ */
 public void refreshAnnotations() {
-	
-	//network.colorAll(Color.DARK_GRAY);
 	for(BrowserWidget widget: widgetTable.values()){
-		if((!widget.isClickable() || widget.isActive())&&widget.getNetwork()!=null){
+		if((!widget.isClickable() || widget.isActive()) && (widget.getNetwork() !=null) ){
 			widget.updateAnnotations();
 		}
 	}
+	// TODO: check precise functionality of network annotations and shadows
 	network.updateAnnotations();
 	network.applyShadows();
 	System.gc();
 	visualizationViewer.repaint();
 }
 
-
-public Document getConfiguration() {
-	return configuration;
-}
-
+/**
+ * Interface function to trigger the changes due to a change on the network nature
+ * @return void
+ */
 public void onNetworkChange() {
 	System.out.println("Network changed " + network.getName());
 	
+	//concurrent modification of the ARF layouts for simulation position updates
 	if (layout instanceof ARF2Layout)
 	{
-		((ARF2Layout)layout).step();
-		((ARF2Layout)layout).resetUpdates();
+		((ARF2Layout<Vertex,Edge>)layout).step();
+		((ARF2Layout<Vertex,Edge>)layout).resetUpdates();
 		getVisualizationViewer().repaint();
 	}
 	if (layout instanceof WeightedARF2Layout)
 	{
-		((WeightedARF2Layout)layout).step();
-//		((WeightedARF2Layout)layout).resetUpdates();
+		((WeightedARF2Layout<Vertex,Edge>)layout).step();
+		((WeightedARF2Layout<Vertex,Edge>)layout).resetUpdates();
 		getVisualizationViewer().repaint();
 	}
-/*	else
-	{
-		layout.setGraph(getNetwork());
-		layout.initialize();
-		getVisualizationViewer().setGraphLayout(layout);
-		getVisualizationViewer().repaint();
-	}
-	**/
 }
 
+/**
+ * Getter for an argument from the configuration defined by its name
+ * @param String name of the argument
+ * @return String with the value of the argument taken from the configuration XML
+ */
 public String getArgument(String name) {
 	return arguments.get(name);
 }
@@ -531,10 +551,10 @@ private JPanel getLayoutPanel() {
 	if (layoutPanel == null) {
 		layoutPanel = new JPanel();
 		layoutPanel.setLayout(new GridBagLayout());
-	//	layoutPanel.add(getLayoutCheckBox(), new GridBagConstraints());
 		layoutPanel.add(getLayoutComboBox(), new GridBagConstraints());
 		layoutPanel.setBackground(Color.gray);
-		layoutPanel.add(getWriteLayoutButton(), new GridBagConstraints());
+		//The write layout button will be added when static layout load is implemented
+		//layoutPanel.add(getWriteLayoutButton(), new GridBagConstraints());
 		layoutPanel.add(getStopLayoutButton(), new GridBagConstraints());
 		layoutPanel.add(getRestartLayoutButton(), new GridBagConstraints());
 	}
@@ -552,7 +572,8 @@ private JComboBox getLayoutComboBox() {
 	
 	String[] layoutNames = {"ARFLayout", "WeightedARFLayout", "SpringLayout", "Kamada-Kawai", 
 			"Fruchterman-Reingold", "ISOMLayout", "CircleLayout"};
-	
+	/*This array should keep the names of the layouts that are used to define the layout
+	in the method setLayout*/
 	
 	if (layoutComboBox == null) {
 		layoutComboBox = new JComboBox(layoutNames);
@@ -571,53 +592,27 @@ private JComboBox getLayoutComboBox() {
 }
 
 
-
 /**
- * This method initializes layoutCheckBox	
- * 	
- * @return javax.swing.JCheckBox	
+ * Refreshes the layout type and unlocks all the vertices
+ * @return void
  */
-private JCheckBox getLayoutCheckBox() {
-	if (layoutCheckBox == null) {
-		layoutCheckBox = new JCheckBox();
-		layoutCheckBox.setText("dynamic layout");
-		layoutCheckBox.setBackground(Color.gray);
-		layoutCheckBox.setForeground(Color.orange);
-		layoutCheckBox.addActionListener(new ActionListener(){
-
-			public void actionPerformed(ActionEvent e) {
-				if (layoutCheckBox.isSelected())
-					setLayout("SpringLayout");
-				else
-					setLayout("CircleLayout");					
-			}
-			
-		});
-	}
-	return layoutCheckBox;
-}
-
-
-
 public void resumeLayout() {
-	
 	setLayout(layoutType);
 	for (Vertex v : getNetwork().getVertices())
 		layout.lock(v, false);	
 }
 
-
-
+/**
+ * Locks all the vertices in the layout, nothing should move after this
+ * @return void
+ */
 public void stopLayout() {
 	for (Vertex v : getNetwork().getVertices())
 		layout.lock(v, true);
 }
 
-
-
 /**
  * This method initializes writeLayoutButton	
- * 	
  * @return javax.swing.JButton	
  */
 private JButton getWriteLayoutButton() {
@@ -629,8 +624,10 @@ private JButton getWriteLayoutButton() {
 				try {
 					PrintStream p = new PrintStream(getPositionFile());
 					Utils2.writePositions(getNetwork(), p, getNetworkLayout());
-				} catch (FileNotFoundException ex) {
-					ex.printStackTrace();
+				} catch (FileNotFoundException fileEx) {
+					JOptionPane.showMessageDialog(null,fileEx.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
+					System.err.println("Error saving layout");
+					fileEx.printStackTrace();
 				}
 			}
 		});
@@ -682,9 +679,9 @@ private JButton getRestartLayoutButton() {
 
 
 /**
- * Starts a dynamic or a static layout for the network
- * @param isDynamic boolean to determine the dynamics of the network, 
- * with ARF or a fixed layout
+ * Creates a layout from the type chosen among "ARFLayout", "WeightedARFLayout", "SpringLayout", "Kamada-Kawai",
+ * "Fruchterman-Reingold", "ISOMLayout" or "CircleLayout"
+ * @param String with the layout type from the possible ones
  * @return void
  */
 @SuppressWarnings("unchecked")
@@ -696,27 +693,27 @@ public void setLayout(String selectedLayout){
 	layoutType = selectedLayout;
 	Layout<Vertex,Edge> newLayout = null;
 	
-	if (selectedLayout.equals("ARFLayout"))
+	if (selectedLayout.equalsIgnoreCase("ARFLayout"))
 	{	
 		newLayout = new ARF2Layout<Vertex,Edge>(getNetwork(), ((BrowsableNetwork)getNetwork()).isIncremental(),layout);
 		if (((ARF2Layout<Vertex,Edge>)newLayout).getMaxUpdates() < getNetwork().getVertexCount())
 			((ARF2Layout<Vertex,Edge>)newLayout).setMaxUpdates(getNetwork().getVertexCount());		
 	}
-	if (selectedLayout.equals("WeightedARFLayout"))
+	if (selectedLayout.equalsIgnoreCase("WeightedARFLayout"))
 	{
 		newLayout = new WeightedARF2Layout<Vertex,Edge>(getNetwork(), ((BrowsableNetwork)getNetwork()).isIncremental(),layout);
 		if (((WeightedARF2Layout<Vertex,Edge>)newLayout).getMaxUpdates() < getNetwork().getVertexCount())
 			((WeightedARF2Layout<Vertex,Edge>)newLayout).setMaxUpdates(getNetwork().getVertexCount());		
 	}
-	if (selectedLayout.equals("SpringLayout"))
+	if (selectedLayout.equalsIgnoreCase("SpringLayout"))
 		newLayout = new SpringLayout2<Vertex, Edge>(getNetwork());
-	if (selectedLayout.equals("Kamada-Kawai"))
+	if (selectedLayout.equalsIgnoreCase("Kamada-Kawai"))
 		newLayout = new KKLayout<Vertex, Edge>(getNetwork());
-	if (selectedLayout.equals("Fruchterman-Reingold"))
+	if (selectedLayout.equalsIgnoreCase("Fruchterman-Reingold"))
 		newLayout = new FRLayout2<Vertex, Edge>(getNetwork());
-	if (selectedLayout.equals("ISOMLayout"))
+	if (selectedLayout.equalsIgnoreCase("ISOMLayout"))
 		newLayout = new ISOMLayout<Vertex, Edge>(getNetwork());
-	if (selectedLayout.equals("CircleLayout")){
+	if (selectedLayout.equalsIgnoreCase("CircleLayout")){
 		newLayout = new CircleLayout<Vertex, Edge>(getNetwork());
 		((CircleLayout)newLayout).setRadius(getNetwork().getVertexCount() * 10);
 	}
@@ -726,16 +723,14 @@ public void setLayout(String selectedLayout){
 	getVisualizationViewer().setGraphLayout(layout);
 	
 	getVisualizationViewer().repaint();
-	
-	
-	//System.out.println("VV restarted");
 }
 
-
-
 @Override
+/**
+ * Creates an image of the current visualization
+ * @return BufferedImage image created by the visualization viewer 
+ **/
 public BufferedImage getSnapshot() {
-	
 	 Dimension size = visualizationViewer.getSize();
      BufferedImage img = new BufferedImage(size.width, size.height,
        BufferedImage.TYPE_INT_RGB);
@@ -745,6 +740,4 @@ public BufferedImage getSnapshot() {
 	 return img;
 
 }
-
-
 }  //  @jve:decl-index=0:visual-constraint="10,10"
