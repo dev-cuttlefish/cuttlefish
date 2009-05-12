@@ -24,8 +24,10 @@ package ch.ethz.sg.cuttlefish.gui;
 import java.awt.BorderLayout;
 import java.awt.Frame;
 import java.io.File;
+import java.io.FileNotFoundException;
 
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 /**
  * Class of the General User Interface for cuttlefish

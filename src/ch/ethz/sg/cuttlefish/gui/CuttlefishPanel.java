@@ -45,6 +45,7 @@ import java.awt.Graphics2D;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
@@ -56,6 +57,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.JToggleButton;
@@ -80,6 +82,7 @@ import ch.ethz.sg.cuttlefish.layout.WeightedARF2Layout;
 import ch.ethz.sg.cuttlefish.misc.Edge;
 import ch.ethz.sg.cuttlefish.misc.EdgeFactory;
 import ch.ethz.sg.cuttlefish.misc.Utils2;
+import ch.ethz.sg.cuttlefish.misc.Utils;
 import ch.ethz.sg.cuttlefish.misc.Vertex;
 import ch.ethz.sg.cuttlefish.misc.VertexFactory;
 import ch.ethz.sg.cuttlefish.misc.XMLUtil;
@@ -140,7 +143,7 @@ private VertexFactory vertexFactory = null;
 private EdgeFactory edgeFactory = null;
 	
 /**
- * This is the default constructor, initializes the rendering and the viewer
+ * This is the default constructor, initializes the view with the configuration read from the file
  * @param configfile open file with the configuration
  */
 public CuttlefishPanel(File configFile) {
@@ -179,8 +182,7 @@ public CuttlefishPanel(File configFile) {
 	renderContext.setVertexFillPaintTransformer(vertexPaintTransformer);
 	
 			
-	/* edge rendering */
-			
+	/* edge rendering */	
 	Transformer<Edge, Paint> edgePaintTransformer = new Transformer<Edge, Paint>(){
 		public Paint transform(Edge edge) {
 			return edge.getColor(); } };
@@ -204,16 +206,14 @@ public CuttlefishPanel(File configFile) {
     visualizationViewer.setDoubleBuffered(true);
 }
 
-
-
 /**
- * This method initializes this, creating the GraphMouse, the DocumentFactory 
+ * This method initializes the CuttlefishPanel, creating the GraphMouse, the DocumentFactory 
  * and loading the information contained in the configuration file
  * @param configFile open file with the configuration
  * @return void
  */
 private void initialize(File configFile) {
-	 BrowsableNetwork temp = new BrowsableNetwork();
+	BrowsableNetwork temp = new BrowsableNetwork();
 	this.setNetwork(temp);	
 	vertexFactory = new VertexFactory();
     edgeFactory = new EdgeFactory();
@@ -232,28 +232,17 @@ private void initialize(File configFile) {
    
     Schema schema;
 	try {
-		 InputStream schemaStream = this.getClass().getResourceAsStream("/ch/ethz/sg/cuttlefish/resources/configuration.xsd");
-		 File schemaFile = new File("conf_aux.xsd");
-		 OutputStream auxStream = new FileOutputStream(schemaFile);
-		 byte buf[]=new byte[1024];
-         int len;
-         while((len=schemaStream.read(buf))>0)
-        	 auxStream.write(buf,0,len);
-		 auxStream.close();
-		 schemaStream.close();
+		 /*We open configuration.xsd as a stream associated to the .jar and we create a local copy conf_aux.xsd*/
+		 File schemaFile = Utils.createLocalFile("/ch/ethz/sg/cuttlefish/resources/configuration.xsd", (Object) this);
 		 schema = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI).newSchema(schemaFile);
-		 //File schemaFile = new File(this.getClass().getResource("/ch/ethz/sg/cuttlefish/resources/configuration.xsd").getFile());
 		 factory.setSchema(schema);
-		 schemaFile.deleteOnExit();
-	} catch (SAXException e1) {
+		 
+	} catch (SAXException saxEx) {
+		JOptionPane.showMessageDialog(null,saxEx.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
 		System.err.println("Error in XML validation!");
-		e1.printStackTrace();
-	} catch (Exception e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-	}
-  
-    
+		saxEx.printStackTrace();
+	} 
+ 
     try {
        DocumentBuilder builder = factory.newDocumentBuilder();
        configuration = builder.parse(configFile);
