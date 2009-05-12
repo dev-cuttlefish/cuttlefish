@@ -22,8 +22,12 @@ import java.awt.Color;
 import java.awt.geom.Point2D;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.PrintStream;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -31,6 +35,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Set;
+
+import javax.swing.JOptionPane;
 
 import edu.uci.ics.jung.algorithms.layout.Layout;
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
@@ -251,5 +257,32 @@ public class Utils {
 		
 	}
 	
+	public static File createLocalFile(String fileName, Object object)
+	{
+		InputStream inStream = object.getClass().getResourceAsStream(fileName);
+		File copyFile = new File(fileName.substring(fileName.lastIndexOf('/')+1).concat("_aux"));
+		
+		OutputStream outStream;
+		try {
+			outStream = new FileOutputStream(copyFile);
+			byte buf[]=new byte[1024];
+			int len;
+			while((len=inStream.read(buf))>0)
+				outStream.write(buf,0,len);
+			inStream.close();
+			outStream.close();
+			copyFile.deleteOnExit();
+		}
+		catch (FileNotFoundException fileEx) {
+			JOptionPane.showMessageDialog(null,fileEx.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
+			System.err.println("Error: "+ fileName +" not found");
+			fileEx.printStackTrace();
+		} catch (IOException ioEx) {
+			JOptionPane.showMessageDialog(null,ioEx.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
+			System.err.println("Error: problem in " + fileName );
+			ioEx.printStackTrace();
+		}
+		return copyFile;
+	} 
 
 }
