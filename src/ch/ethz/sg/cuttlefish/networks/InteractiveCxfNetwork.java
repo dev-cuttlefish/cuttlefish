@@ -43,6 +43,7 @@ import edu.uci.ics.jung.graph.util.EdgeType;
 
 public class InteractiveCxfNetwork extends CxfNetwork implements ISimulation{
 	
+	boolean done;
 	private static final long serialVersionUID = 1L;
 
 	public InteractiveCxfNetwork(){
@@ -53,6 +54,7 @@ public class InteractiveCxfNetwork extends CxfNetwork implements ISimulation{
 	public InteractiveCxfNetwork(File graphFile){
 		load(graphFile);
 		setIncremental(true);
+		done = false;
 	}
 	public void loadInstructions(File instructionsFile)
 	{
@@ -131,7 +133,13 @@ public class InteractiveCxfNetwork extends CxfNetwork implements ISimulation{
 				if (findEdge(vSource, vDest) != null)
 					System.out.println("WARNING: the edge ("+token.id_source +
 							","+token.id_dest +") already existed -- use editEdge");
-				addEdge(createEdge(token), vSource, vDest);
+				Edge e = createEdge(token);
+				
+				EdgeType et = EdgeType.DIRECTED;
+				if (!directed)
+					et = EdgeType.UNDIRECTED;
+				
+				addEdge(e, vSource, vDest,et);
 			}
 			else
 				System.out.println("WARNING: one of the endpoints of the added edge ("+token.id_source +
@@ -242,28 +250,33 @@ public class InteractiveCxfNetwork extends CxfNetwork implements ISimulation{
 	public void reset() {
 		instructionIndex = 0;
 		reload();
+		done = false;
 	}
 
 	@Override
 	public boolean update(long passedTime) {
 
-		Token token = instructionTokens.get(instructionIndex);
-		
-		if (token.freeze)
+		if (!done)
 		{
-			while ((instructionIndex < instructionTokens.size()) && (!token.commit))
+			Token token = instructionTokens.get(instructionIndex);
+			
+			if (token.freeze)
 			{
-				token = instructionTokens.get(instructionIndex);
+				while ((instructionIndex < instructionTokens.size()) && (!token.commit))
+				{
+					token = instructionTokens.get(instructionIndex);
+					execute(token);
+					instructionIndex++;
+				}
+				
+			}
+			else if (instructionIndex < instructionTokens.size())
+			{
 				execute(token);
 				instructionIndex++;
 			}
-			
 		}
-		else if (instructionIndex < instructionTokens.size())
-		{
-			execute(token);
-			instructionIndex++;
-		}
-		return (instructionIndex < instructionTokens.size());
+		done = !(instructionIndex < instructionTokens.size());
+		return !done;
 	}
 }
