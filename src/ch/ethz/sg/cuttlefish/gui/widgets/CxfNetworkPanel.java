@@ -65,8 +65,7 @@ public class CxfNetworkPanel extends BrowserWidget {
 		
 		this.setLayout(new GridBagLayout());
         this.add(getLoadButton(), gridBagConstraints1);
-			
-	}
+ 	}
 	
 	private JFileChooser getFileChooser() {
 		if (fileC == null) {
@@ -99,11 +98,11 @@ public class CxfNetworkPanel extends BrowserWidget {
 		                getBrowser().onNetworkChange();
 		                getBrowser().getNetworkLayout().reset();
 		                getBrowser().repaintViewer();
+		                getBrowser().stopLayout();
 		            } else {
 		                System.out.println("Input cancelled by user");
 		            }
-		           
-
+		       
 				}
 			});
 		}

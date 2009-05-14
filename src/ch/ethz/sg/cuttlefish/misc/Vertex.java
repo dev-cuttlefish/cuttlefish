@@ -24,6 +24,7 @@ package ch.ethz.sg.cuttlefish.misc;
 import java.awt.Color;
 import java.awt.Shape;
 import java.awt.geom.Ellipse2D;
+import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.RectangularShape;
 
@@ -43,12 +44,14 @@ public class Vertex {
 	private String var2 = null;
 	private boolean excluded = false;
 	private boolean fixed = false;
+	private Point2D position;
 	
 	public Vertex(int id){
 		this.id = id;
 		Ellipse2D ellipse = new Ellipse2D.Float();
 		ellipse.setFrameFromCenter(0,0,size,size);
 		shape = ellipse;
+		position = null;
 	}
 
 	public Vertex(int id, String label){
@@ -57,13 +60,15 @@ public class Vertex {
 		Ellipse2D ellipse = new Ellipse2D.Float();
 		ellipse.setFrameFromCenter(0,0,size,size);
 		shape = ellipse;
-	}
+		position = null;
+		}
 
 	public Vertex() {
 		this.id = -1;  //Anonymous vertex
 		Ellipse2D ellipse = new Ellipse2D.Float();
 		ellipse.setFrameFromCenter(0,0,size,size);
 		shape = ellipse;
+		position = null;
 	}
 
 	/**
@@ -226,5 +231,17 @@ public class Vertex {
 		return width;
 	}
 
+	public Point2D getPosition(){
+		return position;
+	}
+	
+	public void setPosition(Point2D position){
+		this.position = (Point2D) position.clone();
+	}
+	
+	public void setPosition(double x, double y){
+		this.position = new Point2D.Double(x,y);
+	}
 
+	
 }

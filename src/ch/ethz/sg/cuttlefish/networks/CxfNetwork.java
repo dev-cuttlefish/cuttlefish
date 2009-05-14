@@ -23,6 +23,7 @@ package ch.ethz.sg.cuttlefish.networks;
 
 import java.awt.Color;
 import java.awt.Shape;
+import java.awt.geom.Point2D;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -70,7 +71,9 @@ public class CxfNetwork extends BrowsableNetwork {
 		
 		Double size = null; String shape = null;
 		
-		String var1 = null; String var2 = null;		
+		String var1 = null; String var2 = null;	
+		
+		Point2D position = null;
 		
 		boolean freeze = false; boolean commit = false;
 	}
@@ -251,6 +254,7 @@ public class CxfNetwork extends BrowsableNetwork {
 		    Iterator<String> it = lineFields.iterator();
 	    	field = it.next();
 	    	float R, G, B;
+	    	double x, y;
 	    	if (field.equals("[")) {
 	    		field = it.next();	
 	    		token.freeze = true;
@@ -298,7 +302,15 @@ public class CxfNetwork extends BrowsableNetwork {
 		    			token.size = new Double(Double.parseDouble(field.substring(field.indexOf('{')+1,field.indexOf('}'))));
 				    else if (field.startsWith("shape"))
 		    			token.shape = field.substring(field.indexOf('{')+1,field.indexOf('}'));
-		    		else if (field.startsWith("var1"))
+				    else if (field.startsWith("position"))
+				    {
+						int pos = field.indexOf('{')+1;
+						x = Double.parseDouble(field.substring(pos,field.indexOf(',',pos)));
+		    			pos = field.indexOf(',',pos)+1;
+		    			y = Double.parseDouble(field.substring(pos,field.indexOf('}',pos)));
+		    			token.position = new Point2D.Double(x,y);		    			
+		    	    }
+				    else if (field.startsWith("var1"))
 		    			token.var1 = field.substring(field.indexOf('{')+1,field.indexOf('}'));
 		    		else if (field.startsWith("var2"))
 		    			token.var2 = field.substring(field.indexOf('{')+1,field.indexOf('}'));
@@ -401,7 +413,11 @@ public class CxfNetwork extends BrowsableNetwork {
 			v.setFillColor(token.color);
 		if (token.borderColor != null)
 			v.setColor(token.borderColor);
-
+		if (token.position != null)
+		{
+//			v.setFixed(true);
+			v.setPosition(token.position);
+		}
 		if (token.var1 != null)
 			v.setVar1(token.var1);
 		if (token.var2 != null)
@@ -425,6 +441,14 @@ public class CxfNetwork extends BrowsableNetwork {
 			e.setVar2(token.var2);
 		
 		return e;
+	}
+	
+	public boolean hideVertexLabels()
+	{
+		return hideVertexLabels;
+	}
+	public boolean hideEdgeLabels(){
+		return hideEdgeLabels;
 	}
 	
 	public static void main(String argv[]){
