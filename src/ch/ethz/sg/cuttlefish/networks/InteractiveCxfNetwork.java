@@ -190,6 +190,8 @@ public class InteractiveCxfNetwork extends CxfNetwork implements ISimulation{
 			v.setFillColor(token.color);
 		if (token.borderColor != null)
 			v.setColor(token.borderColor);
+		if (token.position != null)
+			v.setPosition(token.position);
 		if (token.var1 != null)
 			v.setVar1(token.var1);
 		if (token.var2 != null)

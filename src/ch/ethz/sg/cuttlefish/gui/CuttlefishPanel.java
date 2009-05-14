@@ -56,6 +56,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
@@ -76,9 +77,12 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import ch.ethz.sg.cuttlefish.gui.mouse.PopupMousePlugin;
+import ch.ethz.sg.cuttlefish.gui.widgets.CxfNetworkPanel;
 import ch.ethz.sg.cuttlefish.gui.widgets.MousePanel;
 import ch.ethz.sg.cuttlefish.layout.ARF2Layout;
+import ch.ethz.sg.cuttlefish.layout.FixedLayout;
 import ch.ethz.sg.cuttlefish.layout.WeightedARF2Layout;
+import ch.ethz.sg.cuttlefish.misc.CxfSaver;
 import ch.ethz.sg.cuttlefish.misc.Edge;
 import ch.ethz.sg.cuttlefish.misc.EdgeFactory;
 import ch.ethz.sg.cuttlefish.misc.Utils2;
@@ -87,6 +91,7 @@ import ch.ethz.sg.cuttlefish.misc.Vertex;
 import ch.ethz.sg.cuttlefish.misc.VertexFactory;
 import ch.ethz.sg.cuttlefish.misc.XMLUtil;
 import ch.ethz.sg.cuttlefish.networks.BrowsableNetwork;
+import ch.ethz.sg.cuttlefish.networks.StaticCxfNetwork;
 
 import edu.uci.ics.jung.algorithms.layout.CircleLayout;
 import edu.uci.ics.jung.algorithms.layout.FRLayout2;
@@ -127,6 +132,7 @@ private JComboBox layoutComboBox = null;
 private JButton writeLayoutButton = null;
 private JButton stopLayoutButton = null;
 private JButton restartLayoutButton = null;
+private JFileChooser fileC = null;
 
 private JPanel viewPanel = null;
 private EditingModalGraphMouse<Vertex,Edge> graphMouse;  
@@ -553,8 +559,7 @@ private JPanel getLayoutPanel() {
 		layoutPanel.setLayout(new GridBagLayout());
 		layoutPanel.add(getLayoutComboBox(), new GridBagConstraints());
 		layoutPanel.setBackground(Color.gray);
-		//The write layout button will be added when static layout load is implemented
-		//layoutPanel.add(getWriteLayoutButton(), new GridBagConstraints());
+		layoutPanel.add(getWriteLayoutButton(), new GridBagConstraints());
 		layoutPanel.add(getStopLayoutButton(), new GridBagConstraints());
 		layoutPanel.add(getRestartLayoutButton(), new GridBagConstraints());
 	}
@@ -570,7 +575,7 @@ private JPanel getLayoutPanel() {
  */
 private JComboBox getLayoutComboBox() {
 	
-	String[] layoutNames = {"ARFLayout", "WeightedARFLayout", "SpringLayout", "Kamada-Kawai", 
+	String[] layoutNames = {"ARFLayout", "FixedLayout", "WeightedARFLayout", "SpringLayout", "Kamada-Kawai", 
 			"Fruchterman-Reingold", "ISOMLayout", "CircleLayout"};
 	/*This array should keep the names of the layouts that are used to define the layout
 	in the method setLayout*/
@@ -599,7 +604,10 @@ private JComboBox getLayoutComboBox() {
 public void resumeLayout() {
 	setLayout(layoutType);
 	for (Vertex v : getNetwork().getVertices())
-		layout.lock(v, false);	
+		if (!v.isFixed())
+			layout.lock(v, false);	
+		else
+			layout.setLocation(v, v.getPosition());
 }
 
 /**
@@ -608,7 +616,18 @@ public void resumeLayout() {
  */
 public void stopLayout() {
 	for (Vertex v : getNetwork().getVertices())
+	{
 		layout.lock(v, true);
+		if (v.isFixed())
+			layout.setLocation(v, v.getPosition());
+	}
+}
+
+private JFileChooser getFileChooser() {
+	if (fileC == null) {
+		fileC = new JFileChooser();
+	}
+	return fileC;
 }
 
 /**
@@ -618,17 +637,33 @@ public void stopLayout() {
 private JButton getWriteLayoutButton() {
 	if (writeLayoutButton == null) {
 		writeLayoutButton = new JButton();
-		writeLayoutButton.setText("Save Layout");
+		writeLayoutButton.setText("Save Network");
 		writeLayoutButton.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent e) {
-				try {
-					PrintStream p = new PrintStream(getPositionFile());
-					Utils2.writePositions(getNetwork(), p, getNetworkLayout());
-				} catch (FileNotFoundException fileEx) {
-					JOptionPane.showMessageDialog(null,fileEx.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
-					System.err.println("Error saving layout");
-					fileEx.printStackTrace();
-				}
+				
+				 JFileChooser fc = getFileChooser();
+				    fc.setCurrentDirectory( new File(System.getProperty("user.dir")));
+					int returnVal = fc.showSaveDialog(CuttlefishPanel.this);
+
+		            if (returnVal == JFileChooser.APPROVE_OPTION) {
+		                File file = fc.getSelectedFile();
+		                try {
+							file.createNewFile();
+							CxfSaver saver = new CxfSaver(network, layout);
+							saver.save(file);
+						} catch (IOException ioEx) {
+							JOptionPane.showMessageDialog(null,ioEx.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
+							System.err.println("Impossible to write");
+							ioEx.printStackTrace();
+						}
+		                
+		                
+		            } else {
+		                System.out.println("Input cancelled by user");
+		            }
+				
+				
+				
 			}
 		});
 	}
@@ -679,7 +714,7 @@ private JButton getRestartLayoutButton() {
 
 
 /**
- * Creates a layout from the type chosen among "ARFLayout", "WeightedARFLayout", "SpringLayout", "Kamada-Kawai",
+ * Creates a layout from the type chosen among "ARFLayout", "FixedLayout", "WeightedARFLayout", "SpringLayout", "Kamada-Kawai",
  * "Fruchterman-Reingold", "ISOMLayout" or "CircleLayout"
  * @param String with the layout type from the possible ones
  * @return void
@@ -712,10 +747,14 @@ public void setLayout(String selectedLayout){
 		newLayout = new FRLayout2<Vertex, Edge>(getNetwork());
 	if (selectedLayout.equalsIgnoreCase("ISOMLayout"))
 		newLayout = new ISOMLayout<Vertex, Edge>(getNetwork());
-	if (selectedLayout.equalsIgnoreCase("CircleLayout")){
+	if (selectedLayout.equalsIgnoreCase("CircleLayout"))
+	{
 		newLayout = new CircleLayout<Vertex, Edge>(getNetwork());
 		((CircleLayout)newLayout).setRadius(getNetwork().getVertexCount() * 10);
 	}
+	if (selectedLayout.equalsIgnoreCase("FixedLayout"))
+		newLayout = new FixedLayout<Vertex, Edge>(getNetwork(),layout);
+	
 	layout = newLayout;
 	System.out.println("Set layout to " + layout.getClass());
 
