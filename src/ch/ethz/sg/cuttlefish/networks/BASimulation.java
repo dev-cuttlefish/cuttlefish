@@ -37,6 +37,7 @@ public class BASimulation extends BrowsableNetwork implements ISimulation {
 	
 	public BASimulation(){
 		super();
+		this.setIncremental(true);
 		//The initial network for this simulation case is a triangle
 		Vertex v1 = new Vertex(), v2 = new Vertex(), v3 = new Vertex();
 		addVertex(v1); v1.setLabel("2");

@@ -522,14 +522,14 @@ public void onNetworkChange() {
 	{
 		((ARF2Layout<Vertex,Edge>)layout).step();
 		((ARF2Layout<Vertex,Edge>)layout).resetUpdates();
-		getVisualizationViewer().repaint();
 	}
 	if (layout instanceof WeightedARF2Layout)
 	{
 		((WeightedARF2Layout<Vertex,Edge>)layout).step();
 		((WeightedARF2Layout<Vertex,Edge>)layout).resetUpdates();
-		getVisualizationViewer().repaint();
 	}
+	getVisualizationViewer().repaint();
+
 }
 
 /**
@@ -689,7 +689,6 @@ public void setLayout(String selectedLayout){
 	
 	//File positionData = getPositionFile(); 
 	// TODO: create static layout with position file data
-
 	layoutType = selectedLayout;
 	Layout<Vertex,Edge> newLayout = null;
 	

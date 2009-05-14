@@ -67,7 +67,6 @@ public class SimulationPanel extends BrowserWidget {
         this.add(getStopButton(), gridBagConstraints1);
         this.add(getRunButton(), gridBagConstraints1);
         this.add(getJButton2(), gridBagConstraints1);
-			
 	}
 
 	/**
@@ -134,7 +133,8 @@ public class SimulationPanel extends BrowserWidget {
 
 	                       };
 	                       thread.start();
-	                   } 
+					}
+					getBrowser().resumeLayout();				
 				}
 			});
 		}
