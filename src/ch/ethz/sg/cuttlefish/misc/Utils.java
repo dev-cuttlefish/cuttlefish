@@ -144,6 +144,7 @@ public class Utils {
 			
 		}
 		writeVertexColorTable(vertices, p);
+		
 		Color std = Color.DARK_GRAY;
 		p.println("\\definecolor{std}{rgb}{"
 				+(std.getRed()/255.0)+","
@@ -284,5 +285,9 @@ public class Utils {
 		}
 		return copyFile;
 	} 
-
+	
+	public static String ensureDecimal(double num)
+	{
+			return (new DecimalFormat("#####.#######################").format((num)));
+	}
 }
