@@ -42,6 +42,7 @@ import com.sun.image.codec.jpeg.*;
 import com.sun.imageio.plugins.png.PNGImageWriter;
 import com.sun.imageio.plugins.png.PNGImageWriterSpi;
 
+import ch.ethz.sg.cuttlefish.misc.TikzExporter;
 import ch.ethz.sg.cuttlefish.misc.Utils;
 import ch.ethz.sg.cuttlefish.misc.Utils2;
 import ch.ethz.sg.cuttlefish.networks.TemporalNetwork;
@@ -55,6 +56,7 @@ public class ExportPanel extends BrowserWidget  {
 	private JButton adjlistButton = null;
 	private JButton edgelistButton = null;
 	private JButton snapshotButton = null;
+	private JButton tikzButton = null;
 	private JTextField jTextField = null;
 	private JLabel jLabel = null;
 
@@ -113,6 +115,16 @@ public class ExportPanel extends BrowserWidget  {
 		gridBagConstraints.fill = GridBagConstraints.BOTH;
 		gridBagConstraints.weightx = 1.0;
 		gridBagConstraints.gridy = 3;
+		
+		
+		GridBagConstraints gridBagConstraints4 = new GridBagConstraints();
+		gridBagConstraints4.gridx = 2;
+		gridBagConstraints4.insets = new Insets(2, 2, 2, 2);
+		gridBagConstraints4.fill = GridBagConstraints.BOTH;
+		gridBagConstraints4.weightx = 1.0;
+		gridBagConstraints4.gridy = 3;
+		
+		
 		this.setSize(287, 230);
 		this.setLayout(new GridBagLayout());
 		//this.setBorder(BorderFactory.createTitledBorder(null, "export", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, null, null));
@@ -121,6 +133,9 @@ public class ExportPanel extends BrowserWidget  {
 		this.add(getAdjlistButton(), gridBagConstraints1);
 		this.add(getEdgelistButton(), gridBagConstraints11);
 		this.add(getJTextField(), gridBagConstraints21);
+		this.add(getTikzButton(), gridBagConstraints4);
+		
+		
 		this.add(jLabel, gridBagConstraints3);
 	}
 
@@ -181,6 +196,24 @@ public class ExportPanel extends BrowserWidget  {
 			});
 		}
 		return pstricksButton;
+	}
+	
+	/**
+	 * This method initializes tikzButton	
+	 * 	
+	 * @return javax.swing.JButton	
+	 */
+	private JButton getTikzButton() {
+		if (tikzButton == null) {
+			tikzButton = new JButton();
+			tikzButton.setText("tikz");
+			tikzButton.addActionListener(new java.awt.event.ActionListener() {
+				public void actionPerformed(java.awt.event.ActionEvent e) {
+						exportToTikz();
+				}
+			});
+		}
+		return tikzButton;
 	}
 
 
@@ -266,8 +299,27 @@ public class ExportPanel extends BrowserWidget  {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
-		
+	}
+	
+	public void exportToTikz() {
+		try {
+			
+			String fileName = null;
+			if(getNetwork() instanceof TemporalNetwork && ((TemporalNetwork)getNetwork()).getDate() != null){
+				DateFormat format = new SimpleDateFormat("yyyy");//DateFormat format = new SimpleDateFormat("yyyy-MM-dd_HHmm_ss");
+				fileName = getNetwork().getName()+ format.format(((TemporalNetwork)getNetwork()).getDate()) + ".tex";
+				
+			}else{
+				fileName = getNetwork().getName()+".tex";
+			}
+			System.out.println("exporting to " + fileName);
+			File f = new File(fileName);
+			//f.createNewFile();
+			TikzExporter tikzexp = new TikzExporter(getNetwork());
+			tikzexp.exportToTikz(f, getBrowser().getNetworkLayout());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public void exportToPos() {
