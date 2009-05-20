@@ -49,6 +49,20 @@ public class Utils {
 	static double x0 = Double.MAX_VALUE; 
 	static double y0 = Double.MAX_VALUE;
 
+	static public Point2D caculateCenter(Layout<Vertex, Edge> layout, Graph<Vertex,Edge> graph)
+	{
+		Point2D center = new Point2D.Double(0.0d,0.0d);
+		double n = 0.0d;
+		
+		for (Vertex vertex : graph.getVertices())
+		{
+			Point2D vertexPosition = layout.transform(vertex);
+			center.setLocation(center.getX() + vertexPosition.getX(), center.getY() + vertexPosition.getY());
+			n++;
+		}
+		center.setLocation(center.getX() / n, center.getY() / n);
+		return center;
+	}
 	
 	static public void exportGraphToPSTricks(Graph<Vertex,Edge> graph, PrintStream p, Layout<Vertex,Edge> layout){
 		exportGraphToPSTricks(graph, p, layout, true);

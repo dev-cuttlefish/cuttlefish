@@ -23,7 +23,7 @@ package ch.ethz.sg.cuttlefish.misc;
 
 import java.awt.Color;
 
-public class Edge {
+public class Edge implements Comparable<Edge>{
 	
 	
 	private int idTemp;
@@ -171,6 +171,15 @@ public class Edge {
 	 */
 	public String getVar2() {
 		return var2;
+	}
+
+	@Override
+	public int compareTo(Edge o) {
+		if (this.getWeight() > o.getWeight())
+			return 1;
+		else if (this.getWeight() < o.getWeight())
+			return -1;
+		return 0;
 	}
 
 }
