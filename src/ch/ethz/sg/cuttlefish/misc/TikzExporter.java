@@ -28,7 +28,10 @@ import java.awt.geom.RectangularShape;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 import javax.swing.JOptionPane;
 
@@ -49,6 +52,8 @@ public class TikzExporter {
 	private Layout <Vertex, Edge> layout = null;
 	private PrintStream p = null;
 	private final double FACTOR = 0.025;
+	private final double WIDTHFACTOR = 0.5;
+	private double maxY= 0;
 	
 	/**
 	 * General constructor for the class, pure object oriented approach.
@@ -68,6 +73,14 @@ public class TikzExporter {
 		outFile = file;
 		layout = netLayout;
 		
+		//We find the maximum value of Y to revert the y coordinate when writing the nodes in tex
+		for (Vertex vertex : network.getVertices())
+		{
+			double y = layout.transform(vertex).getY();
+			if (y > maxY)
+				maxY = y;
+		}
+		
 		try {
 			p = new PrintStream(outFile);
 		
@@ -77,20 +90,33 @@ public class TikzExporter {
 			p.println("\\usepackage{pst-node}");
 			p.println("\\usepackage{xcolor}");
 			p.println("\\usepackage{tikz}");
+			p.println("\\usepackage{tkz-graph}");
 	
 			p.println("\\begin{document}");
 			
 			writeVertexColorTable();
 			writeEdgeColorTable();;
 			
+
+			p.println("\\pgfdeclarelayer{background}");
+			p.println("\\pgfdeclarelayer{foreground}");
+			p.println("\\pgfsetlayers{background,main,foreground}");
 			p.println("\\begin{tikzpicture}");
 			
 			for (Vertex v : network.getVertices())
 				exportVertex(v);
 			
-			for (Edge e : network.getEdges())
+			p.println("\\begin{pgfonlayer}{background}");
+			p.println("\\tikzset{EdgeStyle/.style = {->,shorten >=1pt,>=stealth, bend right=10}}");
+			
+			ArrayList<Edge> edgeList = new ArrayList<Edge>(network.getEdges());
+			
+			Collections.sort(edgeList);
+
+			for (Edge e : edgeList)
 				exportEdge(e);
 			
+			p.println("\\end{pgfonlayer}");
 			p.println("\\end{tikzpicture}");
 			p.println("\\end{document}");
 			
@@ -153,7 +179,7 @@ public class TikzExporter {
 	{
 		Point2D coordinates = layout.transform(vertex);
 		p.print("\\node at (" + Utils.ensureDecimal(coordinates.getX()*FACTOR)
-				+ "," + Utils.ensureDecimal(coordinates.getY()*FACTOR) + ") [");
+				+ "," + Utils.ensureDecimal((maxY - coordinates.getY())*FACTOR) + ") [");
 		if (vertex.getShape() != null)
 		{
 			if (vertex.getShape() instanceof Rectangle2D)
@@ -163,32 +189,87 @@ public class TikzExporter {
 		}
 		p.print(" line width=" + Utils.ensureDecimal(vertex.getWidth()) + ",");
 		
-		if (vertex.getColor() != null)
-			p.print("draw="+vertex.getId()+"COLOR,");
+		if ((vertex.getColor() != null) && (vertex.getWidth() > 0))
+			p.print(" draw="+vertex.getId()+"COLOR,");
 		if (vertex.getFillColor() != null)
-			p.print("fill="+vertex.getId()+"FILL,");
+			p.print(" fill="+vertex.getId()+"FILL,");
 		p.print(" minimum size = " + Utils.ensureDecimal((vertex.getSize())) + "pt,");
 		
 		//TODO: check hide_vertex_labels here
 		if ((vertex.getLabel() != null) && (true))
 		{
 			String latexLabel = vertex.getLabel().replace("&", "\\&");
-			p.print(" label=0:" + latexLabel + ",");
+			p.print(" label={[label distance=-7]"+ calculateAngle(vertex)+":" + latexLabel + "},");
 		}
-		p.print(" shading=ball] (" + vertex.getId() + ") {};\n");
+		p.print(" shading=ball,");
+		if (vertex.getFillColor() != null)
+			p.print(" ball color="+vertex.getId()+"FILL");
+		else
+			p.print(" ball color=black");			
+		p.print("] (" + vertex.getId() + ") {};\n");
 	}
 	
+	Point2D center = null;
+	private double calculateAngle(Vertex v)
+	{
+		if (center == null)
+			center = Utils.caculateCenter(layout, network);
+		Point2D vPos = layout.transform(v);
+	/*	Point2D diff = new Point2D.Double(vPos.getX()-center.getX(), center.getY() - vPos.getY());
+		Point2D origin = new Point2D.Double(1.0d, 0.0d);
+		
+		return angle(origin,diff);
+		*/
+		if (vPos.getX() > center.getX())
+		{
+			if (vPos.getY() < center.getY())
+			{
+				return 45;
+			}
+			else
+			{
+				return 315;
+			}
+		}
+		else
+		{
+			if (vPos.getY() < center.getY())
+			{
+				return 135;
+			}
+			else
+			{
+				return 225;
+			}
+		}
+	}
+	
+	
+    public double angle(Point2D a, Point2D b) {
+    	 
+        double dx = b.getX() - a.getX();
+        double dy = b.getY() - a.getY();
+        double angle = 0.0d;
+ 
+        if (dx == 0.0) {
+            if(dy == 0.0)     angle = 0.0;
+            else if(dy > 0.0) angle = Math.PI / 2.0;
+            else              angle = (Math.PI * 3.0) / 2.0;
+        }
+        else if(dy == 0.0) {
+            if(dx > 0.0)      angle = 0.0;
+            else              angle = Math.PI;
+        }
+        else {
+            if(dx < 0.0)      angle = Math.atan(dy/dx) + Math.PI;
+            else if(dy < 0.0) angle = Math.atan(dy/dx) + (2*Math.PI);
+            else              angle = Math.atan(dy/dx);
+        }
+        return (angle * 180) / Math.PI;
+    }
+    
 	private void exportEdge(Edge edge)
 	{
-		p.print("\\draw [");
-		if (network.getEdgeType(edge) == EdgeType.DIRECTED)
-			p.print("->,");
-		else
-			p.print("-,");
-			
-		p.print(" line width=" + Utils.ensureDecimal(edge.getWidth()) +", bend right, sloped, looseness=0.1," );
-		if (edge.getColor() != null)
-			p.print(" draw="+edge.toString());
 		Vertex v1, v2;
 		if (network.getEdgeType(edge) == EdgeType.DIRECTED)
 		{
@@ -202,10 +283,61 @@ public class TikzExporter {
 			v2 = endpoints.getSecond();
 		}
 		
-		p.print("] (" + v1.getId() + ") to" );
-		//TODO: check hide_edge_labels here
-		if ((edge.getLabel() != null) && (true))
-			p.print(" node[above] {" + edge.getLabel() + "}");
-		p.print(" (" + v2.getId() + ");\n");	
+		if (v1.getId() == v2.getId())
+		{	
+			double angle = calculateAngle(v1);
+			
+			if	((angle > 124) && (angle < 226))
+				p.print("\\Loop[dist=1cm,dir=WE,");
+			else
+				p.print("\\Loop[dist=1cm,dir=EA,");
+			
+			p.print("style={->,shorten >=1pt,>=stealth,line width="+ Utils.ensureDecimal(edge.getWidth()*WIDTHFACTOR));
+		    p.print("}, color="+edge.toString());
+		  
+		    //TODO: check hide_vertex_labels here
+		    if ((edge.getLabel() != null) && (true))
+		    	p.print(", label="+ edge.getLabel());
+		    
+		    p.print("](" + v1.getId() + ")\n");
+		}
+		else
+		{
+			
+		/*	p.print("\\draw [");
+			if (network.getEdgeType(edge) == EdgeType.DIRECTED)
+				p.print("->,");
+			else
+				p.print("-,");
+				
+			p.print(" line width=" + Utils.ensureDecimal(edge.getWidth()*WIDTHFACTOR) +"," );
+			if (edge.getColor() != null)
+				p.print(" draw="+edge.toString());
+		
+			
+			p.print("] (" + v1.getId() + ") to" );
+			//TODO: check hide_edge_labels here
+			if ((edge.getLabel() != null) && (true))
+				p.print(" node[above] {" + edge.getLabel() + "}");
+			p.print(" (" + v2.getId() + ");\n");*/
+			
+			if (network.getEdgeType(edge) == EdgeType.UNDIRECTED)
+				p.println("\tikzset{EdgeStyle/.append style = {-}}");
+			
+			
+			p.print("\\Edge [lw=" + Utils.ensureDecimal(edge.getWidth()*WIDTHFACTOR) );
+			if (edge.getColor() != null)
+				p.print(", color=" + edge.toString());
+			//TODO: check hide_edge_labels here
+			if ((edge.getLabel() != null) && (true))
+				p.print(", label=" + edge.getLabel());
+			
+			
+			
+			p.print("](" + v1.getId() + ")(" + v2.getId() + ")\n");
+			
+			if (network.getEdgeType(edge) == EdgeType.UNDIRECTED)
+				p.println("\tikzset{EdgeStyle/.append style = {->}}");
+		}
 	}
 }
