@@ -740,9 +740,20 @@ public void setLayout(String selectedLayout){
 			((WeightedARF2Layout<Vertex,Edge>)newLayout).setMaxUpdates(getNetwork().getVertexCount());		
 	}
 	if (selectedLayout.equalsIgnoreCase("SpringLayout"))
+	{	
 		newLayout = new SpringLayout2<Vertex, Edge>(getNetwork());
+		//System.out.println("rep: "+((SpringLayout2<Vertex,Edge>) newLayout).getRepulsionRange());
+		//System.out.println("force: "+((SpringLayout2<Vertex,Edge>) newLayout).getForceMultiplier());
+		((SpringLayout2<Vertex,Edge>) newLayout).setForceMultiplier(10);
+
+	}
 	if (selectedLayout.equalsIgnoreCase("Kamada-Kawai"))
+	{
 		newLayout = new KKLayout<Vertex, Edge>(getNetwork());
+		((KKLayout<Vertex,Edge>)newLayout).setExchangeVertices(false);
+		((KKLayout<Vertex,Edge>)newLayout).setDisconnectedDistanceMultiplier(3);
+		((KKLayout<Vertex,Edge>)newLayout).setLengthFactor(0.15);
+	}
 	if (selectedLayout.equalsIgnoreCase("Fruchterman-Reingold"))
 		newLayout = new FRLayout2<Vertex, Edge>(getNetwork());
 	if (selectedLayout.equalsIgnoreCase("ISOMLayout"))
