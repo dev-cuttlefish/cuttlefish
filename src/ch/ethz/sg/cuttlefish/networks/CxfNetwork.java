@@ -71,6 +71,8 @@ public class CxfNetwork extends BrowsableNetwork {
 		
 		Double size = null; String shape = null;
 		
+		Integer borderWidth = null;
+		
 		String var1 = null; String var2 = null;	
 		
 		Point2D position = null;
@@ -302,6 +304,8 @@ public class CxfNetwork extends BrowsableNetwork {
 		    			token.size = new Double(Double.parseDouble(field.substring(field.indexOf('{')+1,field.indexOf('}'))));
 				    else if (field.startsWith("shape"))
 		    			token.shape = field.substring(field.indexOf('{')+1,field.indexOf('}'));
+				    else if (field.startsWith("width"))
+		    			token.borderWidth = new Integer(Integer.parseInt(field.substring(field.indexOf('{')+1,field.indexOf('}'))));
 				    else if (field.startsWith("position"))
 				    {
 						int pos = field.indexOf('{')+1;
@@ -418,6 +422,8 @@ public class CxfNetwork extends BrowsableNetwork {
 //			v.setFixed(true);
 			v.setPosition(token.position);
 		}
+		if (token.borderWidth != null)
+			v.setWidth(token.borderWidth);
 		if (token.var1 != null)
 			v.setVar1(token.var1);
 		if (token.var2 != null)
