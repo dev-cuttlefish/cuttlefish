@@ -85,14 +85,17 @@ public class TikzExporter {
 			p = new PrintStream(outFile);
 		
 			p.println("\\documentclass[a4paper]{article}");
-		    p.println("\\usepackage{a4wide}");
 			p.println("\\usepackage{pst-pdf}");
 			p.println("\\usepackage{pst-node}");
 			p.println("\\usepackage{xcolor}");
 			p.println("\\usepackage{tikz}");
 			p.println("\\usepackage{tkz-graph}");
-	
+			p.println("\\usepackage[active,tightpage]{preview}");
+			p.println("\\PreviewEnvironment{tikzpicture}");
+			p.println("\\setlength\\PreviewBorder{5pt}");	
 			p.println("\\begin{document}");
+	
+			
 			
 			writeVertexColorTable();
 			writeEdgeColorTable();;
