@@ -69,6 +69,7 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
 import org.apache.commons.collections15.Factory;
+import org.apache.commons.collections15.Predicate;
 import org.apache.commons.collections15.Transformer;
 import org.apache.commons.collections15.functors.InstantiateFactory;
 import org.w3c.dom.Document;
@@ -102,6 +103,7 @@ import edu.uci.ics.jung.algorithms.layout.SpringLayout;
 import edu.uci.ics.jung.algorithms.layout.SpringLayout2;
 import edu.uci.ics.jung.algorithms.util.IterativeContext;
 import edu.uci.ics.jung.graph.*;
+import edu.uci.ics.jung.graph.util.Context;
 
 import edu.uci.ics.jung.visualization.RenderContext;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
@@ -173,19 +175,24 @@ public CuttlefishPanel(File configFile) {
 			return vertex.getFillColor(); } };
 	Transformer<Vertex, Paint> vertexBorderTransformer = new Transformer<Vertex, Paint>(){
 		public Paint transform(Vertex vertex) {
-			return vertex.getColor(); } };			
+			return vertex.getColor(); } };		
+			
+	Predicate<Context<Graph<Vertex,Edge>,Vertex>> vertexIncludePredicate = new Predicate<Context<Graph<Vertex,Edge>,Vertex>>() {
+		public boolean evaluate(Context<Graph<Vertex, Edge>, Vertex> context) {
+			Vertex vertex = context.element;
+			return !vertex.isExcluded(); } };
+	
 
 	//vertex label, shape and border width
 	renderContext.setVertexShapeTransformer(vertexShapeTransformer);
 	renderContext.setVertexLabelTransformer(vertexLabelTransformer);
 	renderContext.setVertexDrawPaintTransformer(vertexBorderTransformer);
-
+	renderContext.setVertexIncludePredicate(vertexIncludePredicate);
 	renderContext.setLabelOffset(20); //shift of the vertex label to center the first character under the vertex
 
 	//vertex colors
 	renderContext.setVertexStrokeTransformer(vertexStrokeTransformer);
 	renderContext.setVertexFillPaintTransformer(vertexPaintTransformer);
-	
 			
 	/* edge rendering */	
 	Transformer<Edge, Paint> edgePaintTransformer = new Transformer<Edge, Paint>(){
@@ -197,12 +204,17 @@ public CuttlefishPanel(File configFile) {
 	Transformer<Edge,Stroke> edgeStrokeTransformer = new Transformer<Edge, Stroke>() {
 		public Stroke transform(Edge edge) {
 			return new BasicStroke(new Double(edge.getWidth()).intValue()); } };
+	Predicate<Context<Graph<Vertex,Edge>,Edge>> edgeIncludePredicate = new Predicate<Context<Graph<Vertex,Edge>,Edge>>() {
+		public boolean evaluate(Context<Graph<Vertex, Edge>, Edge> context) {
+			Edge edge = context.element;
+			return !edge.isExcluded(); } };
 	
 	renderContext.setEdgeDrawPaintTransformer(edgePaintTransformer);	
 	renderContext.setArrowFillPaintTransformer(edgePaintTransformer);	
 	renderContext.setArrowDrawPaintTransformer(edgePaintTransformer); //arrows are of the same color as the edge
 	renderContext.setEdgeLabelTransformer(edgeLabelTransformer);
 	renderContext.setEdgeStrokeTransformer(edgeStrokeTransformer);
+	renderContext.setEdgeIncludePredicate(edgeIncludePredicate);
 	
 	/*mouse settings*/
 	visualizationViewer.setPickSupport(new ShapePickSupport<Vertex,Edge>(visualizationViewer));

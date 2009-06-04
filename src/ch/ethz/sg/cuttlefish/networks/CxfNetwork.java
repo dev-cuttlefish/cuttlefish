@@ -77,6 +77,8 @@ public class CxfNetwork extends BrowsableNetwork {
 		
 		Point2D position = null;
 		
+		boolean hide = false;
+		
 		boolean freeze = false; boolean commit = false;
 	}
 	
@@ -189,8 +191,11 @@ public class CxfNetwork extends BrowsableNetwork {
 		    while ( parser.hasMoreTokens() ) {
 		    	field = parser.nextToken(currentDelims);
 				if (!field.equals(" ") && !field.equals("\t") && !field.equals("\n") && !field.equals("\r")){
-					if (field.indexOf('\"') == -1){
-						lineFields.add(field.trim());
+					if ((!((field.contains("{") && ! field.contains("}")) 
+							|| (!field.contains("{") && field.contains("}")))) 
+						&& (fieldaux == null) )
+					{
+							lineFields.add(field.trim());
 					}
 					else{
 						if (fieldaux == null){
@@ -226,10 +231,13 @@ public class CxfNetwork extends BrowsableNetwork {
 		    	field = null;
 		    	while ( parser.hasMoreTokens() ) {
 			    	field = parser.nextToken(currentDelims);
-					if (!field.equals(" ") && !field.equals("\t") && !field.equals("\n") && !field.equals("\r")){
-						if (field.indexOf('\"') == -1){
-							lineFields.add(field.trim());
-						}
+			    	if (!field.equals(" ") && !field.equals("\t") && !field.equals("\n") && !field.equals("\r")){
+						if ((!((field.contains("{") && ! field.contains("}")) 
+							|| (!field.contains("{") && field.contains("}")))) 
+						&& (fieldaux == null) )
+					{
+						lineFields.add(field.trim());
+					}
 						else{
 							if (fieldaux == null){
 								fieldaux = field;					
@@ -318,6 +326,8 @@ public class CxfNetwork extends BrowsableNetwork {
 		    			token.var1 = field.substring(field.indexOf('{')+1,field.indexOf('}'));
 		    		else if (field.startsWith("var2"))
 		    			token.var2 = field.substring(field.indexOf('{')+1,field.indexOf('}'));
+		    		else if (field.startsWith("hide"))
+		    			token.hide = true;
 		    	}
 		    	if (field.contains("]"))
 		    		token.commit = true;
@@ -357,7 +367,8 @@ public class CxfNetwork extends BrowsableNetwork {
 		    			token.var1 = field.substring(field.indexOf('{')+1,field.indexOf('}'));
 		    		else if (field.startsWith("var2"))
 		    			token.var2 = field.substring(field.indexOf('{')+1,field.indexOf('}'));
-	
+		    		else if (field.startsWith("hide"))
+		    			token.hide = true;
 		    	}
 		    	if (field.contains("]"))
 		    		token.commit = true;
@@ -378,7 +389,7 @@ public class CxfNetwork extends BrowsableNetwork {
 		    	}
 		    	token.type = "configuration";
     		}
-		    else
+		    else if (! lineFields.isEmpty())
 		    {
 		    	System.out.println("Unkown object in line" + (lineNum-1));
 		    }
@@ -428,6 +439,8 @@ public class CxfNetwork extends BrowsableNetwork {
 			v.setVar1(token.var1);
 		if (token.var2 != null)
 			v.setVar2(token.var2);
+		if (token.hide)
+			v.setExcluded(true);
 		return v;
 	}
 	
@@ -445,7 +458,8 @@ public class CxfNetwork extends BrowsableNetwork {
 			e.setVar1(token.var1);
 		if (token.var2 != null)
 			e.setVar2(token.var2);
-		
+		if (token.hide)
+			e.setExcluded(true);
 		return e;
 	}
 	
@@ -484,7 +498,8 @@ public class CxfNetwork extends BrowsableNetwork {
 			System.out.print(e.getVar1() + " ");
 			System.out.print(e.getVar2() + "\n");
 		}
-		
-		
 	}
+
+
+
 }

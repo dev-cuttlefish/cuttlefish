@@ -34,14 +34,19 @@ import java.text.SimpleDateFormat;
 
 import javax.imageio.ImageIO;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
 import ch.ethz.sg.cuttlefish.gui.BrowserWidget;
+import ch.ethz.sg.cuttlefish.gui.CuttlefishPanel;
+
 import com.sun.image.codec.jpeg.*;
 import com.sun.imageio.plugins.png.PNGImageWriter;
 import com.sun.imageio.plugins.png.PNGImageWriterSpi;
 
+import ch.ethz.sg.cuttlefish.misc.CxfSaver;
 import ch.ethz.sg.cuttlefish.misc.TikzExporter;
 import ch.ethz.sg.cuttlefish.misc.Utils;
 import ch.ethz.sg.cuttlefish.misc.Utils2;
@@ -60,6 +65,7 @@ public class ExportPanel extends BrowserWidget  {
 	private JTextField jTextField = null;
 	private JLabel jLabel = null;
 
+	private JFileChooser tikzFileC = null;
 
 	/**
 	 * This is the default constructor
@@ -198,6 +204,14 @@ public class ExportPanel extends BrowserWidget  {
 		return pstricksButton;
 	}
 	
+
+	private JFileChooser getTikzFileChooser() {
+		if (tikzFileC == null) {
+			tikzFileC = new JFileChooser();
+		}
+		return tikzFileC;
+	}
+	
 	/**
 	 * This method initializes tikzButton	
 	 * 	
@@ -209,7 +223,19 @@ public class ExportPanel extends BrowserWidget  {
 			tikzButton.setText("tikz");
 			tikzButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
-						exportToTikz();
+					 JFileChooser fc = getTikzFileChooser();
+				     fc.setCurrentDirectory( new File(System.getProperty("user.dir")));
+				     	fc.setSelectedFile(new File(getNetwork().getName()+".tex"));
+			            int returnVal = fc.showSaveDialog(ExportPanel.this);
+						if (returnVal == JFileChooser.APPROVE_OPTION) {
+			                File file = fc.getSelectedFile();
+			                exportToTikz(file);
+					    } else {
+			                System.out.println("Input cancelled by user");
+			            }
+					
+					
+					
 				}
 			});
 		}
@@ -301,22 +327,10 @@ public class ExportPanel extends BrowserWidget  {
 		}
 	}
 	
-	public void exportToTikz() {
+	public void exportToTikz(File file) {
 		try {
-			
-			String fileName = null;
-			if(getNetwork() instanceof TemporalNetwork && ((TemporalNetwork)getNetwork()).getDate() != null){
-				DateFormat format = new SimpleDateFormat("yyyy");//DateFormat format = new SimpleDateFormat("yyyy-MM-dd_HHmm_ss");
-				fileName = getNetwork().getName()+ format.format(((TemporalNetwork)getNetwork()).getDate()) + ".tex";
-				
-			}else{
-				fileName = getNetwork().getName()+".tex";
-			}
-			System.out.println("exporting to " + fileName);
-			File f = new File(fileName);
-			//f.createNewFile();
 			TikzExporter tikzexp = new TikzExporter(getNetwork());
-			tikzexp.exportToTikz(f, getBrowser().getNetworkLayout());
+			tikzexp.exportToTikz(file, getBrowser().getNetworkLayout());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
