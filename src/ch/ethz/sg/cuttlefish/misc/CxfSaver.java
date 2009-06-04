@@ -116,11 +116,16 @@ public class CxfSaver {
 		double y = ((Point2D)layout.transform(vertex)).getY();
 		ps.print(" position{"+x+","+y+"}");
 		
+		if (vertex.getWidth() != 1)
+			ps.print(" width{"+vertex.getWidth()+"}");
 		
 		if (vertex.getVar1() != null)
 			ps.print(" var1{"+vertex.getVar1()+"}");
 		if (vertex.getVar2() != null)
 			ps.print(" var2{"+vertex.getVar2()+"}");
+		if (vertex.isExcluded())
+			ps.print(" hide");
+			
 		ps.print("\n");
 	}
 	
@@ -149,6 +154,8 @@ public class CxfSaver {
 			ps.print(" var1{"+edge.getVar1()+"}");
 		if (edge.getVar2() != null)
 			ps.print(" var2{"+edge.getVar2()+"}");
+		if (edge.isExcluded())
+			ps.print(" hide");
 		ps.print("\n");
 	}	
 }
