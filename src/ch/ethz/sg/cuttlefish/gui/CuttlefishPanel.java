@@ -32,31 +32,17 @@ import java.awt.Insets;
 import java.awt.Paint;
 import java.awt.Shape;
 import java.awt.Stroke;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.awt.geom.Ellipse2D;
-import java.awt.geom.GeneralPath;
-import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.Graphics2D;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
@@ -68,49 +54,37 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
-import org.apache.commons.collections15.Factory;
 import org.apache.commons.collections15.Predicate;
 import org.apache.commons.collections15.Transformer;
-import org.apache.commons.collections15.functors.InstantiateFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import ch.ethz.sg.cuttlefish.gui.mouse.PopupMousePlugin;
-import ch.ethz.sg.cuttlefish.gui.widgets.CxfNetworkPanel;
-import ch.ethz.sg.cuttlefish.gui.widgets.MousePanel;
 import ch.ethz.sg.cuttlefish.layout.ARF2Layout;
 import ch.ethz.sg.cuttlefish.layout.FixedLayout;
 import ch.ethz.sg.cuttlefish.layout.WeightedARF2Layout;
-import ch.ethz.sg.cuttlefish.misc.CxfSaver;
 import ch.ethz.sg.cuttlefish.misc.Edge;
 import ch.ethz.sg.cuttlefish.misc.EdgeFactory;
-import ch.ethz.sg.cuttlefish.misc.Utils2;
 import ch.ethz.sg.cuttlefish.misc.Utils;
 import ch.ethz.sg.cuttlefish.misc.Vertex;
 import ch.ethz.sg.cuttlefish.misc.VertexFactory;
 import ch.ethz.sg.cuttlefish.misc.XMLUtil;
 import ch.ethz.sg.cuttlefish.networks.BrowsableNetwork;
-import ch.ethz.sg.cuttlefish.networks.StaticCxfNetwork;
 
 import edu.uci.ics.jung.algorithms.layout.CircleLayout;
 import edu.uci.ics.jung.algorithms.layout.FRLayout2;
 import edu.uci.ics.jung.algorithms.layout.ISOMLayout;
 import edu.uci.ics.jung.algorithms.layout.KKLayout;
 import edu.uci.ics.jung.algorithms.layout.Layout;
-import edu.uci.ics.jung.algorithms.layout.SpringLayout;
 import edu.uci.ics.jung.algorithms.layout.SpringLayout2;
-import edu.uci.ics.jung.algorithms.util.IterativeContext;
 import edu.uci.ics.jung.graph.*;
 import edu.uci.ics.jung.graph.util.Context;
 
 import edu.uci.ics.jung.visualization.RenderContext;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
-import edu.uci.ics.jung.visualization.control.CrossoverScalingControl;
 import edu.uci.ics.jung.visualization.control.EditingModalGraphMouse;
 import edu.uci.ics.jung.visualization.control.ModalGraphMouse;
-import edu.uci.ics.jung.visualization.control.ScalingControl;
 import edu.uci.ics.jung.visualization.picking.ShapePickSupport;
 
 /**
@@ -129,12 +103,7 @@ private VisualizationViewer<Vertex,Edge> visualizationViewer = null;
 /*User interface*/
 private JTabbedPane menuPane = null;
 private JToggleButton jToggleButton = null;
-private JPanel layoutPanel = null;
-private JComboBox layoutComboBox = null;
-private JButton writeLayoutButton = null;
-private JButton stopLayoutButton = null;
-private JButton restartLayoutButton = null;
-private JFileChooser fileC = null;
+private LayoutPanel layoutPanel = null;
 
 private JPanel viewPanel = null;
 private EditingModalGraphMouse<Vertex,Edge> graphMouse;  
@@ -176,7 +145,7 @@ public CuttlefishPanel(File configFile) {
 	Transformer<Vertex, Paint> vertexBorderTransformer = new Transformer<Vertex, Paint>(){
 		public Paint transform(Vertex vertex) {
 			return vertex.getColor(); } };		
-			
+    // This predicate selects which vertices to ignore		
 	Predicate<Context<Graph<Vertex,Edge>,Vertex>> vertexIncludePredicate = new Predicate<Context<Graph<Vertex,Edge>,Vertex>>() {
 		public boolean evaluate(Context<Graph<Vertex, Edge>, Vertex> context) {
 			Vertex vertex = context.element;
@@ -204,6 +173,7 @@ public CuttlefishPanel(File configFile) {
 	Transformer<Edge,Stroke> edgeStrokeTransformer = new Transformer<Edge, Stroke>() {
 		public Stroke transform(Edge edge) {
 			return new BasicStroke(new Double(edge.getWidth()).intValue()); } };
+	// This predicate selects which edges to ignore
 	Predicate<Context<Graph<Vertex,Edge>,Edge>> edgeIncludePredicate = new Predicate<Context<Graph<Vertex,Edge>,Edge>>() {
 		public boolean evaluate(Context<Graph<Vertex, Edge>, Edge> context) {
 			Edge edge = context.element;
@@ -377,16 +347,6 @@ private VisualizationViewer<Vertex,Edge> getVisualizationViewer() {
 		visualizationViewer.setGraphMouse(graphMouse);
 	}
 	return visualizationViewer;
-}
-
-/**
- * Gives the position file of the argument list
- * @return File object with the position file
- */
-public File getPositionFile(){
-	String base = getArgument("layoutFolder");
-	File positionData = new File((base == null ? "" : base) + network.getName()+".pos");
-	return positionData;
 }
 
 /**
@@ -567,45 +527,9 @@ public String getArgument(String name) {
  */
 private JPanel getLayoutPanel() {
 	if (layoutPanel == null) {
-		layoutPanel = new JPanel();
-		layoutPanel.setLayout(new GridBagLayout());
-		layoutPanel.add(getLayoutComboBox(), new GridBagConstraints());
-		layoutPanel.setBackground(Color.gray);
-		layoutPanel.add(getWriteLayoutButton(), new GridBagConstraints());
-		layoutPanel.add(getStopLayoutButton(), new GridBagConstraints());
-		layoutPanel.add(getRestartLayoutButton(), new GridBagConstraints());
+		layoutPanel = new LayoutPanel(this);	
 	}
 	return layoutPanel;
-}
-
-
-
-/**
- * This method initializes layoutComboBox	
- * 	
- * @return javax.swing.JComboBox	
- */
-private JComboBox getLayoutComboBox() {
-	
-	String[] layoutNames = {"ARFLayout", "FixedLayout", "WeightedARFLayout", "SpringLayout", "Kamada-Kawai", 
-			"Fruchterman-Reingold", "ISOMLayout", "CircleLayout"};
-	/*This array should keep the names of the layouts that are used to define the layout
-	in the method setLayout*/
-	
-	if (layoutComboBox == null) {
-		layoutComboBox = new JComboBox(layoutNames);
-		layoutComboBox.setName("Layout");
-		layoutComboBox.setBackground(Color.gray);
-		layoutComboBox.setForeground(Color.orange);
-		layoutComboBox.addActionListener(new ActionListener(){
-
-			public void actionPerformed(ActionEvent e) {
-				setLayout((String)layoutComboBox.getSelectedItem());
-			}
-			
-		});
-	}
-	return layoutComboBox;
 }
 
 
@@ -634,96 +558,6 @@ public void stopLayout() {
 			layout.setLocation(v, v.getPosition());
 	}
 }
-
-private JFileChooser getFileChooser() {
-	if (fileC == null) {
-		fileC = new JFileChooser();
-	}
-	return fileC;
-}
-
-/**
- * This method initializes writeLayoutButton	
- * @return javax.swing.JButton	
- */
-private JButton getWriteLayoutButton() {
-	if (writeLayoutButton == null) {
-		writeLayoutButton = new JButton();
-		writeLayoutButton.setText("Save Network");
-		writeLayoutButton.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent e) {
-				
-				 JFileChooser fc = getFileChooser();
-				    fc.setCurrentDirectory( new File(System.getProperty("user.dir")));
-					int returnVal = fc.showSaveDialog(CuttlefishPanel.this);
-
-		            if (returnVal == JFileChooser.APPROVE_OPTION) {
-		                File file = fc.getSelectedFile();
-		                try {
-							file.createNewFile();
-							CxfSaver saver = new CxfSaver(network, layout);
-							saver.save(file);
-						} catch (IOException ioEx) {
-							JOptionPane.showMessageDialog(null,ioEx.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
-							System.err.println("Impossible to write");
-							ioEx.printStackTrace();
-						}
-		                
-		                
-		            } else {
-		                System.out.println("Input cancelled by user");
-		            }
-				
-				
-				
-			}
-		});
-	}
-	return writeLayoutButton;
-}
-
-
-/**
- * This method initializes stopLayoutButton	
- * 	
- * @return javax.swing.JButton	
- */
-private JButton getStopLayoutButton() {
-	if (stopLayoutButton == null) {
-		stopLayoutButton = new JButton();
-		stopLayoutButton.setText("Stop Layout");
-		stopLayoutButton.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent e) {
-				stopLayout();
-				stopLayoutButton.setEnabled(false);
-				getRestartLayoutButton().setEnabled(true);
-			}
-		});
-	}
-	return stopLayoutButton;
-}
-
-/**
- * This method initializes restartLayoutButton	
- * 	
- * @return javax.swing.JButton	
- */
-private JButton getRestartLayoutButton() {
-	if (restartLayoutButton == null) {
-		restartLayoutButton = new JButton();
-		restartLayoutButton.setText("Restart Layout");
-		restartLayoutButton.setEnabled(false);
-		restartLayoutButton.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent e) {
-				resumeLayout();
-				restartLayoutButton.setEnabled(false);
-				stopLayoutButton.setEnabled(true);
-			}
-		});
-	}
-	return restartLayoutButton;
-}
-
 
 /**
  * Creates a layout from the type chosen among "ARFLayout", "FixedLayout", "WeightedARFLayout", "SpringLayout", "Kamada-Kawai",

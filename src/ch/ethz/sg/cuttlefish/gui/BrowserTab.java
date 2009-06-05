@@ -23,7 +23,6 @@
 
 package ch.ethz.sg.cuttlefish.gui;
 
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import ch.ethz.sg.cuttlefish.networks.BrowsableNetwork;

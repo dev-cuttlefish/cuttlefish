@@ -223,11 +223,4 @@ public class GroupPanel extends JPanel implements ItemSelectable{
 		
 	}
 
-
-
-	
-
-
-
-
 }

@@ -336,16 +336,6 @@ public class ExportPanel extends BrowserWidget  {
 		}
 	}
 	
-	public void exportToPos() {
-		try {
-			PrintStream p = new PrintStream(getBrowser().getPositionFile());
-			Utils2.writePositions(getNetwork(), p, getBrowser().getNetworkLayout());
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-	}
-
-
 	@Override
 	public void init() {
 		// TODO Auto-generated method stub

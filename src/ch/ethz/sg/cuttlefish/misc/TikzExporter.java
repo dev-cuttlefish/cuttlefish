@@ -84,36 +84,40 @@ public class TikzExporter {
 		try {
 			p = new PrintStream(outFile);
 		
+			p.println("\\documentclass{minimal}");		
+			/* Former preamble:
 			p.println("\\documentclass[a4paper]{article}");
 			p.println("\\usepackage{pst-pdf}");
 			p.println("\\usepackage{pst-node}");
-			p.println("\\usepackage{xcolor}");
-			p.println("\\usepackage{tikz}");
-			p.println("\\usepackage{tkz-graph}");
+			p.println("\\usepackage{xcolor}");*/
+			
+			p.println("\\usepackage{tikz, tkz-graph}");
 			p.println("\\usepackage[active,tightpage]{preview}");
 			p.println("\\PreviewEnvironment{tikzpicture}");
 			p.println("\\setlength\\PreviewBorder{5pt}");	
 			p.println("\\begin{document}");
-	
 			
-			
+			//In pgf we need to define the colors outside the figure before using them
 			writeVertexColorTable();
 			writeEdgeColorTable();;
 			
-
 			p.println("\\pgfdeclarelayer{background}");
 			p.println("\\pgfdeclarelayer{foreground}");
 			p.println("\\pgfsetlayers{background,main,foreground}");
 			p.println("\\begin{tikzpicture}");
 			
+			//Vertices will appear in the main layer while edges will be in the background
 			for (Vertex v : network.getVertices())
 				exportVertex(v);
 			
 			p.println("\\begin{pgfonlayer}{background}");
+			//Arrow style for directed networks
+			//TODO: Check arrows in undirected tikz 
 			p.println("\\tikzset{EdgeStyle/.style = {->,shorten >=1pt,>=stealth, bend right=10}}");
 			
+			//The edges are sorted by wheight so the heavier ones will be plotted later and thus on top
+			//of the lightest ones
 			ArrayList<Edge> edgeList = new ArrayList<Edge>(network.getEdges());
-			
 			Collections.sort(edgeList);
 
 			for (Edge e : edgeList)
@@ -133,7 +137,6 @@ public class TikzExporter {
 	
 	/**
 	 * Private method that defines the colors of each vertex from its id 
-	 * (it is s
 	 */
 	private void writeVertexColorTable()
 	{
@@ -160,6 +163,9 @@ public class TikzExporter {
 		return;
 	}
 
+	/**
+	 * Private method that defines the colors of each edge from its object identifier 
+	 */
 	private void writeEdgeColorTable()
 	{
 		if ((outFile == null) || (layout == null))
@@ -177,7 +183,10 @@ public class TikzExporter {
 		return;
 	}
 
-	
+	/**
+	 * Prints the necessary information to display a vertex in the tikz output
+	 * @param vertex
+	 */
 	private void exportVertex(Vertex vertex)
 	{
 		Point2D coordinates = layout.transform(vertex);
