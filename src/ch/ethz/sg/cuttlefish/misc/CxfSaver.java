@@ -1,3 +1,23 @@
+/*
+  
+    Copyright (C) 2009  Markus Michael Geipel, David Garcia Becerra
+
+	This file is part of Cuttlefish.
+	
+ 	Cuttlefish is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ 
+*/
 package ch.ethz.sg.cuttlefish.misc;
 
 import java.awt.geom.Point2D;
@@ -11,7 +31,6 @@ import javax.swing.JOptionPane;
 import ch.ethz.sg.cuttlefish.networks.BrowsableNetwork;
 import ch.ethz.sg.cuttlefish.networks.CxfNetwork;
 import edu.uci.ics.jung.algorithms.layout.Layout;
-import edu.uci.ics.jung.graph.DirectedGraph;
 import edu.uci.ics.jung.graph.util.EdgeType;
 import edu.uci.ics.jung.graph.util.Pair;
 
@@ -23,7 +42,7 @@ import edu.uci.ics.jung.graph.util.Pair;
 public class CxfSaver {
 
 	BrowsableNetwork network;
-	Layout layout;
+	Layout<Vertex,Edge> layout;
 	PrintStream ps;
 	
 	/**
@@ -31,7 +50,7 @@ public class CxfSaver {
 	 * @param network to save
 	 * @param layout to get the position of the nodes of the network
 	 */
-	public CxfSaver(BrowsableNetwork network, Layout layout)
+	public CxfSaver(BrowsableNetwork network, Layout<Vertex,Edge> layout)
 	{
 		this.network = network;
 		this.layout = layout;
@@ -51,6 +70,7 @@ public class CxfSaver {
 			boolean hideEdgeLabels = false;
 			if (network instanceof CxfNetwork)
 			{
+				//These two variables can only be defined if the network was loaded from cxf
 				hideVertexLabels = ((CxfNetwork)network).hideVertexLabels();
 				hideEdgeLabels = ((CxfNetwork)network).hideEdgeLabels();
 			}
@@ -60,6 +80,7 @@ public class CxfSaver {
 				if (network.getEdgeType(edge) == EdgeType.DIRECTED)
 					isDirected = true;
 			
+			// Setting up the configuration line
 			if ((!isDirected) || hideVertexLabels || hideEdgeLabels)
 				ps.print("configuration:");
 			

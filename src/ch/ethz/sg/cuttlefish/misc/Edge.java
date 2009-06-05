@@ -23,6 +23,10 @@ package ch.ethz.sg.cuttlefish.misc;
 
 import java.awt.Color;
 
+/**
+ * Class that stores the information related to the edges of the network.
+ * @author David Garcia Becerra
+ */
 public class Edge implements Comparable<Edge>{
 	
 	
@@ -174,6 +178,9 @@ public class Edge implements Comparable<Edge>{
 	}
 
 	@Override
+	/**
+	 * Compare method to order the edges by weight
+	 */
 	public int compareTo(Edge o) {
 		if (this.getWeight() > o.getWeight())
 			return 1;
