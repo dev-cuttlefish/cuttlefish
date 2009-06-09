@@ -22,7 +22,6 @@
 package ch.ethz.sg.cuttlefish.networks;
 
 import java.awt.Color;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.ConcurrentModificationException;
 import java.util.Hashtable;
@@ -32,9 +31,7 @@ import java.util.Set;
 import ch.ethz.sg.cuttlefish.misc.Edge;
 import ch.ethz.sg.cuttlefish.misc.Vertex;
 
-import edu.uci.ics.jung.graph.DirectedSparseGraph;
 import edu.uci.ics.jung.graph.SparseGraph;
-import edu.uci.ics.jung.visualization.VisualizationViewer;
 
 
 
@@ -53,13 +50,6 @@ public class BrowsableNetwork extends SparseGraph<Vertex, Edge> {
 	public void updateAnnotations(){
 	}
 	
-	private final ArrayList<String> loadAnnotations() {
-		ArrayList<String> annotations = new ArrayList<String>();
-		//TODO: add reflection and extension on Vertices
-		annotations.add("label");
-		return annotations;
-	}
-
 	public final void setArguments(Hashtable<String, String> args){
 		arguments=args;
 	}
@@ -160,7 +150,6 @@ public class BrowsableNetwork extends SparseGraph<Vertex, Edge> {
 	public void applyShadows() {
 		for(Vertex vertex: getVertices()){
 			if(vertex.isShadowed()){
-				//System.out.println("shadowing "+vertex);
 				Color shadowColor = Color.white;
 				Color c = vertex.getFillColor();
 				if (c!= null)

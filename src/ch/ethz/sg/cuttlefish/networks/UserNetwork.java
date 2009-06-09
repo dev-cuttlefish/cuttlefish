@@ -24,9 +24,12 @@ package ch.ethz.sg.cuttlefish.networks;
 import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
+
+import javax.swing.JOptionPane;
 
 
 import ch.ethz.sg.cuttlefish.misc.Edge;
@@ -44,26 +47,30 @@ public class UserNetwork extends BrowsableNetwork {
 		
 		HashMap<Integer,Vertex> hash = new HashMap<Integer,Vertex>();
 		
-		try {
-			fr = new FileReader(graphFile);
-			br = new BufferedReader(fr);
+			try {
+				fr = new FileReader(graphFile);
+				br = new BufferedReader(fr);
+				
+				Vertex v;
+				while ((v = getNextVertex()) != null)
+				{
+					addVertex(v);
+					hash.put(v.getId(), v);
+				}
+				
+				Edge e;
+				while (( e = getNextEdge()) != null)
+					addEdge(e,hash.get(orig), hash.get(dest));
 			
-			Vertex v;
-			while ((v = getNextVertex()) != null)
-			{
-				addVertex(v);
-				hash.put(v.getId(), v);
+			} catch (FileNotFoundException fnfEx) {
+				JOptionPane.showMessageDialog(null,fnfEx.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
+				System.err.println("cff network file not found");
+				fnfEx.printStackTrace();
+			} catch (IOException ioEx) {
+				JOptionPane.showMessageDialog(null,ioEx.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
+				System.err.println("Input problem in cff file");
+				ioEx.printStackTrace();
 			}
-			
-			Edge e;
-			while (( e = getNextEdge()) != null)
-				addEdge(e,hash.get(orig), hash.get(dest));
-			
-			
-		
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 	}
 	
 	public void load(File nodeFile, File edgeFile){

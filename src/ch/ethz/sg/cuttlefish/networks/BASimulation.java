@@ -22,14 +22,8 @@
 package ch.ethz.sg.cuttlefish.networks;
 
 import java.awt.Color;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.ConcurrentModificationException;
-import java.util.Iterator;
-
 import ch.ethz.sg.cuttlefish.misc.Edge;
 import ch.ethz.sg.cuttlefish.misc.Vertex;
-import edu.uci.ics.jung.graph.util.Pair;
 
 public class BASimulation extends BrowsableNetwork implements ISimulation {
 

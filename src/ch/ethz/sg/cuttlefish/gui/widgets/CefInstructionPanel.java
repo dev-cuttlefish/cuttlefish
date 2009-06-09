@@ -31,7 +31,6 @@ import javax.swing.JFileChooser;
 
 import ch.ethz.sg.cuttlefish.gui.BrowserWidget;
 import ch.ethz.sg.cuttlefish.networks.InteractiveCxfNetwork;
-import ch.ethz.sg.cuttlefish.networks.UserNetwork;
 
 public class CefInstructionPanel extends BrowserWidget {
 
@@ -111,8 +110,6 @@ public class CefInstructionPanel extends BrowserWidget {
 
 	@Override
 	public void init() {
-		// TODO Auto-generated method stub
-		
 	}
 
 }

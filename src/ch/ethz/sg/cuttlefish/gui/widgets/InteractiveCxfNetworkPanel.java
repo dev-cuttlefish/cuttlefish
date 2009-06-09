@@ -31,8 +31,6 @@ import javax.swing.JFileChooser;
 
 import ch.ethz.sg.cuttlefish.gui.BrowserWidget;
 import ch.ethz.sg.cuttlefish.networks.InteractiveCxfNetwork;
-import ch.ethz.sg.cuttlefish.networks.StaticCxfNetwork;
-import ch.ethz.sg.cuttlefish.networks.UserNetwork;
 
 public class InteractiveCxfNetworkPanel extends BrowserWidget {
 

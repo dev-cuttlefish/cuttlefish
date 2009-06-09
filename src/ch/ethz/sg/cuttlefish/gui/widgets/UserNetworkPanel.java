@@ -110,8 +110,6 @@ public class UserNetworkPanel extends BrowserWidget {
 
 	@Override
 	public void init() {
-		// TODO Auto-generated method stub
-		
 	}
 
 }

@@ -102,24 +102,20 @@ public abstract class TemporalNetwork extends BrowsableNetwork {
 			
 			ArrayList<Date> dates = new ArrayList<Date>();
 			
-			try{
-				GregorianCalendar now = new GregorianCalendar();
-				now.setTime(start);
+			GregorianCalendar now = new GregorianCalendar();
+			now.setTime(start);
+		
 			
+			
+		//	System.out.println(format.format(now.getTime()));
+			dates.add(new java.sql.Date(now.getTimeInMillis()));
+			while(now.getTime().before(end)){
 				
-				
-			//	System.out.println(format.format(now.getTime()));
+				now.add(stepType, steps);
 				dates.add(new java.sql.Date(now.getTimeInMillis()));
-				while(now.getTime().before(end)){
-					
-					now.add(stepType, steps);
-					dates.add(new java.sql.Date(now.getTimeInMillis()));
-				//	System.out.println(format.format(now.getTime()));
-				}
-			
-			}catch(Exception e){
-				e.printStackTrace();
+			//	System.out.println(format.format(now.getTime()));
 			}
+			
 			
 			return dates;
 		}

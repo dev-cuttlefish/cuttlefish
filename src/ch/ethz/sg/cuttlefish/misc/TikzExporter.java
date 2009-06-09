@@ -24,20 +24,16 @@ package ch.ethz.sg.cuttlefish.misc;
 import java.awt.Color;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.awt.geom.RectangularShape;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 
 import javax.swing.JOptionPane;
 
 import ch.ethz.sg.cuttlefish.networks.BrowsableNetwork;
 import edu.uci.ics.jung.algorithms.layout.Layout;
-import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.graph.util.EdgeType;
 import edu.uci.ics.jung.graph.util.Pair;
 
@@ -54,6 +50,8 @@ public class TikzExporter {
 	private final double FACTOR = 0.025;
 	private final double WIDTHFACTOR = 0.5;
 	private double maxY= 0;
+	private boolean hideVertexLabels = false;
+	private boolean hideEdgeLabels = false;
 	
 	/**
 	 * General constructor for the class, pure object oriented approach.
@@ -85,12 +83,6 @@ public class TikzExporter {
 			p = new PrintStream(outFile);
 		
 			p.println("\\documentclass{minimal}");		
-			/* Former preamble:
-			p.println("\\documentclass[a4paper]{article}");
-			p.println("\\usepackage{pst-pdf}");
-			p.println("\\usepackage{pst-node}");
-			p.println("\\usepackage{xcolor}");*/
-			
 			p.println("\\usepackage{tikz, tkz-graph}");
 			p.println("\\usepackage[active,tightpage]{preview}");
 			p.println("\\PreviewEnvironment{tikzpicture}");
@@ -207,14 +199,15 @@ public class TikzExporter {
 			p.print(" fill="+vertex.getId()+"FILL,");
 		p.print(" minimum size = " + Utils.ensureDecimal((vertex.getSize())) + "pt,");
 		
-		//TODO: check hide_vertex_labels here
 		if ((vertex.getLabel() != null) && (true))
 		{
 			String latexLabel = vertex.getLabel().replace("&", "\\&");
+			latexLabel = latexLabel.replace("_", "\\_");
 			p.print(" label={[label distance=-7]"+ calculateAngle(vertex)+":" + latexLabel + "},");
 		}
+		//TODO: now all vertices are shaded, add a variable in cxf to determine that
 		p.print(" shading=ball,");
-		if (vertex.getFillColor() != null)
+		if (vertex.getFillColor() != null) //The color reappears in the shading
 			p.print(" ball color="+vertex.getId()+"FILL");
 		else
 			p.print(" ball color=black");			
@@ -222,64 +215,37 @@ public class TikzExporter {
 	}
 	
 	Point2D center = null;
+	/**
+	 * Private method that calculates the angle for the vertex label according to the four quadrant rule that
+	 * paints the labels in the tex file in a way that they are on the other side of the center of the network.
+	 * @param v vertex that is going to be painted
+	 * @return
+	 */
 	private double calculateAngle(Vertex v)
 	{
 		if (center == null)
 			center = Utils.caculateCenter(layout, network);
 		Point2D vPos = layout.transform(v);
-	/*	Point2D diff = new Point2D.Double(vPos.getX()-center.getX(), center.getY() - vPos.getY());
-		Point2D origin = new Point2D.Double(1.0d, 0.0d);
-		
-		return angle(origin,diff);
-		*/
 		if (vPos.getX() > center.getX())
 		{
 			if (vPos.getY() < center.getY())
-			{
 				return 45;
-			}
 			else
-			{
 				return 315;
-			}
 		}
 		else
 		{
 			if (vPos.getY() < center.getY())
-			{
 				return 135;
-			}
 			else
-			{
 				return 225;
-			}
 		}
 	}
 	
-	
-    public double angle(Point2D a, Point2D b) {
-    	 
-        double dx = b.getX() - a.getX();
-        double dy = b.getY() - a.getY();
-        double angle = 0.0d;
- 
-        if (dx == 0.0) {
-            if(dy == 0.0)     angle = 0.0;
-            else if(dy > 0.0) angle = Math.PI / 2.0;
-            else              angle = (Math.PI * 3.0) / 2.0;
-        }
-        else if(dy == 0.0) {
-            if(dx > 0.0)      angle = 0.0;
-            else              angle = Math.PI;
-        }
-        else {
-            if(dx < 0.0)      angle = Math.atan(dy/dx) + Math.PI;
-            else if(dy < 0.0) angle = Math.atan(dy/dx) + (2*Math.PI);
-            else              angle = Math.atan(dy/dx);
-        }
-        return (angle * 180) / Math.PI;
-    }
-    
+	/**
+	 * Prints the necessary information for tikz to represent an edge between given nodes
+	 * @param edge to paint
+	 */
 	private void exportEdge(Edge edge)
 	{
 		Vertex v1, v2;
@@ -295,11 +261,16 @@ public class TikzExporter {
 			v2 = endpoints.getSecond();
 		}
 		
-		if (v1.getId() == v2.getId())
+		// the edges are displayed as directed by default, if it is undirected, the line style
+		// is overwritten to be arrowless
+		if (network.getEdgeType(edge) == EdgeType.UNDIRECTED)
+			p.println("\\tikzset{EdgeStyle/.append style = {-}}");
+		
+		if (v1.getId() == v2.getId()) //self loop case, it is written with Loop in pgf
 		{	
 			double angle = calculateAngle(v1);
 			
-			if	((angle > 124) && (angle < 226))
+			if	((angle > 124) && (angle < 226)) //two kinds of loops, in the left or right of the node
 				p.print("\\Loop[dist=1cm,dir=WE,");
 			else
 				p.print("\\Loop[dist=1cm,dir=EA,");
@@ -307,49 +278,58 @@ public class TikzExporter {
 			p.print("style={->,shorten >=1pt,>=stealth,line width="+ Utils.ensureDecimal(edge.getWidth()*WIDTHFACTOR));
 		    p.print("}, color="+edge.toString());
 		  
-		    //TODO: check hide_vertex_labels here
-		    if ((edge.getLabel() != null) && (true))
+		    if ((edge.getLabel() != null) && (! hideEdgeLabels))
 		    	p.print(", label="+ edge.getLabel());
 		    
 		    p.print("](" + v1.getId() + ")\n");
 		}
 		else
 		{
-			
-		/*	p.print("\\draw [");
-			if (network.getEdgeType(edge) == EdgeType.DIRECTED)
-				p.print("->,");
-			else
-				p.print("-,");
-				
-			p.print(" line width=" + Utils.ensureDecimal(edge.getWidth()*WIDTHFACTOR) +"," );
-			if (edge.getColor() != null)
-				p.print(" draw="+edge.toString());
-		
-			
-			p.print("] (" + v1.getId() + ") to" );
-			//TODO: check hide_edge_labels here
-			if ((edge.getLabel() != null) && (true))
-				p.print(" node[above] {" + edge.getLabel() + "}");
-			p.print(" (" + v2.getId() + ");\n");*/
-			
-			if (network.getEdgeType(edge) == EdgeType.UNDIRECTED)
-				p.println("\tikzset{EdgeStyle/.append style = {-}}");
-			
-			
 			p.print("\\Edge [lw=" + Utils.ensureDecimal(edge.getWidth()*WIDTHFACTOR) );
 			if (edge.getColor() != null)
 				p.print(", color=" + edge.toString());
-			//TODO: check hide_edge_labels here
-			if ((edge.getLabel() != null) && (true))
+		
+			if ((edge.getLabel() != null) && (! hideEdgeLabels))
 				p.print(", label=" + edge.getLabel());
-			
-			
 			
 			p.print("](" + v1.getId() + ")(" + v2.getId() + ")\n");
 			
-			if (network.getEdgeType(edge) == EdgeType.UNDIRECTED)
-				p.println("\tikzset{EdgeStyle/.append style = {->}}");
 		}
+
+		//To return to default directed style, the arrow edge is reset
+		if (network.getEdgeType(edge) == EdgeType.UNDIRECTED)
+			p.println("\\tikzset{EdgeStyle/.append style = {->}}");
+
+	}
+	/**
+	 * Getter to know if the vertex labels have to be ignored
+	 * @return
+	 */
+	public boolean hiddenVertexLabels() {
+		return hideVertexLabels;
+	}
+
+	/**
+	 * Setter to hide the vertex labels
+	 * @param hideVertexLabels
+	 */
+	public void setHideVertexLabels(boolean hideVertexLabels) {
+		this.hideVertexLabels = hideVertexLabels;
+	}
+
+	/**
+	 * Setter to hide the edge labels
+	 * @param hideEdgeLabels
+	 */
+	public void setHideEdgeLabels(boolean hideEdgeLabels) {
+		this.hideEdgeLabels = hideEdgeLabels;
+	}
+
+	/**
+	 * Getter to know if the edge labels have to be ignored
+	 * @return
+	 */
+	public boolean hiddenEdgeLabels() {
+		return hideEdgeLabels;
 	}
 }

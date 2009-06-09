@@ -26,6 +26,10 @@ import java.util.Hashtable;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+/**
+ * Class with static methods of general purpose for dealing with XML files
+ * @author david
+ */
 public class XMLUtil {
 		static public Hashtable<String, String> getArguments(Node source) {
 			Hashtable<String, String> argumentTable = new Hashtable<String, String>();
