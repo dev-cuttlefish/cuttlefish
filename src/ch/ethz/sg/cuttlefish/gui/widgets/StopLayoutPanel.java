@@ -23,16 +23,10 @@ package ch.ethz.sg.cuttlefish.gui.widgets;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.io.File;
 
 import javax.swing.JButton;
-import javax.swing.JFileChooser;
-
 
 import ch.ethz.sg.cuttlefish.gui.BrowserWidget;
-import ch.ethz.sg.cuttlefish.networks.InteractiveCxfNetwork;
-import ch.ethz.sg.cuttlefish.networks.UserNetwork;
-import edu.uci.ics.jung.algorithms.layout.Layout;
 
 public class StopLayoutPanel extends BrowserWidget {
 
@@ -88,8 +82,6 @@ public class StopLayoutPanel extends BrowserWidget {
 	
 	@Override
 	public void init() {
-		// TODO Auto-generated method stub
-		
 	}
 
 }

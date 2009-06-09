@@ -28,6 +28,10 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.RectangularShape;
 
+/**
+ * Class that stores the information associated with a vertex
+ * @author david
+ */
 public class Vertex {
 	
 	
@@ -46,6 +50,10 @@ public class Vertex {
 	private boolean fixed = false;
 	private Point2D position;
 	
+	/**
+	 * General constructor for a vertex
+	 * @param id
+	 */
 	public Vertex(int id){
 		this.id = id;
 		Ellipse2D ellipse = new Ellipse2D.Float();
@@ -54,6 +62,11 @@ public class Vertex {
 		position = null;
 	}
 
+	/**
+	 * Constructor for a vertex with a label.
+	 * @param id
+	 * @param label
+	 */
 	public Vertex(int id, String label){
 		this.id = id;
 		this.label = label;
@@ -63,6 +76,9 @@ public class Vertex {
 		position = null;
 		}
 
+	/**
+	 * Constructor for an annonymous vertex
+	 */
 	public Vertex() {
 		this.id = -1;  //Anonymous vertex
 		Ellipse2D ellipse = new Ellipse2D.Float();
@@ -163,24 +179,38 @@ public class Vertex {
 		this.fixed = fixed;
 	}
 	/**
-	 * @return the fixed
+	 * @return if it is fixed
 	 */
 	public boolean isFixed() {
 		return fixed;
 	}
+	/**
+	 * @return the size of the vertex
+	 */
 	public double getSize() {
 		return size;
 	}
 
+	/**
+	 * Sets the size of the vertex
+	 * @param size
+	 */
 	public void setSize(double size) {
 		this.size = size;
 		((RectangularShape) this.shape).setFrameFromCenter(0,0,size,size);
 	}
 
+	/**
+	 * @return the shape of the vertex
+	 */
 	public Shape getShape() {
 		return shape;
 	}
 
+	/**
+	 * Creates the shape of the vertex given its description in a string
+	 * @param shapeString "square" or "circle"
+	 */
 	public void setShape(String shapeString) {
 		Shape newShape;
 		if (shapeString.startsWith("square")){
@@ -197,22 +227,42 @@ public class Vertex {
 		this.shape = newShape;
 	}
 	
+	/**
+	 * Sets the shape of the vertex to an already created one
+	 * @param shape
+	 */
 	public void setShape(Shape shape) {
 		this.shape = shape;
 	}
 
+	/**
+	 * General purpose variable 1 getter
+	 * @return
+	 */
 	public String getVar1() {
 		return var1;
 	}
-
+	
+	/**
+	 * General purpose variable 1 setter
+	 * @return
+	 */
 	public void setVar1(String var1) {
 		this.var1 = var1;
 	}
 
+	/**
+	 * General purpose variable 2 getter
+	 * @return
+	 */
 	public String getVar2() {
 		return var2;
 	}
 
+	/**
+	 * General purpose variable 2 setter
+	 * @return
+	 */
 	public void setVar2(String var2) {
 		this.var2 = var2;
 	}
@@ -231,14 +281,26 @@ public class Vertex {
 		return width;
 	}
 
+	/**
+	 * @return a Point2D with the position of the vertex
+	 */
 	public Point2D getPosition(){
 		return position;
 	}
 	
+	/**
+	 * Sets the position of the vertex to an already created one
+	 * @param position
+	 */
 	public void setPosition(Point2D position){
 		this.position = (Point2D) position.clone();
 	}
 	
+	/**
+	 * Sets the position of the vertex to the coordinates
+	 * @param x
+	 * @param y
+	 */
 	public void setPosition(double x, double y){
 		this.position = new Point2D.Double(x,y);
 	}

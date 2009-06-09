@@ -24,6 +24,8 @@ package ch.ethz.sg.cuttlefish.networks;
 import java.io.File;
 import java.io.IOException;
 
+import javax.swing.JOptionPane;
+
 import ch.ethz.sg.cuttlefish.misc.Edge;
 import ch.ethz.sg.cuttlefish.misc.EdgeFactory;
 import ch.ethz.sg.cuttlefish.misc.Vertex;
@@ -41,9 +43,10 @@ public class PajekNetwork extends BrowsableNetwork {
 		PajekNetReader<PajekNetwork, Vertex, Edge> pReader = new PajekNetReader<PajekNetwork, Vertex, Edge>(vertexFactory, edgeFactory);
 		try {
 			pReader.load(netFile.getAbsolutePath(), this);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} catch (IOException ioEx) {
+			JOptionPane.showMessageDialog(null,ioEx.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
+			System.err.println("Input error in Pajek file");
+			ioEx.printStackTrace();
 		}
 		
 		for (Vertex v : getVertices())

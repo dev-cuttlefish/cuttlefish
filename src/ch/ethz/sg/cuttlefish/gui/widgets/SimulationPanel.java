@@ -25,6 +25,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 
 import javax.swing.JButton;
+import javax.swing.JOptionPane;
 
 import ch.ethz.sg.cuttlefish.gui.BrowserWidget;
 import ch.ethz.sg.cuttlefish.networks.ISimulation;
@@ -125,8 +126,10 @@ public class SimulationPanel extends BrowserWidget {
 	                        		   
 	                        		   try {
 										Thread.sleep(sleepTime);
-	                        		   } catch (InterruptedException e) {
-										e.printStackTrace();
+	                        		   } catch (InterruptedException iEx) {
+	                        				JOptionPane.showMessageDialog(null,iEx.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
+	                        				System.err.println("Interrupted simulation process");
+	                        				iEx.printStackTrace();
 	                        		   }
 	                        	   }
 	                           }
@@ -155,7 +158,6 @@ public class SimulationPanel extends BrowserWidget {
 					((ISimulation)getNetwork()).update(sleepTime);
 					System.out.println("StepChange");
 					getBrowser().onNetworkChange();
-					
 				}
 			});
 		}
@@ -188,8 +190,6 @@ public class SimulationPanel extends BrowserWidget {
 
 	@Override
 	public void init() {
-		// TODO Auto-generated method stub
-		
 	}
 
 }

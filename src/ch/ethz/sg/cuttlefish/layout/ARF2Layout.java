@@ -31,15 +31,8 @@ import java.util.Set;
 
 import ch.ethz.sg.cuttlefish.misc.Edge;
 import ch.ethz.sg.cuttlefish.misc.Vertex;
-import ch.ethz.sg.cuttlefish.networks.BrowsableNetwork;
-
 import edu.uci.ics.jung.algorithms.layout.AbstractLayout;
-import edu.uci.ics.jung.algorithms.layout.FRLayout2;
-import edu.uci.ics.jung.algorithms.layout.ISOMLayout;
-import edu.uci.ics.jung.algorithms.layout.KKLayout;
 import edu.uci.ics.jung.algorithms.layout.Layout;
-import edu.uci.ics.jung.algorithms.layout.SpringLayout;
-import edu.uci.ics.jung.algorithms.layout.SpringLayout2;
 import edu.uci.ics.jung.algorithms.util.IterativeContext;
 import edu.uci.ics.jung.graph.Graph;
 
@@ -169,26 +162,20 @@ protected void initialize_local_vertex(Vertex v) {
  */
 @SuppressWarnings("unchecked")
 public void advancePositions() {
-	try{
-
-        for (int i = 0; i < updatesPerFrame; i++) {
-        	for (Object o : getVertices()) {
-                Vertex v = (Vertex) o;
-                if(!isFixed(v)){
-	                Point2D c = transform((V) v);
-	                if(c != null){
-		                Point2D f = getForceforNode(v);
-		                double deltaIndividual = getGraph().degree((V)v) > 1 ? deltaT / Math.pow(getGraph().degree((V)v), 0.4) : deltaT;
-		                f.setLocation(f.getX()*deltaIndividual, f.getY()*deltaIndividual);
-		                c.setLocation(c.getX() + f.getX(), c.getY() + f.getY());
-	                }
-                }
-            }
-        }
-	}catch(Exception e){
-		System.err.println(e);
-		e.printStackTrace();
-	}
+    for (int i = 0; i < updatesPerFrame; i++) {
+		for (Object o : getVertices()) {
+	        Vertex v = (Vertex) o;
+	        if(!isFixed(v)){
+	            Point2D c = transform((V) v);
+	            if(c != null){
+	                Point2D f = getForceforNode(v);
+	                double deltaIndividual = getGraph().degree((V)v) > 1 ? deltaT / Math.pow(getGraph().degree((V)v), 0.4) : deltaT;
+	                f.setLocation(f.getX()*deltaIndividual, f.getY()*deltaIndividual);
+	                c.setLocation(c.getX() + f.getX(), c.getY() + f.getY());
+	            }
+	        }
+	    }
+    }
 	align(100,100);
 }
 
@@ -332,6 +319,7 @@ public Point2D assignPositionToVertex(Vertex vertex) {
 	return c;
 }
 
+@SuppressWarnings("unchecked")
 public void updateVertices(){
 	
 	Set<Vertex> nvertices = new HashSet<Vertex>();

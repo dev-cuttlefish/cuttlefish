@@ -30,7 +30,6 @@ import javax.swing.JFileChooser;
 
 
 import ch.ethz.sg.cuttlefish.gui.BrowserWidget;
-import ch.ethz.sg.cuttlefish.networks.ISimulation;
 import ch.ethz.sg.cuttlefish.networks.PajekNetwork;
 
 public class PajekPanel extends BrowserWidget {
@@ -111,8 +110,6 @@ public class PajekPanel extends BrowserWidget {
 
 	@Override
 	public void init() {
-		// TODO Auto-generated method stub
-		
 	}
 
 }

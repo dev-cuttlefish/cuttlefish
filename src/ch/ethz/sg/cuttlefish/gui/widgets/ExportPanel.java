@@ -20,7 +20,6 @@ package ch.ethz.sg.cuttlefish.gui.widgets;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.Image;
 import java.awt.Insets;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -32,7 +31,6 @@ import java.io.PrintStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
-import javax.imageio.ImageIO;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
@@ -40,16 +38,12 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
 import ch.ethz.sg.cuttlefish.gui.BrowserWidget;
-import ch.ethz.sg.cuttlefish.gui.CuttlefishPanel;
 
 import com.sun.image.codec.jpeg.*;
-import com.sun.imageio.plugins.png.PNGImageWriter;
-import com.sun.imageio.plugins.png.PNGImageWriterSpi;
 
-import ch.ethz.sg.cuttlefish.misc.CxfSaver;
+import ch.ethz.sg.cuttlefish.misc.PSTricksExporter;
 import ch.ethz.sg.cuttlefish.misc.TikzExporter;
-import ch.ethz.sg.cuttlefish.misc.Utils;
-import ch.ethz.sg.cuttlefish.misc.Utils2;
+import ch.ethz.sg.cuttlefish.misc.Conversion;
 import ch.ethz.sg.cuttlefish.networks.TemporalNetwork;
 
 
@@ -156,9 +150,7 @@ public class ExportPanel extends BrowserWidget  {
 			dotButton.setText("dot");
 			dotButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
-					
 						exportToDot();
-					
 				}
 			});
 		}
@@ -195,9 +187,7 @@ public class ExportPanel extends BrowserWidget  {
 			pstricksButton.setText("pstricks");
 			pstricksButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
-					
 						exportToPsTricks();
-					
 				}
 			});
 		}
@@ -233,9 +223,6 @@ public class ExportPanel extends BrowserWidget  {
 					    } else {
 			                System.out.println("Input cancelled by user");
 			            }
-					
-					
-					
 				}
 			});
 		}
@@ -260,14 +247,14 @@ public class ExportPanel extends BrowserWidget  {
 						PrintStream p = new PrintStream(new File("adjlists/" + getNetwork().getName()+"_adjmatrix.dat"));
 						//Utils.writeAdjacencyList(getNetwork(), p);
 						
-						int[][] myAdjMatrix = Utils2.graphToAdjacencyMatrix( getNetwork() );
-						Utils2.printMatrix( myAdjMatrix , p );
+						int[][] myAdjMatrix = Conversion.graphToAdjacencyMatrix( getNetwork() );
+						Conversion.printMatrix( myAdjMatrix , p );
 						
-					} catch (FileNotFoundException e1) {
-						e1.printStackTrace();
+					} catch (FileNotFoundException fnfEx) {
+						JOptionPane.showMessageDialog(null,fnfEx.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
+						System.err.println("Error trying to write andjacency list file");
+						fnfEx.printStackTrace();
 					}
-						//exportToPos();
-				
 				}
 			});
 		}
@@ -279,67 +266,68 @@ public class ExportPanel extends BrowserWidget  {
 		
 		BufferedImage img = getBrowser().getSnapshot();
 	    
-	    try {
-	       OutputStream out = new FileOutputStream(getNetwork().getName()+".jpg");
-	   
+	       OutputStream out;
+		try {
+			out = new FileOutputStream(getNetwork().getName()+".jpg");
 	       JPEGImageEncoder encoder = JPEGCodec.createJPEGEncoder(out);
 	       JPEGEncodeParam param = JPEGCodec.getDefaultJPEGEncodeParam(img);
 	       param.setQuality(1.0f,true);
 	       encoder.setJPEGEncodeParam(param);
 	       encoder.encode(img,param);
 	       out.close();
-	     } catch (Exception e) {
-	       System.out.println(e); 
-	     }
-		
+		} 
+		catch (FileNotFoundException fnfEx) {
+			JOptionPane.showMessageDialog(null,fnfEx.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
+			System.err.println("Impossible to save in JPG");
+			fnfEx.printStackTrace();
+		} catch (ImageFormatException ifEx) {
+			JOptionPane.showMessageDialog(null,ifEx.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
+			System.err.println("Error creating JPG Snapshot");
+			ifEx.printStackTrace();
+		} catch (IOException ioEx) {
+			JOptionPane.showMessageDialog(null,ioEx.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
+			System.err.println("Output error when saving in JPG");
+			ioEx.printStackTrace();
+		}
 	}
 	
 	
 	public void exportToDot() {
 		try {
 			PrintStream p = new PrintStream(new File(getNetwork().getName()+".dot"));
-			Utils2.graphToDot(getNetwork(), p);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+			Conversion.graphToDot(getNetwork(), p);
+		} catch (FileNotFoundException fnfEx) {
+			JOptionPane.showMessageDialog(null,fnfEx.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
+			System.err.println("Impossible export to Dot");
+			fnfEx.printStackTrace();
 		}
 	}
 
 
 
 	public void exportToPsTricks() {
-		try {
+		String fileName = null;
+		if(getNetwork() instanceof TemporalNetwork && ((TemporalNetwork)getNetwork()).getDate() != null){
+			DateFormat format = new SimpleDateFormat("yyyy");//DateFormat format = new SimpleDateFormat("yyyy-MM-dd_HHmm_ss");
+			fileName = getNetwork().getName()+ format.format(((TemporalNetwork)getNetwork()).getDate()) + ".tex";
 			
-			String fileName = null;
-			if(getNetwork() instanceof TemporalNetwork && ((TemporalNetwork)getNetwork()).getDate() != null){
-				DateFormat format = new SimpleDateFormat("yyyy");//DateFormat format = new SimpleDateFormat("yyyy-MM-dd_HHmm_ss");
-				fileName = getNetwork().getName()+ format.format(((TemporalNetwork)getNetwork()).getDate()) + ".tex";
-				
-			}else{
-				fileName = getNetwork().getName()+".tex";
-			}
-			System.out.println("exporting to " + fileName);
-			File f = new File(fileName);
-			//f.createNewFile();
-			PrintStream p = new PrintStream(f);
-			Utils.exportGraphToPSTricks(getNetwork(), p, getBrowser().getNetworkLayout());
-		} catch (Exception e) {
-			e.printStackTrace();
+		}else{
+			fileName = getNetwork().getName()+".tex";
 		}
+		System.out.println("exporting to " + fileName);
+		File f = new File(fileName);
+
+		PSTricksExporter psExporter = new PSTricksExporter(getNetwork());
+		psExporter.exportToPSTricks(f, getBrowser().getNetworkLayout());
 	}
 	
 	public void exportToTikz(File file) {
-		try {
-			TikzExporter tikzexp = new TikzExporter(getNetwork());
-			tikzexp.exportToTikz(file, getBrowser().getNetworkLayout());
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		TikzExporter tikzexp = new TikzExporter(getNetwork());
+		tikzexp.exportToTikz(file, getBrowser().getNetworkLayout());
 	}
 	
 	@Override
 	public void init() {
-		// TODO Auto-generated method stub
-		
 	}
 
 	/**
@@ -355,9 +343,11 @@ public class ExportPanel extends BrowserWidget  {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
 					try {
 						PrintStream p = new PrintStream(new File("edgelists/" + getNetwork().getName()+".edgelist"));
-						Utils2.writeEdgeList(getNetwork(), p);
-					} catch (FileNotFoundException e1) {
-						e1.printStackTrace();
+						Conversion.writeEdgeList(getNetwork(), p);
+					} catch (FileNotFoundException fnfEx) {
+						JOptionPane.showMessageDialog(null,fnfEx.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
+						System.err.println("Impossible to save in edge list");
+						fnfEx.printStackTrace();
 					}
 					//
 				}

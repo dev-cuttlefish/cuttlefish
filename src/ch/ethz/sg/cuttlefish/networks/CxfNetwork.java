@@ -22,7 +22,6 @@
 package ch.ethz.sg.cuttlefish.networks;
 
 import java.awt.Color;
-import java.awt.Shape;
 import java.awt.geom.Point2D;
 import java.io.BufferedReader;
 import java.io.File;
@@ -33,15 +32,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.ConcurrentModificationException;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Set;
 import java.util.StringTokenizer;
+
+import javax.swing.JOptionPane;
 
 
 import ch.ethz.sg.cuttlefish.misc.Edge;
 import ch.ethz.sg.cuttlefish.misc.Vertex;
-import edu.uci.ics.jung.graph.SparseGraph;
 import edu.uci.ics.jung.graph.util.EdgeType;
 
 public class CxfNetwork extends BrowsableNetwork {
@@ -114,16 +112,15 @@ public class CxfNetwork extends BrowsableNetwork {
 			for (Vertex v : vertices)
 				removeVertex(v);
 			}
-			catch (ConcurrentModificationException e){
-				
-			}
+			catch (ConcurrentModificationException e){}
 		}
 		
 		try {
 			fr = new FileReader(graphFile);
-		} catch (FileNotFoundException e) {
-			System.out.println("NETWORK FILE NOT FOUND");
-			e.printStackTrace();
+		} catch (FileNotFoundException fnfEx) {
+			JOptionPane.showMessageDialog(null,fnfEx.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
+			System.err.println("Network file not found");
+			fnfEx.printStackTrace();
 		}
 		
 		br = new BufferedReader(fr);
@@ -394,9 +391,10 @@ public class CxfNetwork extends BrowsableNetwork {
 		    	System.out.println("Unkown object in line" + (lineNum-1));
 		    }
 			
-		} catch (IOException e) {
-			System.out.println("INPUT ERROR");
-			e.printStackTrace();
+		} catch (IOException ioEx) {
+			JOptionPane.showMessageDialog(null,ioEx.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
+			System.err.println("Input error");
+			ioEx.printStackTrace();
 		}
 		
 		return token;

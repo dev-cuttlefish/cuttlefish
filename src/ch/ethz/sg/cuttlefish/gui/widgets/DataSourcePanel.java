@@ -25,15 +25,19 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JOptionPane;
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
@@ -105,15 +109,13 @@ public class DataSourcePanel extends BrowserWidget {
 			jButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent ev) {
 					Node source = sources.item(jComboBox.getSelectedIndex());
-					boolean isDatabaseSource = true;
-					
 					String className = source.getAttributes().getNamedItem("class").getNodeValue();
-					
+
+					/*boolean isDatabaseSource = true;
 					String database = null;
 					String host = null;
 					String login = null;
 					String password = null;
-					
 					try {
 						database = source.getAttributes().getNamedItem("database").getNodeValue();
 						host = source.getAttributes().getNamedItem("host").getNodeValue();
@@ -122,35 +124,40 @@ public class DataSourcePanel extends BrowserWidget {
 						
 					} catch (Exception e) {
 						isDatabaseSource = false;
-					}
+					}*/
 
 					Class<?> clazz;
 					
-					try {
-						clazz = Class.forName(className);
-						BrowsableNetwork network = (BrowsableNetwork) clazz.newInstance();
-					/*	if(isDatabaseSource){
-							((IDatabaseSource)network).loadFromDB(host, login, password, database);
-						}*/
-						
-						network.setArguments(XMLUtil.getArguments(source));
-						//network.init();
-						getBrowser().setNetwork(network);
-						
-					} catch (Exception e1) {
-
-						e1.printStackTrace();
-						getBrowser().setNetwork(new BrowsableNetwork());
-						return;
+						try {
+							clazz = Class.forName(className);
+							BrowsableNetwork network = (BrowsableNetwork) clazz.newInstance();
+						  
+						  /*if(isDatabaseSource){
+								((IDatabaseSource)network).loadFromDB(host, login, password, database);
+							}*/
+							
+							network.setArguments(XMLUtil.getArguments(source));
+							getBrowser().setNetwork(network);
+					
+						} catch (ClassNotFoundException cnfEx) {
+							JOptionPane.showMessageDialog(null,cnfEx.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
+							System.err.println("Nonexisting class in data source");
+							cnfEx.printStackTrace();
+							getBrowser().setNetwork(new BrowsableNetwork());
+						} catch (InstantiationException instEx) {
+							JOptionPane.showMessageDialog(null,instEx.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
+							System.err.println("Impossible to instantiante class in data source");
+							instEx.printStackTrace();
+							getBrowser().setNetwork(new BrowsableNetwork());
+						} catch (IllegalAccessException iaEx) {
+							JOptionPane.showMessageDialog(null,iaEx.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
+							System.err.println("Ilegal access in data source");
+							iaEx.printStackTrace();
+							getBrowser().setNetwork(new BrowsableNetwork());
+						}
 					}
-					
-
-					
-				}
-
-				
-			});
-		}
+				});
+			}
 		return jButton;
 	}
 
@@ -168,9 +175,8 @@ public class DataSourcePanel extends BrowserWidget {
 
 	@Override		
 	public void init() {
-		try {  
-
-		    Schema schema;
+		try {
+			Schema schema;
 			DocumentBuilderFactory factory =
 	        DocumentBuilderFactory.newInstance();
 	        factory.setValidating(false);  
@@ -178,8 +184,9 @@ public class DataSourcePanel extends BrowserWidget {
 	        
 	    	InputStream schemaStream = this.getClass().getResourceAsStream("/ch/ethz/sg/cuttlefish/resources/datasources.xsd");
 	   		File schemaFile = new File("sources_aux.xsd");
-	   		OutputStream auxStream = new FileOutputStream(schemaFile);
-	   		byte buf[]=new byte[1024];
+	   		OutputStream auxStream;
+			auxStream = new FileOutputStream(schemaFile);
+			byte buf[]=new byte[1024];
 	        int len;
 	        while((len=schemaStream.read(buf))>0)
 	        	auxStream.write(buf,0,len);
@@ -203,12 +210,26 @@ public class DataSourcePanel extends BrowserWidget {
 				Node source = sources.item(i);
 				jComboBox.addItem(source.getAttributes().getNamedItem("name").getNodeValue());
 			}
-           
-	          
-	        } catch (Exception e) {
-	           e.printStackTrace();
-	         
-	        }
-		
+		} 
+		catch (FileNotFoundException fnfEx) {
+			JOptionPane.showMessageDialog(null,fnfEx.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
+			System.err.println("Schema file for data sources not found");
+			fnfEx.printStackTrace();
+		} 
+		catch (IOException ioEx) {
+			JOptionPane.showMessageDialog(null,ioEx.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
+			System.err.println("Input exception in data source schema file");
+			ioEx.printStackTrace();
+		} 
+		catch (SAXException saxEx) {
+			JOptionPane.showMessageDialog(null,saxEx.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
+			System.err.println("Error validating data sources XML");
+			saxEx.printStackTrace();
+		} 
+		catch (ParserConfigurationException pcEx) {
+			JOptionPane.showMessageDialog(null,pcEx.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
+			System.err.println("Parse error in data sources XML");
+			pcEx.printStackTrace();
+		}  
 	}
 }

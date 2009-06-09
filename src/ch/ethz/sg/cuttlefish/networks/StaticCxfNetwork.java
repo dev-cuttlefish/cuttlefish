@@ -21,26 +21,7 @@
 
 package ch.ethz.sg.cuttlefish.networks;
 
-import java.awt.Color;
-import java.awt.Shape;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
-import java.util.StringTokenizer;
-
-
-import ch.ethz.sg.cuttlefish.misc.Edge;
-import ch.ethz.sg.cuttlefish.misc.Vertex;
-import edu.uci.ics.jung.graph.SparseGraph;
-import edu.uci.ics.jung.graph.util.EdgeType;
-
 public class StaticCxfNetwork extends CxfNetwork {
 
 	public StaticCxfNetwork(){
