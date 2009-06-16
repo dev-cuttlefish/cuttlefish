@@ -42,10 +42,13 @@ import ch.ethz.sg.cuttlefish.misc.Edge;
 import ch.ethz.sg.cuttlefish.misc.Vertex;
 import edu.uci.ics.jung.graph.util.EdgeType;
 
+/**
+ * Class for the loading of network data from the Cuttlefish eXtended Format
+ * @author david
+ */
 public class CxfNetwork extends BrowsableNetwork {
 
 	private static final long serialVersionUID = 1L;
-	
 	FileReader fr;
 	BufferedReader br;
 	boolean directed = true;
@@ -55,7 +58,12 @@ public class CxfNetwork extends BrowsableNetwork {
 	String line = null;
 	int instructionIndex = 0;
 	File graphFile;
+
+	/**
+	 * Class as data structure for the parsed tokens
+	 */
 	class Token{
+		int line;
 		
 		String type = null;
 		
@@ -83,14 +91,24 @@ public class CxfNetwork extends BrowsableNetwork {
 	ArrayList<Token> instructionTokens = null;
 	HashMap<Integer,Vertex> hash = null;
 
-	
+	/**
+	 * Void general constructor
+	 */
 	public CxfNetwork(){
 	}
 	
+	/**
+	 * Constructor that loads directly the graph file
+	 * @param graphFile
+	 */
 	public CxfNetwork(File graphFile){
 		load(graphFile);
 	}
 	
+	/**
+	 * Loads the data stored in cxf format to the Cxf network
+	 * @param graphFile
+	 */
 	public void load(File graphFile){
 		
 		this.graphFile = graphFile;
@@ -100,12 +118,13 @@ public class CxfNetwork extends BrowsableNetwork {
 		hideEdgeLabels = false;
 		lineNum = 1;
 		line = null;
-		
+	
+		//First, empty the network
 		for (Edge e : getEdges())
 			removeEdge(e);
-		
 		Collection<Vertex> vertices = getVertices();
-		
+		//this funny way of deleting the vertices is because some ConcurrentModificationExceptions could appear
+		//after this we are sure that all the vertices have been deleted in a correct way
 		while (!vertices.isEmpty())
 		{
 			try{
@@ -116,59 +135,79 @@ public class CxfNetwork extends BrowsableNetwork {
 		}
 		
 		try {
-			fr = new FileReader(graphFile);
+			br = new BufferedReader(new FileReader(graphFile));
+			Token token;
+			ArrayList<Token> edgeTokens = new ArrayList<Token>();
+			while ((token = getNextToken()) != null)
+			{
+				if (token.type.equalsIgnoreCase("node"))
+				{
+					Vertex v = createVertex(token);
+			
+					if (hash.get(v.getId()) != null)
+					{
+						JOptionPane.showMessageDialog(null,"Double node identifier: " + v.getId() +" in line " + token.line,"cxf error", JOptionPane.WARNING_MESSAGE);
+						System.out.println("Double node identifier" + v.getId() +" in line " + token.line);	
+					}
+					else{
+						addVertex(v);
+						//we store the ids and vertices in a hash table
+						hash.put(v.getId(), v);
+					}
+				}
+				else if (token.type.equalsIgnoreCase("edge"))
+					edgeTokens.add(token);
+				else if (!token.type.equalsIgnoreCase("configuration"))
+				{
+					JOptionPane.showMessageDialog(null,"Unkown command in line " + token.line,"cxf error", JOptionPane.WARNING_MESSAGE);
+					System.out.println("Unkown command in line " + token.line);
+				}
+			}
+			
+			for (Token t : edgeTokens)
+			{
+				//We retrieve the vertex object from the identifiers in the edge
+				Vertex source = hash.get(t.id_source);
+				Vertex dest = hash.get(t.id_dest);
+				if ((source == null) || (dest == null))
+				{
+					JOptionPane.showMessageDialog(null,"Malformed edge (nonexistent endpoint): (" + t.id_source + "," + t.id_dest + ") in line "+t.line,
+							"cxf error", JOptionPane.WARNING_MESSAGE);
+					System.out.println("Malformed edge: (" + t.id_source + "," + t.id_dest + ") in line "+t.line);
+				}
+				else
+				{
+					System.out.println("adding edge ("+ source.getId() + "," + dest.getId()+")");
+					Edge e = createEdge(t);
+					EdgeType et = EdgeType.DIRECTED;
+					if (!directed)
+						et = EdgeType.UNDIRECTED;
+					addEdge(e, source, dest, et);
+				}
+			}
+			line = null;
+		
 		} catch (FileNotFoundException fnfEx) {
 			JOptionPane.showMessageDialog(null,fnfEx.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
 			System.err.println("Network file not found");
 			fnfEx.printStackTrace();
 		}
-		
-		br = new BufferedReader(fr);
-	
-		Token token;
-		ArrayList<Token> edgeTokens = new ArrayList<Token>();
-		
-		while ((token = getNextToken()) != null)
-		{
-		
-			if (token.type.equalsIgnoreCase("node"))
-			{
-				Vertex v = createVertex(token);
-				addVertex(v);
-				hash.put(v.getId(), v);
-			}
-			else if (token.type.equalsIgnoreCase("edge"))
-				edgeTokens.add(token);
-			else if (!token.type.equalsIgnoreCase("configuration"))
-			{
-				System.out.println("Unkown command in line " + line);
-			}
-		}
-		
-		for (Token t : edgeTokens)
-		{
-			Edge e = createEdge(t);
-			EdgeType et = EdgeType.DIRECTED;
-			if (!directed)
-				et = EdgeType.UNDIRECTED;
-		
-			Vertex source = hash.get(t.id_source);
-			Vertex dest = hash.get(t.id_dest);
-			System.out.println("adding edge ("+ source.getId() + "," + dest.getId()+")");
-			addEdge(e, source, dest, et);
-		}
-		
-		line = null;
-		
 	}
 	
+	/**
+	 * Method that reloads the data from the cxf graph file
+	 */
 	public void reload(){
 		load(graphFile);
 	}
 	
-	  private static final String QUOTES = "}";
-	  private static final String WHITESPACES = " \t\r\n";
+	private static final String BRACES = "}";
+	private static final String WHITESPACES = " \t\r\n";
 	
+	/**
+	 * Retrieves the next parsed token from the input
+	 * @return the created structure with the available data from the file
+	 */
 	Token getNextToken(){
 		Token token = new Token();
 		try {
@@ -178,38 +217,10 @@ public class CxfNetwork extends BrowsableNetwork {
 					return null;
 				lineNum++;
 			}
-		    ArrayList<String> lineFields = new ArrayList<String>();
-
-		    String currentDelims = WHITESPACES;
-		    StringTokenizer parser = new StringTokenizer(line, currentDelims, true);
-
-		    String field = null;
-		    String fieldaux = null;
-		    while ( parser.hasMoreTokens() ) {
-		    	field = parser.nextToken(currentDelims);
-				if (!field.equals(" ") && !field.equals("\t") && !field.equals("\n") && !field.equals("\r")){
-					if ((!((field.contains("{") && ! field.contains("}")) 
-							|| (!field.contains("{") && field.contains("}")))) 
-						&& (fieldaux == null) )
-					{
-							lineFields.add(field.trim());
-					}
-					else{
-						if (fieldaux == null){
-							fieldaux = field;					
-							currentDelims = flipDelimiters(currentDelims);
-						}
-						else{
-							fieldaux = fieldaux.concat(field);
-							currentDelims = flipDelimiters(currentDelims);
-							fieldaux = fieldaux.concat(parser.nextToken());
-							lineFields.add(fieldaux);
-							fieldaux = null;
-						}
-					}
-				}
-		      }
-		    
+			token.line=lineNum-1;
+		    		  
+			ArrayList<String> lineFields = getFields(line);
+		  
 			line = br.readLine();
 			String lineLc;
 			if (line != null)
@@ -218,38 +229,10 @@ public class CxfNetwork extends BrowsableNetwork {
 				lineLc = null;
 			lineNum++;
 		    		
-		    while ((line != null) &&  !(lineLc.startsWith("node") || lineLc.startsWith("edge")
-		    					|| lineLc.startsWith("addnode") || lineLc.startsWith("addedge")
-		    					|| lineLc.startsWith("removenode") || lineLc.startsWith("removeedge")
-		    					|| lineLc.startsWith("editnode") || lineLc.startsWith("editedge")
-		    					|| lineLc.startsWith("[")))
+		    while (notFinal(lineLc))
 			{
-		    	parser = new StringTokenizer(line, currentDelims, true);
-		    	field = null;
-		    	while ( parser.hasMoreTokens() ) {
-			    	field = parser.nextToken(currentDelims);
-			    	if (!field.equals(" ") && !field.equals("\t") && !field.equals("\n") && !field.equals("\r")){
-						if ((!((field.contains("{") && ! field.contains("}")) 
-							|| (!field.contains("{") && field.contains("}")))) 
-						&& (fieldaux == null) )
-					{
-						lineFields.add(field.trim());
-					}
-						else{
-							if (fieldaux == null){
-								fieldaux = field;					
-								currentDelims = flipDelimiters(currentDelims);
-							}
-							else{
-								fieldaux = fieldaux.concat(field);
-								currentDelims = flipDelimiters(currentDelims);
-								fieldaux = fieldaux.concat(parser.nextToken());
-								lineFields.add(fieldaux);
-								fieldaux = null;
-							}
-						}
-					}
-			      }
+
+		    	lineFields.addAll(getFields(line));
 				line = br.readLine();
 				if (line != null)
 					lineLc = new String(line.toLowerCase());
@@ -259,117 +242,17 @@ public class CxfNetwork extends BrowsableNetwork {
 			}
 		    
 		    Iterator<String> it = lineFields.iterator();
-	    	field = it.next();
-	    	float R, G, B;
-	    	double x, y;
+	    	String field = it.next();
 	    	if (field.equals("[")) {
 	    		field = it.next();	
 	    		token.freeze = true;
 	    	}
 		    if ( field.toLowerCase().contains("node"))
-    		{
-		    	token.type = field.substring(0, field.lastIndexOf(':'));
-		    	while (it.hasNext())
-		    	{
-		    		field = it.next();
-		    		if (field.startsWith("("))
-		    		{
-		    			if (token.id == null)
-		    				token.id = Integer.parseInt(field.substring(1, field.indexOf(')')));
-		    			else 
-		    				System.out.println("WARNING: two identifiers for the same node: " + (lineNum-1));
-		    		}
-		    		else if (field.startsWith("label"))  
-		    		{
-		    			while (field.indexOf('}') < 0)
-		    				field = field.concat(" " + it.next());
-		    			token.label = field.substring(field.indexOf('{')+1,field.indexOf('}'));
-		    		}
-		    		else if (field.startsWith("color"))
-		    		{
-		    			int pos = field.indexOf('{')+1;
-		    			R = Float.parseFloat(field.substring(pos,field.indexOf(',',pos)));
-		    			pos = field.indexOf(',',pos)+1;
-		    			G = Float.parseFloat(field.substring(pos,field.indexOf(',',pos)));
-		    			pos = field.indexOf(',',pos)+1;
-		    			B = Float.parseFloat(field.substring(pos,field.indexOf('}',pos)));
-		    			token.color = new Color(R,G,B);
-		    		}
-		    		else if (field.startsWith("borderColor"))
-		    		{
-		    			int pos = field.indexOf('{')+1;
-		    			R = Float.parseFloat(field.substring(pos,field.indexOf(',',pos)));
-		    			pos = field.indexOf(',',pos)+1;
-		    			G = Float.parseFloat(field.substring(pos,field.indexOf(',',pos)));
-		    			pos = field.indexOf(',',pos)+1;
-		    			B = Float.parseFloat(field.substring(pos,field.indexOf('}',pos)));
-		    			token.borderColor = new Color(R,G,B);		    			
-		    		}
-		    		else if (field.startsWith("size"))
-		    			token.size = new Double(Double.parseDouble(field.substring(field.indexOf('{')+1,field.indexOf('}'))));
-				    else if (field.startsWith("shape"))
-		    			token.shape = field.substring(field.indexOf('{')+1,field.indexOf('}'));
-				    else if (field.startsWith("width"))
-		    			token.borderWidth = new Integer(Integer.parseInt(field.substring(field.indexOf('{')+1,field.indexOf('}'))));
-				    else if (field.startsWith("position"))
-				    {
-						int pos = field.indexOf('{')+1;
-						x = Double.parseDouble(field.substring(pos,field.indexOf(',',pos)));
-		    			pos = field.indexOf(',',pos)+1;
-		    			y = Double.parseDouble(field.substring(pos,field.indexOf('}',pos)));
-		    			token.position = new Point2D.Double(x,y);		    			
-		    	    }
-				    else if (field.startsWith("var1"))
-		    			token.var1 = field.substring(field.indexOf('{')+1,field.indexOf('}'));
-		    		else if (field.startsWith("var2"))
-		    			token.var2 = field.substring(field.indexOf('{')+1,field.indexOf('}'));
-		    		else if (field.startsWith("hide"))
-		    			token.hide = true;
-		    	}
-		    	if (field.contains("]"))
-		    		token.commit = true;
-    		}
+    			token = parseNode(token, it);
+    		
 		    else if (field.toLowerCase().contains("edge"))
-    		{
-		     	token.type = field.substring(0, field.lastIndexOf(':'));
-				while (it.hasNext())
-		    	{
-		    		field = it.next();
-		    		if (field.startsWith("("))
-		    		{
-	    				token.id_source = Integer.parseInt(field.substring(1, field.indexOf(',')));
-	    				token.id_dest = Integer.parseInt(field.substring(field.indexOf(',')+1, field.indexOf(')')));
-		    		}
-		    		else if (field.startsWith("label"))  
-		    		{		
-		    			while (field.indexOf('}') < 0)
-		    				field = field.concat(" " + it.next());
-		    			token.label = field.substring(field.indexOf('{')+1,field.indexOf('}'));
-		    		}
-		    		else if (field.startsWith("weight"))
-		    			token.weight = new Double(Double.parseDouble(field.substring(field.indexOf('{')+1,field.indexOf('}'))));
-				    else if (field.startsWith("width"))
-				    	token.size = new Double(Double.parseDouble(field.substring(field.indexOf('{')+1,field.indexOf('}'))));
-				    else if (field.startsWith("color"))
-		    		{
-		    			int pos = field.indexOf('{')+1;
-		    			R = Float.parseFloat(field.substring(pos,field.indexOf(',',pos)));
-		    			pos = field.indexOf(',',pos)+1;
-		    			G = Float.parseFloat(field.substring(pos,field.indexOf(',',pos)));
-		    			pos = field.indexOf(',',pos)+1;
-		    			B = Float.parseFloat(field.substring(pos,field.indexOf('}',pos)));
-		    			token.color = new Color(R,G,B);
-		    		}
-		    		else if (field.startsWith("var1"))
-		    			token.var1 = field.substring(field.indexOf('{')+1,field.indexOf('}'));
-		    		else if (field.startsWith("var2"))
-		    			token.var2 = field.substring(field.indexOf('{')+1,field.indexOf('}'));
-		    		else if (field.startsWith("hide"))
-		    			token.hide = true;
-		    	}
-		    	if (field.contains("]"))
-		    		token.commit = true;
-    		}
+		    	token = parseEdge(token, it);
+
 		    else if (lineFields.get(0).equalsIgnoreCase("configuration:"))
     		{
 		    	while (it.hasNext())
@@ -382,13 +265,17 @@ public class CxfNetwork extends BrowsableNetwork {
 		    		else if (field.equalsIgnoreCase("hide_edge_labels"))
 		    			hideEdgeLabels = true;
 		    		else	
-		    			System.out.println("Unkown field in object of line" + (lineNum-1));
+		    		{
+		    			JOptionPane.showMessageDialog(null,"Unkown configuration line " + token.line,"cxf error", JOptionPane.WARNING_MESSAGE);
+						System.out.println("Unkown field configuration line" + token.line);
+		    		}
 		    	}
 		    	token.type = "configuration";
     		}
 		    else if (! lineFields.isEmpty())
 		    {
-		    	System.out.println("Unkown object in line" + (lineNum-1));
+		    	JOptionPane.showMessageDialog(null,"Unkown object in line " + token.line,"cxf error", JOptionPane.WARNING_MESSAGE);
+		    	System.out.println("Unkown object in line" + token.line);
 		    }
 			
 		} catch (IOException ioEx) {
@@ -400,11 +287,201 @@ public class CxfNetwork extends BrowsableNetwork {
 		return token;
 	}
 	
+	private ArrayList<String> getFields(String line){
+		ArrayList<String> lineFields = new ArrayList<String>();
+	    String currentDelims = WHITESPACES;
+		StringTokenizer parser = new StringTokenizer(line, currentDelims, true);
 
+	    String field = null;
+	    String fieldaux = null;
+	    while ( parser.hasMoreTokens() ) {
+	    	field = parser.nextToken(currentDelims);
+			if (!field.equals(" ") && !field.equals("\t") && !field.equals("\n") && !field.equals("\r")){
+				if ((!((field.contains("{") && ! field.contains("}")) 
+	
+		    		|| (!field.contains("{") && field.contains("}")))) 
+					&& (fieldaux == null) )
+				{
+						lineFields.add(field.trim());
+				}
+				else{
+					if (fieldaux == null){
+						fieldaux = field;					
+						currentDelims = flipDelimiters(currentDelims);
+					}
+					else{
+						fieldaux = fieldaux.concat(field);
+						currentDelims = flipDelimiters(currentDelims);
+						fieldaux = fieldaux.concat(parser.nextToken());
+						lineFields.add(fieldaux);
+						fieldaux = null;
+					}
+				}
+			}
+	      }
+	    return lineFields;
+	}
+	
+	private boolean notFinal(String lineLc){
+		return (lineLc != null) &&  !(lineLc.startsWith("node") || lineLc.startsWith("edge")
+				|| lineLc.startsWith("addnode") || lineLc.startsWith("addedge")
+				|| lineLc.startsWith("removenode") || lineLc.startsWith("removeedge")
+				|| lineLc.startsWith("editnode") || lineLc.startsWith("editedge")
+				|| lineLc.startsWith("["));
+	}
+	
+	private Token parseNode(Token t, Iterator<String> it){
+		String field = null;;
+		Token token = t; 
+    	token.type = "node";
+    	float R, G, B;
+    	double x,y;
+    	while (it.hasNext())
+    	{
+    		field = it.next();
+    		if (field.startsWith("("))
+    		{
+    			if (token.id == null)
+    				token.id = Integer.parseInt(field.substring(1, field.indexOf(')')));
+    			else 
+    			{	
+    				JOptionPane.showMessageDialog(null,"Two identifiers for the same node in line " + token.line,"cxf error", JOptionPane.WARNING_MESSAGE);
+					System.out.println("WARNING: two identifiers for the same node: " + token.line);
+    			}
+    		}
+    		else if (field.startsWith("label"))  
+    		{
+    			while (field.indexOf('}') < 0)
+    				field = field.concat(" " + it.next());
+    			token.label = field.substring(field.indexOf('{')+1,field.indexOf('}'));
+    		}
+    		else if (field.startsWith("color"))
+    		{
+    			int pos = field.indexOf('{')+1;
+    			try{
+    				R = Float.parseFloat(field.substring(pos,field.indexOf(',',pos)));
+    				pos = field.indexOf(',',pos)+1;
+	    			G = Float.parseFloat(field.substring(pos,field.indexOf(',',pos)));
+	    			pos = field.indexOf(',',pos)+1;
+	    			B = Float.parseFloat(field.substring(pos,field.indexOf('}',pos)));
+	    			token.color = new Color(R,G,B);
+    			}
+    			catch (Exception nfEx)
+    			{
+    				JOptionPane.showMessageDialog(null,"Malformed color in line " + token.line,"cxf error", JOptionPane.WARNING_MESSAGE);
+					System.out.println("Malformed color in line " + token.line);
+    			}
+    		}
+    		else if (field.startsWith("borderColor"))
+    		{
+    			int pos = field.indexOf('{')+1;
+        		
+    			try {    		
+	    			R = Float.parseFloat(field.substring(pos,field.indexOf(',',pos)));
+	    			pos = field.indexOf(',',pos)+1;
+	    			G = Float.parseFloat(field.substring(pos,field.indexOf(',',pos)));
+	    			pos = field.indexOf(',',pos)+1;
+	    			B = Float.parseFloat(field.substring(pos,field.indexOf('}',pos)));
+	    			token.borderColor = new Color(R,G,B);		    			
+    			}
+    			catch (Exception nfEx)
+    			{
+    				JOptionPane.showMessageDialog(null,"Malformed color in line " + token.line,"cxf error", JOptionPane.WARNING_MESSAGE);
+					System.out.println("Malformed color in line " + token.line);
+    			}
+    		}
+    		else if (field.startsWith("size"))
+    			token.size = new Double(Double.parseDouble(field.substring(field.indexOf('{')+1,field.indexOf('}'))));
+		    else if (field.startsWith("shape"))
+    			token.shape = field.substring(field.indexOf('{')+1,field.indexOf('}'));
+		    else if (field.startsWith("width"))
+    			token.borderWidth = new Integer(Integer.parseInt(field.substring(field.indexOf('{')+1,field.indexOf('}'))));
+		    else if (field.startsWith("position"))
+		    {
+				int pos = field.indexOf('{')+1;
+				x = Double.parseDouble(field.substring(pos,field.indexOf(',',pos)));
+    			pos = field.indexOf(',',pos)+1;
+    			y = Double.parseDouble(field.substring(pos,field.indexOf('}',pos)));
+    			token.position = new Point2D.Double(x,y);		    			
+    	    }
+		    else if (field.startsWith("var1"))
+    			token.var1 = field.substring(field.indexOf('{')+1,field.indexOf('}'));
+    		else if (field.startsWith("var2"))
+    			token.var2 = field.substring(field.indexOf('{')+1,field.indexOf('}'));
+    		else if (field.startsWith("hide"))
+    			token.hide = true;
+    		else
+    		{
+    			JOptionPane.showMessageDialog(null,"Unknown node property in line " + token.line,"cxf error", JOptionPane.WARNING_MESSAGE);
+				System.out.println("Unknown node property in line " + (lineNum-1));
+			}
+    	}
+    	if (field.contains("]"))
+    		token.commit = true;
+		return token;
+	}
+
+	private Token parseEdge(Token t, Iterator<String> it){
+		String field = null;;
+		Token token = t; 
+    	token.type = "edge";
+    	float R, G, B;
+		while (it.hasNext())
+    	{
+    		field = it.next();
+    		if (field.startsWith("("))
+    		{
+				token.id_source = Integer.parseInt(field.substring(1, field.indexOf(',')));
+				token.id_dest = Integer.parseInt(field.substring(field.indexOf(',')+1, field.indexOf(')')));
+    		}
+    		else if (field.startsWith("label"))  
+    		{		
+    			while (field.indexOf('}') < 0)
+    				field = field.concat(" " + it.next());
+    			token.label = field.substring(field.indexOf('{')+1,field.indexOf('}'));
+    		}
+    		else if (field.startsWith("weight"))
+    			token.weight = new Double(Double.parseDouble(field.substring(field.indexOf('{')+1,field.indexOf('}'))));
+		    else if (field.startsWith("width"))
+		    	token.size = new Double(Double.parseDouble(field.substring(field.indexOf('{')+1,field.indexOf('}'))));
+		    else if (field.startsWith("color"))
+    		{
+    			int pos = field.indexOf('{')+1;
+		    	try {
+	    			R = Float.parseFloat(field.substring(pos,field.indexOf(',',pos)));
+	    			pos = field.indexOf(',',pos)+1;
+	    			G = Float.parseFloat(field.substring(pos,field.indexOf(',',pos)));
+	    			pos = field.indexOf(',',pos)+1;
+	    			B = Float.parseFloat(field.substring(pos,field.indexOf('}',pos)));
+	    			token.color = new Color(R,G,B);
+		    	}
+    			catch (Exception nfEx)
+    			{
+    				JOptionPane.showMessageDialog(null,"Malformed color in line " + token.line,"cxf error", JOptionPane.WARNING_MESSAGE);
+					System.out.println("Malformed color in line " + token.line);
+    			}
+    		}
+    		else if (field.startsWith("var1"))
+    			token.var1 = field.substring(field.indexOf('{')+1,field.indexOf('}'));
+    		else if (field.startsWith("var2"))
+    			token.var2 = field.substring(field.indexOf('{')+1,field.indexOf('}'));
+    		else if (field.startsWith("hide"))
+    			token.hide = true;
+    		else   		
+    		{
+    			JOptionPane.showMessageDialog(null,"Unknown edge property in line " + token.line,"cxf error", JOptionPane.WARNING_MESSAGE);
+				System.out.println("Unknown edge property in line " + (lineNum-1));
+			}  
+    		if (field.contains("]"))
+	    		token.commit = true;
+    	}
+		return token;
+	}
+	
 	private String flipDelimiters( String aCurrentDelims ) {
 	    String result = null;
 	    if ( aCurrentDelims.equals(WHITESPACES) ) {
-	      result = QUOTES;
+	      result = BRACES;
 	    }
 	    else {
 	      result = WHITESPACES;
@@ -412,7 +489,6 @@ public class CxfNetwork extends BrowsableNetwork {
 	    return result;
 	}
 
-	
 	Vertex createVertex(Token token){
 		Vertex v = new Vertex(token.id);
 		
@@ -441,7 +517,7 @@ public class CxfNetwork extends BrowsableNetwork {
 			v.setExcluded(true);
 		return v;
 	}
-	
+
 	Edge createEdge(Token token){
 		Edge e = new Edge();
 		if (token.weight != null)
