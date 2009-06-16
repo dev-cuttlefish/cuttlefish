@@ -104,7 +104,6 @@ public class TikzExporter {
 			
 			p.println("\\begin{pgfonlayer}{background}");
 			//Arrow style for directed networks
-			//TODO: Check arrows in undirected tikz 
 			p.println("\\tikzset{EdgeStyle/.style = {->,shorten >=1pt,>=stealth, bend right=10}}");
 			
 			//The edges are sorted by wheight so the heavier ones will be plotted later and thus on top
