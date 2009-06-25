@@ -31,6 +31,7 @@ import javax.swing.JOptionPane;
 
 import ch.ethz.sg.cuttlefish.misc.Edge;
 import ch.ethz.sg.cuttlefish.misc.Vertex;
+import ch.ethz.sg.cuttlefish.networks.CxfNetwork.Token;
 import edu.uci.ics.jung.graph.util.EdgeType;
 
 public class InteractiveCxfNetwork extends CxfNetwork implements ISimulation{
@@ -114,7 +115,10 @@ public class InteractiveCxfNetwork extends CxfNetwork implements ISimulation{
 				editVertex(v,token);
 			}
 			else
+			{
+				JOptionPane.showMessageDialog(null,"Editing an inexistent node --- use addNode","Warning",JOptionPane.WARNING_MESSAGE);
 				System.out.println("WARNING: editing an inexistent node --- use addNode");
+			}
 			
 		}
 		else if (token.type.equalsIgnoreCase("addEdge"))
@@ -135,8 +139,12 @@ public class InteractiveCxfNetwork extends CxfNetwork implements ISimulation{
 				addEdge(e, vSource, vDest,et);
 			}
 			else
+			{
+				JOptionPane.showMessageDialog(null,"One of the endpoints of the added edge ("+token.id_source +
+						","+token.id_dest +") does not exist","Warning",JOptionPane.WARNING_MESSAGE);
 				System.out.println("WARNING: one of the endpoints of the added edge ("+token.id_source +
 						","+token.id_dest +") does not exist");
+			}
 		}
 		else if (token.type.equalsIgnoreCase("removeEdge"))
 		{
@@ -147,10 +155,14 @@ public class InteractiveCxfNetwork extends CxfNetwork implements ISimulation{
 				Edge e;
 				if ((e = findEdge(vSource, vDest)) != null)
 					removeEdge(e);
-		}
+			}
 			else
-				System.out.println("WARNING: one of the endpoints of the removing edge ("+token.id_source +
+			{
+				JOptionPane.showMessageDialog(null,"One of the endpoints of the added edge ("+token.id_source +
+						","+token.id_dest +") does not exist","Warning",JOptionPane.WARNING_MESSAGE);
+				System.out.println("WARNING: one of the endpoints of the added edge ("+token.id_source +
 						","+token.id_dest +") does not exist");
+			}
 		}
 		else if (token.type.equalsIgnoreCase("editEdge"))
 		{
@@ -164,10 +176,15 @@ public class InteractiveCxfNetwork extends CxfNetwork implements ISimulation{
 				else
 					System.out.println("WARNING: the edited edge ("+token.id_source +
 							","+token.id_dest +") didn't exist -- use addEdge");
-		}
+			}
 			else
-				System.out.println("WARNING: one of the endpoints of the editing edge ("+token.id_source +
+			{
+				JOptionPane.showMessageDialog(null,"One of the endpoints of the added edge ("+token.id_source +
+						","+token.id_dest +") does not exist","Warning",JOptionPane.WARNING_MESSAGE);
+				System.out.println("WARNING: one of the endpoints of the added edge ("+token.id_source +
 						","+token.id_dest +") does not exist");
+			}
+
 		}
 		return;
 	}
@@ -185,10 +202,13 @@ public class InteractiveCxfNetwork extends CxfNetwork implements ISimulation{
 			v.setColor(token.borderColor);
 		if (token.position != null)
 			v.setPosition(token.position);
+		if (token.borderWidth != null)
+			v.setWidth(token.borderWidth);
 		if (token.var1 != null)
 			v.setVar1(token.var1);
 		if (token.var2 != null)
 			v.setVar2(token.var2);
+		v.setExcluded(token.hide);
 		return;
 	}
 	
@@ -205,10 +225,9 @@ public class InteractiveCxfNetwork extends CxfNetwork implements ISimulation{
 			e.setVar1(token.var1);
 		if (token.var2 != null)
 			e.setVar2(token.var2);
-
+		e.setExcluded(token.hide);
 		return;
 	}
-	
 	
 	public static void main(String argv[]){
 		InteractiveCxfNetwork network = new InteractiveCxfNetwork();
