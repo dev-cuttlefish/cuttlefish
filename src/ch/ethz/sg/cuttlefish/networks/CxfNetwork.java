@@ -513,8 +513,7 @@ public class CxfNetwork extends BrowsableNetwork {
 			v.setVar1(token.var1);
 		if (token.var2 != null)
 			v.setVar2(token.var2);
-		if (token.hide)
-			v.setExcluded(true);
+		v.setExcluded(token.hide);
 		return v;
 	}
 
@@ -532,8 +531,7 @@ public class CxfNetwork extends BrowsableNetwork {
 			e.setVar1(token.var1);
 		if (token.var2 != null)
 			e.setVar2(token.var2);
-		if (token.hide)
-			e.setExcluded(true);
+		e.setExcluded(token.hide);
 		return e;
 	}
 	
