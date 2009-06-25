@@ -205,7 +205,7 @@ public CuttlefishPanel(File configFile) {
 
 /**
  * This method initializes the CuttlefishPanel, creating the GraphMouse, the DocumentFactory 
- * and loading the information contained in the configuration file
+ * and loadlensColoring the information contained in the configuration file
  * @param configFile open file with the configuration
  * @return void
  */
@@ -217,6 +217,7 @@ private void initialize(File configFile) {
 		
 	graphMouse = new EditingModalGraphMouse<Vertex,Edge>(visualizationViewer.getRenderContext(),
 				vertexFactory, edgeFactory);		
+	graphMouse.getAnnotatingPlugin().setAnnotationColor(getForeground());
 	
 	//starting on transforming mode, the most used
 	graphMouse.setMode(ModalGraphMouse.Mode.TRANSFORMING);
