@@ -71,6 +71,7 @@ import ch.ethz.sg.cuttlefish.misc.Vertex;
 import ch.ethz.sg.cuttlefish.misc.VertexFactory;
 import ch.ethz.sg.cuttlefish.misc.XMLUtil;
 import ch.ethz.sg.cuttlefish.networks.BrowsableNetwork;
+import ch.ethz.sg.cuttlefish.networks.CxfNetwork;
 
 import edu.uci.ics.jung.algorithms.layout.CircleLayout;
 import edu.uci.ics.jung.algorithms.layout.FRLayout2;
@@ -135,7 +136,13 @@ public CuttlefishPanel(File configFile) {
 			return vertex.getShape();} };
 	Transformer<Vertex,String> vertexLabelTransformer = new Transformer<Vertex,String>(){
 		public String transform(Vertex vertex) {
-			return vertex.getLabel(); } };
+		
+			if (network instanceof CxfNetwork)
+				if (((CxfNetwork)network).hideVertexLabels())
+					return null;
+			return vertex.getLabel(); 
+			
+		} };
 	Transformer<Vertex, Stroke> vertexStrokeTransformer = new Transformer<Vertex, Stroke>(){
 		public Stroke transform(Vertex vertex) {
 			return new BasicStroke(new Double(vertex.getWidth()).intValue()); } };
@@ -169,6 +176,9 @@ public CuttlefishPanel(File configFile) {
 			return edge.getColor(); } };
 	Transformer<Edge, String> edgeLabelTransformer = new Transformer<Edge, String>(){
 		public String transform(Edge edge) {
+			if (network instanceof CxfNetwork)
+				if (((CxfNetwork)network).hideEdgeLabels())
+					return null;
 			return edge.getLabel();} };
 	Transformer<Edge,Stroke> edgeStrokeTransformer = new Transformer<Edge, Stroke>() {
 		public Stroke transform(Edge edge) {
@@ -568,8 +578,6 @@ public void stopLayout() {
 @SuppressWarnings("unchecked")
 public void setLayout(String selectedLayout){
 	
-	//File positionData = getPositionFile(); 
-	// TODO: create static layout with position file data
 	layoutType = selectedLayout;
 	Layout<Vertex,Edge> newLayout = null;
 	
