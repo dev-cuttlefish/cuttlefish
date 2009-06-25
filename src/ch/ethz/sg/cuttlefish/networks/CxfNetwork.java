@@ -140,7 +140,7 @@ public class CxfNetwork extends BrowsableNetwork {
 			ArrayList<Token> edgeTokens = new ArrayList<Token>();
 			while ((token = getNextToken()) != null)
 			{
-				if (token.type.equalsIgnoreCase("node"))
+				if (token.type.toLowerCase().contains("node"))
 				{
 					Vertex v = createVertex(token);
 			
@@ -155,12 +155,12 @@ public class CxfNetwork extends BrowsableNetwork {
 						hash.put(v.getId(), v);
 					}
 				}
-				else if (token.type.equalsIgnoreCase("edge"))
+				else if (token.type.toLowerCase().contains("edge"))
 					edgeTokens.add(token);
-				else if (!token.type.equalsIgnoreCase("configuration"))
+				else if (!token.type.toLowerCase().equalsIgnoreCase("configuration"))
 				{
-					JOptionPane.showMessageDialog(null,"Unkown command in line " + token.line,"cxf error", JOptionPane.WARNING_MESSAGE);
-					System.out.println("Unkown command in line " + token.line);
+					JOptionPane.showMessageDialog(null,"Unknown command in line " + token.line,"cxf error", JOptionPane.WARNING_MESSAGE);
+					System.out.println("Unknown command in line " + token.line);
 				}
 			}
 			
@@ -248,10 +248,10 @@ public class CxfNetwork extends BrowsableNetwork {
 	    		token.freeze = true;
 	    	}
 		    if ( field.toLowerCase().contains("node"))
-    			token = parseNode(token, it);
+    			token = parseNode(token,field.toLowerCase(), it);
     		
 		    else if (field.toLowerCase().contains("edge"))
-		    	token = parseEdge(token, it);
+		    	token = parseEdge(token,field.toLowerCase(), it);
 
 		    else if (lineFields.get(0).equalsIgnoreCase("configuration:"))
     		{
@@ -330,10 +330,10 @@ public class CxfNetwork extends BrowsableNetwork {
 				|| lineLc.startsWith("["));
 	}
 	
-	private Token parseNode(Token t, Iterator<String> it){
+	private Token parseNode(Token t, String preField, Iterator<String> it){
 		String field = null;;
 		Token token = t; 
-    	token.type = "node";
+    	token.type = preField.substring(0,preField.indexOf(":"));
     	float R, G, B;
     	double x,y;
     	while (it.hasNext())
@@ -410,7 +410,7 @@ public class CxfNetwork extends BrowsableNetwork {
     			token.var2 = field.substring(field.indexOf('{')+1,field.indexOf('}'));
     		else if (field.startsWith("hide"))
     			token.hide = true;
-    		else
+    		else if (! (field.contains("[") || field.contains("]")))
     		{
     			JOptionPane.showMessageDialog(null,"Unknown node property in line " + token.line,"cxf error", JOptionPane.WARNING_MESSAGE);
 				System.out.println("Unknown node property in line " + (lineNum-1));
@@ -421,10 +421,10 @@ public class CxfNetwork extends BrowsableNetwork {
 		return token;
 	}
 
-	private Token parseEdge(Token t, Iterator<String> it){
+	private Token parseEdge(Token t, String preField, Iterator<String> it){
 		String field = null;;
 		Token token = t; 
-    	token.type = "edge";
+    	token.type = preField.substring(0,preField.indexOf(":"));
     	float R, G, B;
 		while (it.hasNext())
     	{
@@ -572,8 +572,7 @@ public class CxfNetwork extends BrowsableNetwork {
 			System.out.print(e.getVar1() + " ");
 			System.out.print(e.getVar2() + "\n");
 		}
+		
 	}
-
-
 
 }

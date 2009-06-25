@@ -24,6 +24,11 @@ package ch.ethz.sg.cuttlefish.networks;
 import java.io.File;
 public class StaticCxfNetwork extends CxfNetwork {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public StaticCxfNetwork(){
 		super();
 		setIncremental(false);

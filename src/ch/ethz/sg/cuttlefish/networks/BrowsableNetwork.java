@@ -180,5 +180,5 @@ public class BrowsableNetwork extends SparseGraph<Vertex, Edge> {
 	{
 		incremental = inc;
 	}
-	
+		
 }
