@@ -49,6 +49,7 @@ import edu.uci.ics.jung.graph.util.EdgeType;
 public class CxfNetwork extends BrowsableNetwork {
 
 	private static final long serialVersionUID = 1L;
+	private String networkFileName = null;
 	FileReader fr;
 	BufferedReader br;
 	boolean directed = true;
@@ -111,6 +112,7 @@ public class CxfNetwork extends BrowsableNetwork {
 	 */
 	public void load(File graphFile){
 		
+		this.networkFileName = graphFile.getName();
 		this.graphFile = graphFile;
 		hash = new HashMap<Integer,Vertex>();
 		directed = true;
@@ -543,6 +545,10 @@ public class CxfNetwork extends BrowsableNetwork {
 		return hideEdgeLabels;
 	}
 	
+	public String getCxfName(){
+		return networkFileName;
+	}
+	
 	public static void main(String argv[]){
 		CxfNetwork network = new CxfNetwork();
 		network.load(new File("testGraph1.cxf"));
@@ -573,4 +579,5 @@ public class CxfNetwork extends BrowsableNetwork {
 		
 	}
 
+	
 }

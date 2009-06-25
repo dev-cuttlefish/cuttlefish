@@ -23,10 +23,12 @@ package ch.ethz.sg.cuttlefish.gui.widgets;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.io.File;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
+import javax.swing.JLabel;
 
 
 import ch.ethz.sg.cuttlefish.gui.BrowserWidget;
@@ -41,6 +43,7 @@ public class CxfNetworkPanel extends BrowserWidget {
 	
 	private JFileChooser fileC = null;
 	private JButton loadButton = null;
+	private JLabel networkNameLabel = null;
 
 	/**
 	 * This method initializes 
@@ -58,11 +61,28 @@ public class CxfNetworkPanel extends BrowserWidget {
 	 */
 	private void initialize() {
 		GridBagConstraints gridBagConstraints1 = new GridBagConstraints();
-		gridBagConstraints1.anchor = GridBagConstraints.CENTER;
 		gridBagConstraints1.fill = GridBagConstraints.VERTICAL;
+		gridBagConstraints1.gridy = 1;
+		gridBagConstraints1.weightx = 1.0;
+		gridBagConstraints1.insets = new Insets(2, 2, 2, 2);
+		gridBagConstraints1.gridx = 0;
 		
+		GridBagConstraints gridBagConstraints = new GridBagConstraints();
+		gridBagConstraints.gridx = 0;
+		gridBagConstraints.insets = new Insets(2, 2, 2, 2);
+		gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
+		gridBagConstraints.gridy = 2;
+
+		GridBagConstraints gridBagConstraints2 = new GridBagConstraints();
+		gridBagConstraints2.gridx = 0;
+		gridBagConstraints2.insets = new Insets(2, 2, 2, 2);
+		gridBagConstraints2.fill = GridBagConstraints.HORIZONTAL;
+		gridBagConstraints2.gridy = 3;
+
 		this.setLayout(new GridBagLayout());
         this.add(getLoadButton(), gridBagConstraints1);
+        this.add(new JLabel("Network name:"), gridBagConstraints);
+        this.add(getNameLabel(), gridBagConstraints2);
  	}
 	
 	private JFileChooser getFileChooser() {
@@ -72,6 +92,18 @@ public class CxfNetworkPanel extends BrowserWidget {
 		return fileC;
 	}
 
+	private JLabel getNameLabel() {
+		if (networkNameLabel == null)
+		{
+			StaticCxfNetwork cxfNet = (StaticCxfNetwork) getNetwork();
+			if (cxfNet != null)
+				networkNameLabel = new JLabel(cxfNet.getCxfName());
+			else
+				networkNameLabel = new JLabel("");	
+		}
+		return networkNameLabel;
+	}
+	
 	/**
 	 * This method initializes stopButton	
 	 * 	
@@ -97,6 +129,7 @@ public class CxfNetworkPanel extends BrowserWidget {
 		                getBrowser().getNetworkLayout().reset();
 		                getBrowser().repaintViewer();
 		                getBrowser().stopLayout();
+		               	networkNameLabel.setText(cxfNet.getCxfName());
 		            } else {
 		                System.out.println("Input cancelled by user");
 		            }
