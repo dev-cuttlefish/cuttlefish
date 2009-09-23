@@ -49,7 +49,6 @@ import org.xml.sax.SAXException;
 import ch.ethz.sg.cuttlefish.gui.BrowserWidget;
 import ch.ethz.sg.cuttlefish.misc.XMLUtil;
 import ch.ethz.sg.cuttlefish.networks.BrowsableNetwork;
-//import ch.ethz.sg.cuttlefish.networks.IDatabaseSource;
 
 public class DataSourcePanel extends BrowserWidget {
 
@@ -111,31 +110,12 @@ public class DataSourcePanel extends BrowserWidget {
 					Node source = sources.item(jComboBox.getSelectedIndex());
 					String className = source.getAttributes().getNamedItem("class").getNodeValue();
 
-					/*boolean isDatabaseSource = true;
-					String database = null;
-					String host = null;
-					String login = null;
-					String password = null;
-					try {
-						database = source.getAttributes().getNamedItem("database").getNodeValue();
-						host = source.getAttributes().getNamedItem("host").getNodeValue();
-						login = source.getAttributes().getNamedItem("login").getNodeValue();
-						password = source.getAttributes().getNamedItem("password").getNodeValue();
-						
-					} catch (Exception e) {
-						isDatabaseSource = false;
-					}*/
-
 					Class<?> clazz;
 					
 						try {
 							clazz = Class.forName(className);
 							BrowsableNetwork network = (BrowsableNetwork) clazz.newInstance();
 						  
-						  /*if(isDatabaseSource){
-								((IDatabaseSource)network).loadFromDB(host, login, password, database);
-							}*/
-							
 							network.setArguments(XMLUtil.getArguments(source));
 							getBrowser().setNetwork(network);
 					

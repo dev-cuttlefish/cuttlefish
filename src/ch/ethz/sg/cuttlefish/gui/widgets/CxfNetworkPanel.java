@@ -35,10 +35,7 @@ import ch.ethz.sg.cuttlefish.gui.BrowserWidget;
 import ch.ethz.sg.cuttlefish.networks.StaticCxfNetwork;
 
 public class CxfNetworkPanel extends BrowserWidget {
-
-	/**
-	 * 
-	 */
+ 
 	private static final long serialVersionUID = 1L;
 	
 	private JFileChooser fileC = null;
@@ -47,7 +44,6 @@ public class CxfNetworkPanel extends BrowserWidget {
 
 	/**
 	 * This method initializes 
-	 * 
 	 */
 	public CxfNetworkPanel() {
 		super();
@@ -57,7 +53,6 @@ public class CxfNetworkPanel extends BrowserWidget {
 
 	/**
 	 * This method initializes this
-	 * 
 	 */
 	private void initialize() {
 		GridBagConstraints gridBagConstraints1 = new GridBagConstraints();

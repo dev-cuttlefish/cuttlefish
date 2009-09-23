@@ -24,24 +24,18 @@ package ch.ethz.sg.cuttlefish.gui.widgets;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.io.File;
-
 import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JLabel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
-
-
 import ch.ethz.sg.cuttlefish.gui.BrowserWidget;
 import ch.ethz.sg.cuttlefish.networks.DBNetwork;
-import ch.ethz.sg.cuttlefish.networks.StaticCxfNetwork;
+
+/**
+ * Widget for the connection to the database 
+ */
 
 public class DBConnectPanel extends BrowserWidget {
-
-	/**
-	 * 
-	 */
+	 
 	private static final long serialVersionUID = 1L;
 	
 	private JButton connectButton = null;
@@ -50,8 +44,7 @@ public class DBConnectPanel extends BrowserWidget {
 	private JPasswordField passwordField = null;
 	
 	/**
-	 * This method initializes 
-	 * 
+	 * Basic constructor for the connect panel
 	 */
 	public DBConnectPanel() {
 		super();
@@ -61,7 +54,6 @@ public class DBConnectPanel extends BrowserWidget {
 
 	/**
 	 * This method initializes this
-	 * 
 	 */
 	private void initialize() {
 		GridBagConstraints gridBagConstraints1 = new GridBagConstraints();
@@ -96,28 +88,52 @@ public class DBConnectPanel extends BrowserWidget {
         this.add(getPasswordField(), gridBagConstraints3);
  	}
 
+	/**
+	 * Getter for the URL field
+	 * @return JTextField
+	 */
 	private JTextField getUrlField() {
 		if (urlField == null)
 		{
-			urlField = new JTextField("Database URL");
+			String initialContent = getArgument("url");
+			if (initialContent != null)
+				urlField = new JTextField(initialContent);
+			else
+				urlField = new JTextField("Database URL");
 			urlField.setToolTipText("Database URL");
 		}
 		return urlField;
 	}
 
+	/**
+	 * Getter for the user name field
+	 * @return JTextField
+	 */
 	private JTextField getUserNameField() {
 		if (userNameField == null)
 		{
-			userNameField = new JTextField("User name");
+			String initialContent = getArgument("userName");
+			if (initialContent != null)
+				userNameField = new JTextField(initialContent);
+			else
+				userNameField = new JTextField("User name");
 			userNameField.setToolTipText("User name");
 		}
 		return userNameField;
 	}
 
+	/**
+	 * Getter for the password field
+	 * @return JPasswordField
+	 */
 	private JTextField getPasswordField() {
 		if (passwordField == null)
 		{
-			passwordField = new JPasswordField("Password");
+			String initialContent = getArgument("password");
+			if (initialContent != null)
+				passwordField = new JPasswordField(initialContent);
+			else
+				passwordField = new JPasswordField("Password");
 			passwordField.setToolTipText("Password");
 		}
 		return passwordField;
@@ -125,7 +141,7 @@ public class DBConnectPanel extends BrowserWidget {
 
 	
 	/**
-	 * This method initializes stopButton	
+	 * This method initializes connectButton	
 	 * 	
 	 * @return javax.swing.JButton	
 	 */

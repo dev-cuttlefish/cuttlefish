@@ -33,11 +33,8 @@ import ch.ethz.sg.cuttlefish.misc.Vertex;
 
 import edu.uci.ics.jung.graph.SparseGraph;
 
-
-
 public class BrowsableNetwork extends SparseGraph<Vertex, Edge> {
 	
-	//default value for serialization in serialVersionUID
 	private static final long serialVersionUID = 1L;
 	
 	private String name=this.getClass().getName();
@@ -85,12 +82,14 @@ public class BrowsableNetwork extends SparseGraph<Vertex, Edge> {
 		while (!vertices.isEmpty())
 		{ 
 			try{
+				vertices = getVertices();
 				for (Vertex vertex : vertices)
 					super.removeVertex(vertex);
 			}
 			catch (ConcurrentModificationException e)
 			{}
 		}
+		System.out.println("erasing complete");
 	}
 	
 	public final void setName(String name){

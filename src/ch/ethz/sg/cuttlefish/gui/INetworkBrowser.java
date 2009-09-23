@@ -22,6 +22,8 @@
 package ch.ethz.sg.cuttlefish.gui;
 
 import java.awt.image.BufferedImage;
+import java.util.Set;
+
 import ch.ethz.sg.cuttlefish.misc.Edge;
 import ch.ethz.sg.cuttlefish.misc.Vertex;
 import ch.ethz.sg.cuttlefish.networks.BrowsableNetwork;
@@ -99,4 +101,9 @@ public interface INetworkBrowser {
 	 * @return BufferedImage image created by the visualization viewer 
 	 **/
 	public BufferedImage getSnapshot();
+	/**
+	 * Gives the set of selected vertices by the mouse
+	 * @return set of selected vertices
+	 */
+	public Set<Vertex> getPickedVertices();
 }

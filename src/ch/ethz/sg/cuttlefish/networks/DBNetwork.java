@@ -21,17 +21,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package ch.ethz.sg.cuttlefish.networks;
 
+import java.awt.Color;
 import java.awt.HeadlessException;
 import java.sql.*;
-import java.util.Collection;
-import java.util.ConcurrentModificationException;
 import java.util.HashMap;
-
 import javax.swing.JOptionPane;
-
 import ch.ethz.sg.cuttlefish.misc.Edge;
 import ch.ethz.sg.cuttlefish.misc.Vertex;
-import edu.uci.ics.jung.graph.SparseGraph;
 import edu.uci.ics.jung.graph.util.EdgeType;
 
 /**
@@ -42,8 +38,10 @@ public class DBNetwork extends BrowsableNetwork {
 
 	private static final long serialVersionUID = 1L;
 	
-	Connection conn;
-	HashMap<Integer,Vertex> hash = new HashMap<Integer,Vertex>();
+	private Connection conn;
+	private HashMap<Integer,Vertex> hash = new HashMap<Integer,Vertex>();
+	private String nodeFilter = "";
+	private String edgeFilter = "";
 	
 	/**
 	 * Void general constructor
@@ -113,38 +111,129 @@ public class DBNetwork extends BrowsableNetwork {
 	 * Method that disposes all nodes and edges of the current network
 	 */
 	public void emptyNetwork() {
-		for (Edge e : getEdges())
-			removeEdge(e);
-		Collection<Vertex> vertices = getVertices();
-		//this funny way of deleting the vertices is because some ConcurrentModificationExceptions could appear
-		//after this we are sure that all the vertices have been deleted in a correct way
-		while (!vertices.isEmpty())
-		{
-			try{
-			for (Vertex v : vertices)
-				removeVertex(v);
-			}
-			catch (ConcurrentModificationException e){}
-		}
 		hash.clear();
+		clearGraph();
+		
+	}
+	
+	/**
+	 * Setter for the filter on the queries for the nodes
+	 * @param nodeFilter
+	 */
+	public void setNodeFilter(String nodeFilter)
+	{
+		this.nodeFilter = nodeFilter;
+	}
+	
+	/**
+	 * Setter for the filter on the queries for the edges of the database
+	 */
+	public void setEdgeFilter(String edgeFilter)
+	{
+		this.edgeFilter = edgeFilter;
+	}
+	
+	/**
+	 * Function that applies certain filter to any query, transforming it to a filtered query
+	 * @param query to modify
+	 * @param filter to add to the query
+	 * @return extended query
+	 */
+	private String applyFilter(String query, String filter)
+	{
+		if (filter.equals(""))
+			return query;
+		int whereIndex = query.lastIndexOf("where");
+		if (whereIndex == -1)
+			whereIndex = query.lastIndexOf("WHERE");
+		
+		if (whereIndex == -1)
+			return query + "where " + filter;
+		
+		String result = query.substring(0, whereIndex+5);
+		String whereClause = query.substring(whereIndex+5);
+		result = result + " " + filter + " and " + whereClause;		
+		return result;
 	}
 	
 	/**
 	 * Executes a proper node query and adds all the resulting nodes to the network
 	 * @param queryString
 	 */
-	public void nodeQuery(String queryString) {
+	public void nodeQuery(String queryStringOriginal) {
 		    try
 		    {
+		      String queryString = applyFilter(queryStringOriginal, nodeFilter);
+		      System.out.println(queryString);
 		      Statement st = conn.createStatement();
 		      ResultSet rs = st.executeQuery(queryString);
 		      while (rs.next())
 		      {
-		        int id = rs.getInt("id");
-		        String label = rs.getString("label");
-		        Vertex v = new Vertex(id, label); 
-		        addVertex(v);
-		        hash.put(id, v);
+			    	Vertex v;
+			        int id = rs.getInt("id");
+     		    	if (hash.get(id) == null)
+			        {
+     		    		String label = rs.getString("label");
+				        if (label != null)
+				        	v = new Vertex(id, label);
+				        else
+				        	v = new Vertex(id);
+				        
+				        String colorString = rs.getString("color");
+				        if (colorString != null)
+				        {
+				        	int pos = 0;
+				        	float R, G, B;
+				        	R = Float.parseFloat(colorString.substring(pos,colorString.indexOf(',',pos)));
+		    				pos = colorString.indexOf(',',pos)+1;
+			    			G = Float.parseFloat(colorString.substring(pos,colorString.indexOf(',',pos)));
+			    			pos = colorString.indexOf(',',pos)+1;
+			    			B = Float.parseFloat(colorString.substring(pos));
+			    			v.setFillColor(new Color(R,G,B));
+			    		}
+				        
+				        String borderColorString = rs.getString("borderColor");
+				        if (borderColorString != null)
+				        {
+				        	int pos = 0;
+				        	float R, G, B;
+				        	R = Float.parseFloat(borderColorString.substring(pos,borderColorString.indexOf(',',pos)));
+		    				pos = borderColorString.indexOf(',',pos)+1;
+			    			G = Float.parseFloat(borderColorString.substring(pos,borderColorString.indexOf(',',pos)));
+			    			pos = borderColorString.indexOf(',',pos)+1;
+			    			B = Float.parseFloat(borderColorString.substring(pos));
+			    			v.setColor(new Color(R,G,B));
+			    		}
+				        
+				        float size = rs.getFloat("size");
+				        if (size != 0)
+				        	v.setSize(size);
+				        
+				        String shape = rs.getString("shape");
+				        if (shape != null)
+				        	v.setShape(shape);
+				        
+				        int width = rs.getInt("width");
+				        if (width != 0)
+				        	v.setWidth(width);
+	
+				        String var1 = rs.getString("var1");
+				        if (var1 != null)
+				        	v.setVar1(var1);
+	
+				        String var2 = rs.getString("var2");
+				        if (var2 != null)
+				        	v.setVar2(var2);
+				        
+				        String hide = rs.getString("hide");
+				        if ((hide != null) && (hide.equals("true")))
+				        	v.setExcluded(true);
+		
+				        addVertex(v);
+				        
+				        hash.put(id, v);
+			        }
+			        
 		      }
 		    }
 		    catch (SQLException sqlEx)
@@ -156,21 +245,83 @@ public class DBNetwork extends BrowsableNetwork {
 		    extendEdges();
 	}
 	
-	public void extendNeighborhood(int id, int distance) {
+	/**
+	 * Method that adds to the network the neighboring nodes up to certain distance from a center.
+	 * @param id from the node to start the search from
+	 * @param distance maximum depth
+	 * @param forward whether the traversal is forward or backward
+	 */
+	public void extendNeighborhood(int id, int distance, boolean forward) {
 		Vertex v = hash.get(id);
 		if (v == null)
 		{
 			try
 		    {
-			  String queryString = "select id, label from CFNodes where id = " + id + ";";
+			  String queryString = "select * from CFNodes where id = " + id + ";";
+			  queryString = applyFilter(queryString, nodeFilter);
+		      System.out.println(queryString);
 		      Statement st = conn.createStatement();
 		      ResultSet rs = st.executeQuery(queryString);
 		      while (rs.next())
 		      {
-		        String label = rs.getString("label");
-		        v = new Vertex(id, label); 
-		        addVertex(v);
-		        hash.put(id, v);
+		    	    String label = rs.getString("label");
+			        if (label != null)
+			        	v = new Vertex(id, label);
+			        else
+			        	v = new Vertex(id);
+			        
+			        String colorString = rs.getString("color");
+			        if (colorString != null)
+			        {
+			        	int pos = 0;
+			        	float R, G, B;
+			        	R = Float.parseFloat(colorString.substring(pos,colorString.indexOf(',',pos)));
+	    				pos = colorString.indexOf(',',pos)+1;
+		    			G = Float.parseFloat(colorString.substring(pos,colorString.indexOf(',',pos)));
+		    			pos = colorString.indexOf(',',pos)+1;
+		    			B = Float.parseFloat(colorString.substring(pos));
+		    			v.setFillColor(new Color(R,G,B));
+		    		}
+			        
+			        String borderColorString = rs.getString("borderColor");
+			        if (borderColorString != null)
+			        {
+			        	int pos = 0;
+			        	float R, G, B;
+			        	R = Float.parseFloat(borderColorString.substring(pos,borderColorString.indexOf(',',pos)));
+	    				pos = borderColorString.indexOf(',',pos)+1;
+		    			G = Float.parseFloat(borderColorString.substring(pos,borderColorString.indexOf(',',pos)));
+		    			pos = borderColorString.indexOf(',',pos)+1;
+		    			B = Float.parseFloat(borderColorString.substring(pos));
+		    			v.setColor(new Color(R,G,B));
+		    		}
+			        
+			        float size = rs.getFloat("size");
+			        if (size != 0)
+			        	v.setSize(size);
+			        
+			        String shape = rs.getString("shape");
+			        if (shape != null)
+			        	v.setShape(shape);
+			        
+			        int width = rs.getInt("width");
+			        if (width != 0)
+			        	v.setWidth(width);
+
+			        String var1 = rs.getString("var1");
+			        if (var1 != null)
+			        	v.setVar1(var1);
+
+			        String var2 = rs.getString("var2");
+			        if (var2 != null)
+			        	v.setVar2(var2);
+			        
+			        String hide = rs.getString("hide");
+			        if ((hide != null) && (hide.equals("true")))
+			        	v.setExcluded(true);
+	
+			        addVertex(v);
+			        hash.put(id, v);
 		      }
 		    }
 		    catch (SQLException sqlEx)
@@ -180,17 +331,123 @@ public class DBNetwork extends BrowsableNetwork {
 				sqlEx.printStackTrace();
 		    }
 		}
-		if (distance > 0)
+		if ((forward == true) && (distance > 0) && (v != null))
 		{
 			try
 			  {
 				  String queryString = "select * from CFEdges where id_origin =" + v.getId() + ";";
+				  queryString = applyFilter(queryString, edgeFilter);
+			      System.out.println(queryString);
 			      Statement st = conn.createStatement();
 			      ResultSet rs = st.executeQuery(queryString);
 			      while (rs.next())
 			      {
 			    	  int id_dest = rs.getInt("id_dest");
-			    	  extendNeighborhood(id_dest, distance-1);  
+			    	  extendNeighborhood(id_dest, distance-1, true); 
+			    	  
+			    	  Edge e = new Edge();
+			  			
+			  			String label = rs.getString("label");
+			  			e.setLabel(label);
+			  			
+			  			String colorString = rs.getString("color");
+				        if (colorString != null)
+				        {
+				        	int pos = 0;
+				        	float R, G, B;
+				        	R = Float.parseFloat(colorString.substring(pos,colorString.indexOf(',',pos)));
+		    				pos = colorString.indexOf(',',pos)+1;
+			    			G = Float.parseFloat(colorString.substring(pos,colorString.indexOf(',',pos)));
+			    			pos = colorString.indexOf(',',pos)+1;
+			    			B = Float.parseFloat(colorString.substring(pos));
+			    			e.setColor(new Color(R,G,B));
+			    		}
+				        
+				        int width = rs.getInt("width");
+				        if (width != 0)
+				        	e.setWidth(width);
+
+				        float weight = rs.getFloat("weight");
+				        if (weight != 0)
+				        	e.setWeight(weight);
+				        
+				        String var1 = rs.getString("var1");
+				        if (var1 != null)
+				        	e.setVar1(var1);
+
+				        String var2 = rs.getString("var2");
+				        if (var2 != null)
+				        	e.setVar2(var2);
+				        
+				        String hide = rs.getString("hide");
+				        if ((hide != null) && (hide.equals("true")))
+				        	e.setExcluded(true);
+			
+			    		addEdge(e, v , hash.get(id_dest), EdgeType.DIRECTED);
+			    	  
+			      }
+			  }
+		      catch (SQLException sqlEx)
+			  {
+			    	JOptionPane.showMessageDialog(null,sqlEx.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
+					System.err.println("SQL error");
+					sqlEx.printStackTrace();
+			  }
+		}
+		if ((forward == false) && (distance > 0) && (v != null))
+		{
+			try
+			  {
+				  String queryString = "select * from CFEdges where id_dest =" + v.getId() + ";";
+				  queryString = applyFilter(queryString, edgeFilter);
+			      System.out.println(queryString);
+			      Statement st = conn.createStatement();
+			      ResultSet rs = st.executeQuery(queryString);
+			      while (rs.next())
+			      {
+			    	  int id_origin = rs.getInt("id_origin");
+			    	  extendNeighborhood(id_origin, distance-1, false);  
+			    	  
+			    	  Edge e = new Edge();
+			  			
+			  			String label = rs.getString("label");
+			  			e.setLabel(label);
+			  			
+			  			String colorString = rs.getString("color");
+				        if (colorString != null)
+				        {
+				        	int pos = 0;
+				        	float R, G, B;
+				        	R = Float.parseFloat(colorString.substring(pos,colorString.indexOf(',',pos)));
+		    				pos = colorString.indexOf(',',pos)+1;
+			    			G = Float.parseFloat(colorString.substring(pos,colorString.indexOf(',',pos)));
+			    			pos = colorString.indexOf(',',pos)+1;
+			    			B = Float.parseFloat(colorString.substring(pos));
+			    			e.setColor(new Color(R,G,B));
+			    		}
+				        
+				        int width = rs.getInt("width");
+				        if (width != 0)
+				        	e.setWidth(width);
+
+				        float weight = rs.getFloat("weight");
+				        if (weight != 0)
+				        	e.setWeight(weight);
+				        
+				        String var1 = rs.getString("var1");
+				        if (var1 != null)
+				        	e.setVar1(var1);
+
+				        String var2 = rs.getString("var2");
+				        if (var2 != null)
+				        	e.setVar2(var2);
+				        
+				        String hide = rs.getString("hide");
+				        if ((hide != null) && (hide.equals("true")))
+				        	e.setExcluded(true);
+			
+			    		addEdge(e, hash.get(id_origin) , v, EdgeType.DIRECTED);
+			    	  
 			      }
 			  }
 		      catch (SQLException sqlEx)
@@ -202,12 +459,18 @@ public class DBNetwork extends BrowsableNetwork {
 		}
 	}
 	
+	/**
+	 * Method that adds all the edges of the subgraph induced in the database by the nodes
+	 * already added to the displayed network
+	 */
 	public void extendEdges() {
 		for (Vertex v : getVertices())
 		{
 			  try
 			  {
 				  String queryString = "select * from CFEdges where id_origin =" + v.getId() + ";";
+				  queryString = applyFilter(queryString, edgeFilter);
+			      System.out.println(queryString);
 			      Statement st = conn.createStatement();
 			      ResultSet rs = st.executeQuery(queryString);
 			      while (rs.next())
@@ -215,7 +478,47 @@ public class DBNetwork extends BrowsableNetwork {
 			    	  int id_dest = rs.getInt("id_dest");
 			    	  Vertex v_dest = hash.get(id_dest);
 			    	  if (v_dest != null)
-			    		  addEdge(new Edge(),v , v_dest, EdgeType.DIRECTED);
+			    	  {
+				    		Edge e = new Edge();
+				  			
+				  			String label = rs.getString("label");
+				  			e.setLabel(label);
+				  			
+				  			String colorString = rs.getString("color");
+					        if (colorString != null)
+					        {
+					        	int pos = 0;
+					        	float R, G, B;
+					        	R = Float.parseFloat(colorString.substring(pos,colorString.indexOf(',',pos)));
+			    				pos = colorString.indexOf(',',pos)+1;
+				    			G = Float.parseFloat(colorString.substring(pos,colorString.indexOf(',',pos)));
+				    			pos = colorString.indexOf(',',pos)+1;
+				    			B = Float.parseFloat(colorString.substring(pos));
+				    			e.setColor(new Color(R,G,B));
+				    		}
+					        
+					        int width = rs.getInt("width");
+					        if (width != 0)
+					        	e.setWidth(width);
+	
+					        float weight = rs.getFloat("weight");
+					        if (weight != 0)
+					        	e.setWeight(weight);
+					        
+					        String var1 = rs.getString("var1");
+					        if (var1 != null)
+					        	e.setVar1(var1);
+	
+					        String var2 = rs.getString("var2");
+					        if (var2 != null)
+					        	e.setVar2(var2);
+					        
+					        String hide = rs.getString("hide");
+					        if ((hide != null) && (hide.equals("true")))
+					        	e.setExcluded(true);
+				
+				    		addEdge(e,v , v_dest, EdgeType.DIRECTED);
+			    	  }
 			      }
 			  }
 		      catch (SQLException sqlEx)
@@ -225,6 +528,42 @@ public class DBNetwork extends BrowsableNetwork {
 					sqlEx.printStackTrace();
 			  }
 
+		}
+	}
+	
+	/**
+	 * Method that substracts the neighborhood from a selected vertex
+	 * @param vertex
+	 */
+	public void shrinkVertex(Vertex vertex)
+	{
+		for (Edge adjacentEdge : getOutEdges(vertex))
+		{
+			Vertex neighbor = getOpposite(vertex, adjacentEdge);
+			removeEdge(adjacentEdge);
+			if (getNeighborCount(neighbor) < 1)
+			{
+				hash.put(neighbor.getId(), null);
+				removeVertex(neighbor);
+			}
+		}
+	}
+	
+	/**
+	 * Method that substracts the predecessors of a selected vertex
+	 * @param vertex
+	 */
+	public void backShrinkVertex(Vertex vertex)
+	{
+		for (Edge adjacentEdge : getInEdges(vertex))
+		{
+			Vertex neighbor = getOpposite(vertex, adjacentEdge);
+			removeEdge(adjacentEdge);
+			if (getNeighborCount(neighbor) < 1)
+			{
+				hash.put(neighbor.getId(), null);
+				removeVertex(neighbor);
+			}
 		}
 	}
 	

@@ -144,6 +144,7 @@ public class ExportPanel extends BrowserWidget  {
 	 * 	
 	 * @return javax.swing.JButton	
 	 */
+	@SuppressWarnings("unused")
 	private JButton getDotButton() {
 		if (dotButton == null) {
 			dotButton = new JButton();

@@ -40,6 +40,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.Set;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -365,6 +366,7 @@ private VisualizationViewer<Vertex,Edge> getVisualizationViewer() {
  * @param network Network object to use in cuttlefish
  * @return void
  */
+@SuppressWarnings("unchecked")
 public void setNetwork(BrowsableNetwork network) {
 	this.network = network;
 	System.out.println("Set network " + network.getName() + " (" + network.getVertices().size() + " nodes)");
@@ -503,6 +505,7 @@ public void refreshAnnotations() {
  * Interface function to trigger the changes due to a change on the network nature
  * @return void
  */
+@SuppressWarnings("unchecked")
 public void onNetworkChange() {
 	System.out.println("Network changed " + network.getName());
 	
@@ -644,4 +647,15 @@ public BufferedImage getSnapshot() {
 	 return img;
 
 }
+
+@Override
+/**
+ * Gives the set of selected vertices by the mouse
+ * @return set of selected vertices
+ */
+public Set<Vertex> getPickedVertices()
+{
+	return visualizationViewer.getPickedVertexState().getPicked();
+}
+
 }  //  @jve:decl-index=0:visual-constraint="10,10"
