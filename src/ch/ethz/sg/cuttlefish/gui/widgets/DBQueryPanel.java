@@ -24,31 +24,24 @@ package ch.ethz.sg.cuttlefish.gui.widgets;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.io.File;
-
 import javax.swing.JButton;
-import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
-
-
 import ch.ethz.sg.cuttlefish.gui.BrowserWidget;
 import ch.ethz.sg.cuttlefish.networks.DBNetwork;
-import ch.ethz.sg.cuttlefish.networks.StaticCxfNetwork;
 
+/**
+ * Widget for the input of a query to a database network
+ */
 public class DBQueryPanel extends BrowserWidget {
-
-	/**
-	 * 
-	 */
+	
 	private static final long serialVersionUID = 1L;
 	
 	private JButton executeButton = null;
 	private JTextField queryField = null;
 	
 	/**
-	 * This method initializes 
-	 * 
+	 * Basic constructor
 	 */
 	public DBQueryPanel() {
 		super();
@@ -58,7 +51,6 @@ public class DBQueryPanel extends BrowserWidget {
 
 	/**
 	 * This method initializes this
-	 * 
 	 */
 	private void initialize() {
 		GridBagConstraints gridBagConstraints1 = new GridBagConstraints();
@@ -86,6 +78,10 @@ public class DBQueryPanel extends BrowserWidget {
         this.add(getQueryField(), gridBagConstraints2);
  	}
 
+	/**
+	 * Getter for the query text field
+	 * @return JTextField
+	 */
 	private JTextField getQueryField() {
 		if (queryField == null)
 		{
@@ -96,7 +92,7 @@ public class DBQueryPanel extends BrowserWidget {
 	}
 	
 	/**
-	 * This method initializes stopButton	
+	 * This method initializes executeButton	
 	 * 	
 	 * @return javax.swing.JButton	
 	 */

@@ -32,19 +32,20 @@ import javax.swing.JFileChooser;
 import ch.ethz.sg.cuttlefish.gui.BrowserWidget;
 import ch.ethz.sg.cuttlefish.networks.InteractiveCxfNetwork;
 
+/**
+ * Widget that loads the cef instructions to apply to a network
+ * @author dgarcia
+ */
+
 public class CefInstructionPanel extends BrowserWidget {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	
 	private JFileChooser fileC = null;
 	private JButton loadButton = null;
 
 	/**
-	 * This method initializes 
-	 * 
+	 * Basic constructor
 	 */
 	public CefInstructionPanel() {
 		super();
@@ -54,7 +55,6 @@ public class CefInstructionPanel extends BrowserWidget {
 
 	/**
 	 * This method initializes this
-	 * 
 	 */
 	private void initialize() {
 		GridBagConstraints gridBagConstraints1 = new GridBagConstraints();
@@ -65,7 +65,11 @@ public class CefInstructionPanel extends BrowserWidget {
         this.add(getLoadButton(), gridBagConstraints1);
 			
 	}
-	
+
+	/**
+	 * Get method for the fileChooser
+	 * @return JFileChooser for the input cef file
+	 */
 	private JFileChooser getFileChooser() {
 		if (fileC == null) {
 			fileC = new JFileChooser();
@@ -74,8 +78,7 @@ public class CefInstructionPanel extends BrowserWidget {
 	}
 
 	/**
-	 * This method initializes stopButton	
-	 * 	
+	 * This method initializes the load button	
 	 * @return javax.swing.JButton	
 	 */
 	private JButton getLoadButton() {

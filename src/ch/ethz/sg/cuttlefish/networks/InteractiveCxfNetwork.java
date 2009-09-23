@@ -31,7 +31,6 @@ import javax.swing.JOptionPane;
 
 import ch.ethz.sg.cuttlefish.misc.Edge;
 import ch.ethz.sg.cuttlefish.misc.Vertex;
-import ch.ethz.sg.cuttlefish.networks.CxfNetwork.Token;
 import edu.uci.ics.jung.graph.util.EdgeType;
 
 public class InteractiveCxfNetwork extends CxfNetwork implements ISimulation{

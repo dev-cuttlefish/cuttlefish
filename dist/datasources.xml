@@ -6,6 +6,7 @@
 		class="ch.ethz.sg.cuttlefish.networks.StaticCxfNetwork" name="Load cxf network">
 	</Source>
 	<Source id="cxfNetwork" name="Interactive cxf network" class="ch.ethz.sg.cuttlefish.networks.InteractiveCxfNetwork"></Source>
+	<Source id="Database" name="Database network" class="ch.ethz.sg.cuttlefish.networks.DBNetwork"></Source>
 	<Source id="pajekNet" name="Pajek load" class="ch.ethz.sg.cuttlefish.networks.PajekNetwork"></Source>
 	<Source id="graphML" name="GraphML load" class="ch.ethz.sg.cuttlefish.networks.GraphMLNetwork"></Source>
 	<Source id="userNetwork" name="Load cff Network" class="ch.ethz.sg.cuttlefish.networks.UserNetwork"></Source>

@@ -24,24 +24,17 @@ package ch.ethz.sg.cuttlefish.gui.widgets;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.io.File;
-
 import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JLabel;
-import javax.swing.JPasswordField;
 import javax.swing.JTextField;
-
-
 import ch.ethz.sg.cuttlefish.gui.BrowserWidget;
 import ch.ethz.sg.cuttlefish.networks.DBNetwork;
-import ch.ethz.sg.cuttlefish.networks.StaticCxfNetwork;
 
+/**
+ * Widget for the database browsing
+ * @author dgarcia
+ */
 public class DBBrowsePanel extends BrowserWidget {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	
 	private JButton exploreButton = null;
@@ -50,8 +43,7 @@ public class DBBrowsePanel extends BrowserWidget {
 	private JButton clearButton = null;
 	
 	/**
-	 * This method initializes 
-	 * 
+	 * This method initializes the DataBase browser panel
 	 */
 	public DBBrowsePanel() {
 		super();
@@ -61,7 +53,6 @@ public class DBBrowsePanel extends BrowserWidget {
 
 	/**
 	 * This method initializes this
-	 * 
 	 */
 	private void initialize() {
 		GridBagConstraints gridBagConstraints1 = new GridBagConstraints();
@@ -95,6 +86,10 @@ public class DBBrowsePanel extends BrowserWidget {
         this.add(getDistanceField(), gridBagConstraints2);
         this.add(getClearButton(), gridBagConstraints3);
  	}
+	/**
+	 * Getter for the Vertex id text field
+	 * @return JTextField
+	 */
 
 	private JTextField getIdField() {
 		if (idField == null)
@@ -105,6 +100,10 @@ public class DBBrowsePanel extends BrowserWidget {
 		return idField;
 	}
 
+	/**
+	 * Getter for the distance text field
+	 * @return JTextField
+	 */
 	private JTextField getDistanceField() {
 		if (distanceField == null)
 		{
@@ -115,8 +114,7 @@ public class DBBrowsePanel extends BrowserWidget {
 	}
 
 	/**
-	 * This method initializes stopButton	
-	 * 	
+	 * This method initializes exploreButton	
 	 * @return javax.swing.JButton	
 	 */
 	private JButton getExploreButton() {
@@ -126,8 +124,14 @@ public class DBBrowsePanel extends BrowserWidget {
 			exploreButton.setEnabled(true);
 			exploreButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
-				   ((DBNetwork) getNetwork()).extendNeighborhood(Integer.parseInt(idField.getText()), Integer.parseInt(distanceField.getText()));
-				   ((DBNetwork) getNetwork()).extendEdges();
+					boolean forward = true;
+					int distance = Integer.parseInt(distanceField.getText());
+					if (distance < 0) // negative distance input means backwards exploration
+					{
+						forward = false;
+						distance = (-1) * distance;		//extendNeighborhood gets abs value of distance
+					}
+				   ((DBNetwork) getNetwork()).extendNeighborhood(Integer.parseInt(idField.getText()), distance, forward);
 					getBrowser().onNetworkChange();
 	                getBrowser().getNetworkLayout().reset();
 	                getBrowser().repaintViewer();
@@ -139,8 +143,7 @@ public class DBBrowsePanel extends BrowserWidget {
 	}
 
 	/**
-	 * This method initializes stopButton	
-	 * 	
+	 * This method initializes clearButton	
 	 * @return javax.swing.JButton	
 	 */
 	private JButton getClearButton() {
@@ -150,11 +153,9 @@ public class DBBrowsePanel extends BrowserWidget {
 			clearButton.setEnabled(true);
 			clearButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
-				   ((DBNetwork) getNetwork()).clearGraph();
+				   ((DBNetwork) getNetwork()).emptyNetwork(); //network emptied through the DBNetwork interface
 				   getBrowser().onNetworkChange();
-	               getBrowser().getNetworkLayout().reset();
 	               getBrowser().repaintViewer();
-	               getBrowser().stopLayout();
 				}
 			});
 		}
