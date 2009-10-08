@@ -15,6 +15,6 @@
 	<classpathentry kind="lib" path="lib/jung-io-2.0-beta1.jar"/>
 	<classpathentry kind="lib" path="lib/jung-jai-2.0-beta1.jar"/>
 	<classpathentry kind="lib" path="lib/jung-visualization-2.0-beta1.jar"/>
-	<classpathentry kind="lib" path="/home/dgarcia/cuttlefish/lib/mysql-connector-java-5.1.9-bin.jar"/>
+	<classpathentry kind="lib" path="lib/mysql-connector-java-5.1.9-bin.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
