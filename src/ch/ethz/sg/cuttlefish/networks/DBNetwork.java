@@ -42,6 +42,8 @@ public class DBNetwork extends BrowsableNetwork {
 	private HashMap<Integer,Vertex> hash = new HashMap<Integer,Vertex>();
 	private String nodeFilter = "";
 	private String edgeFilter = "";
+	private boolean directed = true;
+	private boolean initialized = false;
 	
 	/**
 	 * Void general constructor
@@ -90,6 +92,28 @@ public class DBNetwork extends BrowsableNetwork {
 			JOptionPane.showMessageDialog(null,hEx.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
 			System.err.println("SQL error");
 			hEx.printStackTrace();
+		}
+		getDirection();
+		
+	}
+	
+	/**
+	 * Method that queries the database to determine whether the network should be directed or not
+	 */
+	private void getDirection(){
+		if (! initialized)
+		{
+			try {
+				String queryString = "select * from Directed;";
+		      	Statement st;
+					st = conn.createStatement();
+					ResultSet rs = st.executeQuery(queryString);
+					directed = rs.getBoolean(1);
+			} catch (SQLException e) {
+				initialized = true;
+				directed = true;    // if no view is defined, is directed by default
+			}
+			initialized = true;
 		}
 		
 	}
@@ -344,9 +368,9 @@ public class DBNetwork extends BrowsableNetwork {
 			      {
 			    	  int id_dest = rs.getInt("id_dest");
 			    	  extendNeighborhood(id_dest, distance-1, true); 
-			    	  
+			   
 			    	  Edge e = new Edge();
-			  			
+			  		 	
 			  			String label = rs.getString("label");
 			  			e.setLabel(label);
 			  			
@@ -383,8 +407,11 @@ public class DBNetwork extends BrowsableNetwork {
 				        if ((hide != null) && (hide.equals("true")))
 				        	e.setExcluded(true);
 			
-			    		addEdge(e, v , hash.get(id_dest), EdgeType.DIRECTED);
-			    	  
+				        if (directed)
+				        	addEdge(e, v , hash.get(id_dest), EdgeType.DIRECTED);
+				        else
+				         	addEdge(e, v , hash.get(id_dest), EdgeType.UNDIRECTED);
+					       
 			      }
 			  }
 		      catch (SQLException sqlEx)
@@ -446,8 +473,11 @@ public class DBNetwork extends BrowsableNetwork {
 				        if ((hide != null) && (hide.equals("true")))
 				        	e.setExcluded(true);
 			
-			    		addEdge(e, hash.get(id_origin) , v, EdgeType.DIRECTED);
-			    	  
+				        if (directed)
+				        	addEdge(e, hash.get(id_origin) , v, EdgeType.DIRECTED);
+				        else
+				         	addEdge(e, hash.get(id_origin) , v, EdgeType.UNDIRECTED);
+						   
 			      }
 			  }
 		      catch (SQLException sqlEx)
@@ -517,7 +547,11 @@ public class DBNetwork extends BrowsableNetwork {
 					        if ((hide != null) && (hide.equals("true")))
 					        	e.setExcluded(true);
 				
-				    		addEdge(e,v , v_dest, EdgeType.DIRECTED);
+					        if (directed)
+					        	addEdge(e,v , v_dest, EdgeType.DIRECTED);
+					        else
+					         	addEdge(e,v , v_dest, EdgeType.UNDIRECTED);
+						       
 			    	  }
 			      }
 			  }

@@ -33,7 +33,7 @@ public class BASimulation extends BrowsableNetwork implements ISimulation {
 		super();
 		this.setIncremental(true);
 		//The initial network for this simulation case is a triangle
-		Vertex v1 = new Vertex(), v2 = new Vertex(), v3 = new Vertex();
+		Vertex v1 = new Vertex(1), v2 = new Vertex(2), v3 = new Vertex(3);
 		addVertex(v1); v1.setLabel("2");
 		addVertex(v2); v2.setLabel("2");
 		addVertex(v3); v3.setLabel("2");
@@ -58,28 +58,28 @@ public class BASimulation extends BrowsableNetwork implements ISimulation {
 			dest = getEndpoints(getRandomEdge()).getSecond();
 		
 		//rejection sampling of second vertex - inital network on 3 vertices assures bounded running time
-		Vertex dest2 = dest;
+	/*	Vertex dest2 = dest;
 		while (dest2 == dest)
 			if (Math.random() > 0.5)
 				dest2 = getEndpoints(getRandomEdge()).getFirst();
 			else
 				dest2 = getEndpoints(getRandomEdge()).getSecond();	
-		
+	*/	
 		//growth
-		Vertex v = new Vertex();
-		v.setLabel("2");
 		int vCount = getVertexCount();
-		v.setFillColor(new Color((float) (vCount) / (200.0f),(float) (vCount) / (200.0f),(float) (vCount) / (200.0f)));
+		Vertex v = new Vertex(vCount+1);
+		v.setLabel("1");
+		v.setFillColor(new Color((float) (vCount) / (100.0f),(float) (vCount) / (200.0f),(float) (vCount) / (150.0f)));
 		v.setColor(new Color(0.0f,0.0f,0.0f));
 		
 		addVertex(v);
 		
 		//preferential attachment of parameter 2
 		addEdge(new Edge(), v, dest);
-		addEdge(new Edge(), v, dest2);
+	//	addEdge(new Edge(), v, dest2);
 		dest.setLabel(Integer.toString(getNeighborCount(dest)));
-		dest2.setLabel(Integer.toString(getNeighborCount(dest2)));
+	//	dest2.setLabel(Integer.toString(getNeighborCount(dest2)));
 			
-		return (getVertexCount() < 200);
+		return (getVertexCount() < 100);
 	}
 }
