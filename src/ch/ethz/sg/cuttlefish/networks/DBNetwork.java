@@ -95,6 +95,8 @@ public class DBNetwork extends BrowsableNetwork {
 		}
 		getDirection();
 		
+		System.out.println("Successfully connected to: " + dbName);
+		
 	}
 	
 	/**
@@ -105,13 +107,17 @@ public class DBNetwork extends BrowsableNetwork {
 		{
 			try {
 				String queryString = "select * from Directed;";
+				System.out.println(queryString);
 		      	Statement st;
 					st = conn.createStatement();
 					ResultSet rs = st.executeQuery(queryString);
+					rs.next();
 					directed = rs.getBoolean(1);
+					System.out.println("directed = " + directed);
 			} catch (SQLException e) {
 				initialized = true;
 				directed = true;    // if no view is defined, is directed by default
+				System.out.println("view Directed does not exist");
 			}
 			initialized = true;
 		}
@@ -344,6 +350,15 @@ public class DBNetwork extends BrowsableNetwork {
 			        if ((hide != null) && (hide.equals("true")))
 			        	v.setExcluded(true);
 	
+			        Double x = rs.getDouble("x");
+			        Double y = rs.getDouble("y");
+			        
+			        if ((x != null) && (y != null))
+			        	v.setPosition(x, y);
+
+			        boolean fixed = rs.getBoolean("fixed");
+			        	v.setFixed(fixed);
+			        	
 			        addVertex(v);
 			        hash.put(id, v);
 		      }
