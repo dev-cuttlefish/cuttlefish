@@ -255,6 +255,15 @@ public class DBNetwork extends BrowsableNetwork {
 				        if (var2 != null)
 				        	v.setVar2(var2);
 				        
+				        Double x = rs.getDouble("x");
+				        Double y = rs.getDouble("y");
+				        
+				        if ((x != null) && (y != null))
+				        	v.setPosition(x, y);
+
+				        boolean fixed = rs.getBoolean("fixed");
+				        	v.setFixed(fixed);
+				        
 				        String hide = rs.getString("hide");
 				        if ((hide != null) && (hide.equals("true")))
 				        	v.setExcluded(true);
