@@ -627,6 +627,10 @@ public void setLayout(String selectedLayout){
 	layout = newLayout;
 	System.out.println("Set layout to " + layout.getClass());
 
+	for (Vertex v : getNetwork().getVertices())
+		if (v.isFixed())
+			layout.lock(v,true);
+	
 	getVisualizationViewer().setGraphLayout(layout);
 	
 	getVisualizationViewer().repaint();
