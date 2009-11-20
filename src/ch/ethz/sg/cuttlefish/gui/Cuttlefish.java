@@ -27,6 +27,8 @@ import java.io.File;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+
+import ch.ethz.sg.cuttlefish.misc.Utils;
 /**
  * Class of the General User Interface for cuttlefish
  */
@@ -48,11 +50,15 @@ public class Cuttlefish extends JFrame {
 	 */
 	public static void main(String[] args) {
 		Frame f;
+		String filename;
 		
 		if (args.length == 0)
-			f = new Cuttlefish("configuration.xml");
+			filename = "configuration.xml";
 		else
-			f = new Cuttlefish(args[0]);
+			filename = args[0];
+		
+		File configfile = new File(filename);
+	    f = new Cuttlefish(filename);		
 		f.setVisible(true);
 	}
 	
@@ -62,7 +68,17 @@ public class Cuttlefish extends JFrame {
 	 */
 	public Cuttlefish(String string) {
 		super();
+		
 		configFile = new File(string);
+		
+		
+		if (!configFile.exists())
+	    {
+			configFile = Utils.createLocalFile("/ch/ethz/sg/cuttlefish/resources/default_configuration.xml", (Object) this);
+	    	System.out.println("WARNING: configuration file not found - using default");
+	    }
+		
+		
 		initialize();
 	}
 

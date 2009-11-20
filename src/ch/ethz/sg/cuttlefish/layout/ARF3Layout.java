@@ -22,6 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package ch.ethz.sg.cuttlefish.layout;
 
 import java.awt.geom.Point2D;
+import java.awt.geom.Point2D.Double;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -109,6 +110,8 @@ private double forceCutoff=7;
 private boolean verbose =false;
 
 private Collection<Vertex> visualizedVertices = new HashSet<Vertex>();
+
+private Point2D centerOfMass;
 
 /**
  * Genrates a new Layout for graph g
@@ -258,7 +261,8 @@ private Point2D getForceforNode(Vertex node) {
     	return mDot;
     }
 
-    for (Object o : getVertices()) {
+    
+    for (Object o : getGraph().getNeighbors((V)node)) {
         Vertex otherNode = (Vertex) o;
         if (node != otherNode) {
             Point2D otherNodeX = transform((V) otherNode);
@@ -270,21 +274,18 @@ private Point2D getForceforNode(Vertex node) {
             temp.setLocation(temp.getX() - x.getX(), temp.getY() - x.getY());
 
             
-            double multiplier = isEdgeInGraph(node, otherNode) ? a : 1;
+            double multiplier = a-1;
 
             multiplier *= attraction / Math.sqrt(numNodes);
 
             Point2D addition = (Point2D) temp.clone();
             addition.setLocation(addition.getX() * multiplier, addition.getY() * multiplier);
             mDot.setLocation(mDot.getX() + addition.getX(), mDot.getY() + addition.getY());
-            
-            multiplier = 1 / temp.distance(origin);
-            addition = (Point2D) temp.clone();
-            addition.setLocation(addition.getX() * multiplier * b, addition.getY() * multiplier * b);
-            
-            mDot.setLocation(mDot.getX() - addition.getX(), mDot.getY() - addition.getY());            
        }
     }
+    
+   // calculate attraction and repulsion from center of masses    
+    
     
     if (incremental && mDot.distance(origin) > forceCutoff) {
         double mult = forceCutoff / mDot.distance(origin);
@@ -541,6 +542,20 @@ public void initialize() {
 		locations.put((V) v, randomPoint);
 	}
 	update();
+	updateCenterOfMass();
+	
+}
+
+@SuppressWarnings("unchecked")
+public void updateCenterOfMass()
+{
+	centerOfMass = new Point2D.Double(0.0,0.0);
+	for (Vertex v : (Collection<Vertex>) getGraph().getVertices())
+	{
+		Point2D location = transform((V) v);
+		centerOfMass.setLocation(centerOfMass.getX() + location.getX(), centerOfMass.getY() + location.getY());
+	}
+	centerOfMass.setLocation(centerOfMass.getX() / getGraph().getVertexCount(), centerOfMass.getX() / getGraph().getVertexCount());
 }
 
 @Override

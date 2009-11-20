@@ -47,6 +47,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import ch.ethz.sg.cuttlefish.gui.BrowserWidget;
+import ch.ethz.sg.cuttlefish.misc.Utils;
 import ch.ethz.sg.cuttlefish.misc.XMLUtil;
 import ch.ethz.sg.cuttlefish.networks.BrowsableNetwork;
 
@@ -180,7 +181,12 @@ public class DataSourcePanel extends BrowserWidget {
 	        
 	        System.out.println("loading sources from " + getArgument("sources"));
 	        File sourcesFile = new File(getArgument("sources"));
-	        
+	        if (!sourcesFile.exists())
+	        {
+				 
+	        	sourcesFile = Utils.createLocalFile("/ch/ethz/sg/cuttlefish/resources/default_datasources.xml", (Object) this);
+	        	System.out.println("WARNING: datasources file not found - using default");
+	        }
 	        sourcesDocument = builder.parse(sourcesFile);
 	          
 			jComboBox.removeAllItems();
@@ -191,11 +197,11 @@ public class DataSourcePanel extends BrowserWidget {
 				jComboBox.addItem(source.getAttributes().getNamedItem("name").getNodeValue());
 			}
 		} 
-		catch (FileNotFoundException fnfEx) {
+	/*	catch (FileNotFoundException fnfEx) {
 			JOptionPane.showMessageDialog(null,fnfEx.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
 			System.err.println("Schema file for data sources not found");
 			fnfEx.printStackTrace();
-		} 
+		}*/ 
 		catch (IOException ioEx) {
 			JOptionPane.showMessageDialog(null,ioEx.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
 			System.err.println("Input exception in data source schema file");
