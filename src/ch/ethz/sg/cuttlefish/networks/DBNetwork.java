@@ -178,7 +178,7 @@ public class DBNetwork extends BrowsableNetwork {
 			whereIndex = query.lastIndexOf("WHERE");
 		
 		if (whereIndex == -1)
-			return query + "where " + filter;
+			return query + " where " + filter;
 		
 		String result = query.substring(0, whereIndex+5);
 		String whereClause = query.substring(whereIndex+5);
