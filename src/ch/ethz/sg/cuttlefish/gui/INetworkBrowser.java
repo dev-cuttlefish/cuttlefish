@@ -106,4 +106,8 @@ public interface INetworkBrowser {
 	 * @return set of selected vertices
 	 */
 	public Set<Vertex> getPickedVertices();
-}
+	/**
+	 * Gives the set of selected edges by the mouse
+	 * @return set of selected edges
+	 */
+	public Set<Edge> getPickedEdges();}

@@ -662,4 +662,15 @@ public Set<Vertex> getPickedVertices()
 	return visualizationViewer.getPickedVertexState().getPicked();
 }
 
+
+@Override
+/**
+ * Gives the set of selected edges by the mouse
+ * @return set of selected edges
+ */
+public Set<Edge> getPickedEdges()
+{
+	return visualizationViewer.getPickedEdgeState().getPicked();
+}
+
 }  //  @jve:decl-index=0:visual-constraint="10,10"
