@@ -264,9 +264,11 @@ public class DBNetwork extends BrowsableNetwork {
 				        boolean fixed = rs.getBoolean("fixed");
 				        	v.setFixed(fixed);
 				        
-				        String hide = rs.getString("hide");
-				        if ((hide != null) && (hide.equals("true")))
-				        	v.setExcluded(true);
+				        boolean hide =false;
+				        if (rs.getString("hide") != null)	
+				        	hide = rs.getBoolean("hide");
+				        
+				        v.setExcluded(hide);
 		
 				        addVertex(v);
 				        
@@ -355,10 +357,12 @@ public class DBNetwork extends BrowsableNetwork {
 			        if (var2 != null)
 			        	v.setVar2(var2);
 			        
-			        String hide = rs.getString("hide");
-			        if ((hide != null) && (hide.equals("true")))
-			        	v.setExcluded(true);
-	
+			        boolean hide =false;
+			        if (rs.getString("hide") != null)	
+			        	hide = rs.getBoolean("hide");
+			        
+			        v.setExcluded(hide);
+			        
 			        Double x = rs.getDouble("x");
 			        Double y = rs.getDouble("y");
 			        
@@ -426,11 +430,13 @@ public class DBNetwork extends BrowsableNetwork {
 				        String var2 = rs.getString("var2");
 				        if (var2 != null)
 				        	e.setVar2(var2);
+				       
+				        boolean hide =false;
+				        if (rs.getString("hide") != null)	
+				        	hide = rs.getBoolean("hide");
 				        
-				        String hide = rs.getString("hide");
-				        if ((hide != null) && (hide.equals("true")))
-				        	e.setExcluded(true);
-			
+				        e.setExcluded(hide);
+				       
 				        if (directed)
 				        	addEdge(e, v , hash.get(id_dest), EdgeType.DIRECTED);
 				        else
@@ -492,11 +498,13 @@ public class DBNetwork extends BrowsableNetwork {
 				        String var2 = rs.getString("var2");
 				        if (var2 != null)
 				        	e.setVar2(var2);
-				        
-				        String hide = rs.getString("hide");
-				        if ((hide != null) && (hide.equals("true")))
-				        	e.setExcluded(true);
 			
+				        boolean hide =false;
+				        if (rs.getString("hide") != null)	
+				        	hide = rs.getBoolean("hide");
+				        
+				        e.setExcluded(hide);
+				        
 				        if (directed)
 				        	addEdge(e, hash.get(id_origin) , v, EdgeType.DIRECTED);
 				        else
@@ -566,10 +574,12 @@ public class DBNetwork extends BrowsableNetwork {
 					        String var2 = rs.getString("var2");
 					        if (var2 != null)
 					        	e.setVar2(var2);
+					    
+					        boolean hide =false;
+					        if (rs.getString("hide") != null)	
+					        	hide = rs.getBoolean("hide");
 					        
-					        String hide = rs.getString("hide");
-					        if ((hide != null) && (hide.equals("true")))
-					        	e.setExcluded(true);
+					        e.setExcluded(hide);
 				
 					        if (directed)
 					        	addEdge(e,v , v_dest, EdgeType.DIRECTED);
