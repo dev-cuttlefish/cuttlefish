@@ -245,11 +245,22 @@ public class CxfNetwork extends BrowsableNetwork {
 		    
 		    Iterator<String> it = lineFields.iterator();
 	    	String field = it.next();
-	    	if (field.equals("[")) {
-	    		field = it.next();	
+//	    	if (field.equals("[")) {
+//	    		field = it.next();	
+	    	if (field.startsWith("[")) {
+	    		if ((field.length() < 3) && (it.hasNext()))
+	    			field = it.next();
+	    		else
+	    			field = field.substring(1);
 	    		token.freeze = true;
 	    	}
-		    if ( field.toLowerCase().contains("node"))
+	    	if (field.endsWith("]")) {
+//	    		field = it.next();	
+	    		field = field.substring(0,field.length()-1);
+	    		token.commit = true;
+	    	}
+
+	    	if ( field.toLowerCase().contains("node"))
     			token = parseNode(token,field.toLowerCase(), it);
     		
 		    else if (field.toLowerCase().contains("edge"))
@@ -274,7 +285,7 @@ public class CxfNetwork extends BrowsableNetwork {
 		    	}
 		    	token.type = "configuration";
     		}
-		    else if (! lineFields.isEmpty())
+		    else if ((! lineFields.isEmpty()) && (!token.freeze) && (!token.commit))
 		    {
 		    	JOptionPane.showMessageDialog(null,"Unkown object in line " + token.line,"cxf error", JOptionPane.WARNING_MESSAGE);
 		    	System.out.println("Unkown object in line" + token.line);

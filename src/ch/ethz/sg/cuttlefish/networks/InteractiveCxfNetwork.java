@@ -73,7 +73,8 @@ public class InteractiveCxfNetwork extends CxfNetwork implements ISimulation{
 	
 	private void execute(Token token)
 	{
-	
+		if (token.type == null)
+			return;
 		if (token.type.equalsIgnoreCase("addNode"))
 		{
 			if (hash.containsKey(token.id))
@@ -137,7 +138,7 @@ public class InteractiveCxfNetwork extends CxfNetwork implements ISimulation{
 				
 				addEdge(e, vSource, vDest,et);
 			}
-			else
+			else if (!token.commit && !token.freeze)
 			{
 				JOptionPane.showMessageDialog(null,"One of the endpoints of the added edge ("+token.id_source +
 						","+token.id_dest +") does not exist","Warning",JOptionPane.WARNING_MESSAGE);
@@ -275,11 +276,15 @@ public class InteractiveCxfNetwork extends CxfNetwork implements ISimulation{
 			
 			if (token.freeze)
 			{
-				while ((instructionIndex < instructionTokens.size()) && (!token.commit))
+				execute(token);
+				instructionIndex++;
+				boolean commited = false;
+				while ((instructionIndex < instructionTokens.size()) && (!commited))
 				{
 					token = instructionTokens.get(instructionIndex);
 					execute(token);
 					instructionIndex++;
+					commited = token.commit;
 				}
 				
 			}
