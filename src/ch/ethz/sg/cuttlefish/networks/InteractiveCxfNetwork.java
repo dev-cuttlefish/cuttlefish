@@ -278,7 +278,7 @@ public class InteractiveCxfNetwork extends CxfNetwork implements ISimulation{
 			{
 				execute(token);
 				instructionIndex++;
-				boolean commited = false;
+				boolean commited = token.commit;
 				while ((instructionIndex < instructionTokens.size()) && (!commited))
 				{
 					token = instructionTokens.get(instructionIndex);
