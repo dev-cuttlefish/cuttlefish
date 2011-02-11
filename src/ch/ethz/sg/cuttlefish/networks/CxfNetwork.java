@@ -107,21 +107,10 @@ public class CxfNetwork extends BrowsableNetwork {
 	}
 	
 	/**
-	 * Loads the data stored in cxf format to the Cxf network
-	 * @param graphFile
+	 * Empty the currently loaded network.
+	 * @param
 	 */
-	public void load(File graphFile){
-		
-		this.networkFileName = graphFile.getName();
-		this.graphFile = graphFile;
-		hash = new HashMap<Integer,Vertex>();
-		directed = true;
-		hideVertexLabels = false;
-		hideEdgeLabels = false;
-		lineNum = 1;
-		line = null;
-	
-		//First, empty the network
+	private void emptyNetwork() {
 		for (Edge e : getEdges())
 			removeEdge(e);
 		Collection<Vertex> vertices = getVertices();
@@ -135,6 +124,33 @@ public class CxfNetwork extends BrowsableNetwork {
 			}
 			catch (ConcurrentModificationException e){}
 		}
+	}
+	
+	private boolean confirmFileFormatWarning(String warning, String dialogTitle) {
+		System.out.println(warning);
+		int answer = JOptionPane.showConfirmDialog(null, warning, dialogTitle, 2, JOptionPane.WARNING_MESSAGE);
+		if(answer == JOptionPane.CANCEL_OPTION) {
+			emptyNetwork();
+			return false;
+		}
+		return true;
+	} 
+	
+	/**
+	 * Loads the data stored in cxf format to the Cxf network
+	 * @param graphFile
+	 */
+	public void load(File graphFile){		
+		this.graphFile = graphFile;
+		hash = new HashMap<Integer,Vertex>();
+		directed = true;
+		hideVertexLabels = false;
+		hideEdgeLabels = false;
+		lineNum = 1;
+		line = null;
+	
+		//First, empty the network
+		emptyNetwork();		
 		
 		try {
 			br = new BufferedReader(new FileReader(graphFile));
@@ -148,8 +164,8 @@ public class CxfNetwork extends BrowsableNetwork {
 			
 					if (hash.get(v.getId()) != null)
 					{
-						JOptionPane.showMessageDialog(null,"Double node identifier: " + v.getId() +" in line " + token.line,"cxf error", JOptionPane.WARNING_MESSAGE);
-						System.out.println("Double node identifier" + v.getId() +" in line " + token.line);	
+						if(!confirmFileFormatWarning("Double node identifier: " + v.getId() +" in line " + token.line, "cxf error") )
+							return;	
 					}
 					else{
 						addVertex(v);
@@ -161,8 +177,8 @@ public class CxfNetwork extends BrowsableNetwork {
 					edgeTokens.add(token);
 				else if (!token.type.toLowerCase().equalsIgnoreCase("configuration"))
 				{
-					JOptionPane.showMessageDialog(null,"Unknown command in line " + token.line,"cxf error", JOptionPane.WARNING_MESSAGE);
-					System.out.println("Unknown command in line " + token.line);
+					if(!confirmFileFormatWarning("Unknown command in line " + token.line, "cxf error") )
+						return;					
 				}
 			}
 			
@@ -173,9 +189,8 @@ public class CxfNetwork extends BrowsableNetwork {
 				Vertex dest = hash.get(t.id_dest);
 				if ((source == null) || (dest == null))
 				{
-					JOptionPane.showMessageDialog(null,"Malformed edge (nonexistent endpoint): (" + t.id_source + "," + t.id_dest + ") in line "+t.line,
-							"cxf error", JOptionPane.WARNING_MESSAGE);
-					System.out.println("Malformed edge: (" + t.id_source + "," + t.id_dest + ") in line "+t.line);
+					if(!confirmFileFormatWarning("Malformed edge (nonexistent endpoint): (" + t.id_source + "," + t.id_dest + ") in line "+t.line, "cxf error") )
+						return;
 				}
 				else
 				{
@@ -194,6 +209,7 @@ public class CxfNetwork extends BrowsableNetwork {
 			System.err.println("Network file not found");
 			fnfEx.printStackTrace();
 		}
+		this.networkFileName = graphFile.getName();
 	}
 	
 	/**
