@@ -206,8 +206,8 @@ public void advancePositions() {
  */
 @SuppressWarnings("unchecked")
 public void align(double x0, double y0){
-	double x = Double.MAX_VALUE;
-	double y = Double.MAX_VALUE;
+	double x = java.lang.Double.MAX_VALUE;
+	double y = java.lang.Double.MAX_VALUE;
 	
 	for (Object o : getVertices()) {
         Vertex v = (Vertex) o;
@@ -423,7 +423,7 @@ public void update() {
  * produce a non interactive layout by calling advancePositions() several times.
  */
 private void layout() {
-	double error = Double.MAX_VALUE;
+	double error = java.lang.Double.MAX_VALUE;
 	/*for(int i = 0; i< getVisibleVertices().size(); i++){
 		if(verbose || !verbose){
 			System.out.println("run 1: " + (getVisibleVertices().size() - i));
