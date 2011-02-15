@@ -29,6 +29,11 @@ import java.io.FileNotFoundException;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import javax.swing.JOptionPane;
 
@@ -52,6 +57,7 @@ public class TikzExporter {
 	private double maxY= 0;
 	private boolean hideVertexLabels = false;
 	private boolean hideEdgeLabels = false;
+	private Map<Color, String> colors;
 	
 	/**
 	 * General constructor for the class, pure object oriented approach.
@@ -60,6 +66,46 @@ public class TikzExporter {
 	 */
 	public TikzExporter(BrowsableNetwork network){
 		this.network = network;
+		colors = new HashMap<Color, String>();
+	}
+	
+	/**
+	 * Private method that reads all used colors in the network
+	 * and defines them in the Tikz document.
+	 */
+	private void defineColors() {
+	
+		for (Vertex vertex : network.getVertices()) 
+		{
+			Color fColor = vertex.getFillColor();
+			if(fColor != null && !colors.containsKey(fColor) ) {
+				colors.put(fColor, "COLOR"+colors.size());
+				writeColor(fColor);
+			}
+			Color cColor = vertex.getColor();
+			if(cColor != null && !colors.containsKey(cColor) ) {
+				colors.put(cColor, "COLOR"+colors.size());
+				writeColor(cColor);
+			}
+		}
+		for( Edge edge : network.getEdges() ) {
+			Color color = edge.getColor();
+			if(color != null && !colors.containsKey(color) ) {
+				colors.put(color, "COLOR"+colors.size());
+				writeColor(color);
+			}
+		}		
+	}	
+	
+	/**
+	 * Private method that defines a color in the Tikz document.
+	 * @param color The color to be written to the Tikz document
+	 */
+	private void writeColor(Color color) { 
+		p.println("\\definecolor{"+colors.get(color)+"}{rgb}{"
+				+(color.getRed()/255.0)+","
+				+(color.getGreen()/255.0)+","
+				+(color.getBlue()/255.0)+"}");
 	}
 	
 	/**
@@ -90,8 +136,7 @@ public class TikzExporter {
 			p.println("\\begin{document}");
 			
 			//In pgf we need to define the colors outside the figure before using them
-			writeVertexColorTable();
-			writeEdgeColorTable();;
+			defineColors();
 			
 			p.println("\\pgfdeclarelayer{background}");
 			p.println("\\pgfdeclarelayer{foreground}");
@@ -106,13 +151,7 @@ public class TikzExporter {
 			//Arrow style for directed networks
 			p.println("\\tikzset{EdgeStyle/.style = {->,shorten >=1pt,>=stealth, bend right=10}}");
 			
-			//The edges are sorted by wheight so the heavier ones will be plotted later and thus on top
-			//of the lightest ones
-			ArrayList<Edge> edgeList = new ArrayList<Edge>(network.getEdges());
-			Collections.sort(edgeList);
-
-			for (Edge e : edgeList)
-				exportEdge(e);
+			exportEdges();
 			
 			p.println("\\end{pgfonlayer}");
 			p.println("\\end{tikzpicture}");
@@ -124,56 +163,8 @@ public class TikzExporter {
 			fnfEx.printStackTrace();
 		}
 		return;
-	}
+	}	
 	
-	/**
-	 * Private method that defines the colors of each vertex from its id 
-	 */
-	private void writeVertexColorTable()
-	{
-		if ((outFile == null) || (layout == null))
-			return;
-			
-		for (Vertex vertex : network.getVertices()) 
-		{
-			Color fColor = vertex.getFillColor();
-			if (fColor != null)
-				p.println("\\definecolor{"+ vertex.getId()+"FILL}{rgb}{"
-						+(fColor.getRed()/255.0)+","
-						+(fColor.getGreen()/255.0)+","
-						+(fColor.getBlue()/255.0)+"}");
-		
-			Color cColor = vertex.getColor();
-			if (cColor != null)
-				p.println("\\definecolor{"+ vertex.getId()+"COLOR}{rgb}{"
-						+(cColor.getRed()/255.0)+","
-						+(cColor.getGreen()/255.0)+","
-						+(cColor.getBlue()/255.0)+"}");
-			
-		}
-		return;
-	}
-
-	/**
-	 * Private method that defines the colors of each edge from its object identifier 
-	 */
-	private void writeEdgeColorTable()
-	{
-		if ((outFile == null) || (layout == null))
-			return;
-			
-		for (Edge edge : network.getEdges()) 
-		{
-			Color color = edge.getColor();
-			if (color != null)
-				p.println("\\definecolor{"+ edge.toString()+"}{rgb}{"
-						+(color.getRed()/255.0)+","
-						+(color.getGreen()/255.0)+","
-						+(color.getBlue()/255.0)+"}");
-		}
-		return;
-	}
-
 	/**
 	 * Prints the necessary information to display a vertex in the tikz output
 	 * @param vertex
@@ -193,9 +184,9 @@ public class TikzExporter {
 		p.print(" line width=" + Utils.ensureDecimal(vertex.getWidth()) + ",");
 		
 		if ((vertex.getColor() != null) && (vertex.getWidth() > 0))
-			p.print(" draw="+vertex.getId()+"COLOR,");
+			p.print(" draw=" + colors.get(vertex.getColor()) + ",");
 		if (vertex.getFillColor() != null)
-			p.print(" fill="+vertex.getId()+"FILL,");
+			p.print(" fill=" + colors.get(vertex.getFillColor()) + ",");
 		p.print(" minimum size = " + Utils.ensureDecimal((vertex.getSize())) + "pt,");
 		
 		if ((vertex.getLabel() != null) && (true))
@@ -207,7 +198,7 @@ public class TikzExporter {
 		//TODO: now all vertices are shaded, add a variable in cxf to determine that
 		p.print(" shading=ball,");
 		if (vertex.getFillColor() != null) //The color reappears in the shading
-			p.print(" ball color="+vertex.getId()+"FILL");
+			p.print(" ball color="+ colors.get(vertex.getFillColor() ) );
 		else
 			p.print(" ball color=black");			
 		p.print("] (" + vertex.getId() + ") {};\n");
@@ -242,64 +233,91 @@ public class TikzExporter {
 	}
 	
 	/**
-	 * Prints the necessary information for tikz to represent an edge between given nodes
-	 * @param edge to paint
+	 * Private method that exports all edges and writes them to the
+	 * Tikz file.
 	 */
-	private void exportEdge(Edge edge)
-	{
-		Vertex v1, v2;
-		if (network.getEdgeType(edge) == EdgeType.DIRECTED)
-		{
-			v1 = network.getSource(edge);
-			v2 = network.getDest(edge);
+	private void exportEdges() {
+		ArrayList<Edge> edgeList = new ArrayList<Edge>(network.getEdges());
+		if(edgeList.size() == 0) return;
+		Collections.sort(edgeList, new Comparator<Edge>() {
+			@Override
+			public int compare(Edge edge1, Edge edge2) {
+				if( network.getEdgeType(edge1) != network.getEdgeType(edge2) ) {
+					if(network.getEdgeType(edge1) == EdgeType.DIRECTED) return -1;
+					else return 1;
+				}
+				if(edge1.getColor() != edge2.getColor() ) {
+					return edge1.getColor().hashCode() - edge2.getColor().hashCode();
+				}
+				if(edge1.getWidth() != edge2.getWidth() ) {
+					if(edge1.getWidth() < edge2.getWidth() ) return -1;
+					else return 1;
+				}
+				return 0;
+			}			
+		});
+		EdgeType curEdgeType = null;
+		Color curColor = null;
+		double curWidth = java.lang.Double.MAX_VALUE;
+		for(Edge edge : edgeList) {
+			EdgeType edgeType = network.getEdgeType(edge);
+			Color color = edge.getColor();
+			double width = edge.getWidth();
+			// If any of the edge properties is different from the current edge settings,
+			// we need to redefine the edge settings
+			if(edgeType != curEdgeType || !color.equals(curColor) || width != curWidth) {
+				curEdgeType = edgeType;
+				curColor = color;
+				curWidth = width;
+				p.print("\\tikzset{EdgeStyle/.append style = {");
+				if(curEdgeType == EdgeType.DIRECTED) p.print("->, ");
+				else p.print("-, ");
+				p.print("line width=" + Utils.ensureDecimal(curWidth*WIDTHFACTOR) );
+				if(curColor != null)
+					p.println(", color=" + colors.get(curColor) + "}}");
+				else
+					p.println("}}");
+			}
+			Vertex v1, v2;
+			if (edgeType == EdgeType.DIRECTED)	{
+				v1 = network.getSource(edge);
+				v2 = network.getDest(edge);
+			} else {
+				Pair<Vertex> endpoints = network.getEndpoints(edge);
+				v1 = endpoints.getFirst();
+				v2 = endpoints.getSecond();
+			}
+			if (v1.getId() == v2.getId()) {
+				exportLoopEdge(edge, v1);
+				continue;
+			}
+			p.print("\\Edge ");
+			if ((edge.getLabel() != null) && (! hideEdgeLabels))
+				p.print("[label=" + edge.getLabel() + "]");			
+			p.print("(" + v1.getId() + ")(" + v2.getId() + ")\n");
 		}
+	}
+	
+	/**
+	 * Private method that exports a loop edge
+	 * @param edge the loop edge
+	 * @param v1 the vertex that has the loop edge
+	 */
+	private void exportLoopEdge(Edge edge, Vertex v) {
+		double angle = calculateAngle(v);
+			
+		if	((angle > 124) && (angle < 226)) //two kinds of loops, in the left or right of the node
+			p.print("\\Loop[dist=1cm,dir=WE,");
 		else
-		{
-			Pair<Vertex> endpoints = network.getEndpoints(edge);
-			v1 = endpoints.getFirst();
-			v2 = endpoints.getSecond();
-		}
-		
-		// the edges are displayed as directed by default, if it is undirected, the line style
-		// is overwritten to be arrowless
-		if (network.getEdgeType(edge) == EdgeType.UNDIRECTED)
-			p.println("\\tikzset{EdgeStyle/.append style = {-}}");
-		
-		if (v1.getId() == v2.getId()) //self loop case, it is written with Loop in pgf
-		{	
-			double angle = calculateAngle(v1);
-			
-			if	((angle > 124) && (angle < 226)) //two kinds of loops, in the left or right of the node
-				p.print("\\Loop[dist=1cm,dir=WE,");
-			else
-				p.print("\\Loop[dist=1cm,dir=EA,");
-			
+			p.print("\\Loop[dist=1cm,dir=EA,");
 			p.print("style={->,shorten >=1pt,>=stealth,line width="+ Utils.ensureDecimal(edge.getWidth()*WIDTHFACTOR));
-		    p.print("}, color="+edge.toString());
-		  
+		    p.print("}, color="+colors.get(edge.getColor()));
 		    if ((edge.getLabel() != null) && (! hideEdgeLabels))
 		    	p.print(", label="+ edge.getLabel());
-		    
-		    p.print("](" + v1.getId() + ")\n");
-		}
-		else
-		{
-			p.print("\\Edge [lw=" + Utils.ensureDecimal(edge.getWidth()*WIDTHFACTOR) );
-			if (edge.getColor() != null)
-				p.print(", color=" + edge.toString());
-		
-			if ((edge.getLabel() != null) && (! hideEdgeLabels))
-				p.print(", label=" + edge.getLabel());
-			
-			p.print("](" + v1.getId() + ")(" + v2.getId() + ")\n");
-			
-		}
 
-		//To return to default directed style, the arrow edge is reset
-		if (network.getEdgeType(edge) == EdgeType.UNDIRECTED)
-			p.println("\\tikzset{EdgeStyle/.append style = {->}}");
+		    p.print("](" + v.getId() + ")\n");
+	}	
 
-	}
 	/**
 	 * Getter to know if the vertex labels have to be ignored
 	 * @return
