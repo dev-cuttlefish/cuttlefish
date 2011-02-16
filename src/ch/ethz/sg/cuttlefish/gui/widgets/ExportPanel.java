@@ -177,7 +177,7 @@ public class ExportPanel extends BrowserWidget  {
 	private JButton getSnapshotButton() {
 		if (snapshotButton == null) {
 			snapshotButton = new JButton();
-			snapshotButton.setText("snapshot");
+			snapshotButton.setText("Snapshot");
 			snapshotButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
 						exportToJpg();
@@ -194,7 +194,7 @@ public class ExportPanel extends BrowserWidget  {
 	private JButton getWriteLayoutButton() {
 		if (writeLayoutButton == null) {
 			writeLayoutButton = new JButton();
-			writeLayoutButton.setText("Save Network");
+			writeLayoutButton.setText("Save network");
 			writeLayoutButton.addActionListener(new java.awt.event.ActionListener() {
 				
 				public void actionPerformed(java.awt.event.ActionEvent e) {
@@ -242,7 +242,7 @@ public class ExportPanel extends BrowserWidget  {
 	private JButton getPstricksButton() {
 		if (pstricksButton == null) {
 			pstricksButton = new JButton();
-			pstricksButton.setText("pstricks");
+			pstricksButton.setText("PSTricks");
 			pstricksButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
 						exportToPsTricks();
@@ -268,7 +268,7 @@ public class ExportPanel extends BrowserWidget  {
 	private JButton getTikzButton() {
 		if (tikzButton == null) {
 			tikzButton = new JButton();
-			tikzButton.setText("tikz");
+			tikzButton.setText("TikZ");
 			tikzButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
 					 JFileChooser fc = getTikzFileChooser();
@@ -297,7 +297,7 @@ public class ExportPanel extends BrowserWidget  {
 		if (adjlistButton == null) {
 			adjlistButton = new JButton();
 			//adjlistButton.setText("adj. list");
-			adjlistButton.setText("adj. matrix");
+			adjlistButton.setText("Adj. matrix");
 			adjlistButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
 					try {
@@ -396,7 +396,7 @@ public class ExportPanel extends BrowserWidget  {
 	private JButton getEdgelistButton() {
 		if (edgelistButton == null) {
 			edgelistButton = new JButton();
-			edgelistButton.setText("edge list");
+			edgelistButton.setText("Edge list");
 			edgelistButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
 					try {
