@@ -21,6 +21,7 @@
 package ch.ethz.sg.cuttlefish.misc;
 
 import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 import java.awt.geom.RectangularShape;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -127,8 +128,8 @@ public class CxfSaver {
 		ps.print(" size{"+vertex.getSize()+"}");
 		if (vertex.getShape() != null)
 		{
-			if (vertex.getShape() instanceof RectangularShape)
-				ps.print(" shape{rectangle}");
+			if (vertex.getShape() instanceof Rectangle2D)
+				ps.print(" shape{square}");
 			else
 				ps.print(" shape{circle}");
 		}
