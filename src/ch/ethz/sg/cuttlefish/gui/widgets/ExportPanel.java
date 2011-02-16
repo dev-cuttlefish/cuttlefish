@@ -41,9 +41,11 @@ import ch.ethz.sg.cuttlefish.gui.BrowserWidget;
 
 import com.sun.image.codec.jpeg.*;
 
+import ch.ethz.sg.cuttlefish.misc.CxfSaver;
 import ch.ethz.sg.cuttlefish.misc.PSTricksExporter;
 import ch.ethz.sg.cuttlefish.misc.TikzExporter;
 import ch.ethz.sg.cuttlefish.misc.Conversion;
+import ch.ethz.sg.cuttlefish.networks.BrowsableNetwork;
 import ch.ethz.sg.cuttlefish.networks.TemporalNetwork;
 
 
@@ -56,6 +58,8 @@ public class ExportPanel extends BrowserWidget  {
 	private JButton edgelistButton = null;
 	private JButton snapshotButton = null;
 	private JButton tikzButton = null;
+	private JButton writeLayoutButton = null;
+	private JFileChooser fileC = null;
 	private JTextField jTextField = null;
 	private JLabel jLabel = null;
 
@@ -115,8 +119,7 @@ public class ExportPanel extends BrowserWidget  {
 		gridBagConstraints.fill = GridBagConstraints.BOTH;
 		gridBagConstraints.weightx = 1.0;
 		gridBagConstraints.gridy = 3;
-		
-		
+				
 		GridBagConstraints gridBagConstraints4 = new GridBagConstraints();
 		gridBagConstraints4.gridx = 2;
 		gridBagConstraints4.insets = new Insets(2, 2, 2, 2);
@@ -124,16 +127,24 @@ public class ExportPanel extends BrowserWidget  {
 		gridBagConstraints4.weightx = 1.0;
 		gridBagConstraints4.gridy = 3;
 		
+		GridBagConstraints gridBagConstraints41 = new GridBagConstraints();
+		gridBagConstraints41.gridx = 2;
+		gridBagConstraints41.insets = new Insets(2, 2, 2, 2);
+		gridBagConstraints41.fill = GridBagConstraints.BOTH;
+		gridBagConstraints41.weightx = 1.0;
+		gridBagConstraints41.gridy = 2;
+		
 		
 		this.setSize(287, 230);
 		this.setLayout(new GridBagLayout());
 		//this.setBorder(BorderFactory.createTitledBorder(null, "export", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, null, null));
 		this.add(getSnapshotButton(), gridBagConstraints);
 		this.add(getPstricksButton(), gridBagConstraints2);
-		this.add(getAdjlistButton(), gridBagConstraints1);
-		this.add(getEdgelistButton(), gridBagConstraints11);
+		this.add(getAdjlistButton(), gridBagConstraints11	);
+		this.add(getEdgelistButton(), gridBagConstraints41);
 		this.add(getJTextField(), gridBagConstraints21);
 		this.add(getTikzButton(), gridBagConstraints4);
+		this.add(getWriteLayoutButton(),gridBagConstraints1 );
 		
 		
 		this.add(jLabel, gridBagConstraints3);
@@ -176,6 +187,52 @@ public class ExportPanel extends BrowserWidget  {
 		return snapshotButton;
 	}
 
+	/**
+	 * This method initializes writeLayoutButton	
+	 * @return javax.swing.JButton	
+	 */
+	private JButton getWriteLayoutButton() {
+		if (writeLayoutButton == null) {
+			writeLayoutButton = new JButton();
+			writeLayoutButton.setText("Save Network");
+			writeLayoutButton.addActionListener(new java.awt.event.ActionListener() {
+				
+				public void actionPerformed(java.awt.event.ActionEvent e) {
+					//The action is opening a dialog and saving in Cxf on the selected file
+					JFileChooser fc = getFileChooser();
+					fc.setCurrentDirectory( new File(System.getProperty("user.dir")));
+					int returnVal = fc.showSaveDialog(null);
+
+		            if (returnVal == JFileChooser.APPROVE_OPTION) {
+		                File file = fc.getSelectedFile();
+		                try {
+							file.createNewFile();
+							CxfSaver saver = new CxfSaver((BrowsableNetwork)getNetwork(), getBrowser().getNetworkLayout());
+							saver.save(file);
+						} catch (IOException ioEx) {
+							JOptionPane.showMessageDialog(null,ioEx.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
+							System.err.println("Impossible to write");
+							ioEx.printStackTrace();
+						}
+		            } else {
+		                System.out.println("Input cancelled by user");
+		            }
+				}
+			});
+		}
+		return writeLayoutButton;
+	}
+	
+	/**
+	 * This method initializes the fileChooser for saving
+	 * @return
+	 */
+	private JFileChooser getFileChooser() {
+		if (fileC == null) {
+			fileC = new JFileChooser();
+		}
+		return fileC;
+	}
 	
 	/**
 	 * This method initializes pstricksButton	

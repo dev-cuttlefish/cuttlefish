@@ -46,10 +46,8 @@ import ch.ethz.sg.cuttlefish.networks.BrowsableNetwork;
 public class LayoutPanel extends JPanel{
 	
 private JComboBox layoutComboBox = null;
-private JButton writeLayoutButton = null;
 private JButton stopLayoutButton = null;
 private JButton restartLayoutButton = null;
-private JFileChooser fileC = null;
 
 private CuttlefishPanel parentPanel = null;
 
@@ -64,7 +62,6 @@ public LayoutPanel(CuttlefishPanel parentPanel){
 	setLayout(new GridBagLayout());
 	add(getLayoutComboBox(), new GridBagConstraints());
 	setBackground(Color.gray);
-	add(getWriteLayoutButton(), new GridBagConstraints());
 	add(getStopLayoutButton(), new GridBagConstraints());
 	add(getRestartLayoutButton(), new GridBagConstraints());
 }
@@ -95,54 +92,6 @@ private JComboBox getLayoutComboBox() {
 	}
 	return layoutComboBox;
 }
-
-/**
- * This method initializes the fileChooser for saving
- * @return
- */
-private JFileChooser getFileChooser() {
-	if (fileC == null) {
-		fileC = new JFileChooser();
-	}
-	return fileC;
-}
-
-/**
- * This method initializes writeLayoutButton	
- * @return javax.swing.JButton	
- */
-private JButton getWriteLayoutButton() {
-	if (writeLayoutButton == null) {
-		writeLayoutButton = new JButton();
-		writeLayoutButton.setText("Save Network");
-		writeLayoutButton.addActionListener(new java.awt.event.ActionListener() {
-			
-			public void actionPerformed(java.awt.event.ActionEvent e) {
-				//The action is opening a dialog and saving in Cxf on the selected file
-				JFileChooser fc = getFileChooser();
-				fc.setCurrentDirectory( new File(System.getProperty("user.dir")));
-				int returnVal = fc.showSaveDialog(parentPanel);
-
-	            if (returnVal == JFileChooser.APPROVE_OPTION) {
-	                File file = fc.getSelectedFile();
-	                try {
-						file.createNewFile();
-						CxfSaver saver = new CxfSaver((BrowsableNetwork)parentPanel.getNetwork(), parentPanel.getNetworkLayout());
-						saver.save(file);
-					} catch (IOException ioEx) {
-						JOptionPane.showMessageDialog(null,ioEx.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
-						System.err.println("Impossible to write");
-						ioEx.printStackTrace();
-					}
-	            } else {
-	                System.out.println("Input cancelled by user");
-	            }
-			}
-		});
-	}
-	return writeLayoutButton;
-}
-
 
 /**
  * This method initializes stopLayoutButton	
