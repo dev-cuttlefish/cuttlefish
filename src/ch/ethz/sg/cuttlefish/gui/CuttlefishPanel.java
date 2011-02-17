@@ -204,6 +204,8 @@ public CuttlefishPanel(File configFile) {
     visualizationViewer.setDoubleBuffered(true);
 }
 
+
+
 /**
  * This method initializes the CuttlefishPanel, creating the GraphMouse, the DocumentFactory 
  * and loadlensColoring the information contained in the configuration file
@@ -400,6 +402,8 @@ private void updateWidgets() {
 	for(BrowserTab tab: tabArray){
 		if(tab.checkCondition(network)){
 			getMenuPane().add(tab.getName(), tab);
+			// Immediately change the current tab to the newly added tab
+			menuPane.setSelectedComponent(tab);
 		}
 	}
 }

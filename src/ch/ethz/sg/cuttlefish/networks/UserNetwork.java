@@ -32,6 +32,7 @@ import java.util.HashMap;
 import javax.swing.JOptionPane;
 
 
+import ch.ethz.sg.cuttlefish.gui.NetworkInitializer;
 import ch.ethz.sg.cuttlefish.misc.Edge;
 import ch.ethz.sg.cuttlefish.misc.Vertex;
 
@@ -43,6 +44,10 @@ public class UserNetwork extends BrowsableNetwork {
 	BufferedReader br;
 	int orig, dest;
 	  
+	public void graphicalInit(NetworkInitializer initializer) {
+		initializer.initUserNetwork(this);
+	}
+	
 	public void load(File graphFile){
 		
 		HashMap<Integer,Vertex> hash = new HashMap<Integer,Vertex>();

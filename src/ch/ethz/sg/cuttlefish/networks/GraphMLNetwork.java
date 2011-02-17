@@ -29,6 +29,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.xml.sax.SAXException;
 
+import ch.ethz.sg.cuttlefish.gui.NetworkInitializer;
 import ch.ethz.sg.cuttlefish.misc.Edge;
 import ch.ethz.sg.cuttlefish.misc.EdgeFactory;
 import ch.ethz.sg.cuttlefish.misc.Vertex;
@@ -38,6 +39,10 @@ import edu.uci.ics.jung.io.GraphMLReader;
 public class GraphMLNetwork extends BrowsableNetwork {
 
 	private static final long serialVersionUID = 1L;
+	
+	public void graphicalInit(NetworkInitializer initializer) {
+		initializer.initGraphMLNetwork(this);
+	}
 	
 	public void load(File netFile){
 		VertexFactory vertexFactory = new VertexFactory();

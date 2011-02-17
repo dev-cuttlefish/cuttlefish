@@ -23,12 +23,28 @@ package ch.ethz.sg.cuttlefish.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Frame;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 import java.io.File;
+import java.io.IOException;
 
+import javax.swing.AbstractAction;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JToolBar;
+import javax.swing.KeyStroke;
 
+import ch.ethz.sg.cuttlefish.misc.Edge;
 import ch.ethz.sg.cuttlefish.misc.Utils;
+import ch.ethz.sg.cuttlefish.misc.Vertex;
+import edu.uci.ics.jung.visualization.control.EditingModalGraphMouse;
+import edu.uci.ics.jung.visualization.control.ModalGraphMouse;
+import edu.uci.ics.jung.visualization.control.ModalGraphMouse.Mode;
 /**
  * Class of the General User Interface for cuttlefish
  */
@@ -94,14 +110,101 @@ public class Cuttlefish extends JFrame {
 	}
 
 	/**
+	 * Prototype Menu for the Cuttlefish GUI	
+	 * @return
+	 */
+//	private JMenuBar createMenu() {
+//		JMenuBar menubar = new JMenuBar();
+//		
+//		JMenu importMenu = new JMenu("Open");
+//        importMenu.setMnemonic(KeyEvent.VK_O);
+//
+//        JMenuItem importCxfFile = new JMenuItem("Cxf file", KeyEvent.VK_T);
+//        importCxfFile.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_1, ActionEvent.ALT_MASK));        
+//        importMenu.add(importCxfFile);
+//        JMenuItem importPajekFile = new JMenuItem("Pajek file", KeyEvent.VK_T);
+//        importPajekFile.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_1, ActionEvent.ALT_MASK));        
+//        importMenu.add(importPajekFile);
+//        JMenuItem importCffFile = new JMenuItem("Cff file", KeyEvent.VK_T);
+//        importCffFile.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_1, ActionEvent.ALT_MASK));        
+//        importMenu.add(importCffFile);
+//        
+//        menubar.add(importMenu);
+//        
+//        JMenu exportMenu = new JMenu("Export");
+//        JMenuItem exportAdjacencyMatrix = new JMenuItem("Adjacency matrix");
+//        exportMenu.add(exportAdjacencyMatrix);
+//        JMenuItem exportTikz = new JMenuItem("Tikz");
+//        exportMenu.add(exportTikz);
+//        JMenuItem exportPdf = new JMenuItem("Pdf");
+//        exportMenu.add(exportPdf);
+//        
+//        menubar.add(exportMenu);
+//        
+//		return menubar;
+//	}
+	
+	/**
+	 * Prototype toolbar for mouse edit type
+	 */
+//	private JToolBar createMouseToolbar(EditingModalGraphMouse<Vertex, Edge> graphMouse) {
+//		final EditingModalGraphMouse<Vertex, Edge> mouse = graphMouse;
+//		JToolBar toolbar = new JToolBar();
+//		toolbar.setFloatable(true);
+//		toolbar.setRollover(true);
+//		ImageIcon transformingIcon = new ImageIcon("icons/left_ptr.png");
+//		JButton transformingButton = new JButton(transformingIcon);
+//		transformingButton.setToolTipText("Set mouse to transforming mode");
+//		transformingButton.addActionListener( new java.awt.event.ActionListener() {
+//				@Override
+//				public void actionPerformed(java.awt.event.ActionEvent e) {
+//				mouse.setMode(ModalGraphMouse.Mode.TRANSFORMING);
+//				}
+//			}
+//		);	
+//		//transformingButton.setText("Transform");
+//		ImageIcon pickingIcon = new ImageIcon("icons/closedhand.png");
+//		JButton pickingButton = new JButton(pickingIcon);
+//		pickingButton.setToolTipText("Set mouse to picking mode");
+//		pickingButton.addActionListener( new java.awt.event.ActionListener() {
+//			@Override
+//				public void actionPerformed(java.awt.event.ActionEvent e) {
+//					mouse.setMode(ModalGraphMouse.Mode.PICKING);
+//				}
+//			}
+//		);		
+//		ImageIcon editIcon = new ImageIcon("icons/crosshair.png");
+//		JButton editButton = new JButton(editIcon);
+//		editButton.setToolTipText("Set mouse to editing mode");
+//		editButton.addActionListener( new java.awt.event.ActionListener() {
+//			@Override
+//				public void actionPerformed(java.awt.event.ActionEvent e) {
+//					mouse.setMode(ModalGraphMouse.Mode.EDITING);
+//				}
+//			}
+//		);
+//		toolbar.add(transformingButton);
+//		toolbar.add(pickingButton);
+//		toolbar.add(editButton);
+//		return toolbar;
+//	}	
+	
+	/**
 	 * This method initializes jContentPane, adding the network browser
 	 * @return javax.swing.JPanel the panel with the network
 	 */
+	
 	private JPanel getJContentPane() {
 		if (jContentPane == null) {
 			jContentPane = new JPanel();
 			jContentPane.setLayout(new BorderLayout());
-			jContentPane.add(getNetworkBrowserPanel(), BorderLayout.CENTER);
+			CuttlefishPanel networkBrowserPanel = getNetworkBrowserPanel();
+			jContentPane.add(networkBrowserPanel, BorderLayout.CENTER);
+			// Adding the prototype menu
+			//this.setJMenuBar(createMenu());
+			// Adding prototype mouse toolbar
+			//jContentPane.add(createMouseToolbar(networkBrowserPanel.getMouse()), BorderLayout.SOUTH);
+			
 		}
 		return jContentPane;
 	}

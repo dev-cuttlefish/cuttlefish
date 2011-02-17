@@ -26,17 +26,10 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
-import java.io.IOException;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-
-import ch.ethz.sg.cuttlefish.misc.CxfSaver;
-import ch.ethz.sg.cuttlefish.networks.BrowsableNetwork;
 
 /**
  * Class for the JPanel that appears always in the bottom of the window with tools like saving and 

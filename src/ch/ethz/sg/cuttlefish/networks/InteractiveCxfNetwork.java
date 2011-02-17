@@ -29,6 +29,7 @@ import java.util.ArrayList;
 
 import javax.swing.JOptionPane;
 
+import ch.ethz.sg.cuttlefish.gui.NetworkInitializer;
 import ch.ethz.sg.cuttlefish.misc.Edge;
 import ch.ethz.sg.cuttlefish.misc.Vertex;
 import edu.uci.ics.jung.graph.util.EdgeType;
@@ -48,6 +49,12 @@ public class InteractiveCxfNetwork extends CxfNetwork implements ISimulation{
 		setIncremental(true);
 		done = false;
 	}
+	
+	@Override
+	public void graphicalInit(NetworkInitializer initializer) {
+		initializer.initInteractiveCxfNetwork(this);
+	}
+	
 	public void loadInstructions(File instructionsFile)
 	{
 		setIncremental(true);

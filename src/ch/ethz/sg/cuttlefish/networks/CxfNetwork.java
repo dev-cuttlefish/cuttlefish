@@ -37,7 +37,7 @@ import java.util.StringTokenizer;
 
 import javax.swing.JOptionPane;
 
-
+import ch.ethz.sg.cuttlefish.gui.NetworkInitializer;
 import ch.ethz.sg.cuttlefish.misc.Edge;
 import ch.ethz.sg.cuttlefish.misc.Vertex;
 import edu.uci.ics.jung.graph.util.EdgeType;
@@ -60,6 +60,11 @@ public class CxfNetwork extends BrowsableNetwork {
 	int instructionIndex = 0;
 	File graphFile;
 
+	@Override
+	public void graphicalInit(NetworkInitializer initializer) {
+		initializer.initCxfNetwork(this);
+	}
+	
 	/**
 	 * Class as data structure for the parsed tokens
 	 */

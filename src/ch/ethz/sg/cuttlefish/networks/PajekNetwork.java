@@ -26,6 +26,7 @@ import java.io.IOException;
 
 import javax.swing.JOptionPane;
 
+import ch.ethz.sg.cuttlefish.gui.NetworkInitializer;
 import ch.ethz.sg.cuttlefish.misc.Edge;
 import ch.ethz.sg.cuttlefish.misc.EdgeFactory;
 import ch.ethz.sg.cuttlefish.misc.Vertex;
@@ -35,6 +36,11 @@ import edu.uci.ics.jung.io.PajekNetReader;
 public class PajekNetwork extends BrowsableNetwork {
 
 	private static final long serialVersionUID = 1L;
+	
+	@Override
+	public void graphicalInit(NetworkInitializer initializer) {
+		initializer.initPajekNetwork(this);
+	}
 	
 	public void load(File netFile){
 		VertexFactory vertexFactory = new VertexFactory();

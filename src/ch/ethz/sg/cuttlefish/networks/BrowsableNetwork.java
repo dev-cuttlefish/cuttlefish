@@ -28,6 +28,7 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Set;
 
+import ch.ethz.sg.cuttlefish.gui.NetworkInitializer;
 import ch.ethz.sg.cuttlefish.misc.Edge;
 import ch.ethz.sg.cuttlefish.misc.Vertex;
 
@@ -42,6 +43,10 @@ public class BrowsableNetwork extends SparseGraph<Vertex, Edge> {
 	private boolean incremental = false;
 	
 	public void init(){
+	}
+	
+	public void graphicalInit(NetworkInitializer initializer) {
+		initializer.initBrowsableNetwork(this);
 	}
 	
 	public void updateAnnotations(){

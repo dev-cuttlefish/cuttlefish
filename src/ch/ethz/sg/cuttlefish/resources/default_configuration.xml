@@ -14,10 +14,6 @@
 				class="ch.ethz.sg.cuttlefish.gui.widgets.ExportPanel" />
 		</Tab>
 
-		<Tab id="Network" condition="*" name="Network">
-		</Tab>
-
-
 		<Tab name="Simulation"
 			condition="ch.ethz.sg.cuttlefish.networks.ISimulation"
 			id="Simulation">
