@@ -98,7 +98,7 @@ public class PSTricksExporter {
 		
 		p.println("\\Cnode[" +
 				"fillstyle=solid, " +
-				"fillcolor="+vertex.toString()+"FILL, " +
+				"fihttp://www.texample.net/tikz/llcolor="+vertex.toString()+"FILL, " +
 				"linecolor=" +vertex.toString()+"COLOR, " +
 				"linewidth=" + Utils.ensureDecimal(w*f)+", " +
 				"radius="+Utils.ensureDecimal(intSize*f)+"]("+

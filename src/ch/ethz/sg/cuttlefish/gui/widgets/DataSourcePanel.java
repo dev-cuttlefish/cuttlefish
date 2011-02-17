@@ -24,14 +24,13 @@ package ch.ethz.sg.cuttlefish.gui.widgets;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 import javax.xml.XMLConstants;
@@ -47,6 +46,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import ch.ethz.sg.cuttlefish.gui.BrowserWidget;
+import ch.ethz.sg.cuttlefish.gui.NetworkInitializer;
 import ch.ethz.sg.cuttlefish.misc.Utils;
 import ch.ethz.sg.cuttlefish.misc.XMLUtil;
 import ch.ethz.sg.cuttlefish.networks.BrowsableNetwork;
@@ -54,7 +54,6 @@ import ch.ethz.sg.cuttlefish.networks.BrowsableNetwork;
 public class DataSourcePanel extends BrowserWidget {
 
 	private static final long serialVersionUID = 1L;
-	private JButton jButton = null;
 	private JComboBox jComboBox = null;
 	private NodeList sources;  //  @jve:decl-index=0:
 	private Document sourcesDocument;
@@ -66,8 +65,7 @@ public class DataSourcePanel extends BrowserWidget {
 		super();
 		initialize();
 	}
-	
-	
+		
 	/**
 	 * This method initializes this
 	 * 
@@ -87,61 +85,16 @@ public class DataSourcePanel extends BrowserWidget {
 		gridBagConstraints.gridy = 2;
 		this.setSize(300, 200);
 		this.setLayout(new GridBagLayout());
-		this.add(getJButton(), gridBagConstraints);
+		// The Go button is redundant since the action is perform immediately
+		// after selecting an Input from the Input drop-down menu.
+		//this.add(getJButton(), gridBagConstraints);
 		this.add(getJComboBox(), gridBagConstraints1);
 	}
 
 	@Override
 	public void onActiveChanged() {
 	}
-
-
-
-	/**
-	 * This method initializes jButton	
-	 * 	
-	 * @return javax.swing.JButton	
-	 */
-	private JButton getJButton() {
-		if (jButton == null) {
-			jButton = new JButton();
-			jButton.setText("go");
-			jButton.addActionListener(new java.awt.event.ActionListener() {
-				public void actionPerformed(java.awt.event.ActionEvent ev) {
-					Node source = sources.item(jComboBox.getSelectedIndex());
-					String className = source.getAttributes().getNamedItem("class").getNodeValue();
-
-					Class<?> clazz;
-					
-						try {
-							clazz = Class.forName(className);
-							BrowsableNetwork network = (BrowsableNetwork) clazz.newInstance();
-						  
-							network.setArguments(XMLUtil.getArguments(source));
-							getBrowser().setNetwork(network);
-					
-						} catch (ClassNotFoundException cnfEx) {
-							JOptionPane.showMessageDialog(null,cnfEx.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
-							System.err.println("Nonexisting class in data source");
-							cnfEx.printStackTrace();
-							getBrowser().setNetwork(new BrowsableNetwork());
-						} catch (InstantiationException instEx) {
-							JOptionPane.showMessageDialog(null,instEx.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
-							System.err.println("Impossible to instantiante class in data source");
-							instEx.printStackTrace();
-							getBrowser().setNetwork(new BrowsableNetwork());
-						} catch (IllegalAccessException iaEx) {
-							JOptionPane.showMessageDialog(null,iaEx.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
-							System.err.println("Ilegal access in data source");
-							iaEx.printStackTrace();
-							getBrowser().setNetwork(new BrowsableNetwork());
-						}
-					}
-				});
-			}
-		return jButton;
-	}
-
+	
 	/**
 	 * This method initializes jComboBox	
 	 * 	
@@ -151,6 +104,44 @@ public class DataSourcePanel extends BrowserWidget {
 		if (jComboBox == null) {
 			jComboBox = new JComboBox();
 		}
+		jComboBox.addActionListener(new java.awt.event.ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {	
+				Node source = sources.item(jComboBox.getSelectedIndex());
+				String className = source.getAttributes().getNamedItem("class").getNodeValue();
+				Class<?> clazz;
+				
+				// Default value, does not perform any action
+				if(className.equals("selectInput")) return;
+				try {
+					clazz = Class.forName(className);
+					BrowsableNetwork network = (BrowsableNetwork) clazz.newInstance();					
+					network.setArguments(XMLUtil.getArguments(source));
+					network.graphicalInit(new NetworkInitializer() );
+					getBrowser().setNetwork(network);
+	                getBrowser().onNetworkChange();
+	                getBrowser().getNetworkLayout().reset();
+	                getBrowser().repaintViewer();
+	                getBrowser().stopLayout();			
+				} catch (ClassNotFoundException cnfEx) {
+					JOptionPane.showMessageDialog(null,cnfEx.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
+					System.err.println("Nonexisting class in data source");
+					cnfEx.printStackTrace();
+					getBrowser().setNetwork(new BrowsableNetwork());
+				} catch (InstantiationException instEx) {
+					JOptionPane.showMessageDialog(null,instEx.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
+					System.err.println("Impossible to instantiante class in data source");
+					instEx.printStackTrace();
+					getBrowser().setNetwork(new BrowsableNetwork());
+				} catch (IllegalAccessException iaEx) {
+					JOptionPane.showMessageDialog(null,iaEx.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
+					System.err.println("Ilegal access in data source");
+					iaEx.printStackTrace();
+					getBrowser().setNetwork(new BrowsableNetwork());
+				}
+			}						
+		}); 
 		return jComboBox;
 	}
 
@@ -190,18 +181,12 @@ public class DataSourcePanel extends BrowserWidget {
 	        sourcesDocument = builder.parse(sourcesFile);
 	          
 			jComboBox.removeAllItems();
-			
 			this.sources = sourcesDocument.getElementsByTagName("Source");
 			for(int i = 0; i < sources.getLength(); i++){
 				Node source = sources.item(i);
 				jComboBox.addItem(source.getAttributes().getNamedItem("name").getNodeValue());
 			}
-		} 
-	/*	catch (FileNotFoundException fnfEx) {
-			JOptionPane.showMessageDialog(null,fnfEx.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
-			System.err.println("Schema file for data sources not found");
-			fnfEx.printStackTrace();
-		}*/ 
+		}
 		catch (IOException ioEx) {
 			JOptionPane.showMessageDialog(null,ioEx.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
 			System.err.println("Input exception in data source schema file");

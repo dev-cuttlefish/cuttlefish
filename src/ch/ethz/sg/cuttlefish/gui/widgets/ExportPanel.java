@@ -36,6 +36,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import ch.ethz.sg.cuttlefish.gui.BrowserWidget;
 
@@ -200,6 +201,8 @@ public class ExportPanel extends BrowserWidget  {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
 					//The action is opening a dialog and saving in Cxf on the selected file
 					JFileChooser fc = getFileChooser();
+					fc.setDialogTitle("Save Cuttlefish network");
+					fc.setFileFilter(new FileNameExtensionFilter(".cxf files", "cxf"));
 					fc.setCurrentDirectory( new File(System.getProperty("user.dir")));
 					int returnVal = fc.showSaveDialog(null);
 

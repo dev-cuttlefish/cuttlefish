@@ -22,7 +22,6 @@ package ch.ethz.sg.cuttlefish.misc;
 
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.awt.geom.RectangularShape;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
