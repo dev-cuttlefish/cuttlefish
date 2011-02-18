@@ -193,7 +193,7 @@ public class TikzExporter {
 		{
 			String latexLabel = vertex.getLabel().replace("&", "\\&");
 			latexLabel = latexLabel.replace("_", "\\_");
-			p.print(" label={[label distance=-7]"+ calculateAngle(vertex)+":" + latexLabel + "},");
+			p.print(" label={[label distance=-5]"+ calculateAngle(vertex)+":" + latexLabel + "},");
 		}
 		//TODO: now all vertices are shaded, add a variable in cxf to determine that
 		p.print(" shading=ball,");
