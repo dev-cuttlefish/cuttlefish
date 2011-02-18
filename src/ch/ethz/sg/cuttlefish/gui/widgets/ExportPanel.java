@@ -33,9 +33,7 @@ import java.text.SimpleDateFormat;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.JTextField;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import ch.ethz.sg.cuttlefish.gui.BrowserWidget;
@@ -53,21 +51,18 @@ import ch.ethz.sg.cuttlefish.networks.TemporalNetwork;
 public class ExportPanel extends BrowserWidget  {
 
 	private static final long serialVersionUID = 1L;
-	private JButton dotButton = null;
-	private JButton pstricksButton = null;
 	private JButton adjlistButton = null;
 	private JButton edgelistButton = null;
 	private JButton snapshotButton = null;
 	private JButton tikzButton = null;
-	private JButton writeLayoutButton = null;
-	private JFileChooser fileC = null;
-	private JTextField jTextField = null;
-	private JLabel jLabel = null;
-
-	private JFileChooser tikzFileC = null;
+	private JButton cxfButton = null;
+	private JFileChooser cxfFileChooser = null;
+	private JFileChooser tikzFileChooser = null;
+	private JFileChooser snapshotFileChooser = null;
+	private JFileChooser datFileChooser = null;
 
 	/**
-	 * This is the default constructor
+	 * Default constructor
 	 */
 	public ExportPanel() {
 		super();
@@ -75,103 +70,56 @@ public class ExportPanel extends BrowserWidget  {
 	}
 
 	/**
-	 * This method initializes this
+	 * This method initializes the Export widget.
 	 * 
 	 * @return void
 	 */
 	private void initialize() {
-		GridBagConstraints gridBagConstraints3 = new GridBagConstraints();
-		gridBagConstraints3.gridx = 0;
-		gridBagConstraints3.anchor = GridBagConstraints.WEST;
-		gridBagConstraints3.fill = GridBagConstraints.HORIZONTAL;
-		gridBagConstraints3.insets = new Insets(2, 2, 2, 2);
-		gridBagConstraints3.gridy = 0;
-		jLabel = new JLabel();
-		jLabel.setText("prefix:");
-		jLabel.setVisible(false);
-		GridBagConstraints gridBagConstraints21 = new GridBagConstraints();
-		gridBagConstraints21.fill = GridBagConstraints.HORIZONTAL;
-		gridBagConstraints21.gridy = 1;
-		gridBagConstraints21.weightx = 1.0;
-		gridBagConstraints21.gridwidth = 2;
-		gridBagConstraints21.insets = new Insets(2, 2, 2, 2);
-		gridBagConstraints21.gridx = 0;
-		GridBagConstraints gridBagConstraints11 = new GridBagConstraints();
-		gridBagConstraints11.gridx = 1;
-		gridBagConstraints11.gridy = 2;
-		gridBagConstraints11.fill = GridBagConstraints.HORIZONTAL;
-		gridBagConstraints11.weightx = 1.0;
-		gridBagConstraints11.insets = new Insets(2, 2, 2, 2);
-		GridBagConstraints gridBagConstraints1 = new GridBagConstraints();
-		gridBagConstraints1.gridx = 0;
-		gridBagConstraints1.insets = new Insets(2, 2, 2, 2);
-		gridBagConstraints1.fill = GridBagConstraints.BOTH;
-		gridBagConstraints1.weightx = 1.0;
-		gridBagConstraints1.gridy = 2;
-		GridBagConstraints gridBagConstraints2 = new GridBagConstraints();
-		gridBagConstraints2.gridx = 0;
-		gridBagConstraints2.insets = new Insets(2, 2, 2, 2);
-		gridBagConstraints2.fill = GridBagConstraints.BOTH;
-		gridBagConstraints2.weightx = 1.0;
-		gridBagConstraints2.gridy = 3;
-		GridBagConstraints gridBagConstraints = new GridBagConstraints();
-		gridBagConstraints.gridx = 1;
-		gridBagConstraints.insets = new Insets(2, 2, 2, 2);
-		gridBagConstraints.fill = GridBagConstraints.BOTH;
-		gridBagConstraints.weightx = 1.0;
-		gridBagConstraints.gridy = 3;
+		
+		GridBagConstraints gridBagConstraintsTop1 = new GridBagConstraints();
+		gridBagConstraintsTop1.gridx = 0;
+		gridBagConstraintsTop1.gridy = 0;
+		gridBagConstraintsTop1.fill = GridBagConstraints.BOTH;
+		gridBagConstraintsTop1.insets = new Insets(2, 2, 2, 2);
 				
-		GridBagConstraints gridBagConstraints4 = new GridBagConstraints();
-		gridBagConstraints4.gridx = 2;
-		gridBagConstraints4.insets = new Insets(2, 2, 2, 2);
-		gridBagConstraints4.fill = GridBagConstraints.BOTH;
-		gridBagConstraints4.weightx = 1.0;
-		gridBagConstraints4.gridy = 3;
+		GridBagConstraints gridBagConstraintsTop2 = new GridBagConstraints();
+		gridBagConstraintsTop2.gridx = 1;
+		gridBagConstraintsTop2.gridy = 0;
+		gridBagConstraintsTop2.fill = GridBagConstraints.BOTH;
+		gridBagConstraintsTop2.insets = new Insets(2, 2, 2, 2);				
 		
-		GridBagConstraints gridBagConstraints41 = new GridBagConstraints();
-		gridBagConstraints41.gridx = 2;
-		gridBagConstraints41.insets = new Insets(2, 2, 2, 2);
-		gridBagConstraints41.fill = GridBagConstraints.BOTH;
-		gridBagConstraints41.weightx = 1.0;
-		gridBagConstraints41.gridy = 2;
+		GridBagConstraints gridBagConstraintsTop3 = new GridBagConstraints();
+		gridBagConstraintsTop3.gridx = 2;
+		gridBagConstraintsTop3.gridy = 0;
+		gridBagConstraintsTop3.fill = GridBagConstraints.BOTH;
+		gridBagConstraintsTop3.insets = new Insets(2, 2, 2, 2);	
 		
+		GridBagConstraints gridBagConstraintsBottom1 = new GridBagConstraints();
+		gridBagConstraintsBottom1.gridx = 0;
+		gridBagConstraintsBottom1.gridy = 1;
+		gridBagConstraintsBottom1.fill = GridBagConstraints.BOTH;
+		gridBagConstraintsBottom1.insets = new Insets(2, 2, 2, 2);		
+		
+		
+		GridBagConstraints gridBagConstraintsBottom2 = new GridBagConstraints();
+		gridBagConstraintsBottom2.gridx = 1;
+		gridBagConstraintsBottom2.gridy = 1;
+		gridBagConstraintsBottom2.fill = GridBagConstraints.BOTH;
+		gridBagConstraintsBottom2.insets = new Insets(2, 2, 2, 2);		
+						
 		
 		this.setSize(287, 230);
 		this.setLayout(new GridBagLayout());
-		//this.setBorder(BorderFactory.createTitledBorder(null, "export", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, null, null));
-		this.add(getSnapshotButton(), gridBagConstraints);
-		this.add(getPstricksButton(), gridBagConstraints2);
-		this.add(getAdjlistButton(), gridBagConstraints11	);
-		this.add(getEdgelistButton(), gridBagConstraints41);
-		this.add(getJTextField(), gridBagConstraints21);
-		this.add(getTikzButton(), gridBagConstraints4);
-		this.add(getWriteLayoutButton(),gridBagConstraints1 );
-		
-		
-		this.add(jLabel, gridBagConstraints3);
+				
+		this.add(getTikzButton(), gridBagConstraintsBottom1);
+		this.add(getSnapshotButton(), gridBagConstraintsBottom2);
+		this.add(getCxfButton(),gridBagConstraintsTop1 );
+		this.add(getAdjlistButton(), gridBagConstraintsTop2);
+		this.add(getEdgelistButton(), gridBagConstraintsTop3);
 	}
 
 	/**
-	 * This method initializes dotButton	
-	 * 	
-	 * @return javax.swing.JButton	
-	 */
-	@SuppressWarnings("unused")
-	private JButton getDotButton() {
-		if (dotButton == null) {
-			dotButton = new JButton();
-			dotButton.setText("dot");
-			dotButton.addActionListener(new java.awt.event.ActionListener() {
-				public void actionPerformed(java.awt.event.ActionEvent e) {
-						exportToDot();
-				}
-			});
-		}
-		return dotButton;
-	}
-
-	/**
-	 * This method initializes snapshotButton	
+	 * This method initializes the Snapshot button	
 	 * 	
 	 * @return javax.swing.JButton	
 	 */
@@ -181,7 +129,15 @@ public class ExportPanel extends BrowserWidget  {
 			snapshotButton.setText("Snapshot");
 			snapshotButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
-						exportToJpg();
+					JFileChooser fc = getSnapshotFileChooser();					
+					int returnVal = fc.showSaveDialog(null);
+
+		            if (returnVal == JFileChooser.APPROVE_OPTION) {
+		                File file = fc.getSelectedFile();
+						exportToJpg(file);
+		            } else {
+		                System.out.println("Input cancelled by user");
+		            }
 				}
 			});
 		}
@@ -189,21 +145,19 @@ public class ExportPanel extends BrowserWidget  {
 	}
 
 	/**
-	 * This method initializes writeLayoutButton	
+	 * This method initializes getCxfButton	
+	 * 
 	 * @return javax.swing.JButton	
 	 */
-	private JButton getWriteLayoutButton() {
-		if (writeLayoutButton == null) {
-			writeLayoutButton = new JButton();
-			writeLayoutButton.setText("Save network");
-			writeLayoutButton.addActionListener(new java.awt.event.ActionListener() {
+	private JButton getCxfButton() {
+		if (cxfButton == null) {
+			cxfButton = new JButton();
+			cxfButton.setText("Save network");
+			cxfButton.addActionListener(new java.awt.event.ActionListener() {
 				
 				public void actionPerformed(java.awt.event.ActionEvent e) {
 					//The action is opening a dialog and saving in Cxf on the selected file
 					JFileChooser fc = getFileChooser();
-					fc.setDialogTitle("Save Cuttlefish network");
-					fc.setFileFilter(new FileNameExtensionFilter(".cxf files", "cxf"));
-					fc.setCurrentDirectory( new File(System.getProperty("user.dir")));
 					int returnVal = fc.showSaveDialog(null);
 
 		            if (returnVal == JFileChooser.APPROVE_OPTION) {
@@ -223,45 +177,69 @@ public class ExportPanel extends BrowserWidget  {
 				}
 			});
 		}
-		return writeLayoutButton;
+		return cxfButton;
 	}
 	
 	/**
-	 * This method initializes the fileChooser for saving
-	 * @return
+	 * This method initializes the cxfFileChooser for saving
+	 * 
+	 * @return javax.swing.JFileChooser
 	 */
 	private JFileChooser getFileChooser() {
-		if (fileC == null) {
-			fileC = new JFileChooser();
-		}
-		return fileC;
+		if (cxfFileChooser == null) {
+			cxfFileChooser = new JFileChooser();
+			cxfFileChooser.setDialogTitle("Saving cuttlefish network...");
+			cxfFileChooser.setFileFilter(new FileNameExtensionFilter(".cxf files", ".cxf"));
+			cxfFileChooser.setCurrentDirectory( new File(System.getProperty("user.dir")));
+		}		
+		return cxfFileChooser;
 	}
 	
 	/**
-	 * This method initializes pstricksButton	
-	 * 	
-	 * @return javax.swing.JButton	
+	 * This method initializes the file chooser for the Snapshot export button.
+	 * 
+	 * @return javax.swing.JFileChooser
 	 */
-	private JButton getPstricksButton() {
-		if (pstricksButton == null) {
-			pstricksButton = new JButton();
-			pstricksButton.setText("PSTricks");
-			pstricksButton.addActionListener(new java.awt.event.ActionListener() {
-				public void actionPerformed(java.awt.event.ActionEvent e) {
-						exportToPsTricks();
-				}
-			});
-		}
-		return pstricksButton;
+	private JFileChooser getSnapshotFileChooser() {
+		if (snapshotFileChooser == null) {
+			snapshotFileChooser = new JFileChooser();
+			snapshotFileChooser.setDialogTitle("Saving cuttlefish network to jpeg...");
+			snapshotFileChooser.setFileFilter(new FileNameExtensionFilter(".jpeg files", ".jpeg", "jpg"));
+			snapshotFileChooser.setCurrentDirectory( new File(System.getProperty("user.dir")));
+		}		
+		return snapshotFileChooser;
 	}
 	
-
+	/**
+	 * This method initializes the file chooser for the TikZ export button.
+	 *  
+	 * @return javax.swing.JFileChooser
+	 */
 	private JFileChooser getTikzFileChooser() {
-		if (tikzFileC == null) {
-			tikzFileC = new JFileChooser();
+		if (tikzFileChooser == null) {
+			tikzFileChooser = new JFileChooser();
+			tikzFileChooser.setDialogTitle("Exporting network to TikZ...");
+			tikzFileChooser.setFileFilter(new FileNameExtensionFilter(".tex files", ".tex"));
+			tikzFileChooser.setCurrentDirectory( new File(System.getProperty("user.dir")));
 		}
-		return tikzFileC;
+		return tikzFileChooser;
 	}
+	
+	/**
+	 * This method initializes the file chooser for the edge list and
+	 * adjacency list export buttons.
+	 * 
+	 * @return javax.swing.JFileChooser
+	 */
+	private JFileChooser getDatFileChooser() {
+		if(datFileChooser == null) {
+			datFileChooser = new JFileChooser();
+			datFileChooser.setDialogTitle("Exporting cuttlefish network");
+			datFileChooser.setFileFilter(new FileNameExtensionFilter(".dat files", ".dat"));
+			datFileChooser.setCurrentDirectory( new File(System.getProperty("user.dir")));
+		}
+		return datFileChooser;	
+	}	
 	
 	/**
 	 * This method initializes tikzButton	
@@ -281,9 +259,7 @@ public class ExportPanel extends BrowserWidget  {
 						if (returnVal == JFileChooser.APPROVE_OPTION) {
 			                File file = fc.getSelectedFile();
 			                exportToTikz(file);
-					    } else {
-			                System.out.println("Input cancelled by user");
-			            }
+					    }
 				}
 			});
 		}
@@ -299,18 +275,20 @@ public class ExportPanel extends BrowserWidget  {
 	private JButton getAdjlistButton() {
 		if (adjlistButton == null) {
 			adjlistButton = new JButton();
-			//adjlistButton.setText("adj. list");
 			adjlistButton.setText("Adj. matrix");
 			adjlistButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
 					try {
-						//PrintStream p = new PrintStream(new File("adjlists/" + getNetwork().getName()+".adjlist"));
-						PrintStream p = new PrintStream(new File("adjlists/" + getNetwork().getName()+"_adjmatrix.dat"));
-						//Utils.writeAdjacencyList(getNetwork(), p);
+						JFileChooser fc = getDatFileChooser();
+						fc.setSelectedFile(new File(getNetwork().getName()+".dat"));
+						int returnVal = fc.showSaveDialog(ExportPanel.this);
 						
-						int[][] myAdjMatrix = Conversion.graphToAdjacencyMatrix( getNetwork() );
-						Conversion.printMatrix( myAdjMatrix , p );
-						
+						if (returnVal == JFileChooser.APPROVE_OPTION) {
+							File file = fc.getSelectedFile();
+							PrintStream p = new PrintStream(file);						
+							int[][] myAdjMatrix = Conversion.graphToAdjacencyMatrix( getNetwork() );
+							Conversion.printMatrix( myAdjMatrix , p );
+						}											
 					} catch (FileNotFoundException fnfEx) {
 						JOptionPane.showMessageDialog(null,fnfEx.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
 						System.err.println("Error trying to write andjacency list file");
@@ -322,24 +300,24 @@ public class ExportPanel extends BrowserWidget  {
 		return adjlistButton;
 	}
 
-	
-	public void exportToJpg() {
-		
-		BufferedImage img = getBrowser().getSnapshot();
-	    
-	       OutputStream out;
+	/**
+	 * Export a file to JPEG format
+	 * @param file the file where the JPEG image is stored
+	 */
+	public void exportToJpg(File file) {
+		BufferedImage img = getBrowser().getSnapshot();			    
+		OutputStream out;
 		try {
-			out = new FileOutputStream(getNetwork().getName()+".jpg");
-	       JPEGImageEncoder encoder = JPEGCodec.createJPEGEncoder(out);
-	       JPEGEncodeParam param = JPEGCodec.getDefaultJPEGEncodeParam(img);
-	       param.setQuality(1.0f,true);
-	       encoder.setJPEGEncodeParam(param);
-	       encoder.encode(img,param);
-	       out.close();
-		} 
-		catch (FileNotFoundException fnfEx) {
+			out = new FileOutputStream(file);			
+			JPEGImageEncoder encoder = JPEGCodec.createJPEGEncoder(out);
+			JPEGEncodeParam param = JPEGCodec.getDefaultJPEGEncodeParam(img);
+			param.setQuality(1.0f,true);
+			encoder.setJPEGEncodeParam(param);
+			encoder.encode(img, param);
+			out.close();
+		} catch (FileNotFoundException fnfEx) {
 			JOptionPane.showMessageDialog(null,fnfEx.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
-			System.err.println("Impossible to save in JPG");
+			System.err.println("Impossible to save in JPEG");
 			fnfEx.printStackTrace();
 		} catch (ImageFormatException ifEx) {
 			JOptionPane.showMessageDialog(null,ifEx.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
@@ -349,10 +327,19 @@ public class ExportPanel extends BrowserWidget  {
 			JOptionPane.showMessageDialog(null,ioEx.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
 			System.err.println("Output error when saving in JPG");
 			ioEx.printStackTrace();
+		} catch(NullPointerException nullEx) {
+			JOptionPane.showMessageDialog(null,"Error while creating JPEG Encoder." +
+					"You are probably using Java OpenJDK which does contain" +
+					"the JPEGEncoder libraries.","JPEG Error",JOptionPane.ERROR_MESSAGE);
+			System.err.println("Error while creating JPEG Encoder");
+			nullEx.printStackTrace();
 		}
 	}
 	
-	
+	/**
+	 * Export network to DOT format.
+	 */
+	@Deprecated
 	public void exportToDot() {
 		try {
 			PrintStream p = new PrintStream(new File(getNetwork().getName()+".dot"));
@@ -364,8 +351,10 @@ public class ExportPanel extends BrowserWidget  {
 		}
 	}
 
-
-
+	/**
+	 * Export network to PSTricks format.
+	 */
+	@Deprecated
 	public void exportToPsTricks() {
 		String fileName = null;
 		if(getNetwork() instanceof TemporalNetwork && ((TemporalNetwork)getNetwork()).getDate() != null){
@@ -382,6 +371,10 @@ public class ExportPanel extends BrowserWidget  {
 		psExporter.exportToPSTricks(f, getBrowser().getNetworkLayout());
 	}
 	
+	/**
+	 * Export network to TikZ format
+	 * @param file the file where the tikz output is stored
+	 */
 	public void exportToTikz(File file) {
 		TikzExporter tikzexp = new TikzExporter(getNetwork());
 		tikzexp.exportToTikz(file, getBrowser().getNetworkLayout());
@@ -393,7 +386,6 @@ public class ExportPanel extends BrowserWidget  {
 
 	/**
 	 * This method initializes edgelistButton	
-	 * 	
 	 * @return javax.swing.JButton	
 	 */
 	private JButton getEdgelistButton() {
@@ -403,31 +395,23 @@ public class ExportPanel extends BrowserWidget  {
 			edgelistButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
 					try {
-						PrintStream p = new PrintStream(new File("edgelists/" + getNetwork().getName()+".edgelist"));
-						Conversion.writeEdgeList(getNetwork(), p);
+						JFileChooser fc = getDatFileChooser();
+						fc.setSelectedFile(new File(getNetwork().getName()+".dat"));
+						int returnVal = fc.showSaveDialog(ExportPanel.this);
+						
+						if (returnVal == JFileChooser.APPROVE_OPTION) {
+							File file = fc.getSelectedFile();
+							PrintStream p = new PrintStream(file);						
+							Conversion.writeEdgeList(getNetwork(), p);
+						}											
 					} catch (FileNotFoundException fnfEx) {
 						JOptionPane.showMessageDialog(null,fnfEx.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
-						System.err.println("Impossible to save in edge list");
+						System.err.println("Error trying to write andjacency list file");
 						fnfEx.printStackTrace();
-					}
-					//
+					}					
 				}
 			});
 		}
 		return edgelistButton;
 	}
-
-	/**
-	 * This method initializes jTextField	
-	 * 	
-	 * @return javax.swing.JTextField	
-	 */
-	private JTextField getJTextField() {
-		if (jTextField == null) {
-			jTextField = new JTextField();
-			jTextField.setVisible(false);
-		}
-		return jTextField;
-	}
-
-}  //  @jve:decl-index=0:visual-constraint="0,0"
+}

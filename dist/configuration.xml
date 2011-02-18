@@ -8,7 +8,7 @@
 		<Tab id="Data" condition="*" name="Data">
 			<Widget id="Import" name="Import"
 				class="ch.ethz.sg.cuttlefish.gui.widgets.DataSourcePanel">
-				<Argument name="sources">datasources.xml</Argument>
+				<Argument name="sources">/home/ptsankov/eth/cuttlefish/testing-gui/datasources.xml</Argument>
 			</Widget>
 			<Widget id="Export" name="Export"
 				class="ch.ethz.sg.cuttlefish.gui.widgets.ExportPanel" />
@@ -21,6 +21,9 @@
 				class="ch.ethz.sg.cuttlefish.gui.widgets.SimulationPanel"
 				id="Control" />
 		</Tab>
+<!--
+                <Tab name="Static cxf Network" id="CxfNetwork" condition="ch.ethz.sg.cuttlefish.networks.StaticCxfNetwork">
+                        <Widget name="Load cxf file" class="ch.ethz.sg.cuttlefish.gui.widgets.CxfNetworkPanel" id="CxfNetworkPanel"></Widget></Tab>
 		<Tab name="Pajek Network" id="PajekNetwork" condition="ch.ethz.sg.cuttlefish.networks.PajekNetwork">
 			<Widget name="Load Pajek File" class="ch.ethz.sg.cuttlefish.gui.widgets.PajekPanel" id="PajekPanel"></Widget></Tab>
 		<Tab name="GraphML Network" id="GraphML" condition="ch.ethz.sg.cuttlefish.networks.GraphMLNetwork">
@@ -31,8 +34,7 @@
 			<Widget name="Load cxf file" class="ch.ethz.sg.cuttlefish.gui.widgets.InteractiveCxfNetworkPanel" id="ICxfNetworkPanel"></Widget>
 			<Widget name="Load cef instructions" class="ch.ethz.sg.cuttlefish.gui.widgets.CefInstructionPanel" id="InstructionPanel"></Widget>
 		</Tab>
-		<Tab name="Static cxf Network" id="CxfNetwork" condition="ch.ethz.sg.cuttlefish.networks.StaticCxfNetwork">
-			<Widget name="Load cxf file" class="ch.ethz.sg.cuttlefish.gui.widgets.CxfNetworkPanel" id="CxfNetworkPanel"></Widget></Tab>
+-->
 		<Tab name="Database Browsing" id="DBNetwork" condition="ch.ethz.sg.cuttlefish.networks.DBNetwork">
 			<Widget name="Connect to DataBase" class="ch.ethz.sg.cuttlefish.gui.widgets.DBConnectPanel" id="DBConnectPanel"></Widget>
 			<Widget name="Execute query" class="ch.ethz.sg.cuttlefish.gui.widgets.DBQueryPanel" id="DBQueryPanel"></Widget>

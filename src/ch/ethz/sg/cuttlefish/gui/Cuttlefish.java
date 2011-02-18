@@ -26,7 +26,10 @@ import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
@@ -35,13 +38,26 @@ import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
+import javax.xml.XMLConstants;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 import ch.ethz.sg.cuttlefish.misc.Edge;
 import ch.ethz.sg.cuttlefish.misc.Utils;
 import ch.ethz.sg.cuttlefish.misc.Vertex;
+import ch.ethz.sg.cuttlefish.misc.XMLUtil;
 import edu.uci.ics.jung.visualization.control.EditingModalGraphMouse;
 import edu.uci.ics.jung.visualization.control.ModalGraphMouse;
 import edu.uci.ics.jung.visualization.control.ModalGraphMouse.Mode;
@@ -109,40 +125,87 @@ public class Cuttlefish extends JFrame {
 		this.setTitle("Cuttlefish");
 	}
 
+	private JMenu initOpenMenu() {		
+		File sourcesFile = null;
+		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        factory.setValidating(false);  
+        factory.setNamespaceAware(true);
+        DocumentBuilder builder = null; 
+        Document sourcesDocument = null;
+        try {
+        	builder = factory.newDocumentBuilder();
+        	Document configuration = builder.parse(configFile);
+        	NodeList tabs = configuration.getElementsByTagName("Tab");
+            for( int i=0; i<tabs.getLength(); i++ ){
+            	Node tab = tabs.item(i);
+            	NodeList widgets = tab.getChildNodes();
+        	    for(int j=0; j<widgets.getLength(); j++){
+        	    	Node widget = widgets.item(j);
+        	    	if(widget.getAttributes() != null && widget.getAttributes().getNamedItem("id") != null)
+        	    	System.out.println(widget.getAttributes().getNamedItem("id").getNodeValue());
+        	    	
+        	    	if(widget.getNodeName().equals("Widget") && widget.getAttributes().getNamedItem("id").getNodeValue().equals("Import")){
+        	    		NodeList attributes = widget.getChildNodes();
+        	    		for(int k = 0; k < attributes.getLength(); ++k) {
+        	    			Node attribute = attributes.item(k);
+        	    			if(attribute.getAttributes() != null && attribute.getAttributes().getNamedItem("name") != null && attribute.getAttributes().getNamedItem("name").getNodeValue().equals("sources")) {
+        	    				sourcesFile = new File(attribute.getTextContent());
+        	    			}
+        	    		}       	    		
+        	    	}
+        	    }
+            }
+            if (!sourcesFile.exists()) {
+				 
+	        	sourcesFile = Utils.createLocalFile("/ch/ethz/sg/cuttlefish/resources/default_datasources.xml", (Object) this);
+	        	System.out.println("WARNING: datasources file not found - using default");
+            }            
+            sourcesDocument = builder.parse(sourcesFile);
+        } catch (ParserConfigurationException parsEx) {
+    		JOptionPane.showMessageDialog(null,parsEx.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
+    		System.err.println("Parser syntax error in configuration XML");
+    		parsEx.printStackTrace();
+    	} catch (SAXException saxEx) {
+    		JOptionPane.showMessageDialog(null,saxEx.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
+    		System.err.println("SAX syntax error in configuration XML");
+    		saxEx.printStackTrace();
+    	} catch (IOException ioEx) {
+    		JOptionPane.showMessageDialog(null,ioEx.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
+    		System.err.println("Input syntax error in configuration XML");
+    		ioEx.printStackTrace();
+    	}    	
+	    NodeList sources = sourcesDocument.getElementsByTagName("Source");
+	    JMenu importMenu = new JMenu("Open");
+        importMenu.setMnemonic(KeyEvent.VK_O);
+	    for(int i = 0; i < sources.getLength(); i++){
+	    	Node source = sources.item(i);
+	    	JMenuItem menuItem = new JMenuItem(source.getAttributes().getNamedItem("name").getNodeValue());
+	    	importMenu.add(menuItem);
+		}
+	    return importMenu;
+	}
+	
 	/**
 	 * Prototype Menu for the Cuttlefish GUI	
 	 * @return
 	 */
-//	private JMenuBar createMenu() {
-//		JMenuBar menubar = new JMenuBar();
-//		
-//		JMenu importMenu = new JMenu("Open");
-//        importMenu.setMnemonic(KeyEvent.VK_O);
-//
-//        JMenuItem importCxfFile = new JMenuItem("Cxf file", KeyEvent.VK_T);
-//        importCxfFile.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_1, ActionEvent.ALT_MASK));        
-//        importMenu.add(importCxfFile);
-//        JMenuItem importPajekFile = new JMenuItem("Pajek file", KeyEvent.VK_T);
-//        importPajekFile.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_1, ActionEvent.ALT_MASK));        
-//        importMenu.add(importPajekFile);
-//        JMenuItem importCffFile = new JMenuItem("Cff file", KeyEvent.VK_T);
-//        importCffFile.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_1, ActionEvent.ALT_MASK));        
-//        importMenu.add(importCffFile);
-//        
-//        menubar.add(importMenu);
-//        
-//        JMenu exportMenu = new JMenu("Export");
-//        JMenuItem exportAdjacencyMatrix = new JMenuItem("Adjacency matrix");
-//        exportMenu.add(exportAdjacencyMatrix);
-//        JMenuItem exportTikz = new JMenuItem("Tikz");
-//        exportMenu.add(exportTikz);
-//        JMenuItem exportPdf = new JMenuItem("Pdf");
-//        exportMenu.add(exportPdf);
-//        
-//        menubar.add(exportMenu);
-//        
-//		return menubar;
-//	}
+	private JMenuBar createMenu() {
+		JMenuBar menubar = new JMenuBar();    
+        
+        menubar.add(initOpenMenu() );
+        
+        JMenu exportMenu = new JMenu("Export");
+        JMenuItem network = new JMenuItem("Cuttlefish network");
+        exportMenu.add(network);
+        JMenuItem tikz = new JMenuItem("TikZ");
+        exportMenu.add(tikz);
+        JMenuItem snapshot = new JMenuItem("Snapshot");
+        exportMenu.add(snapshot);
+        
+        menubar.add(exportMenu);
+        
+		return menubar;
+	}
 	
 	/**
 	 * Prototype toolbar for mouse edit type
