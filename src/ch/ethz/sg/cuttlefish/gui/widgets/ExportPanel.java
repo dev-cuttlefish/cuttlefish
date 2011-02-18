@@ -129,14 +129,13 @@ public class ExportPanel extends BrowserWidget  {
 			snapshotButton.setText("Snapshot");
 			snapshotButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
-					JFileChooser fc = getSnapshotFileChooser();					
+					JFileChooser fc = getSnapshotFileChooser();		
+					fc.setSelectedFile(new File(getNetwork().getName()+".jpeg"));
 					int returnVal = fc.showSaveDialog(null);
 
 		            if (returnVal == JFileChooser.APPROVE_OPTION) {
 		                File file = fc.getSelectedFile();
 						exportToJpg(file);
-		            } else {
-		                System.out.println("Input cancelled by user");
 		            }
 				}
 			});
@@ -158,6 +157,7 @@ public class ExportPanel extends BrowserWidget  {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
 					//The action is opening a dialog and saving in Cxf on the selected file
 					JFileChooser fc = getFileChooser();
+					fc.setSelectedFile(new File(getNetwork().getName()+".cxf"));
 					int returnVal = fc.showSaveDialog(null);
 
 		            if (returnVal == JFileChooser.APPROVE_OPTION) {
@@ -171,8 +171,6 @@ public class ExportPanel extends BrowserWidget  {
 							System.err.println("Impossible to write");
 							ioEx.printStackTrace();
 						}
-		            } else {
-		                System.out.println("Input cancelled by user");
 		            }
 				}
 			});
@@ -189,7 +187,7 @@ public class ExportPanel extends BrowserWidget  {
 		if (cxfFileChooser == null) {
 			cxfFileChooser = new JFileChooser();
 			cxfFileChooser.setDialogTitle("Saving cuttlefish network...");
-			cxfFileChooser.setFileFilter(new FileNameExtensionFilter(".cxf files", ".cxf"));
+			cxfFileChooser.setFileFilter(new FileNameExtensionFilter(".cxf files", "cxf"));
 			cxfFileChooser.setCurrentDirectory( new File(System.getProperty("user.dir")));
 		}		
 		return cxfFileChooser;
@@ -204,7 +202,7 @@ public class ExportPanel extends BrowserWidget  {
 		if (snapshotFileChooser == null) {
 			snapshotFileChooser = new JFileChooser();
 			snapshotFileChooser.setDialogTitle("Saving cuttlefish network to jpeg...");
-			snapshotFileChooser.setFileFilter(new FileNameExtensionFilter(".jpeg files", ".jpeg", "jpg"));
+			snapshotFileChooser.setFileFilter(new FileNameExtensionFilter(".jpeg files", "jpeg", "jpg"));
 			snapshotFileChooser.setCurrentDirectory( new File(System.getProperty("user.dir")));
 		}		
 		return snapshotFileChooser;
@@ -219,7 +217,7 @@ public class ExportPanel extends BrowserWidget  {
 		if (tikzFileChooser == null) {
 			tikzFileChooser = new JFileChooser();
 			tikzFileChooser.setDialogTitle("Exporting network to TikZ...");
-			tikzFileChooser.setFileFilter(new FileNameExtensionFilter(".tex files", ".tex"));
+			tikzFileChooser.setFileFilter(new FileNameExtensionFilter(".tex files", "tex"));
 			tikzFileChooser.setCurrentDirectory( new File(System.getProperty("user.dir")));
 		}
 		return tikzFileChooser;
@@ -235,7 +233,7 @@ public class ExportPanel extends BrowserWidget  {
 		if(datFileChooser == null) {
 			datFileChooser = new JFileChooser();
 			datFileChooser.setDialogTitle("Exporting cuttlefish network");
-			datFileChooser.setFileFilter(new FileNameExtensionFilter(".dat files", ".dat"));
+			datFileChooser.setFileFilter(new FileNameExtensionFilter(".dat files", "dat"));
 			datFileChooser.setCurrentDirectory( new File(System.getProperty("user.dir")));
 		}
 		return datFileChooser;	
@@ -254,12 +252,12 @@ public class ExportPanel extends BrowserWidget  {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
 					 JFileChooser fc = getTikzFileChooser();
 				     fc.setCurrentDirectory( new File(System.getProperty("user.dir")));
-				     	fc.setSelectedFile(new File(getNetwork().getName()+".tex"));
-			            int returnVal = fc.showSaveDialog(ExportPanel.this);
-						if (returnVal == JFileChooser.APPROVE_OPTION) {
-			                File file = fc.getSelectedFile();
-			                exportToTikz(file);
-					    }
+				     fc.setSelectedFile(new File(getNetwork().getName()+".tex"));
+				     int returnVal = fc.showSaveDialog(ExportPanel.this);
+				     if (returnVal == JFileChooser.APPROVE_OPTION) {
+				    	 File file = fc.getSelectedFile();
+				    	 exportToTikz(file);
+				     }
 				}
 			});
 		}

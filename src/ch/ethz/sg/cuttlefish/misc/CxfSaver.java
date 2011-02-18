@@ -25,6 +25,8 @@ import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.swing.JOptionPane;
 
@@ -56,7 +58,7 @@ public class CxfSaver {
 		this.layout = layout;
 	}
 	
-	
+
 	
 	/**
 	 * saves the data of the network used to create it and the layout
@@ -65,6 +67,8 @@ public class CxfSaver {
 	public void save(File file)
 	{
 		try {
+			if(Utils.checkForDuplicatedVertexIds(network))
+				Utils.reassignVertexIds(network);
 			ps = new PrintStream(file);
 			boolean hideVertexLabels = false;
 			boolean hideEdgeLabels = false;

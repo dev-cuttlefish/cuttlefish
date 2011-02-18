@@ -114,6 +114,8 @@ public class TikzExporter {
 	 * @param netLayout layout to define the position of the vertices
 	 */
 	public void exportToTikz(File file, Layout<Vertex, Edge> netLayout){
+		if(Utils.checkForDuplicatedVertexIds(network))
+			Utils.reassignVertexIds(network);
 		outFile = file;
 		layout = netLayout;
 		
@@ -165,6 +167,14 @@ public class TikzExporter {
 		return;
 	}	
 	
+	private String escapeChars(String s) {
+		String[] chars = {"&", "_", "%"};
+		for(String ch : chars) {
+			s = s.replace(ch, "\\"+ch);
+		}
+		return s;
+	}
+	
 	/**
 	 * Prints the necessary information to display a vertex in the tikz output
 	 * @param vertex
@@ -190,10 +200,8 @@ public class TikzExporter {
 		p.print(" minimum size = " + Utils.ensureDecimal((vertex.getSize())) + "pt,");
 		
 		if ((vertex.getLabel() != null) && (true))
-		{
-			String latexLabel = vertex.getLabel().replace("&", "\\&");
-			latexLabel = latexLabel.replace("_", "\\_");
-			p.print(" label={[label distance=-5]"+ calculateAngle(vertex)+":" + latexLabel + "},");
+		{			
+			p.print(" label={[label distance=-5]"+ calculateAngle(vertex)+":" + escapeChars(vertex.getLabel()) + "},");
 		}
 		//TODO: now all vertices are shaded, add a variable in cxf to determine that
 		p.print(" shading=ball,");
@@ -293,7 +301,7 @@ public class TikzExporter {
 			}
 			p.print("\\Edge ");
 			if ((edge.getLabel() != null) && (! hideEdgeLabels))
-				p.print("[label=" + edge.getLabel() + "]");			
+				p.print("[label=" + escapeChars(edge.getLabel()) + "]");			
 			p.print("(" + v1.getId() + ")(" + v2.getId() + ")\n");
 		}
 	}
