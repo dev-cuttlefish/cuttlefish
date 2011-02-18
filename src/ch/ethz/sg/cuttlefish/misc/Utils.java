@@ -28,8 +28,11 @@ import java.io.PrintStream;
 import java.text.DecimalFormat;
 import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.Set;
 
 import javax.swing.JOptionPane;
+
+import ch.ethz.sg.cuttlefish.networks.BrowsableNetwork;
 
 import edu.uci.ics.jung.algorithms.layout.Layout;
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
@@ -147,5 +150,31 @@ public class Utils {
 			System.out.println(graph.getEdges().contains(edge));
 			graph.removeEdge(edge);	
 		}	
+	}
+	
+	/**
+	 * This method checks if there are duplicated vertices with the
+	 * same ID. If there are duplicated IDs then we cannot save the
+	 * network before reassigning unique IDs
+	 * @return true if there are duplicated IDs, false otherwise.
+	 */
+	public static boolean checkForDuplicatedVertexIds(BrowsableNetwork network) {
+		Set<Integer> ids = new HashSet<Integer>(); 
+		for(Vertex vertex : network.getVertices() ) {
+			if(ids.contains(vertex.getId())) {
+				return true;
+			}
+			ids.add(vertex.getId());
+		}
+		return false;
+	}
+	
+	/**
+	 * This method assigns unique IDs to vertices.
+	 */
+	public static void reassignVertexIds(BrowsableNetwork network) {
+		int curId = 0;
+		for(Vertex vertex : network.getVertices() )
+			vertex.setId(curId++);
 	}
 }

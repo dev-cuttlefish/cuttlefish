@@ -12,7 +12,7 @@
 	<Source id="graphML" name="GraphML network" class="ch.ethz.sg.cuttlefish.networks.GraphMLNetwork"></Source>
 	<Source id="userNetwork" name="CFF network" class="ch.ethz.sg.cuttlefish.networks.UserNetwork"></Source>
 	<Source id="sim1" name="Test simulation" class="ch.ethz.sg.cuttlefish.networks.TestSimulation">
-	<Source id="sim2" name="BA simulation" class="ch.ethz.sg.cuttlefish.networks.BASimulation">
 		<Argument name="test">Argument</Argument>
 		<Argument name="alpha">10.0</Argument></Source>
+	<Source id="sim2" name="BA simulation" class="ch.ethz.sg.cuttlefish.networks.BASimulation"></Source>
 </cf:DataSources>
