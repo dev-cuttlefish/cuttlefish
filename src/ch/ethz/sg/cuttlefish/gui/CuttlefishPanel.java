@@ -39,6 +39,7 @@ import java.awt.Graphics2D;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Hashtable;
 import java.util.Set;
 
@@ -65,8 +66,10 @@ import org.xml.sax.SAXException;
 import ch.ethz.sg.cuttlefish.layout.ARF2Layout;
 import ch.ethz.sg.cuttlefish.layout.FixedLayout;
 import ch.ethz.sg.cuttlefish.layout.WeightedARF2Layout;
+import ch.ethz.sg.cuttlefish.misc.DelegateForest;
 import ch.ethz.sg.cuttlefish.misc.Edge;
 import ch.ethz.sg.cuttlefish.misc.EdgeFactory;
+import ch.ethz.sg.cuttlefish.misc.MinimumSpanningForest;
 import ch.ethz.sg.cuttlefish.misc.Utils;
 import ch.ethz.sg.cuttlefish.misc.Vertex;
 import ch.ethz.sg.cuttlefish.misc.VertexFactory;
@@ -74,12 +77,15 @@ import ch.ethz.sg.cuttlefish.misc.XMLUtil;
 import ch.ethz.sg.cuttlefish.networks.BrowsableNetwork;
 import ch.ethz.sg.cuttlefish.networks.CxfNetwork;
 
+import edu.uci.ics.jung.algorithms.layout.BalloonLayout;
 import edu.uci.ics.jung.algorithms.layout.CircleLayout;
 import edu.uci.ics.jung.algorithms.layout.FRLayout2;
 import edu.uci.ics.jung.algorithms.layout.ISOMLayout;
 import edu.uci.ics.jung.algorithms.layout.KKLayout;
 import edu.uci.ics.jung.algorithms.layout.Layout;
+import edu.uci.ics.jung.algorithms.layout.RadialTreeLayout;
 import edu.uci.ics.jung.algorithms.layout.SpringLayout2;
+import edu.uci.ics.jung.algorithms.layout.TreeLayout;
 import edu.uci.ics.jung.graph.*;
 import edu.uci.ics.jung.graph.util.Context;
 
@@ -87,6 +93,7 @@ import edu.uci.ics.jung.visualization.RenderContext;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 import edu.uci.ics.jung.visualization.control.EditingModalGraphMouse;
 import edu.uci.ics.jung.visualization.control.ModalGraphMouse;
+import edu.uci.ics.jung.visualization.decorators.EdgeShape;
 import edu.uci.ics.jung.visualization.picking.ShapePickSupport;
 
 /**
@@ -152,7 +159,8 @@ public CuttlefishPanel(File configFile) {
 			return vertex.getFillColor(); } };
 	Transformer<Vertex, Paint> vertexBorderTransformer = new Transformer<Vertex, Paint>(){
 		public Paint transform(Vertex vertex) {
-			return vertex.getColor(); } };		
+			return vertex.getColor(); } };
+	
     // This predicate selects which vertices to ignore		
 	Predicate<Context<Graph<Vertex,Edge>,Vertex>> vertexIncludePredicate = new Predicate<Context<Graph<Vertex,Edge>,Vertex>>() {
 		public boolean evaluate(Context<Graph<Vertex, Edge>, Vertex> context) {
@@ -166,7 +174,6 @@ public CuttlefishPanel(File configFile) {
 	renderContext.setVertexDrawPaintTransformer(vertexBorderTransformer);
 	renderContext.setVertexIncludePredicate(vertexIncludePredicate);
 	renderContext.setLabelOffset(20); //shift of the vertex label to center the first character under the vertex
-
 	//vertex colors
 	renderContext.setVertexStrokeTransformer(vertexStrokeTransformer);
 	renderContext.setVertexFillPaintTransformer(vertexPaintTransformer);
@@ -181,6 +188,21 @@ public CuttlefishPanel(File configFile) {
 				if (((CxfNetwork)network).hideEdgeLabels())
 					return null;
 			return edge.getLabel();} };
+			
+	
+	Transformer<Context<Graph<Vertex,Edge>, Edge>, Shape> edgeShapeTransformer = new Transformer<Context<Graph<Vertex,Edge>, Edge>, Shape>() {
+		public Shape transform(Context<Graph<Vertex, Edge>, Edge> context) {
+			if(network instanceof CxfNetwork) {
+				if( ((CxfNetwork)network).getEdgeShape() == "line" ) {
+					return new EdgeShape.Line<Vertex, Edge>().transform(context);
+				}
+			}
+			// The default edge shape is QuadCurve
+			return new EdgeShape.QuadCurve<Vertex, Edge>().transform(context);
+		}
+	};
+	renderContext.setEdgeShapeTransformer(edgeShapeTransformer);
+	
 	Transformer<Edge,Stroke> edgeStrokeTransformer = new Transformer<Edge, Stroke>() {
 		public Stroke transform(Edge edge) {
 			return new BasicStroke(new Double(edge.getWidth()).intValue()); } };
@@ -373,8 +395,15 @@ public void setNetwork(BrowsableNetwork network) {
 	this.network = network;
 	System.out.println("Set network " + network.getName() + " (" + network.getVertices().size() + " nodes)");
 	
-	/*default layout: ARF*/
+	/*
+	 * Default layout: ARF
+	 * If the network is not a forest and the layout is a tree layout,
+	 * change the layout to the default ARF layout.
+	 *
+	 */
 	if (layout == null)
+		setLayout("ARFLayout");	
+	else if( !(network instanceof Forest) && layout instanceof TreeLayout)
 		setLayout("ARFLayout");
 	else if (layout.getGraph() != network) //consistency check between layout and network
 		layout.setGraph(network);
@@ -627,7 +656,24 @@ public void setLayout(String selectedLayout){
 	}
 	if (selectedLayout.equalsIgnoreCase("FixedLayout"))
 		newLayout = new FixedLayout<Vertex, Edge>(getNetwork(),layout);
-	
+	if( selectedLayout.equalsIgnoreCase("TreeLayout"))
+	{
+		Forest<Vertex, Edge> forest = new DelegateForest<Vertex, Edge>();
+		new MinimumSpanningForest<Vertex, Edge>(getNetwork(), forest, getRoots());
+		newLayout = new TreeLayout<Vertex, Edge>(forest);	
+	}
+	if( selectedLayout.equalsIgnoreCase("BaloonLayout")) 
+	{
+		Forest<Vertex, Edge> forest = new DelegateForest<Vertex, Edge>();
+		new MinimumSpanningForest<Vertex, Edge>(getNetwork(), forest, getRoots());
+		newLayout = new BalloonLayout<Vertex, Edge>(forest);	
+	}
+	if( selectedLayout.equalsIgnoreCase("RadialTreeLayout")) 
+	{
+		Forest<Vertex, Edge> forest = new DelegateForest<Vertex, Edge>();		
+		new MinimumSpanningForest<Vertex, Edge>(getNetwork(), forest, getRoots());
+		newLayout = new RadialTreeLayout<Vertex, Edge>(forest);	
+	}
 	layout = newLayout;
 	System.out.println("Set layout to " + layout.getClass());
 
@@ -638,6 +684,20 @@ public void setLayout(String selectedLayout){
 	getVisualizationViewer().setGraphLayout(layout);
 	
 	getVisualizationViewer().repaint();
+}
+
+/**
+ * This is a private method that checks all vertices and extracts
+ * the root vertices into a collection.
+ * @return A collection with the root nodes of the Forest
+ */
+private Collection<Vertex> getRoots() {
+	Collection<Vertex> roots = new ArrayList<Vertex>();
+	for(Vertex v : network.getVertices() ) {
+		if(v.isRoot() )
+			roots.add(v);
+	}
+	return roots;
 }
 
 @Override
