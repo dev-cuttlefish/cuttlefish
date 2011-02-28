@@ -48,6 +48,7 @@ public class Vertex {
 	private String var2 = null;
 	private boolean excluded = false;
 	private boolean fixed = false;
+	private boolean isRoot = false;
 	private Point2D position;
 	
 	/**
@@ -110,6 +111,18 @@ public class Vertex {
 	 */
 	public int getId() {
 		return id;
+	}
+	/**
+	 * @param b boolean specifying whether the vertex is a root vertex
+	 */
+	public void setIsRoot(boolean b) {
+		this.isRoot = b;
+	}
+	/**
+	 * @return isRoot
+	 */
+	public boolean isRoot() {
+		return isRoot;
 	}
 	/**
 	 * @param label the label to set

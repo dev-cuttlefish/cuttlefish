@@ -22,6 +22,7 @@
 package ch.ethz.sg.cuttlefish.networks;
 
 import java.awt.Color;
+import java.awt.Shape;
 import java.awt.geom.Point2D;
 import java.io.BufferedReader;
 import java.io.File;
@@ -36,6 +37,7 @@ import java.util.Iterator;
 import java.util.StringTokenizer;
 
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 
 import ch.ethz.sg.cuttlefish.gui.NetworkInitializer;
 import ch.ethz.sg.cuttlefish.misc.Edge;
@@ -53,8 +55,9 @@ public class CxfNetwork extends BrowsableNetwork {
 	FileReader fr;
 	BufferedReader br;
 	boolean directed = true;
-	boolean hideVertexLabels = false;
-	boolean hideEdgeLabels = false;
+	private String edgeShape = "bendLine";
+	private boolean hideVertexLabels = false;
+	private boolean hideEdgeLabels = false;
 	int lineNum = 0;
 	String line = null;
 	int instructionIndex = 0;
@@ -90,6 +93,8 @@ public class CxfNetwork extends BrowsableNetwork {
 		Point2D position = null;
 		
 		boolean hide = false;
+		
+		boolean isRoot = false;
 		
 		boolean freeze = false; boolean commit = false;
 	}
@@ -131,6 +136,14 @@ public class CxfNetwork extends BrowsableNetwork {
 		}
 	}
 	
+	public String getEdgeShape() {
+		return edgeShape;
+	}
+	
+	public void  setEdgeShape(String edgeType) {
+		this.edgeShape = edgeType;
+	}
+	
 	private boolean confirmFileFormatWarning(String warning, String dialogTitle) {
 		System.out.println(warning);
 		int answer = JOptionPane.showConfirmDialog(null, warning, dialogTitle, 2, JOptionPane.WARNING_MESSAGE);
@@ -149,6 +162,7 @@ public class CxfNetwork extends BrowsableNetwork {
 		this.graphFile = graphFile;
 		hash = new HashMap<Integer,Vertex>();
 		directed = true;
+		edgeShape = "bendLine";
 		hideVertexLabels = false;
 		hideEdgeLabels = false;
 		lineNum = 1;
@@ -298,6 +312,8 @@ public class CxfNetwork extends BrowsableNetwork {
 		    			hideVertexLabels = true;
 		    		else if (field.equalsIgnoreCase("hide_edge_labels"))
 		    			hideEdgeLabels = true;
+		    		else if (field.equalsIgnoreCase("draw_straight_edges"))
+		    			edgeShape = "line";
 		    		else	
 		    		{
 		    			JOptionPane.showMessageDialog(null,"Unkown configuration line " + token.line,"cxf error", JOptionPane.WARNING_MESSAGE);
@@ -424,6 +440,9 @@ public class CxfNetwork extends BrowsableNetwork {
 					System.out.println("Malformed color in line " + token.line);
     			}
     		}
+    		else if (field.startsWith("root")) {
+    			token.isRoot = true;
+    		}
     		else if (field.startsWith("size"))
     			token.size = new Double(Double.parseDouble(field.substring(field.indexOf('{')+1,field.indexOf('}'))));
 		    else if (field.startsWith("shape"))
@@ -543,6 +562,8 @@ public class CxfNetwork extends BrowsableNetwork {
 		}
 		if (token.borderWidth != null)
 			v.setWidth(token.borderWidth);
+		if (token.isRoot)
+			v.setIsRoot(token.isRoot);
 		if (token.var1 != null)
 			v.setVar1(token.var1);
 		if (token.var2 != null)
@@ -580,36 +601,5 @@ public class CxfNetwork extends BrowsableNetwork {
 	public String getCxfName(){
 		return networkFileName;
 	}
-	
-	public static void main(String argv[]){
-		CxfNetwork network = new CxfNetwork();
-		network.load(new File("testGraph1.cxf"));
 		
-		for (Vertex v : network.getVertices())
-		{
-			System.out.print(v.getId() + " ");
-			System.out.print(v.getLabel() + " ");
-			System.out.print(v.getFillColor() + " ");
-			System.out.print(v.getColor() + " ");
-			System.out.print(v.getSize() + " ");
-			System.out.print(v.getShape() + " ");
-			System.out.print(v.getVar1() + " ");
-			System.out.print(v.getVar2() + "\n");
-		}
-		
-		for(Edge e : network.getEdges())
-		{
-			for (Vertex v : network.getIncidentVertices(e))
-				System.out.print(v.getId() + " ");
-			System.out.print(e.getLabel() + " ");
-			System.out.print(e.getWeight() + " ");
-			System.out.print(e.getWidth() + " ");
-			System.out.print(e.getShape() + " ");
-			System.out.print(e.getVar1() + " ");
-			System.out.print(e.getVar2() + "\n");
-		}
-		
-	}
-
-	
 }
