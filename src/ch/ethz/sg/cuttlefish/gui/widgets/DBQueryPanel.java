@@ -103,7 +103,7 @@ public class DBQueryPanel extends BrowserWidget {
 			executeButton.setEnabled(true);
 			executeButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
-					if(((DBNetwork)getNetwork()).isConnected() ) {
+					if( ((DBNetwork)getNetwork() ).isConnected() ) {
 					   ((DBNetwork) getNetwork()).nodeQuery(getQueryField().getText());
 					   	getBrowser().onNetworkChange();
 		                getBrowser().getNetworkLayout().reset();
