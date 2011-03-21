@@ -36,7 +36,7 @@ public class CuttlefishApplet extends JApplet {
 	 */
 	private CuttlefishPanel getNetworkBrowserPanel() {
 		if (networkBrowserPanel == null) {
-			networkBrowserPanel = new CuttlefishPanel(configFile);
+	//		networkBrowserPanel = new CuttlefishPanel(configFile);
 		}
 		return networkBrowserPanel;
 	}

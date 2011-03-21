@@ -1,7 +1,6 @@
 /*
   
-    Copyright (C) 2009  Markus Michael Geipel, David Garcia Becerra
-
+    Copyright (C) 2009  Markus Michael Geipel, David Garcia Becerra, Petar Tsankov
 	This file is part of Cuttlefish.
 	
  	Cuttlefish is free software: you can redistribute it and/or modify
@@ -26,6 +25,7 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import ch.ethz.sg.cuttlefish.gui.BrowserWidget;
 import ch.ethz.sg.cuttlefish.networks.DBNetwork;
@@ -103,12 +103,16 @@ public class DBQueryPanel extends BrowserWidget {
 			executeButton.setEnabled(true);
 			executeButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
-				   ((DBNetwork) getNetwork()).nodeQuery(getQueryField().getText());
-				   	getBrowser().onNetworkChange();
-	                getBrowser().getNetworkLayout().reset();
-	                getBrowser().repaintViewer();
-	                getBrowser().stopLayout();
-				}
+					if(((DBNetwork)getNetwork()).isConnected() ) {
+					   ((DBNetwork) getNetwork()).nodeQuery(getQueryField().getText());
+					   	getBrowser().onNetworkChange();
+		                getBrowser().getNetworkLayout().reset();
+		                getBrowser().repaintViewer();
+		                getBrowser().stopLayout();
+					} else {
+						JOptionPane.showMessageDialog(null, "You are not connected to a database");
+					}
+				}					
 			});
 		}
 		return executeButton;

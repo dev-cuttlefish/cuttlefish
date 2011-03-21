@@ -24,9 +24,18 @@ package ch.ethz.sg.cuttlefish.gui.widgets;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Collection;
+
 import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
+
+import com.sun.corba.se.spi.ior.MakeImmutable;
+
 import ch.ethz.sg.cuttlefish.gui.BrowserWidget;
 import ch.ethz.sg.cuttlefish.networks.DBNetwork;
 
@@ -42,7 +51,8 @@ public class DBConnectPanel extends BrowserWidget {
 	private JTextField urlField = null;
 	private JTextField userNameField = null;
 	private JPasswordField passwordField = null;
-	
+	private JComboBox nodeTables = null;
+	private JComboBox edgeTables = null;
 	/**
 	 * Basic constructor for the connect panel
 	 */
@@ -57,37 +67,104 @@ public class DBConnectPanel extends BrowserWidget {
 	 */
 	private void initialize() {
 		GridBagConstraints gridBagConstraints1 = new GridBagConstraints();
-		gridBagConstraints1.fill = GridBagConstraints.VERTICAL;
-		gridBagConstraints1.gridy = 1;
-		gridBagConstraints1.weightx = 1.0;
+		gridBagConstraints1.fill = GridBagConstraints.HORIZONTAL;
+		gridBagConstraints1.gridy = 0;
 		gridBagConstraints1.insets = new Insets(2, 2, 2, 2);
 		gridBagConstraints1.gridx = 0;
 		
-		GridBagConstraints gridBagConstraints = new GridBagConstraints();
-		gridBagConstraints.gridx = 0;
-		gridBagConstraints.insets = new Insets(2, 2, 2, 2);
-		gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
-		gridBagConstraints.gridy = 2;
-
 		GridBagConstraints gridBagConstraints2 = new GridBagConstraints();
 		gridBagConstraints2.gridx = 0;
 		gridBagConstraints2.insets = new Insets(2, 2, 2, 2);
 		gridBagConstraints2.fill = GridBagConstraints.HORIZONTAL;
-		gridBagConstraints2.gridy = 3;
+		gridBagConstraints2.gridy = 1;
 
 		GridBagConstraints gridBagConstraints3 = new GridBagConstraints();
 		gridBagConstraints3.gridx = 0;
 		gridBagConstraints3.insets = new Insets(2, 2, 2, 2);
 		gridBagConstraints3.fill = GridBagConstraints.HORIZONTAL;
-		gridBagConstraints3.gridy = 4;
+		gridBagConstraints3.gridy = 2;
 
+		GridBagConstraints gridBagConstraints4 = new GridBagConstraints();
+		gridBagConstraints4.gridx = 0;
+		gridBagConstraints4.insets = new Insets(2, 2, 2, 2);
+		gridBagConstraints4.fill = GridBagConstraints.HORIZONTAL;
+		gridBagConstraints4.gridy = 3;
+
+		GridBagConstraints gridBagConstraints5 = new GridBagConstraints();
+		gridBagConstraints5.gridx = 1;
+		gridBagConstraints5.insets = new Insets(2, 2, 2, 2);
+		gridBagConstraints5.fill = GridBagConstraints.HORIZONTAL;
+		gridBagConstraints5.gridy = 0;
+		
+		GridBagConstraints gridBagConstraints6 = new GridBagConstraints();
+		gridBagConstraints6.gridx = 1;
+		gridBagConstraints6.insets = new Insets(2, 2, 2, 2);
+		gridBagConstraints6.fill = GridBagConstraints.HORIZONTAL;
+		gridBagConstraints6.gridy = 1;
+		
+		GridBagConstraints gridBagConstraints7 = new GridBagConstraints();
+		gridBagConstraints7.gridx = 1;
+		gridBagConstraints7.insets = new Insets(2, 2, 2, 2);
+		gridBagConstraints7.fill = GridBagConstraints.HORIZONTAL;
+		gridBagConstraints7.gridy = 2;
+		
+		GridBagConstraints gridBagConstraints8 = new GridBagConstraints();
+		gridBagConstraints8.gridx = 1;
+		gridBagConstraints8.insets = new Insets(2, 2, 2, 2);
+		gridBagConstraints8.fill = GridBagConstraints.HORIZONTAL;
+		gridBagConstraints8.gridy = 3;
+		
 		this.setLayout(new GridBagLayout());
         this.add(getConnectButton(), gridBagConstraints1);
-        this.add(getUrlField(), gridBagConstraints);
-        this.add(getUserNameField(), gridBagConstraints2);
-        this.add(getPasswordField(), gridBagConstraints3);
+        this.add(getUrlField(), gridBagConstraints2);
+        this.add(getUserNameField(), gridBagConstraints3);
+        this.add(getPasswordField(), gridBagConstraints4);
+        
+        this.add(new JLabel("Nodes table"), gridBagConstraints5);
+        this.add(getNodeTables(), gridBagConstraints6);
+        this.add(new JLabel("Edges table"), gridBagConstraints7);
+        this.add(getEdgeTables(), gridBagConstraints8);
  	}
 
+	
+	/**
+	 * Getter for Node Tables
+	 * @return JComboBox
+	 */
+	private JComboBox getNodeTables() {
+		if( nodeTables == null ) {
+			nodeTables = new JComboBox();
+			nodeTables.addActionListener(
+				new ActionListener() {				
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						((DBNetwork)getNetwork()).setNodeTable((String)nodeTables.getSelectedItem());
+					}
+				}
+			);
+		}
+		return nodeTables;
+	}
+	
+	/**
+	 * Getter for Edge Tables
+	 * @return JComboBox
+	 */
+	private JComboBox getEdgeTables() {
+		if( edgeTables == null ) {
+			edgeTables = new JComboBox();
+			edgeTables.addActionListener(
+				new ActionListener() {				
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						((DBNetwork)getNetwork()).setEdgeTable((String)edgeTables.getSelectedItem());
+					}
+				}
+			);
+		}
+		return edgeTables;
+	}
+	
 	/**
 	 * Getter for the URL field
 	 * @return JTextField
@@ -152,8 +229,17 @@ public class DBConnectPanel extends BrowserWidget {
 			connectButton.setEnabled(true);
 			connectButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
+					DBNetwork dbNetwork = (DBNetwork) getNetwork();
 				   ((DBNetwork) getNetwork()).connect(getUrlField().getText(),
 						   getUserNameField().getText(), getPasswordField().getText());
+				   int itemCount = nodeTables.getItemCount();
+				   for(String nodeTable : dbNetwork.getNodeTables(dbNetwork.getSchemaName())) {
+					   nodeTables.insertItemAt(nodeTable, itemCount);
+				   }
+				   itemCount = edgeTables.getItemCount();
+				   for(String edgeTable : dbNetwork.getEdgeTables(dbNetwork.getSchemaName())) {
+					   edgeTables.insertItemAt(edgeTable, itemCount);
+				   }
 				}
 			});
 		}
