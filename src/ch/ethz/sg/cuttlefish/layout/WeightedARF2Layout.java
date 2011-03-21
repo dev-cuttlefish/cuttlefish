@@ -163,7 +163,7 @@ protected void initialize_local_vertex(Vertex v) {
 @SuppressWarnings("unchecked")
 public void advancePositions() {
    for (int i = 0; i < updatesPerFrame; i++) {
-    	for (Object o : getVertices()) {
+    	for (Object o : graph.getVertices()) {
             Vertex v = (Vertex) o;
             if(!isFixed(v)){
                 Point2D c = transform((V) v);
@@ -189,14 +189,14 @@ public void align(double x0, double y0){
 	double x = Double.MAX_VALUE;
 	double y = Double.MAX_VALUE;
 	
-	for (Object o : getVertices()) {
+	for (Object o : graph.getVertices()) {
         Vertex v = (Vertex) o;
         Point2D c = transform((V)v);
         x = Math.min(x, c.getX());
         y = Math.min(y, c.getY());
     }
 	
-	for (Object o : getVertices()) {
+	for (Object o : graph.getVertices()) {
         Vertex v = (Vertex) o;
         Point2D c = transform((V)v);
         c.setLocation(c.getX() - x + x0, c.getY() - y + y0 );
@@ -228,7 +228,7 @@ private Point2D getRandomPoint(int scale) {
 @SuppressWarnings("unchecked")
 private Point2D getForceforNode(Vertex node) {
 
-    double numNodes = getVertices().size();
+    double numNodes = graph.getVertices().size();
    // double aIndivisual = node.degree() > 1 ? 1+((a-1)/node.degree()) : a;
     	
     Point2D mDot = new Point2D.Double();
@@ -239,7 +239,7 @@ private Point2D getForceforNode(Vertex node) {
     	return mDot;
     }
 
-    Collection<V> vertices = getVertices();
+    Collection<V> vertices = graph.getVertices();
     Iterator<V> it = vertices.iterator();
     while (it.hasNext()) {
     	Vertex otherNode;
@@ -309,7 +309,7 @@ public Point2D assignPositionToVertex(Vertex vertex) {
 	
 	if (!visualizedVertices.contains(vertex))
 	{	
-		c = getRandomPoint(((int)Math.sqrt(getVertices().size())*50)+1);
+		c = getRandomPoint(((int)Math.sqrt(graph.getVertices().size())*50)+1);
 		locations.put((V)vertex, c);
 		visualizedVertices.add(vertex);
 		done = false;
@@ -332,7 +332,7 @@ public void updateVertices(){
 	Point2D c;
 	if(nvertices.size() > 0){
 		for (Vertex vertex2 : nvertices) {
-			c = getRandomPoint(((int)Math.sqrt(getVertices().size())*50)+1);
+			c = getRandomPoint(((int)Math.sqrt(graph.getVertices().size())*50)+1);
 			locations.put((V)vertex2, c);
 		}
 		done = false;
@@ -407,7 +407,7 @@ private void layout() {
 		}
 		advancePositions();
 	}*/
-		double threshold = (double)getVertices().size() * epsilon;
+		double threshold = (double)graph.getVertices().size() * epsilon;
 		int count = 0;
 		while(error > threshold && count < maxRelayouts){
 			if(verbose || !verbose){
@@ -531,7 +531,7 @@ public void initialize() {
 		for (Vertex v : (Collection<Vertex>) getGraph().getVertices())
 		{
 		// randomized initialization	
-			randomPoint = getRandomPoint(((int)Math.sqrt(getVertices().size())*50)+1);
+			randomPoint = getRandomPoint(((int)Math.sqrt(graph.getVertices().size())*50)+1);
 			locations.put((V) v, randomPoint);
 			visualizedVertices.add(v);
 		}
