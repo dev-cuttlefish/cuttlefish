@@ -1,6 +1,6 @@
 /*
 
-Copyright (C) 2009  Markus Michael Geipel, David Garcia Becerra
+Copyright (C) 2009  Markus Michael Geipel, David Garcia Becerra, Petar Tsankov
 
 This file is part of Cuttlefish.
 
@@ -24,7 +24,12 @@ package ch.ethz.sg.cuttlefish.networks;
 import java.awt.Color;
 import java.awt.HeadlessException;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import javax.swing.JOptionPane;
 import ch.ethz.sg.cuttlefish.misc.Edge;
 import ch.ethz.sg.cuttlefish.misc.Vertex;
@@ -42,13 +47,43 @@ public class DBNetwork extends BrowsableNetwork {
 	private HashMap<Integer,Vertex> hash = new HashMap<Integer,Vertex>();
 	private String nodeFilter = "";
 	private String edgeFilter = "";
+	private String schemaName = "";
 	private boolean directed = true;
 	private boolean initialized = false;
+	private Collection<String> edgeTableColumns;
+	private Collection<String> nodeTableColumns;
+
+	private String edgeTable = "";
+	private String nodeTable = "";
 	
 	/**
-	 * Void general constructor
+	 * DBNetwork constructor.
+	 * Initializes the edgeTableColumns and nodeTableColumns
 	 */
 	public DBNetwork() {
+		//  nodeTableColumns = new ArrayList<String>() {{ add("id"); add("label"); add("color");
+		//	add("borderColor"); add("size"); add("shape"); add("width"); add("hide");
+		//	add("var1"); add("var2"); add("x"); add("y"); add("fixed"); }};
+		nodeTableColumns = new ArrayList<String>() {{ add("id"); }};
+		//  edgeTableColumns = new ArrayList<String>() {{ add("id_origin"); add("id_dest"); add("weight"); 
+		//	add("label"); add("width"); add("color"); add("var1"); add("var2"); add("hide"); }};
+		edgeTableColumns = new ArrayList<String>() {{ add("id_origin"); add("id_dest"); }};
+	}
+	
+	/**
+	 * Setter for the node table
+	 * @param nodeTable
+	 */
+	public void setNodeTable(String nodeTable) {
+		this.nodeTable = nodeTable;
+	}
+	
+	/**
+	 * Setter for the edge table
+	 * @param edgeTable
+	 */
+	public void setEdgeTable(String edgeTable) {
+		this.edgeTable = edgeTable;
 	}
 	
 	/**
@@ -94,10 +129,72 @@ public class DBNetwork extends BrowsableNetwork {
 			hEx.printStackTrace();
 		}
 		getDirection();
-		
+		schemaName = dbName.substring(dbName.indexOf('/')+1);
+		getNodeTables(schemaName);
+		getEdgeTables(schemaName);
 		System.out.println("Successfully connected to: " + dbName);
 		
 	}
+	
+	/**
+	 * Public method that returns the database schema name of the connection.
+	 * @return - The schema name
+	 */
+	public String getSchemaName() {
+		return schemaName;
+	}
+	
+	/**
+	 * This private method reads the database meta-data and returns a list of
+	 * tables that matched the description provided in the columnNames collection.
+	 * @param schemaName - The database schema
+	 * @param columnNames - Collection of the column names
+	 * @return - Collection of tables that match the column names 
+	 */
+	private Collection<String> getTables(String schemaName, Collection<String> columnNames) {
+		String queryString = "select table_name, count(column_name) as matched_columns from information_schema.columns where table_schema='" + schemaName + "' and (";
+		int columnCount = 0;
+		for(String columnName : columnNames) {
+			columnCount++;
+			queryString += "column_name='" + columnName + "'";
+			if(columnCount < columnNames.size() )
+				queryString += " or ";
+		}
+		queryString += ") group by table_name having matched_columns=" + columnNames.size() + ";";		
+		ArrayList<String> tables = new ArrayList<String>();
+		try {
+			System.out.println(queryString);
+	      	Statement st;
+			st = conn.createStatement();
+			ResultSet rs = st.executeQuery(queryString);
+			while(rs.next())
+				tables.add(rs.getString("table_name") );
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return tables;
+	}
+	
+	/**
+	 * This method reads the database meta-data and returns a list of tables that match the
+	 * format of a Cuttlefish edge table.
+	 * @param schemaName - The database schema
+	 * @return - List of Cuttlefish edge tables
+	 */
+	public Collection<String> getEdgeTables(String schemaName) {
+		return getTables(schemaName, edgeTableColumns);
+	}
+	
+	/**
+	 * This method reads the database meta-data and returns a list of tables that match the
+	 * format of a Cuttlefish node table.
+	 * @param schemaName - The database schema
+	 * @return - List of Cuttlefish node tables
+	 */
+	public Collection<String> getNodeTables(String schemaName) {
+		return getTables(schemaName, nodeTableColumns);
+	}
+
 	
 	/**
 	 * Method that queries the database to determine whether the network should be directed or not
@@ -298,7 +395,7 @@ public class DBNetwork extends BrowsableNetwork {
 		{
 			try
 		    {
-			  String queryString = "select * from CFNodes where id = " + id + ";";
+			  String queryString = "select * from " + nodeTable + " where id = " + id + ";";
 			  queryString = applyFilter(queryString, nodeFilter);
 		      System.out.println(queryString);
 		      Statement st = conn.createStatement();
@@ -387,7 +484,7 @@ public class DBNetwork extends BrowsableNetwork {
 		{
 			try
 			  {
-				  String queryString = "select * from CFEdges where id_origin =" + v.getId() + ";";
+				  String queryString = "select * from " + edgeTable + " where id_origin =" + v.getId() + ";";
 				  queryString = applyFilter(queryString, edgeFilter);
 			      System.out.println(queryString);
 			      Statement st = conn.createStatement();
@@ -455,7 +552,7 @@ public class DBNetwork extends BrowsableNetwork {
 		{
 			try
 			  {
-				  String queryString = "select * from CFEdges where id_dest =" + v.getId() + ";";
+				  String queryString = "select * from " + edgeTable  + " where id_dest =" + v.getId() + ";";
 				  queryString = applyFilter(queryString, edgeFilter);
 			      System.out.println(queryString);
 			      Statement st = conn.createStatement();
@@ -530,7 +627,7 @@ public class DBNetwork extends BrowsableNetwork {
 		{
 			  try
 			  {
-				  String queryString = "select * from CFEdges where id_origin =" + v.getId() + ";";
+				  String queryString = "select * from " + edgeTable + " where id_origin =" + v.getId() + ";";
 				  queryString = applyFilter(queryString, edgeFilter);
 			      System.out.println(queryString);
 			      Statement st = conn.createStatement();
@@ -633,6 +730,19 @@ public class DBNetwork extends BrowsableNetwork {
 				removeVertex(neighbor);
 			}
 		}
+	}
+	
+	/**
+	 * This method checks if Cuttlefish is connected to a database
+	 * @throws SQLException 
+	 */
+	public boolean isConnected() {
+		try {
+			return conn != null && conn.isClosed();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return false;
 	}
 	
 }

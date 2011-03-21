@@ -30,10 +30,13 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.Paint;
+import java.awt.Point;
 import java.awt.Shape;
 import java.awt.Stroke;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.KeyEvent;
+import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.awt.Graphics2D;
 import java.io.File;
@@ -45,6 +48,10 @@ import java.util.Set;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
@@ -89,10 +96,14 @@ import edu.uci.ics.jung.algorithms.layout.TreeLayout;
 import edu.uci.ics.jung.graph.*;
 import edu.uci.ics.jung.graph.util.Context;
 
+import edu.uci.ics.jung.visualization.DefaultVisualizationModel;
 import edu.uci.ics.jung.visualization.RenderContext;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 import edu.uci.ics.jung.visualization.control.EditingModalGraphMouse;
+import edu.uci.ics.jung.visualization.control.LayoutScalingControl;
 import edu.uci.ics.jung.visualization.control.ModalGraphMouse;
+import edu.uci.ics.jung.visualization.control.ScalingControl;
+import edu.uci.ics.jung.visualization.control.ViewScalingControl;
 import edu.uci.ics.jung.visualization.decorators.EdgeShape;
 import edu.uci.ics.jung.visualization.picking.ShapePickSupport;
 
@@ -115,24 +126,28 @@ private JToggleButton jToggleButton = null;
 private LayoutPanel layoutPanel = null;
 
 private JPanel viewPanel = null;
+private JMenuBar menu = null;
 private EditingModalGraphMouse<Vertex,Edge> graphMouse;  
 
 /*Configuration*/
 private Hashtable<String, String> arguments = new Hashtable<String, String>();
 private Hashtable<String, BrowserWidget> widgetTable = new Hashtable<String, BrowserWidget>();
 private ArrayList<BrowserTab> tabArray = new ArrayList<BrowserTab>(); 
+private ArrayList<BrowserMenu> menuArray = new ArrayList<BrowserMenu>();
 private Document configuration; 
 
 /*Factories*/
 private VertexFactory vertexFactory = null;
 private EdgeFactory edgeFactory = null;
+
 	
 /**
  * This is the default constructor, initializes the view with the configuration read from the file
  * @param configfile open file with the configuration
  */
-public CuttlefishPanel(File configFile) {
+public CuttlefishPanel(File configFile, JMenuBar menu) {
 	super();
+	this.menu = menu;
 	initialize(configFile);
 	
 	
@@ -337,6 +352,38 @@ private void initialize(File configFile) {
         	    	  }
     	      }
        }
+              
+       NodeList menus = configuration.getElementsByTagName("Menu");
+       /* GUI WORK IN PROGRESS
+       for( int i=0; i<menus.getLength(); i++ ){
+ 	   	  Node menu = tabs.item(i);
+ 	      System.out.println( ""+i+": " + menu.getAttributes().getNamedItem("name").getNodeValue() );
+ 	      String className = menu.getAttributes().getNamedItem("class").getNodeValue();
+		  Class<?> clazz;
+ 	      try {
+ 	    	  clazz = Class.forName(className);
+ 	    	  BrowserMenu browserMenu= (BrowserMenu) clazz.newInstance();
+ 	    	  browserMenu.setName(menu.getAttributes().getNamedItem("name").getNodeValue());
+ 	 	      
+ 	    	  NodeList attributes = menu.getChildNodes();
+ 	    	  for(int j=0; j< attributes.getLength(); j++){
+ 	    		  Node attribute = attributes.item(j);
+ 	    		  if(attribute.getNodeName().equals("Attribute")){
+ 	    			  browserMenu.setArgument(attribute.getAttributes().getNamedItem("name").getNodeValue(), attribute.getAttributes().getNamedItem("name").getNodeValue());     	    		 
+ 	   	    	  }
+ 	   	    	  browserMenu.init();
+ 	   	      }
+ 	      } catch (ClassNotFoundException classEx) {
+ 	    	  JOptionPane.showMessageDialog(null,classEx.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
+ 	    	  System.err.println("Menu class in XML does not exist");
+ 	    	  classEx.printStackTrace();
+ 	      } catch (Exception instEx ) {
+ 	    	  JOptionPane.showMessageDialog(null,instEx.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
+ 	    	  System.err.println("Error instantiating menu");
+ 	    	  instEx.printStackTrace();
+ 	      } 
+       }
+       	*/
 	} catch (ParserConfigurationException parsEx) {
 		JOptionPane.showMessageDialog(null,parsEx.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
 		System.err.println("Parser syntax error in configuration XML");
@@ -350,7 +397,7 @@ private void initialize(File configFile) {
 		System.err.println("Input syntax error in configuration XML");
 		ioEx.printStackTrace();
 	}
-
+	
 	this.setNetwork(temp);
 
     
@@ -628,7 +675,7 @@ public void setLayout(String selectedLayout){
 	{
 		newLayout = new WeightedARF2Layout<Vertex,Edge>(getNetwork(), ((BrowsableNetwork)getNetwork()).isIncremental(),layout);
 		if (((WeightedARF2Layout<Vertex,Edge>)newLayout).getMaxUpdates() < getNetwork().getVertexCount())
-			((WeightedARF2Layout<Vertex,Edge>)newLayout).setMaxUpdates(getNetwork().getVertexCount());		
+			((WeightedARF2Layout<Vertex,Edge>)newLayout).setMaxUpdates(getNetwork().getVertexCount());			
 	}
 	if (selectedLayout.equalsIgnoreCase("SpringLayout"))
 	{	
@@ -676,13 +723,13 @@ public void setLayout(String selectedLayout){
 	}
 	layout = newLayout;
 	System.out.println("Set layout to " + layout.getClass());
-
+	
 	for (Vertex v : getNetwork().getVertices())
 		if (v.isFixed())
 			layout.lock(v,true);
 	
 	getVisualizationViewer().setGraphLayout(layout);
-	
+
 	getVisualizationViewer().repaint();
 }
 
