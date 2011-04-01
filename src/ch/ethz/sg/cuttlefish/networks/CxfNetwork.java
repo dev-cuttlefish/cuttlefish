@@ -520,13 +520,13 @@ public class CxfNetwork extends BrowsableNetwork {
     			token.var2 = field.substring(field.indexOf('{')+1,field.indexOf('}'));
     		else if (field.startsWith("hide"))
     			token.hide = true;
+    		else if (field.contains("]"))
+	    		token.commit = true;
     		else   		
     		{
     			JOptionPane.showMessageDialog(null,"Unknown edge property in line " + token.line,"cxf error", JOptionPane.WARNING_MESSAGE);
 				System.out.println("Unknown edge property in line " + (lineNum-1));
 			}  
-    		if (field.contains("]"))
-	    		token.commit = true;
     	}
 		return token;
 	}
