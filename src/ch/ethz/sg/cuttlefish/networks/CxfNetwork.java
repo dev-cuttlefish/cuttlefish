@@ -20,7 +20,7 @@
 */
 
 package ch.ethz.sg.cuttlefish.networks;
-
+import edu.uci.ics.jung.algorithms.layout.Layout;
 import java.awt.Color;
 import java.awt.Shape;
 import java.awt.geom.Point2D;
@@ -255,10 +255,11 @@ public class CxfNetwork extends BrowsableNetwork {
 				lineNum++;
 			}
 			token.line=lineNum-1;
-		    		  
+		 
 			ArrayList<String> lineFields = getFields(line);
-		  
-			line = br.readLine();
+		 
+			line = br.readLine();				
+			
 			String lineLc;
 			if (line != null)
 				lineLc = new String(line.toLowerCase());
@@ -289,6 +290,7 @@ public class CxfNetwork extends BrowsableNetwork {
 	    			field = field.substring(1);
 	    		token.freeze = true;
 	    	}
+
 	    	if (field.endsWith("]")) {
 //	    		field = it.next();	
 	    		field = field.substring(0,field.length()-1);
