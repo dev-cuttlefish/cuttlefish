@@ -24,6 +24,7 @@ import java.awt.geom.Point2D;
 
 import edu.uci.ics.jung.algorithms.layout.AbstractLayout;
 import edu.uci.ics.jung.algorithms.layout.Layout;
+import edu.uci.ics.jung.algorithms.util.IterativeContext;
 import edu.uci.ics.jung.graph.Graph;
 import ch.ethz.sg.cuttlefish.misc.Edge;
 import ch.ethz.sg.cuttlefish.misc.Vertex;
@@ -57,11 +58,12 @@ public class FixedLayout<V,E> extends AbstractLayout<Vertex,E> {
 	@Override
 	public void initialize() {		
 		for (Vertex vertex : getGraph().getVertices())
-		{
+		{			
 			if (vertex.getPosition() == null)
 				locations.put(vertex, new Point2D.Double(0.d,0.d));
-			else
+			else {
 				locations.put(vertex, vertex.getPosition());
+			}
 			
 		}
 	}

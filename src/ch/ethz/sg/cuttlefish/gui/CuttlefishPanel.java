@@ -600,6 +600,9 @@ public void onNetworkChange() {
 		((WeightedARF2Layout<Vertex,Edge>)layout).step();
 		((WeightedARF2Layout<Vertex,Edge>)layout).resetUpdates();
 	}
+	if (layout instanceof FixedLayout) {
+		((FixedLayout<Vertex, Edge>)layout).update();
+	}
 	getVisualizationViewer().repaint();
 
 }
