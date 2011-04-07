@@ -65,7 +65,7 @@ public LayoutPanel(CuttlefishPanel parentPanel){
  */
 private JComboBox getLayoutComboBox() {
 	
-	String[] layoutNames = {"ARFLayout", "FixedLayout", "WeightedARFLayout", "SpringLayout", "Kamada-Kawai", 
+	String[] layoutNames = {"ARFLayout", "KCore", "Fixed", "WeightedARFLayout", "SpringLayout", "Kamada-Kawai", 
 			"Fruchterman-Reingold", "ISOMLayout", "CircleLayout", "TreeLayout", "BaloonLayout", "RadialTreeLayout"};
 	/*This array should keep the names of the layouts that are used to define the layout
 	in the method setLayout*/

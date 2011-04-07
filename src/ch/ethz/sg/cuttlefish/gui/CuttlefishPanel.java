@@ -72,6 +72,7 @@ import org.xml.sax.SAXException;
 
 import ch.ethz.sg.cuttlefish.layout.ARF2Layout;
 import ch.ethz.sg.cuttlefish.layout.FixedLayout;
+import ch.ethz.sg.cuttlefish.layout.KCoreLayout;
 import ch.ethz.sg.cuttlefish.layout.WeightedARF2Layout;
 import ch.ethz.sg.cuttlefish.misc.DelegateForest;
 import ch.ethz.sg.cuttlefish.misc.Edge;
@@ -704,8 +705,10 @@ public void setLayout(String selectedLayout){
 		newLayout = new CircleLayout<Vertex, Edge>(getNetwork());
 		((CircleLayout)newLayout).setRadius(getNetwork().getVertexCount() * 10);
 	}
-	if (selectedLayout.equalsIgnoreCase("FixedLayout"))
+	if (selectedLayout.equalsIgnoreCase("Fixed"))
 		newLayout = new FixedLayout<Vertex, Edge>(getNetwork(),layout);
+	if (selectedLayout.equalsIgnoreCase("KCore"))
+		newLayout = new KCoreLayout<Vertex, Edge>(getNetwork(),layout);
 	if( selectedLayout.equalsIgnoreCase("TreeLayout"))
 	{
 		Forest<Vertex, Edge> forest = new DelegateForest<Vertex, Edge>();
