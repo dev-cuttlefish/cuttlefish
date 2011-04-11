@@ -21,7 +21,7 @@ import edu.uci.ics.jung.algorithms.util.IterativeContext;
 import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.graph.SparseGraph;
 
-public class KCoreLayout<V, E>  extends AbstractLayout<V,E> {
+public class KCoreSimpleLayout<V, E>  extends AbstractLayout<V,E> {
 
 	private static final double EPSILON = 0.18;
 	private static final double RHO_SCALE = 1;
@@ -30,9 +30,8 @@ public class KCoreLayout<V, E>  extends AbstractLayout<V,E> {
 	private Map<V, Double> rho;
 	private Map<V, Double> alpha;
 	private int cmax;
-	private double cmaxRadius = Double.MAX_VALUE;
 	
-	public KCoreLayout(Graph<V, E> graph, Layout<Vertex,Edge> layout) {
+	public KCoreSimpleLayout(Graph<V, E> graph, Layout<Vertex,Edge> layout) {
 		super(graph);
 		initialize();
 	}
@@ -44,9 +43,6 @@ public class KCoreLayout<V, E>  extends AbstractLayout<V,E> {
 		alpha = new HashMap<V, Double>();
 
 		computeGraphCoreness(getGraph());
-		for(V v : getGraph().getVertices()){
-			System.out.println("Vertex " + ((Vertex)v).getId() + " with coreness " + coreness.get(v));
-		}
 		cmax = -1;
 		for(V v : getGraph().getVertices() ) {			
 			if(cmax < coreness.get(v))
@@ -56,16 +52,17 @@ public class KCoreLayout<V, E>  extends AbstractLayout<V,E> {
 		computeAlpha(getGraph(), cmax);
 		for(V v : getGraph().getVertices()) {
 			double r;
-			if(rho.get(v).equals(java.lang.Double.NaN) || rho.get(v) == 0d) {	
-				System.out.println("Cmax radius " + cmaxRadius);
-				r = (new Random()).nextDouble()/2 * cmaxRadius;
-				System.out.println("Vertex v cmax radius " + r);
+			if(rho.get(v).equals(java.lang.Double.NaN)) {
+				Random rand = new Random();
+				double gaussian = rand.nextGaussian();
+				r = gaussian * RHO_SCALE /2 ;
 			} else {
 				r = rho.get(v);
-				System.out.println("Vertex v radius " + r);
 			}
 			double x = r*Math.cos(alpha.get(v));
 			double y = r*Math.sin(alpha.get(v));
+			System.out.println("Vertex " + ((Vertex)v).getId() + " x " +  x);
+			System.out.println("Vertex " + ((Vertex)v).getId() + " y " + y );
 			locations.put(v, new Point2D.Double(x,y));
 		}
 	}
@@ -80,7 +77,7 @@ public class KCoreLayout<V, E>  extends AbstractLayout<V,E> {
 		List<V> neighborsWithHigherCoreness = new ArrayList<V>();
 		for( E e : g.getIncidentEdges(v) ) {					
 			V n = g.getOpposite(v, e);
-			if( coreness.get(n) >= coreness.get(v) ) {
+			if( coreness.get(n) > coreness.get(v) ) {
 				neighborsWithHigherCoreness.add(n);
 			}
 				
@@ -96,8 +93,6 @@ public class KCoreLayout<V, E>  extends AbstractLayout<V,E> {
 			}
 			double r = (1 - EPSILON) * (cmax - coreness.get(v) ) + 
 				(EPSILON / getNeighborsWithHigherCoreness(g, v).size() ) * sum;
-			if(r > 0 && cmaxRadius > r)
-				cmaxRadius = r;
 			rho.put(v, r*RHO_SCALE);
 		}
 	}
@@ -148,6 +143,8 @@ public class KCoreLayout<V, E>  extends AbstractLayout<V,E> {
 				}
 				assert(ci != -1);
 				for(int clusterId = 0; clusterId < ci; ++clusterId) {
+					System.out.println(clusters.get(clusterId).size());
+					System.out.println(shell.size());
 					a += (double)clusters.get(clusterId).size() / (double)shell.size();
 				}
 				a = a * 2 * Math.PI;
@@ -177,20 +174,20 @@ public class KCoreLayout<V, E>  extends AbstractLayout<V,E> {
 					minDegreeV = v;					
 				}
 			}
-			computeCore(degree, degree.get(minDegreeV));
+			computeCore(degree, getGraph().degree(minDegreeV));
 		}	
 	}
 	
 	private void computeCore(Map<V, Integer> degree, int core) {
-		System.out.println("Computing core: " + core);
-		Color c = new Color(new Random().nextInt());
+		System.out.println("Core: " + core);
 		List<V> shell = new ArrayList<V>();
 		Random r = new Random();
+		Color shellColor = new Color(r.nextFloat(), r.nextFloat(), r.nextFloat());
 		for(V v : degree.keySet() ) {
 			if(degree.get(v) <= core) {
 				coreness.put(v, core);
 				shell.add(v);
-				((Vertex)v).setFillColor(c);
+				((Vertex)v).setFillColor(shellColor);
 			}
 		}		
 		for(V v : shell) {
@@ -198,7 +195,6 @@ public class KCoreLayout<V, E>  extends AbstractLayout<V,E> {
 			for(E e : getGraph().getIncidentEdges(v) ) {
 				V adjacentV = getGraph().getOpposite(v, e);
 				if(degree.containsKey(adjacentV) ) {
-					System.out.println("Reducing degree for vertex " + ((Vertex)adjacentV).getId());
 					int newDegree = degree.get(adjacentV) - 1;
 					degree.remove(adjacentV);
 					degree.put(adjacentV, newDegree);
