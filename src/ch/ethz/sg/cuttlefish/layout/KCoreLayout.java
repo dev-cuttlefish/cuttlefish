@@ -24,7 +24,7 @@ import edu.uci.ics.jung.graph.SparseGraph;
 public class KCoreLayout<V, E>  extends AbstractLayout<V,E> {
 
 	private static final double EPSILON = 0.18;
-	private static final double RHO_SCALE = 1;
+	private static final double RHO_SCALE = 20;
 	
 	private Map<V, Integer> coreness;
 	private Map<V, Double> rho;
@@ -44,29 +44,37 @@ public class KCoreLayout<V, E>  extends AbstractLayout<V,E> {
 		alpha = new HashMap<V, Double>();
 
 		computeGraphCoreness(getGraph());
-		for(V v : getGraph().getVertices()){
-			System.out.println("Vertex " + ((Vertex)v).getId() + " with coreness " + coreness.get(v));
-		}
 		cmax = -1;
+		int maxDegree = -1;
+		double maxSize = -1;
 		for(V v : getGraph().getVertices() ) {			
 			if(cmax < coreness.get(v))
 				cmax = coreness.get(v);
+			if(getGraph().degree(v) > maxDegree)
+				maxDegree = getGraph().degree(v);
+			if(((Vertex)v).getSize() > maxSize)
+				maxSize = ((Vertex)v).getSize(); 
 		}
 		computeRho(getGraph(), cmax);		
 		computeAlpha(getGraph(), cmax);
 		for(V v : getGraph().getVertices()) {
 			double r;
 			if(rho.get(v).equals(java.lang.Double.NaN) || rho.get(v) == 0d) {	
-				System.out.println("Cmax radius " + cmaxRadius);
 				r = (new Random()).nextDouble()/2 * cmaxRadius;
-				System.out.println("Vertex v cmax radius " + r);
 			} else {
 				r = rho.get(v);
-				System.out.println("Vertex v radius " + r);
 			}
 			double x = r*Math.cos(alpha.get(v));
 			double y = r*Math.sin(alpha.get(v));
-			locations.put(v, new Point2D.Double(x,y));
+			Vertex vertex = (Vertex)v;			
+			double origDegree = Math.log(getGraph().degree(v));
+			if(origDegree < 1)
+				origDegree = 1;
+			vertex.setSize(maxSize * origDegree / Math.log(maxDegree) );
+			float hue = (float)coreness.get(v)/(float)cmax;
+			System.out.println("Coreness: " + coreness.get(v) + " cmax " + cmax + " hue " + hue);
+			vertex.setFillColor(Color.getHSBColor(hue, 1f, 1f));
+			locations.put(v, new Point2D.Double(x*RHO_SCALE,y*RHO_SCALE));
 		}
 	}
 
@@ -98,7 +106,7 @@ public class KCoreLayout<V, E>  extends AbstractLayout<V,E> {
 				(EPSILON / getNeighborsWithHigherCoreness(g, v).size() ) * sum;
 			if(r > 0 && cmaxRadius > r)
 				cmaxRadius = r;
-			rho.put(v, r*RHO_SCALE);
+			rho.put(v, r);
 		}
 	}
 	
@@ -198,7 +206,6 @@ public class KCoreLayout<V, E>  extends AbstractLayout<V,E> {
 			for(E e : getGraph().getIncidentEdges(v) ) {
 				V adjacentV = getGraph().getOpposite(v, e);
 				if(degree.containsKey(adjacentV) ) {
-					System.out.println("Reducing degree for vertex " + ((Vertex)adjacentV).getId());
 					int newDegree = degree.get(adjacentV) - 1;
 					degree.remove(adjacentV);
 					degree.put(adjacentV, newDegree);
@@ -206,5 +213,6 @@ public class KCoreLayout<V, E>  extends AbstractLayout<V,E> {
 			}
 		}		
 	}
+
 
 }
