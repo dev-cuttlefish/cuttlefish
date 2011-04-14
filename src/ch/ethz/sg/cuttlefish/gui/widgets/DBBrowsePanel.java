@@ -25,6 +25,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import javax.swing.JButton;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import ch.ethz.sg.cuttlefish.gui.BrowserWidget;
 import ch.ethz.sg.cuttlefish.networks.DBNetwork;
@@ -124,18 +125,22 @@ public class DBBrowsePanel extends BrowserWidget {
 			exploreButton.setEnabled(true);
 			exploreButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
-					boolean forward = true;
-					int distance = Integer.parseInt(distanceField.getText());
-					if (distance < 0) // negative distance input means backwards exploration
-					{
-						forward = false;
-						distance = (-1) * distance;		//extendNeighborhood gets abs value of distance
+					if ( ((DBNetwork)getNetwork() ).isConnected() ) {
+						boolean forward = true;
+						int distance = Integer.parseInt(distanceField.getText());
+						if (distance < 0) // negative distance input means backwards exploration
+						{
+							forward = false;
+							distance = (-1) * distance;		//extendNeighborhood gets abs value of distance
+						}
+					   ((DBNetwork) getNetwork()).extendNeighborhood(Integer.parseInt(idField.getText()), distance, forward);
+						getBrowser().onNetworkChange();
+		                getBrowser().getNetworkLayout().reset();
+		                getBrowser().repaintViewer();
+		                getBrowser().stopLayout();
+					} else {
+						JOptionPane.showMessageDialog(null, "You are not connected to a database");
 					}
-				   ((DBNetwork) getNetwork()).extendNeighborhood(Integer.parseInt(idField.getText()), distance, forward);
-					getBrowser().onNetworkChange();
-	                getBrowser().getNetworkLayout().reset();
-	                getBrowser().repaintViewer();
-	                getBrowser().stopLayout();
 				}
 			});
 		}

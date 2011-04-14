@@ -20,6 +20,7 @@
 
 package ch.ethz.sg.cuttlefish.gui.widgets;
 
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -84,8 +85,9 @@ public class DBQueryPanel extends BrowserWidget {
 	 */
 	private JTextField getQueryField() {
 		if (queryField == null)
-		{
-			queryField = new JTextField("                          SQL query                          ");
+		{			
+			queryField = new JTextField("Type your SQL query here");
+			queryField.setPreferredSize(new Dimension(300, 25));
 			queryField.setToolTipText("SQL query");
 		}
 		return queryField;
