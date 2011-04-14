@@ -268,6 +268,7 @@ public class TikzExporter {
 		Color curColor = null;
 		double curWidth = java.lang.Double.MAX_VALUE;
 		for(Edge edge : edgeList) {
+			System.out.println("Edge: " + network.getEdgeType(edge) + ' ' + edge.getColor().toString() + ' ' + edge.getWidth() );
 			EdgeType edgeType = network.getEdgeType(edge);
 			Color color = edge.getColor();
 			double width = edge.getWidth();
@@ -277,9 +278,10 @@ public class TikzExporter {
 				curEdgeType = edgeType;
 				curColor = color;
 				curWidth = width;
-				p.print("\\tikzset{EdgeStyle/.append style = {");
+				p.print("\\tikzset{EdgeStyle/.style = {");
 				if(curEdgeType == EdgeType.DIRECTED) p.print("->, ");
 				else p.print("-, ");
+				p.print("shorten >=1pt, >=stealth, bend right=10, ");
 				p.print("line width=" + Utils.ensureDecimal(curWidth*WIDTHFACTOR) );
 				if(curColor != null)
 					p.println(", color=" + colors.get(curColor) + "}}");
