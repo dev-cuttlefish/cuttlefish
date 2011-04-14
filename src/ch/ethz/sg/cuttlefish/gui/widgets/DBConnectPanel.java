@@ -232,11 +232,13 @@ public class DBConnectPanel extends BrowserWidget {
 					DBNetwork dbNetwork = (DBNetwork) getNetwork();
 				   ((DBNetwork) getNetwork()).connect(getUrlField().getText(),
 						   getUserNameField().getText(), getPasswordField().getText());
-				   int itemCount = nodeTables.getItemCount();
+				   int itemCount = 0;
+				   nodeTables.removeAllItems();
 				   for(String nodeTable : dbNetwork.getNodeTables(dbNetwork.getSchemaName())) {
 					   nodeTables.insertItemAt(nodeTable, itemCount);
 				   }
-				   itemCount = edgeTables.getItemCount();
+				   itemCount = 0;
+				   edgeTables.removeAllItems();
 				   for(String edgeTable : dbNetwork.getEdgeTables(dbNetwork.getSchemaName())) {
 					   edgeTables.insertItemAt(edgeTable, itemCount);
 				   }

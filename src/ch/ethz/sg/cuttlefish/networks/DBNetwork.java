@@ -738,7 +738,7 @@ public class DBNetwork extends BrowsableNetwork {
 	 */
 	public boolean isConnected() {
 		try {
-			return conn != null && conn.isClosed();
+			return conn != null && !conn.isClosed();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
