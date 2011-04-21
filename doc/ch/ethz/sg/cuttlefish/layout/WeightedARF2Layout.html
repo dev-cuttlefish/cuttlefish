@@ -1,18 +1,1072 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE html PUBLIC "-//gnu.org///DTD XHTML 1.1 plus Target 1.0//EN" "../../../../../resources/xhtml11-target10.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head><title>WeightedARF2Layout</title><script src="../../../../../resources/gjdoc.js" type="text/javascript"><!-- this comment required for konqueror 3.2.2 --></script><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="generator" content="GNU Gjdoc Standard Doclet"/><meta name="keywords" content="ch.ethz.sg.cuttlefish.layout.WeightedARF2Layout class"/><meta name="keywords" content="FIXED"/><meta name="keywords" content="initialize_local_vertex()"/><meta name="keywords" content="isIncremental()"/><meta name="keywords" content="incrementsAreDone()"/><meta name="keywords" content="getDeltaT()"/><meta name="keywords" content="setDeltaT()"/><meta name="keywords" content="getAttraction()"/><meta name="keywords" content="setAttraction()"/><meta name="keywords" content="getEpsilon()"/><meta name="keywords" content="setEpsilon()"/><meta name="keywords" content="getA()"/><meta name="keywords" content="setA()"/><meta name="keywords" content="getForceCutoff()"/><meta name="keywords" content="setForceCutoff()"/><meta name="keywords" content="getMaxRelayouts()"/><meta name="keywords" content="setMaxRelayouts()"/><meta name="keywords" content="getB()"/><meta name="keywords" content="setB()"/><meta name="keywords" content="getUpdatesPerFrame()"/><meta name="keywords" content="setUpdatesPerFrame()"/><meta name="keywords" content="isVerbose()"/><meta name="keywords" content="setVerbose()"/><meta name="keywords" content="setMaxUpdates()"/><meta name="keywords" content="getMaxUpdates()"/><meta name="keywords" content="resetUpdates()"/><meta name="keywords" content="void reset()"/><meta name="keywords" content="boolean done()"/><meta name="keywords" content="void step()"/><link rel="stylesheet" type="text/css" href="../../../../../resources/gjdochtml-clean-layout.css" title="GNU Clean"/><link rel="stylesheet" type="text/css" href="../../../../../resources/gjdochtml-clean-color1.css" title="GNU Clean"/></head><body class="content class" onload="if(parent.contentPageLoaded)parent.contentPageLoaded(document.title)"><table class="navbar div top"><tr><td class="navbar div top"><div class="navbar div top"><span class="navbar item enabled"><a href="../../../../../overview-summary.html">Overview</a></span> <span class="navbar item enabled"><a href="package-summary.html">Package</a></span> <span class="navbar item active">Class</span> <span class="navbar item enabled"><a href="WeightedARF2Layout-uses.html">Use</a></span> <span class="navbar item enabled"><a href="tree.html">Tree</a></span> <span class="navbar item enabled"><a href="../../../../../alphaindex-1.html">Index</a></span> <span class="navbar item enabled"><a href="../../../../../deprecated.html">Deprecated</a></span> <span class="navbar item enabled"><a href="../../../../../about.html">About</a></span></div></td></tr><tr><td class="navi"><a href="../../../../../ch/ethz/sg/cuttlefish/layout/FixedLayout.html">Prev Class</a> | Next Class</td><td class="navi"><a href="../../../../../index.html" title="Show in a frameset" target="_top">Frames</a> | <a href="WeightedARF2Layout.html" title="Show without frames" target="_top">No Frames</a> </td></tr><tr><td class="navi">Summary: Nested | <a href="#summary-fields">Field</a> | <a href="#summary-methods">Method</a> | <a href="#summary-constructors">Constr</a></td><td class="navi">Detail: Nested | <a href="#detail-fields">Field</a> | <a href="#detail-methods">Method</a> | <a href="#detail-constructors">Constr</a></td></tr></table><div class="class title outer"><h3 class="class title-package">ch.ethz.sg.cuttlefish.layout</h3><h1 class="class title-class">Class WeightedARF2Layout&lt;V,E&gt;</h1></div><div class="class inheritance-tree"><ul class="inheritance 0"><li class="inheritance 0"><code>AbstractLayout</code></li><li><ul class="inheritance 1"><li class="inheritance 1"><code>ch.ethz.sg.cuttlefish.layout.WeightedARF2Layout&lt;V,E&gt;</code></li><li></li></ul></li></ul></div><dl class="class knownimplementing"><dt class="header"><b>Implemented Interfaces:</b></dt><dd class="item">IterativeContext</dd></dl><hr/><div class="class synopsis outer"><div class="class synopsis declaration"><code>public class <b class="class synopsis name">WeightedARF2Layout&lt;V,E&gt;</b></code></div><div class="class synopsis superclass"><code>extends AbstractLayout</code></div><div class="class synopsis implements"><code>implements IterativeContext</code></div></div><hr/><div class="class description"></div><div class="taglet"><dl class="tag list"><dt class="tag section header"><b>Author:</b></dt><dd class="tag item">markus michael geipel
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!--NewPage-->
+<HTML>
+<HEAD>
+<!-- Generated by javadoc (build 1.6.0_24) on Thu Apr 21 12:02:59 CEST 2011 -->
+<TITLE>
+WeightedARF2Layout
+</TITLE>
+
+<META NAME="date" CONTENT="2011-04-21">
+
+<LINK REL ="stylesheet" TYPE="text/css" HREF="../../../../../stylesheet.css" TITLE="Style">
+
+<SCRIPT type="text/javascript">
+function windowTitle()
+{
+    if (location.href.indexOf('is-external=true') == -1) {
+        parent.document.title="WeightedARF2Layout";
+    }
+}
+</SCRIPT>
+<NOSCRIPT>
+</NOSCRIPT>
+
+</HEAD>
+
+<BODY BGCOLOR="white" onload="windowTitle();">
+<HR>
 
 
-An implementation of the ARF Layouter. 
-See http://www.sg.ethz.ch/research/ for details</dd></dl></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><a name="summary-fields" id="summary-fields"/><dl class="table container"><dd><table class="class summary" border="1" width="100%"><tr class="table header"><td colspan="2"><h2 class="table header">Field Summary</h2></td></tr><tr><td class="left" valign="top"><code class="synopsis">static String</code></td><td class="right"><dl class="list"><dt class="synopsis"><code><a href="#FIXED">FIXED</a></code></dt><dd class="description"> A marker used to tag nodes that shall not be moved
-</dd></dl></td></tr></table></dd></dl><a name="summary-constructors" id="summary-constructors"/><dl class="table container"><dd><table class="class summary" border="1" width="100%"><tr class="table header"><td colspan="2"><h2 class="table header">Constructor Summary</h2></td></tr><tr><td class="right"><dl class="list"><dt class="synopsis"><code><a href="#WeightedARF2Layout(Graph<V,E>)">WeightedARF2Layout</a>(Graph<V&nbsp;, E>&nbsp;g)</code></dt><dd class="description"> Genrates a new Layout for graph g
-</dd></dl></td></tr><tr><td class="right"><dl class="list"><dt class="synopsis"><code><a href="#WeightedARF2Layout(Graph<V,E>,boolean)">WeightedARF2Layout</a>(Graph<V&nbsp;, E>&nbsp;g, boolean&nbsp;incremental)</code></dt><dd class="description"> Generates a new Layout for graph g.</dd></dl></td></tr><tr><td class="right"><dl class="list"><dt class="synopsis"><code><a href="#WeightedARF2Layout(Graph<V,E>,boolean,Layout<Vertex,Edge>)">WeightedARF2Layout</a>(Graph<V&nbsp;, E>&nbsp;g, boolean&nbsp;incremental, Layout<Vertex&nbsp;, Edge>&nbsp;init)</code></dt></dl></td></tr></table></dd></dl><a name="summary-methods" id="summary-methods"/><dl class="table container"><dd><table class="class summary" border="1" width="100%"><tr class="table header"><td colspan="2"><h2 class="table header">Method Summary</h2></td></tr><tr><td class="left" valign="top"><code class="synopsis"> @Override</code></td><td class="right"><dl class="list"><dt class="synopsis"><code><a href="#boolean done()">boolean done</a>()</code></dt></dl></td></tr><tr><td class="left" valign="top"><code class="synopsis"> double</code></td><td class="right"><dl class="list"><dt class="synopsis"><code><a href="#getA()">getA</a>()</code></dt></dl></td></tr><tr><td class="left" valign="top"><code class="synopsis"> double</code></td><td class="right"><dl class="list"><dt class="synopsis"><code><a href="#getAttraction()">getAttraction</a>()</code></dt></dl></td></tr><tr><td class="left" valign="top"><code class="synopsis"> double</code></td><td class="right"><dl class="list"><dt class="synopsis"><code><a href="#getB()">getB</a>()</code></dt></dl></td></tr><tr><td class="left" valign="top"><code class="synopsis"> double</code></td><td class="right"><dl class="list"><dt class="synopsis"><code><a href="#getDeltaT()">getDeltaT</a>()</code></dt></dl></td></tr><tr><td class="left" valign="top"><code class="synopsis"> double</code></td><td class="right"><dl class="list"><dt class="synopsis"><code><a href="#getEpsilon()">getEpsilon</a>()</code></dt></dl></td></tr><tr><td class="left" valign="top"><code class="synopsis"> double</code></td><td class="right"><dl class="list"><dt class="synopsis"><code><a href="#getForceCutoff()">getForceCutoff</a>()</code></dt></dl></td></tr><tr><td class="left" valign="top"><code class="synopsis"> int</code></td><td class="right"><dl class="list"><dt class="synopsis"><code><a href="#getMaxRelayouts()">getMaxRelayouts</a>()</code></dt></dl></td></tr><tr><td class="left" valign="top"><code class="synopsis"> int</code></td><td class="right"><dl class="list"><dt class="synopsis"><code><a href="#getMaxUpdates()">getMaxUpdates</a>()</code></dt></dl></td></tr><tr><td class="left" valign="top"><code class="synopsis"> int</code></td><td class="right"><dl class="list"><dt class="synopsis"><code><a href="#getUpdatesPerFrame()">getUpdatesPerFrame</a>()</code></dt></dl></td></tr><tr><td class="left" valign="top"><code class="synopsis"> boolean</code></td><td class="right"><dl class="list"><dt class="synopsis"><code><a href="#incrementsAreDone()">incrementsAreDone</a>()</code></dt></dl></td></tr><tr><td class="left" valign="top"><code class="synopsis">protected  void</code></td><td class="right"><dl class="list"><dt class="synopsis"><code><a href="#initialize_local_vertex(ch.ethz.sg.cuttlefish.misc.Vertex)">initialize_local_vertex</a>(<a href="../../../../../ch/ethz/sg/cuttlefish/misc/Vertex.html" title="Class in ch.ethz.sg.cuttlefish.misc">Vertex</a>&nbsp;v)</code></dt></dl></td></tr><tr><td class="left" valign="top"><code class="synopsis"> boolean</code></td><td class="right"><dl class="list"><dt class="synopsis"><code><a href="#isIncremental()">isIncremental</a>()</code></dt></dl></td></tr><tr><td class="left" valign="top"><code class="synopsis"> boolean</code></td><td class="right"><dl class="list"><dt class="synopsis"><code><a href="#isVerbose()">isVerbose</a>()</code></dt></dl></td></tr><tr><td class="left" valign="top"><code class="synopsis"> void</code></td><td class="right"><dl class="list"><dt class="synopsis"><code><a href="#resetUpdates()">resetUpdates</a>()</code></dt></dl></td></tr><tr><td class="left" valign="top"><code class="synopsis"> void</code></td><td class="right"><dl class="list"><dt class="synopsis"><code><a href="#setA(double)">setA</a>(double&nbsp;a)</code></dt></dl></td></tr><tr><td class="left" valign="top"><code class="synopsis"> void</code></td><td class="right"><dl class="list"><dt class="synopsis"><code><a href="#setAttraction(double)">setAttraction</a>(double&nbsp;attraction)</code></dt></dl></td></tr><tr><td class="left" valign="top"><code class="synopsis"> void</code></td><td class="right"><dl class="list"><dt class="synopsis"><code><a href="#setB(double)">setB</a>(double&nbsp;b)</code></dt></dl></td></tr><tr><td class="left" valign="top"><code class="synopsis"> void</code></td><td class="right"><dl class="list"><dt class="synopsis"><code><a href="#setDeltaT(double)">setDeltaT</a>(double&nbsp;alpha)</code></dt></dl></td></tr><tr><td class="left" valign="top"><code class="synopsis"> void</code></td><td class="right"><dl class="list"><dt class="synopsis"><code><a href="#setEpsilon(double)">setEpsilon</a>(double&nbsp;epsilon)</code></dt></dl></td></tr><tr><td class="left" valign="top"><code class="synopsis"> void</code></td><td class="right"><dl class="list"><dt class="synopsis"><code><a href="#setForceCutoff(double)">setForceCutoff</a>(double&nbsp;forceCutoff)</code></dt></dl></td></tr><tr><td class="left" valign="top"><code class="synopsis"> void</code></td><td class="right"><dl class="list"><dt class="synopsis"><code><a href="#setMaxRelayouts(int)">setMaxRelayouts</a>(int&nbsp;maxRelayouts)</code></dt></dl></td></tr><tr><td class="left" valign="top"><code class="synopsis"> void</code></td><td class="right"><dl class="list"><dt class="synopsis"><code><a href="#setMaxUpdates(int)">setMaxUpdates</a>(int&nbsp;maxUpdates)</code></dt></dl></td></tr><tr><td class="left" valign="top"><code class="synopsis"> void</code></td><td class="right"><dl class="list"><dt class="synopsis"><code><a href="#setUpdatesPerFrame(int)">setUpdatesPerFrame</a>(int&nbsp;updatesPerFrame)</code></dt></dl></td></tr><tr><td class="left" valign="top"><code class="synopsis"> void</code></td><td class="right"><dl class="list"><dt class="synopsis"><code><a href="#setVerbose(boolean)">setVerbose</a>(boolean&nbsp;verbose)</code></dt></dl></td></tr><tr><td class="left" valign="top"><code class="synopsis"> @Override</code></td><td class="right"><dl class="list"><dt class="synopsis"><code><a href="#void reset()">void reset</a>()</code></dt></dl></td></tr><tr><td class="left" valign="top"><code class="synopsis"> @Override</code></td><td class="right"><dl class="list"><dt class="synopsis"><code><a href="#void step()">void step</a>()</code></dt></dl></td></tr></table></dd></dl><a name="detail-fields" id="detail-fields"/><h2 class="section header">Field Details</h2><div class="section"><a name="FIXED" id="FIXED"/><div class="member detail outer"><h3 class="member detail name">FIXED</h3><pre class="member detail synopsis">public static final String FIXED</pre><blockquote class="member detail name"><div class="member detail description"> A marker used to tag nodes that shall not be moved
-</div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div></blockquote></div></div><a name="detail-constructors" id="detail-constructors"/><h2 class="section header">Constructor Details</h2><div class="section"><a name="WeightedARF2Layout(Graph<V,E>)" id="WeightedARF2Layout(Graph<V,E>)"/><div class="member detail outer"><h3 class="member detail name">WeightedARF2Layout</h3><pre class="member detail synopsis">public WeightedARF2Layout(Graph<V ,
-                          E> g)</pre><blockquote class="member detail name"><div class="member detail description"> Genrates a new Layout for graph g
-</div><div class="parameter"><dl><dt class="header"><b>Parameters:</b></dt><dd class="item"><code class="name">g</code><span class="separator"> - </span><span class="description"></span></dd></dl></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div></blockquote></div><hr/><a name="WeightedARF2Layout(Graph<V,E>,boolean)" id="WeightedARF2Layout(Graph<V,E>,boolean)"/><div class="member detail outer"><h3 class="member detail name">WeightedARF2Layout</h3><pre class="member detail synopsis">public WeightedARF2Layout(Graph<V ,
-                          E> g,
-                          boolean incremental)</pre><blockquote class="member detail name"><div class="member detail description"> Generates a new Layout for graph g. if incremental is false the layout will not be interactive.
-</div><div class="parameter"><dl><dt class="header"><b>Parameters:</b></dt><dd class="item"><code class="name">g</code><span class="separator"> - </span><span class="description"></span></dd><dd class="item"><code class="name">incremental</code><span class="separator"> - </span><span class="description"></span></dd></dl></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div></blockquote></div><hr/><a name="WeightedARF2Layout(Graph<V,E>,boolean,Layout<Vertex,Edge>)" id="WeightedARF2Layout(Graph<V,E>,boolean,Layout<Vertex,Edge>)"/><div class="member detail outer"><h3 class="member detail name">WeightedARF2Layout</h3><pre class="member detail synopsis">public WeightedARF2Layout(Graph<V ,
-                          E> g,
-                          boolean incremental,
-                          Layout<Vertex ,
-                          Edge> init)</pre><blockquote class="member detail name"><div class="member detail description"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div></blockquote></div></div><a name="detail-methods" id="detail-methods"/><h2 class="section header">Method Details</h2><div class="section"><a name="boolean done()" id="boolean done()"/><div class="member detail outer"><h3 class="member detail name">boolean done</h3><pre class="member detail synopsis">public @Override boolean done()</pre><blockquote class="member detail name"><div class="member detail description"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div></blockquote></div><hr/><a name="getA()" id="getA()"/><div class="member detail outer"><h3 class="member detail name">getA</h3><pre class="member detail synopsis">public double getA()</pre><blockquote class="member detail name"><div class="member detail description"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div></blockquote></div><hr/><a name="getAttraction()" id="getAttraction()"/><div class="member detail outer"><h3 class="member detail name">getAttraction</h3><pre class="member detail synopsis">public double getAttraction()</pre><blockquote class="member detail name"><div class="member detail description"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div></blockquote></div><hr/><a name="getB()" id="getB()"/><div class="member detail outer"><h3 class="member detail name">getB</h3><pre class="member detail synopsis">public double getB()</pre><blockquote class="member detail name"><div class="member detail description"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div></blockquote></div><hr/><a name="getDeltaT()" id="getDeltaT()"/><div class="member detail outer"><h3 class="member detail name">getDeltaT</h3><pre class="member detail synopsis">public double getDeltaT()</pre><blockquote class="member detail name"><div class="member detail description"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div></blockquote></div><hr/><a name="getEpsilon()" id="getEpsilon()"/><div class="member detail outer"><h3 class="member detail name">getEpsilon</h3><pre class="member detail synopsis">public double getEpsilon()</pre><blockquote class="member detail name"><div class="member detail description"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div></blockquote></div><hr/><a name="getForceCutoff()" id="getForceCutoff()"/><div class="member detail outer"><h3 class="member detail name">getForceCutoff</h3><pre class="member detail synopsis">public double getForceCutoff()</pre><blockquote class="member detail name"><div class="member detail description"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div></blockquote></div><hr/><a name="getMaxRelayouts()" id="getMaxRelayouts()"/><div class="member detail outer"><h3 class="member detail name">getMaxRelayouts</h3><pre class="member detail synopsis">public int getMaxRelayouts()</pre><blockquote class="member detail name"><div class="member detail description"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div></blockquote></div><hr/><a name="getMaxUpdates()" id="getMaxUpdates()"/><div class="member detail outer"><h3 class="member detail name">getMaxUpdates</h3><pre class="member detail synopsis">public int getMaxUpdates()</pre><blockquote class="member detail name"><div class="member detail description"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div></blockquote></div><hr/><a name="getUpdatesPerFrame()" id="getUpdatesPerFrame()"/><div class="member detail outer"><h3 class="member detail name">getUpdatesPerFrame</h3><pre class="member detail synopsis">public int getUpdatesPerFrame()</pre><blockquote class="member detail name"><div class="member detail description"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div></blockquote></div><hr/><a name="incrementsAreDone()" id="incrementsAreDone()"/><div class="member detail outer"><h3 class="member detail name">incrementsAreDone</h3><pre class="member detail synopsis">public boolean incrementsAreDone()</pre><blockquote class="member detail name"><div class="member detail description"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div></blockquote></div><hr/><a name="initialize_local_vertex(ch.ethz.sg.cuttlefish.misc.Vertex)" id="initialize_local_vertex(ch.ethz.sg.cuttlefish.misc.Vertex)"/><div class="member detail outer"><h3 class="member detail name">initialize_local_vertex</h3><pre class="member detail synopsis">protected void initialize_local_vertex(<a href="../../../../../ch/ethz/sg/cuttlefish/misc/Vertex.html" title="Class in ch.ethz.sg.cuttlefish.misc">Vertex</a> v)</pre><blockquote class="member detail name"><div class="member detail description"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div></blockquote></div><hr/><a name="isIncremental()" id="isIncremental()"/><div class="member detail outer"><h3 class="member detail name">isIncremental</h3><pre class="member detail synopsis">public boolean isIncremental()</pre><blockquote class="member detail name"><div class="member detail description"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div></blockquote></div><hr/><a name="isVerbose()" id="isVerbose()"/><div class="member detail outer"><h3 class="member detail name">isVerbose</h3><pre class="member detail synopsis">public boolean isVerbose()</pre><blockquote class="member detail name"><div class="member detail description"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div></blockquote></div><hr/><a name="resetUpdates()" id="resetUpdates()"/><div class="member detail outer"><h3 class="member detail name">resetUpdates</h3><pre class="member detail synopsis">public void resetUpdates()</pre><blockquote class="member detail name"><div class="member detail description"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div></blockquote></div><hr/><a name="setA(double)" id="setA(double)"/><div class="member detail outer"><h3 class="member detail name">setA</h3><pre class="member detail synopsis">public void setA(double a)</pre><blockquote class="member detail name"><div class="member detail description"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div></blockquote></div><hr/><a name="setAttraction(double)" id="setAttraction(double)"/><div class="member detail outer"><h3 class="member detail name">setAttraction</h3><pre class="member detail synopsis">public void setAttraction(double attraction)</pre><blockquote class="member detail name"><div class="member detail description"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div></blockquote></div><hr/><a name="setB(double)" id="setB(double)"/><div class="member detail outer"><h3 class="member detail name">setB</h3><pre class="member detail synopsis">public void setB(double b)</pre><blockquote class="member detail name"><div class="member detail description"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div></blockquote></div><hr/><a name="setDeltaT(double)" id="setDeltaT(double)"/><div class="member detail outer"><h3 class="member detail name">setDeltaT</h3><pre class="member detail synopsis">public void setDeltaT(double alpha)</pre><blockquote class="member detail name"><div class="member detail description"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div></blockquote></div><hr/><a name="setEpsilon(double)" id="setEpsilon(double)"/><div class="member detail outer"><h3 class="member detail name">setEpsilon</h3><pre class="member detail synopsis">public void setEpsilon(double epsilon)</pre><blockquote class="member detail name"><div class="member detail description"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div></blockquote></div><hr/><a name="setForceCutoff(double)" id="setForceCutoff(double)"/><div class="member detail outer"><h3 class="member detail name">setForceCutoff</h3><pre class="member detail synopsis">public void setForceCutoff(double forceCutoff)</pre><blockquote class="member detail name"><div class="member detail description"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div></blockquote></div><hr/><a name="setMaxRelayouts(int)" id="setMaxRelayouts(int)"/><div class="member detail outer"><h3 class="member detail name">setMaxRelayouts</h3><pre class="member detail synopsis">public void setMaxRelayouts(int maxRelayouts)</pre><blockquote class="member detail name"><div class="member detail description"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div></blockquote></div><hr/><a name="setMaxUpdates(int)" id="setMaxUpdates(int)"/><div class="member detail outer"><h3 class="member detail name">setMaxUpdates</h3><pre class="member detail synopsis">public void setMaxUpdates(int maxUpdates)</pre><blockquote class="member detail name"><div class="member detail description"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div></blockquote></div><hr/><a name="setUpdatesPerFrame(int)" id="setUpdatesPerFrame(int)"/><div class="member detail outer"><h3 class="member detail name">setUpdatesPerFrame</h3><pre class="member detail synopsis">public void setUpdatesPerFrame(int updatesPerFrame)</pre><blockquote class="member detail name"><div class="member detail description"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div></blockquote></div><hr/><a name="setVerbose(boolean)" id="setVerbose(boolean)"/><div class="member detail outer"><h3 class="member detail name">setVerbose</h3><pre class="member detail synopsis">public void setVerbose(boolean verbose)</pre><blockquote class="member detail name"><div class="member detail description"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div></blockquote></div><hr/><a name="void reset()" id="void reset()"/><div class="member detail outer"><h3 class="member detail name">void reset</h3><pre class="member detail synopsis">public @Override void reset()</pre><blockquote class="member detail name"><div class="member detail description"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div></blockquote></div><hr/><a name="void step()" id="void step()"/><div class="member detail outer"><h3 class="member detail name">void step</h3><pre class="member detail synopsis">public @Override void step()</pre><blockquote class="member detail name"><div class="member detail description"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div></blockquote></div></div><p class="navbar bottom spacer"> </p><table class="navbar div bottom"><tr><td><div class="navbar div top"><span class="navbar item enabled"><a href="../../../../../overview-summary.html">Overview</a></span> <span class="navbar item enabled"><a href="package-summary.html">Package</a></span> <span class="navbar item active">Class</span> <span class="navbar item enabled"><a href="WeightedARF2Layout-uses.html">Use</a></span> <span class="navbar item enabled"><a href="tree.html">Tree</a></span> <span class="navbar item enabled"><a href="../../../../../alphaindex-1.html">Index</a></span> <span class="navbar item enabled"><a href="../../../../../deprecated.html">Deprecated</a></span> <span class="navbar item enabled"><a href="../../../../../about.html">About</a></span></div></td></tr></table></body></html>
+<!-- ========= START OF TOP NAVBAR ======= -->
+<A NAME="navbar_top"><!-- --></A>
+<A HREF="#skip-navbar_top" title="Skip navigation links"></A>
+<TABLE BORDER="0" WIDTH="100%" CELLPADDING="1" CELLSPACING="0" SUMMARY="">
+<TR>
+<TD COLSPAN=2 BGCOLOR="#EEEEFF" CLASS="NavBarCell1">
+<A NAME="navbar_top_firstrow"><!-- --></A>
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="3" SUMMARY="">
+  <TR ALIGN="center" VALIGN="top">
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../../../overview-summary.html"><FONT CLASS="NavBarFont1"><B>Overview</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="package-summary.html"><FONT CLASS="NavBarFont1"><B>Package</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#FFFFFF" CLASS="NavBarCell1Rev"> &nbsp;<FONT CLASS="NavBarFont1Rev"><B>Class</B></FONT>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="class-use/WeightedARF2Layout.html"><FONT CLASS="NavBarFont1"><B>Use</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="package-tree.html"><FONT CLASS="NavBarFont1"><B>Tree</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../../../deprecated-list.html"><FONT CLASS="NavBarFont1"><B>Deprecated</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../../../index-files/index-1.html"><FONT CLASS="NavBarFont1"><B>Index</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../../../help-doc.html"><FONT CLASS="NavBarFont1"><B>Help</B></FONT></A>&nbsp;</TD>
+  </TR>
+</TABLE>
+</TD>
+<TD ALIGN="right" VALIGN="top" ROWSPAN=3><EM>
+</EM>
+</TD>
+</TR>
+
+<TR>
+<TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
+&nbsp;<A HREF="../../../../../ch/ethz/sg/cuttlefish/layout/KCoreSimpleLayout.html" title="class in ch.ethz.sg.cuttlefish.layout"><B>PREV CLASS</B></A>&nbsp;
+&nbsp;NEXT CLASS</FONT></TD>
+<TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
+  <A HREF="../../../../../index.html?ch/ethz/sg/cuttlefish/layout/WeightedARF2Layout.html" target="_top"><B>FRAMES</B></A>  &nbsp;
+&nbsp;<A HREF="WeightedARF2Layout.html" target="_top"><B>NO FRAMES</B></A>  &nbsp;
+&nbsp;<SCRIPT type="text/javascript">
+  <!--
+  if(window==top) {
+    document.writeln('<A HREF="../../../../../allclasses-noframe.html"><B>All Classes</B></A>');
+  }
+  //-->
+</SCRIPT>
+<NOSCRIPT>
+  <A HREF="../../../../../allclasses-noframe.html"><B>All Classes</B></A>
+</NOSCRIPT>
+
+
+</FONT></TD>
+</TR>
+<TR>
+<TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">
+  SUMMARY:&nbsp;NESTED&nbsp;|&nbsp;<A HREF="#field_summary">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor_summary">CONSTR</A>&nbsp;|&nbsp;<A HREF="#method_summary">METHOD</A></FONT></TD>
+<TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">
+DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor_detail">CONSTR</A>&nbsp;|&nbsp;<A HREF="#method_detail">METHOD</A></FONT></TD>
+</TR>
+</TABLE>
+<A NAME="skip-navbar_top"></A>
+<!-- ========= END OF TOP NAVBAR ========= -->
+
+<HR>
+<!-- ======== START OF CLASS DATA ======== -->
+<H2>
+<FONT SIZE="-1">
+ch.ethz.sg.cuttlefish.layout</FONT>
+<BR>
+Class WeightedARF2Layout&lt;V,E&gt;</H2>
+<PRE>
+<A HREF="http://java.sun.com/javase/6/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang">java.lang.Object</A>
+  <IMG SRC="../../../../../resources/inherit.gif" ALT="extended by ">edu.uci.ics.jung.algorithms.layout.AbstractLayout&lt;V,E&gt;
+      <IMG SRC="../../../../../resources/inherit.gif" ALT="extended by "><B>ch.ethz.sg.cuttlefish.layout.WeightedARF2Layout&lt;V,E&gt;</B>
+</PRE>
+<DL>
+<DT><B>All Implemented Interfaces:</B> <DD>edu.uci.ics.jung.algorithms.layout.Layout&lt;V,E&gt;, edu.uci.ics.jung.algorithms.util.IterativeContext, org.apache.commons.collections15.Transformer&lt;V,<A HREF="http://java.sun.com/javase/6/docs/api/java/awt/geom/Point2D.html?is-external=true" title="class or interface in java.awt.geom">Point2D</A>&gt;</DD>
+</DL>
+<HR>
+<DL>
+<DT><PRE>public class <B>WeightedARF2Layout&lt;V,E&gt;</B><DT>extends edu.uci.ics.jung.algorithms.layout.AbstractLayout&lt;V,E&gt;<DT>implements edu.uci.ics.jung.algorithms.util.IterativeContext</DL>
+</PRE>
+
+<P>
+<DL>
+<DT><B>Author:</B></DT>
+  <DD>markus michael geipel
+ 
+
+ An implementation of the ARF Layouter. 
+ See http://www.sg.ethz.ch/research/ for details</DD>
+</DL>
+<HR>
+
+<P>
+<!-- =========== FIELD SUMMARY =========== -->
+
+<A NAME="field_summary"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2">
+<B>Field Summary</B></FONT></TH>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static&nbsp;<A HREF="http://java.sun.com/javase/6/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</A></CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../../ch/ethz/sg/cuttlefish/layout/WeightedARF2Layout.html#FIXED">FIXED</A></B></CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;A marker used to tag nodes that shall not be moved</TD>
+</TR>
+</TABLE>
+&nbsp;
+<!-- ======== CONSTRUCTOR SUMMARY ======== -->
+
+<A NAME="constructor_summary"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2">
+<B>Constructor Summary</B></FONT></TH>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD><CODE><B><A HREF="../../../../../ch/ethz/sg/cuttlefish/layout/WeightedARF2Layout.html#WeightedARF2Layout(edu.uci.ics.jung.graph.Graph)">WeightedARF2Layout</A></B>(edu.uci.ics.jung.graph.Graph&lt;<A HREF="../../../../../ch/ethz/sg/cuttlefish/layout/WeightedARF2Layout.html" title="type parameter in WeightedARF2Layout">V</A>,<A HREF="../../../../../ch/ethz/sg/cuttlefish/layout/WeightedARF2Layout.html" title="type parameter in WeightedARF2Layout">E</A>&gt;&nbsp;g)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Genrates a new Layout for graph g</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD><CODE><B><A HREF="../../../../../ch/ethz/sg/cuttlefish/layout/WeightedARF2Layout.html#WeightedARF2Layout(edu.uci.ics.jung.graph.Graph, boolean)">WeightedARF2Layout</A></B>(edu.uci.ics.jung.graph.Graph&lt;<A HREF="../../../../../ch/ethz/sg/cuttlefish/layout/WeightedARF2Layout.html" title="type parameter in WeightedARF2Layout">V</A>,<A HREF="../../../../../ch/ethz/sg/cuttlefish/layout/WeightedARF2Layout.html" title="type parameter in WeightedARF2Layout">E</A>&gt;&nbsp;g,
+                   boolean&nbsp;incremental)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Generates a new Layout for graph g.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD><CODE><B><A HREF="../../../../../ch/ethz/sg/cuttlefish/layout/WeightedARF2Layout.html#WeightedARF2Layout(edu.uci.ics.jung.graph.Graph, boolean, edu.uci.ics.jung.algorithms.layout.Layout)">WeightedARF2Layout</A></B>(edu.uci.ics.jung.graph.Graph&lt;<A HREF="../../../../../ch/ethz/sg/cuttlefish/layout/WeightedARF2Layout.html" title="type parameter in WeightedARF2Layout">V</A>,<A HREF="../../../../../ch/ethz/sg/cuttlefish/layout/WeightedARF2Layout.html" title="type parameter in WeightedARF2Layout">E</A>&gt;&nbsp;g,
+                   boolean&nbsp;incremental,
+                   edu.uci.ics.jung.algorithms.layout.Layout&lt;<A HREF="../../../../../ch/ethz/sg/cuttlefish/misc/Vertex.html" title="class in ch.ethz.sg.cuttlefish.misc">Vertex</A>,<A HREF="../../../../../ch/ethz/sg/cuttlefish/misc/Edge.html" title="class in ch.ethz.sg.cuttlefish.misc">Edge</A>&gt;&nbsp;init)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+</TABLE>
+&nbsp;
+<!-- ========== METHOD SUMMARY =========== -->
+
+<A NAME="method_summary"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2">
+<B>Method Summary</B></FONT></TH>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../../ch/ethz/sg/cuttlefish/layout/WeightedARF2Layout.html#advancePositions()">advancePositions</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../../ch/ethz/sg/cuttlefish/layout/WeightedARF2Layout.html#align(double, double)">align</A></B>(double&nbsp;x0,
+      double&nbsp;y0)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;aligns the graph to make (x0,y0) the left upper corner</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="http://java.sun.com/javase/6/docs/api/java/awt/geom/Point2D.html?is-external=true" title="class or interface in java.awt.geom">Point2D</A></CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../../ch/ethz/sg/cuttlefish/layout/WeightedARF2Layout.html#assignPositionToVertex(ch.ethz.sg.cuttlefish.misc.Vertex)">assignPositionToVertex</A></B>(<A HREF="../../../../../ch/ethz/sg/cuttlefish/misc/Vertex.html" title="class in ch.ethz.sg.cuttlefish.misc">Vertex</A>&nbsp;vertex)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Assigns a position to the vertex</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="http://java.sun.com/javase/6/docs/api/java/awt/geom/Point2D.html?is-external=true" title="class or interface in java.awt.geom">Point2D</A></CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../../ch/ethz/sg/cuttlefish/layout/WeightedARF2Layout.html#assignPositionToVertex(ch.ethz.sg.cuttlefish.misc.Vertex, java.awt.geom.Point2D)">assignPositionToVertex</A></B>(<A HREF="../../../../../ch/ethz/sg/cuttlefish/misc/Vertex.html" title="class in ch.ethz.sg.cuttlefish.misc">Vertex</A>&nbsp;vertex,
+                       <A HREF="http://java.sun.com/javase/6/docs/api/java/awt/geom/Point2D.html?is-external=true" title="class or interface in java.awt.geom">Point2D</A>&nbsp;p)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Assign position p to the vertex</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;boolean</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../../ch/ethz/sg/cuttlefish/layout/WeightedARF2Layout.html#done()">done</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;double</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../../ch/ethz/sg/cuttlefish/layout/WeightedARF2Layout.html#getA()">getA</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;double</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../../ch/ethz/sg/cuttlefish/layout/WeightedARF2Layout.html#getAttraction()">getAttraction</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;double</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../../ch/ethz/sg/cuttlefish/layout/WeightedARF2Layout.html#getB()">getB</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;double</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../../ch/ethz/sg/cuttlefish/layout/WeightedARF2Layout.html#getDeltaT()">getDeltaT</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;double</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../../ch/ethz/sg/cuttlefish/layout/WeightedARF2Layout.html#getEpsilon()">getEpsilon</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;double</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../../ch/ethz/sg/cuttlefish/layout/WeightedARF2Layout.html#getForceCutoff()">getForceCutoff</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;int</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../../ch/ethz/sg/cuttlefish/layout/WeightedARF2Layout.html#getMaxRelayouts()">getMaxRelayouts</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;int</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../../ch/ethz/sg/cuttlefish/layout/WeightedARF2Layout.html#getMaxUpdates()">getMaxUpdates</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;int</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../../ch/ethz/sg/cuttlefish/layout/WeightedARF2Layout.html#getUpdatesPerFrame()">getUpdatesPerFrame</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;boolean</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../../ch/ethz/sg/cuttlefish/layout/WeightedARF2Layout.html#incrementsAreDone()">incrementsAreDone</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../../ch/ethz/sg/cuttlefish/layout/WeightedARF2Layout.html#initialize()">initialize</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;boolean</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../../ch/ethz/sg/cuttlefish/layout/WeightedARF2Layout.html#isIncremental()">isIncremental</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;boolean</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../../ch/ethz/sg/cuttlefish/layout/WeightedARF2Layout.html#isVerbose()">isVerbose</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../../ch/ethz/sg/cuttlefish/layout/WeightedARF2Layout.html#reset()">reset</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../../ch/ethz/sg/cuttlefish/layout/WeightedARF2Layout.html#resetUpdates()">resetUpdates</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../../ch/ethz/sg/cuttlefish/layout/WeightedARF2Layout.html#setA(double)">setA</A></B>(double&nbsp;a)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../../ch/ethz/sg/cuttlefish/layout/WeightedARF2Layout.html#setAttraction(double)">setAttraction</A></B>(double&nbsp;attraction)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../../ch/ethz/sg/cuttlefish/layout/WeightedARF2Layout.html#setB(double)">setB</A></B>(double&nbsp;b)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../../ch/ethz/sg/cuttlefish/layout/WeightedARF2Layout.html#setDeltaT(double)">setDeltaT</A></B>(double&nbsp;alpha)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../../ch/ethz/sg/cuttlefish/layout/WeightedARF2Layout.html#setEpsilon(double)">setEpsilon</A></B>(double&nbsp;epsilon)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../../ch/ethz/sg/cuttlefish/layout/WeightedARF2Layout.html#setForceCutoff(double)">setForceCutoff</A></B>(double&nbsp;forceCutoff)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../../ch/ethz/sg/cuttlefish/layout/WeightedARF2Layout.html#setMaxRelayouts(int)">setMaxRelayouts</A></B>(int&nbsp;maxRelayouts)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../../ch/ethz/sg/cuttlefish/layout/WeightedARF2Layout.html#setMaxUpdates(int)">setMaxUpdates</A></B>(int&nbsp;maxUpdates)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../../ch/ethz/sg/cuttlefish/layout/WeightedARF2Layout.html#setUpdatesPerFrame(int)">setUpdatesPerFrame</A></B>(int&nbsp;updatesPerFrame)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../../ch/ethz/sg/cuttlefish/layout/WeightedARF2Layout.html#setVerbose(boolean)">setVerbose</A></B>(boolean&nbsp;verbose)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../../ch/ethz/sg/cuttlefish/layout/WeightedARF2Layout.html#step()">step</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../../ch/ethz/sg/cuttlefish/layout/WeightedARF2Layout.html#update()">update</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../../ch/ethz/sg/cuttlefish/layout/WeightedARF2Layout.html#updateVertices()">updateVertices</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+</TABLE>
+&nbsp;<A NAME="methods_inherited_from_class_edu.uci.ics.jung.algorithms.layout.AbstractLayout"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#EEEEFF" CLASS="TableSubHeadingColor">
+<TH ALIGN="left"><B>Methods inherited from class edu.uci.ics.jung.algorithms.layout.AbstractLayout</B></TH>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD><CODE>getGraph, getSize, getX, getY, isLocked, lock, lock, setGraph, setInitializer, setLocation, setLocation, setSize, transform</CODE></TD>
+</TR>
+</TABLE>
+&nbsp;<A NAME="methods_inherited_from_class_java.lang.Object"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#EEEEFF" CLASS="TableSubHeadingColor">
+<TH ALIGN="left"><B>Methods inherited from class java.lang.<A HREF="http://java.sun.com/javase/6/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang">Object</A></B></TH>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD><CODE><A HREF="http://java.sun.com/javase/6/docs/api/java/lang/Object.html?is-external=true#equals(java.lang.Object)" title="class or interface in java.lang">equals</A>, <A HREF="http://java.sun.com/javase/6/docs/api/java/lang/Object.html?is-external=true#getClass()" title="class or interface in java.lang">getClass</A>, <A HREF="http://java.sun.com/javase/6/docs/api/java/lang/Object.html?is-external=true#hashCode()" title="class or interface in java.lang">hashCode</A>, <A HREF="http://java.sun.com/javase/6/docs/api/java/lang/Object.html?is-external=true#notify()" title="class or interface in java.lang">notify</A>, <A HREF="http://java.sun.com/javase/6/docs/api/java/lang/Object.html?is-external=true#notifyAll()" title="class or interface in java.lang">notifyAll</A>, <A HREF="http://java.sun.com/javase/6/docs/api/java/lang/Object.html?is-external=true#toString()" title="class or interface in java.lang">toString</A>, <A HREF="http://java.sun.com/javase/6/docs/api/java/lang/Object.html?is-external=true#wait()" title="class or interface in java.lang">wait</A>, <A HREF="http://java.sun.com/javase/6/docs/api/java/lang/Object.html?is-external=true#wait(long)" title="class or interface in java.lang">wait</A>, <A HREF="http://java.sun.com/javase/6/docs/api/java/lang/Object.html?is-external=true#wait(long, int)" title="class or interface in java.lang">wait</A></CODE></TD>
+</TR>
+</TABLE>
+&nbsp;
+<P>
+
+<!-- ============ FIELD DETAIL =========== -->
+
+<A NAME="field_detail"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="1"><FONT SIZE="+2">
+<B>Field Detail</B></FONT></TH>
+</TR>
+</TABLE>
+
+<A NAME="FIXED"><!-- --></A><H3>
+FIXED</H3>
+<PRE>
+public static final <A HREF="http://java.sun.com/javase/6/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</A> <B>FIXED</B></PRE>
+<DL>
+<DD>A marker used to tag nodes that shall not be moved
+<P>
+<DL>
+<DT><B>See Also:</B><DD><A HREF="../../../../../constant-values.html#ch.ethz.sg.cuttlefish.layout.WeightedARF2Layout.FIXED">Constant Field Values</A></DL>
+</DL>
+
+<!-- ========= CONSTRUCTOR DETAIL ======== -->
+
+<A NAME="constructor_detail"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="1"><FONT SIZE="+2">
+<B>Constructor Detail</B></FONT></TH>
+</TR>
+</TABLE>
+
+<A NAME="WeightedARF2Layout(edu.uci.ics.jung.graph.Graph)"><!-- --></A><H3>
+WeightedARF2Layout</H3>
+<PRE>
+public <B>WeightedARF2Layout</B>(edu.uci.ics.jung.graph.Graph&lt;<A HREF="../../../../../ch/ethz/sg/cuttlefish/layout/WeightedARF2Layout.html" title="type parameter in WeightedARF2Layout">V</A>,<A HREF="../../../../../ch/ethz/sg/cuttlefish/layout/WeightedARF2Layout.html" title="type parameter in WeightedARF2Layout">E</A>&gt;&nbsp;g)</PRE>
+<DL>
+<DD>Genrates a new Layout for graph g
+<P>
+<DL>
+<DT><B>Parameters:</B><DD><CODE>g</CODE> - </DL>
+</DL>
+<HR>
+
+<A NAME="WeightedARF2Layout(edu.uci.ics.jung.graph.Graph, boolean)"><!-- --></A><H3>
+WeightedARF2Layout</H3>
+<PRE>
+public <B>WeightedARF2Layout</B>(edu.uci.ics.jung.graph.Graph&lt;<A HREF="../../../../../ch/ethz/sg/cuttlefish/layout/WeightedARF2Layout.html" title="type parameter in WeightedARF2Layout">V</A>,<A HREF="../../../../../ch/ethz/sg/cuttlefish/layout/WeightedARF2Layout.html" title="type parameter in WeightedARF2Layout">E</A>&gt;&nbsp;g,
+                          boolean&nbsp;incremental)</PRE>
+<DL>
+<DD>Generates a new Layout for graph g. if incremental is false the layout will not be interactive.
+<P>
+<DL>
+<DT><B>Parameters:</B><DD><CODE>g</CODE> - <DD><CODE>incremental</CODE> - </DL>
+</DL>
+<HR>
+
+<A NAME="WeightedARF2Layout(edu.uci.ics.jung.graph.Graph, boolean, edu.uci.ics.jung.algorithms.layout.Layout)"><!-- --></A><H3>
+WeightedARF2Layout</H3>
+<PRE>
+public <B>WeightedARF2Layout</B>(edu.uci.ics.jung.graph.Graph&lt;<A HREF="../../../../../ch/ethz/sg/cuttlefish/layout/WeightedARF2Layout.html" title="type parameter in WeightedARF2Layout">V</A>,<A HREF="../../../../../ch/ethz/sg/cuttlefish/layout/WeightedARF2Layout.html" title="type parameter in WeightedARF2Layout">E</A>&gt;&nbsp;g,
+                          boolean&nbsp;incremental,
+                          edu.uci.ics.jung.algorithms.layout.Layout&lt;<A HREF="../../../../../ch/ethz/sg/cuttlefish/misc/Vertex.html" title="class in ch.ethz.sg.cuttlefish.misc">Vertex</A>,<A HREF="../../../../../ch/ethz/sg/cuttlefish/misc/Edge.html" title="class in ch.ethz.sg.cuttlefish.misc">Edge</A>&gt;&nbsp;init)</PRE>
+<DL>
+</DL>
+
+<!-- ============ METHOD DETAIL ========== -->
+
+<A NAME="method_detail"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="1"><FONT SIZE="+2">
+<B>Method Detail</B></FONT></TH>
+</TR>
+</TABLE>
+
+<A NAME="advancePositions()"><!-- --></A><H3>
+advancePositions</H3>
+<PRE>
+public void <B>advancePositions</B>()</PRE>
+<DL>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="align(double, double)"><!-- --></A><H3>
+align</H3>
+<PRE>
+public void <B>align</B>(double&nbsp;x0,
+                  double&nbsp;y0)</PRE>
+<DL>
+<DD>aligns the graph to make (x0,y0) the left upper corner
+<P>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>x0</CODE> - <DD><CODE>y0</CODE> - </DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="assignPositionToVertex(ch.ethz.sg.cuttlefish.misc.Vertex, java.awt.geom.Point2D)"><!-- --></A><H3>
+assignPositionToVertex</H3>
+<PRE>
+public <A HREF="http://java.sun.com/javase/6/docs/api/java/awt/geom/Point2D.html?is-external=true" title="class or interface in java.awt.geom">Point2D</A> <B>assignPositionToVertex</B>(<A HREF="../../../../../ch/ethz/sg/cuttlefish/misc/Vertex.html" title="class in ch.ethz.sg.cuttlefish.misc">Vertex</A>&nbsp;vertex,
+                                      <A HREF="http://java.sun.com/javase/6/docs/api/java/awt/geom/Point2D.html?is-external=true" title="class or interface in java.awt.geom">Point2D</A>&nbsp;p)</PRE>
+<DL>
+<DD>Assign position p to the vertex
+<P>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>vertex</CODE> - <DD><CODE>p</CODE> - 
+<DT><B>Returns:</B><DD>the newly assigned position</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="assignPositionToVertex(ch.ethz.sg.cuttlefish.misc.Vertex)"><!-- --></A><H3>
+assignPositionToVertex</H3>
+<PRE>
+public <A HREF="http://java.sun.com/javase/6/docs/api/java/awt/geom/Point2D.html?is-external=true" title="class or interface in java.awt.geom">Point2D</A> <B>assignPositionToVertex</B>(<A HREF="../../../../../ch/ethz/sg/cuttlefish/misc/Vertex.html" title="class in ch.ethz.sg.cuttlefish.misc">Vertex</A>&nbsp;vertex)</PRE>
+<DL>
+<DD>Assigns a position to the vertex
+<P>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>vertex</CODE> - 
+<DT><B>Returns:</B><DD>the newly assigned position</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="updateVertices()"><!-- --></A><H3>
+updateVertices</H3>
+<PRE>
+public void <B>updateVertices</B>()</PRE>
+<DL>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="isIncremental()"><!-- --></A><H3>
+isIncremental</H3>
+<PRE>
+public boolean <B>isIncremental</B>()</PRE>
+<DL>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="incrementsAreDone()"><!-- --></A><H3>
+incrementsAreDone</H3>
+<PRE>
+public boolean <B>incrementsAreDone</B>()</PRE>
+<DL>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="update()"><!-- --></A><H3>
+update</H3>
+<PRE>
+public void <B>update</B>()</PRE>
+<DL>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="getDeltaT()"><!-- --></A><H3>
+getDeltaT</H3>
+<PRE>
+public double <B>getDeltaT</B>()</PRE>
+<DL>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="setDeltaT(double)"><!-- --></A><H3>
+setDeltaT</H3>
+<PRE>
+public void <B>setDeltaT</B>(double&nbsp;alpha)</PRE>
+<DL>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="getAttraction()"><!-- --></A><H3>
+getAttraction</H3>
+<PRE>
+public double <B>getAttraction</B>()</PRE>
+<DL>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="setAttraction(double)"><!-- --></A><H3>
+setAttraction</H3>
+<PRE>
+public void <B>setAttraction</B>(double&nbsp;attraction)</PRE>
+<DL>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="getEpsilon()"><!-- --></A><H3>
+getEpsilon</H3>
+<PRE>
+public double <B>getEpsilon</B>()</PRE>
+<DL>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="setEpsilon(double)"><!-- --></A><H3>
+setEpsilon</H3>
+<PRE>
+public void <B>setEpsilon</B>(double&nbsp;epsilon)</PRE>
+<DL>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="getA()"><!-- --></A><H3>
+getA</H3>
+<PRE>
+public double <B>getA</B>()</PRE>
+<DL>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="setA(double)"><!-- --></A><H3>
+setA</H3>
+<PRE>
+public void <B>setA</B>(double&nbsp;a)</PRE>
+<DL>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="getForceCutoff()"><!-- --></A><H3>
+getForceCutoff</H3>
+<PRE>
+public double <B>getForceCutoff</B>()</PRE>
+<DL>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="setForceCutoff(double)"><!-- --></A><H3>
+setForceCutoff</H3>
+<PRE>
+public void <B>setForceCutoff</B>(double&nbsp;forceCutoff)</PRE>
+<DL>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="getMaxRelayouts()"><!-- --></A><H3>
+getMaxRelayouts</H3>
+<PRE>
+public int <B>getMaxRelayouts</B>()</PRE>
+<DL>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="setMaxRelayouts(int)"><!-- --></A><H3>
+setMaxRelayouts</H3>
+<PRE>
+public void <B>setMaxRelayouts</B>(int&nbsp;maxRelayouts)</PRE>
+<DL>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="getB()"><!-- --></A><H3>
+getB</H3>
+<PRE>
+public double <B>getB</B>()</PRE>
+<DL>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="setB(double)"><!-- --></A><H3>
+setB</H3>
+<PRE>
+public void <B>setB</B>(double&nbsp;b)</PRE>
+<DL>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="getUpdatesPerFrame()"><!-- --></A><H3>
+getUpdatesPerFrame</H3>
+<PRE>
+public int <B>getUpdatesPerFrame</B>()</PRE>
+<DL>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="setUpdatesPerFrame(int)"><!-- --></A><H3>
+setUpdatesPerFrame</H3>
+<PRE>
+public void <B>setUpdatesPerFrame</B>(int&nbsp;updatesPerFrame)</PRE>
+<DL>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="isVerbose()"><!-- --></A><H3>
+isVerbose</H3>
+<PRE>
+public boolean <B>isVerbose</B>()</PRE>
+<DL>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="setVerbose(boolean)"><!-- --></A><H3>
+setVerbose</H3>
+<PRE>
+public void <B>setVerbose</B>(boolean&nbsp;verbose)</PRE>
+<DL>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="setMaxUpdates(int)"><!-- --></A><H3>
+setMaxUpdates</H3>
+<PRE>
+public void <B>setMaxUpdates</B>(int&nbsp;maxUpdates)</PRE>
+<DL>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="getMaxUpdates()"><!-- --></A><H3>
+getMaxUpdates</H3>
+<PRE>
+public int <B>getMaxUpdates</B>()</PRE>
+<DL>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="resetUpdates()"><!-- --></A><H3>
+resetUpdates</H3>
+<PRE>
+public void <B>resetUpdates</B>()</PRE>
+<DL>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="initialize()"><!-- --></A><H3>
+initialize</H3>
+<PRE>
+public void <B>initialize</B>()</PRE>
+<DL>
+<DD><DL>
+<DT><B>Specified by:</B><DD><CODE>initialize</CODE> in interface <CODE>edu.uci.ics.jung.algorithms.layout.Layout&lt;<A HREF="../../../../../ch/ethz/sg/cuttlefish/layout/WeightedARF2Layout.html" title="type parameter in WeightedARF2Layout">V</A>,<A HREF="../../../../../ch/ethz/sg/cuttlefish/layout/WeightedARF2Layout.html" title="type parameter in WeightedARF2Layout">E</A>&gt;</CODE></DL>
+</DD>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="reset()"><!-- --></A><H3>
+reset</H3>
+<PRE>
+public void <B>reset</B>()</PRE>
+<DL>
+<DD><DL>
+<DT><B>Specified by:</B><DD><CODE>reset</CODE> in interface <CODE>edu.uci.ics.jung.algorithms.layout.Layout&lt;<A HREF="../../../../../ch/ethz/sg/cuttlefish/layout/WeightedARF2Layout.html" title="type parameter in WeightedARF2Layout">V</A>,<A HREF="../../../../../ch/ethz/sg/cuttlefish/layout/WeightedARF2Layout.html" title="type parameter in WeightedARF2Layout">E</A>&gt;</CODE></DL>
+</DD>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="done()"><!-- --></A><H3>
+done</H3>
+<PRE>
+public boolean <B>done</B>()</PRE>
+<DL>
+<DD><DL>
+<DT><B>Specified by:</B><DD><CODE>done</CODE> in interface <CODE>edu.uci.ics.jung.algorithms.util.IterativeContext</CODE></DL>
+</DD>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="step()"><!-- --></A><H3>
+step</H3>
+<PRE>
+public void <B>step</B>()</PRE>
+<DL>
+<DD><DL>
+<DT><B>Specified by:</B><DD><CODE>step</CODE> in interface <CODE>edu.uci.ics.jung.algorithms.util.IterativeContext</CODE></DL>
+</DD>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<!-- ========= END OF CLASS DATA ========= -->
+<HR>
+
+
+<!-- ======= START OF BOTTOM NAVBAR ====== -->
+<A NAME="navbar_bottom"><!-- --></A>
+<A HREF="#skip-navbar_bottom" title="Skip navigation links"></A>
+<TABLE BORDER="0" WIDTH="100%" CELLPADDING="1" CELLSPACING="0" SUMMARY="">
+<TR>
+<TD COLSPAN=2 BGCOLOR="#EEEEFF" CLASS="NavBarCell1">
+<A NAME="navbar_bottom_firstrow"><!-- --></A>
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="3" SUMMARY="">
+  <TR ALIGN="center" VALIGN="top">
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../../../overview-summary.html"><FONT CLASS="NavBarFont1"><B>Overview</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="package-summary.html"><FONT CLASS="NavBarFont1"><B>Package</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#FFFFFF" CLASS="NavBarCell1Rev"> &nbsp;<FONT CLASS="NavBarFont1Rev"><B>Class</B></FONT>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="class-use/WeightedARF2Layout.html"><FONT CLASS="NavBarFont1"><B>Use</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="package-tree.html"><FONT CLASS="NavBarFont1"><B>Tree</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../../../deprecated-list.html"><FONT CLASS="NavBarFont1"><B>Deprecated</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../../../index-files/index-1.html"><FONT CLASS="NavBarFont1"><B>Index</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../../../help-doc.html"><FONT CLASS="NavBarFont1"><B>Help</B></FONT></A>&nbsp;</TD>
+  </TR>
+</TABLE>
+</TD>
+<TD ALIGN="right" VALIGN="top" ROWSPAN=3><EM>
+</EM>
+</TD>
+</TR>
+
+<TR>
+<TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
+&nbsp;<A HREF="../../../../../ch/ethz/sg/cuttlefish/layout/KCoreSimpleLayout.html" title="class in ch.ethz.sg.cuttlefish.layout"><B>PREV CLASS</B></A>&nbsp;
+&nbsp;NEXT CLASS</FONT></TD>
+<TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
+  <A HREF="../../../../../index.html?ch/ethz/sg/cuttlefish/layout/WeightedARF2Layout.html" target="_top"><B>FRAMES</B></A>  &nbsp;
+&nbsp;<A HREF="WeightedARF2Layout.html" target="_top"><B>NO FRAMES</B></A>  &nbsp;
+&nbsp;<SCRIPT type="text/javascript">
+  <!--
+  if(window==top) {
+    document.writeln('<A HREF="../../../../../allclasses-noframe.html"><B>All Classes</B></A>');
+  }
+  //-->
+</SCRIPT>
+<NOSCRIPT>
+  <A HREF="../../../../../allclasses-noframe.html"><B>All Classes</B></A>
+</NOSCRIPT>
+
+
+</FONT></TD>
+</TR>
+<TR>
+<TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">
+  SUMMARY:&nbsp;NESTED&nbsp;|&nbsp;<A HREF="#field_summary">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor_summary">CONSTR</A>&nbsp;|&nbsp;<A HREF="#method_summary">METHOD</A></FONT></TD>
+<TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">
+DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor_detail">CONSTR</A>&nbsp;|&nbsp;<A HREF="#method_detail">METHOD</A></FONT></TD>
+</TR>
+</TABLE>
+<A NAME="skip-navbar_bottom"></A>
+<!-- ======== END OF BOTTOM NAVBAR ======= -->
+
+<HR>
+
+</BODY>
+</HTML>

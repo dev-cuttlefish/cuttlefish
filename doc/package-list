@@ -1,6 +1,7 @@
-ch.ethz.sg.cuttlefish.layout
-ch.ethz.sg.cuttlefish.gui.widgets
-ch.ethz.sg.cuttlefish.networks
 ch.ethz.sg.cuttlefish.gui
 ch.ethz.sg.cuttlefish.gui.mouse
+ch.ethz.sg.cuttlefish.gui.widgets
+ch.ethz.sg.cuttlefish.gui2
+ch.ethz.sg.cuttlefish.layout
 ch.ethz.sg.cuttlefish.misc
+ch.ethz.sg.cuttlefish.networks

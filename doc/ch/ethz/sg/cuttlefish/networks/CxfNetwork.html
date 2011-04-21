@@ -1,11 +1,474 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE html PUBLIC "-//gnu.org///DTD XHTML 1.1 plus Target 1.0//EN" "../../../../../resources/xhtml11-target10.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head><title>CxfNetwork</title><script src="../../../../../resources/gjdoc.js" type="text/javascript"><!-- this comment required for konqueror 3.2.2 --></script><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="generator" content="GNU Gjdoc Standard Doclet"/><meta name="keywords" content="ch.ethz.sg.cuttlefish.networks.CxfNetwork class"/><meta name="keywords" content="load()"/><meta name="keywords" content="reload()"/><meta name="keywords" content="hideVertexLabels()"/><meta name="keywords" content="hideEdgeLabels()"/><meta name="keywords" content="main()"/><link rel="stylesheet" type="text/css" href="../../../../../resources/gjdochtml-clean-layout.css" title="GNU Clean"/><link rel="stylesheet" type="text/css" href="../../../../../resources/gjdochtml-clean-color1.css" title="GNU Clean"/></head><body class="content class" onload="if(parent.contentPageLoaded)parent.contentPageLoaded(document.title)"><table class="navbar div top"><tr><td class="navbar div top"><div class="navbar div top"><span class="navbar item enabled"><a href="../../../../../overview-summary.html">Overview</a></span> <span class="navbar item enabled"><a href="package-summary.html">Package</a></span> <span class="navbar item active">Class</span> <span class="navbar item enabled"><a href="CxfNetwork-uses.html">Use</a></span> <span class="navbar item enabled"><a href="tree.html">Tree</a></span> <span class="navbar item enabled"><a href="../../../../../alphaindex-1.html">Index</a></span> <span class="navbar item enabled"><a href="../../../../../deprecated.html">Deprecated</a></span> <span class="navbar item enabled"><a href="../../../../../about.html">About</a></span></div></td></tr><tr><td class="navi"><a href="../../../../../ch/ethz/sg/cuttlefish/networks/BrowsableNetwork.html">Prev Class</a> | <a href="../../../../../ch/ethz/sg/cuttlefish/networks/GraphMLNetwork.html">Next Class</a></td><td class="navi"><a href="../../../../../index.html" title="Show in a frameset" target="_top">Frames</a> | <a href="CxfNetwork.html" title="Show without frames" target="_top">No Frames</a> </td></tr><tr><td class="navi">Summary: Nested | Field | <a href="#summary-methods">Method</a> | <a href="#summary-constructors">Constr</a></td><td class="navi">Detail: Nested | Field | <a href="#detail-methods">Method</a> | <a href="#detail-constructors">Constr</a></td></tr></table><div class="class title outer"><h3 class="class title-package">ch.ethz.sg.cuttlefish.networks</h3><h1 class="class title-class">Class CxfNetwork</h1></div><div class="class inheritance-tree"><ul class="inheritance 0"><li class="inheritance 0"><code>SparseGraph</code></li><li><ul class="inheritance 1"><li class="inheritance 1"><code><a href="../../../../../ch/ethz/sg/cuttlefish/networks/BrowsableNetwork.html">ch.ethz.sg.cuttlefish.networks.BrowsableNetwork</a></code></li><li><ul class="inheritance 2"><li class="inheritance 2"><code>ch.ethz.sg.cuttlefish.networks.CxfNetwork</code></li><li></li></ul></li></ul></li></ul></div><dl class="class subclasses"><dt class="class subclasses header"><b>Known Direct Subclasses:</b></dt><dd class="class subclasses header"><a href="../../../../../ch/ethz/sg/cuttlefish/networks/InteractiveCxfNetwork.html" title="Class in ch.ethz.sg.cuttlefish.networks">InteractiveCxfNetwork</a>, <a href="../../../../../ch/ethz/sg/cuttlefish/networks/StaticCxfNetwork.html" title="Class in ch.ethz.sg.cuttlefish.networks">StaticCxfNetwork</a></dd></b></dt></dl><hr/><div class="class synopsis outer"><div class="class synopsis declaration"><code>public class <b class="class synopsis name">CxfNetwork</b></code></div><div class="class synopsis superclass"><code>extends <a href="../../../../../ch/ethz/sg/cuttlefish/networks/BrowsableNetwork.html" title="Class in ch.ethz.sg.cuttlefish.networks">BrowsableNetwork</a></code></div></div><hr/><div class="class description"> Class for the loading of network data from the Cuttlefish eXtended Format
-</div><div class="taglet"><dl class="tag list"><dt class="tag section header"><b>Author:</b></dt><dd class="tag item">david</dd></dl></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><a name="summary-constructors" id="summary-constructors"/><dl class="table container"><dd><table class="class summary" border="1" width="100%"><tr class="table header"><td colspan="2"><h2 class="table header">Constructor Summary</h2></td></tr><tr><td class="right"><dl class="list"><dt class="synopsis"><code><a href="#CxfNetwork()">CxfNetwork</a>()</code></dt><dd class="description"> Void general constructor
-</dd></dl></td></tr><tr><td class="right"><dl class="list"><dt class="synopsis"><code><a href="#CxfNetwork(File)">CxfNetwork</a>(File&nbsp;graphFile)</code></dt><dd class="description"> Constructor that loads directly the graph file
-</dd></dl></td></tr></table></dd></dl><a name="summary-methods" id="summary-methods"/><dl class="table container"><dd><table class="class summary" border="1" width="100%"><tr class="table header"><td colspan="2"><h2 class="table header">Method Summary</h2></td></tr><tr><td class="left" valign="top"><code class="synopsis"> boolean</code></td><td class="right"><dl class="list"><dt class="synopsis"><code><a href="#hideEdgeLabels()">hideEdgeLabels</a>()</code></dt></dl></td></tr><tr><td class="left" valign="top"><code class="synopsis"> boolean</code></td><td class="right"><dl class="list"><dt class="synopsis"><code><a href="#hideVertexLabels()">hideVertexLabels</a>()</code></dt></dl></td></tr><tr><td class="left" valign="top"><code class="synopsis"> void</code></td><td class="right"><dl class="list"><dt class="synopsis"><code><a href="#load(File)">load</a>(File&nbsp;graphFile)</code></dt><dd class="description"> Loads the data stored in cxf format to the Cxf network
-</dd></dl></td></tr><tr><td class="left" valign="top"><code class="synopsis">static void</code></td><td class="right"><dl class="list"><dt class="synopsis"><code><a href="#main(argv[])">main</a>(argv[]&nbsp;)</code></dt></dl></td></tr><tr><td class="left" valign="top"><code class="synopsis"> void</code></td><td class="right"><dl class="list"><dt class="synopsis"><code><a href="#reload()">reload</a>()</code></dt><dd class="description"> Method that reloads the data from the cxf graph file
-</dd></dl></td></tr></table></dd></dl><dl class="table container"><dd><table class="class summary" border="1" width="100%"><tr class="table sub header"><td colspan="2"><h3 class="table sub header">Methods inherited from class ch.ethz.sg.cuttlefish.networks.<a href="../../../../../ch/ethz/sg/cuttlefish/networks/BrowsableNetwork.html" title="Class in ch.ethz.sg.cuttlefish.networks">BrowsableNetwork</a></h3></td></tr><tr><td class="inherited"><a href="../../../../../ch/ethz/sg/cuttlefish/networks/BrowsableNetwork.html#addColor(ch.ethz.sg.cuttlefish.misc.Vertex,Color)" title="addColor(Vertex,Color)"><code class="member">addColor</code></a>, <a href="../../../../../ch/ethz/sg/cuttlefish/networks/BrowsableNetwork.html#applyShadows()" title="applyShadows()"><code class="member">applyShadows</code></a>, <a href="../../../../../ch/ethz/sg/cuttlefish/networks/BrowsableNetwork.html#clearGraph()" title="clearGraph()"><code class="member">clearGraph</code></a>, <a href="../../../../../ch/ethz/sg/cuttlefish/networks/BrowsableNetwork.html#colorAll(Color)" title="colorAll(Color)"><code class="member">colorAll</code></a>, <a href="../../../../../ch/ethz/sg/cuttlefish/networks/BrowsableNetwork.html#copyIDsToLabels()" title="copyIDsToLabels()"><code class="member">copyIDsToLabels</code></a>, <a href="../../../../../ch/ethz/sg/cuttlefish/networks/BrowsableNetwork.html#getArgument(String)" title="getArgument(String)"><code class="member">getArgument</code></a>, <a href="../../../../../ch/ethz/sg/cuttlefish/networks/BrowsableNetwork.html#getMaxDegree()" title="getMaxDegree()"><code class="member">getMaxDegree</code></a>, <a href="../../../../../ch/ethz/sg/cuttlefish/networks/BrowsableNetwork.html#getName()" title="getName()"><code class="member">getName</code></a>, <a href="../../../../../ch/ethz/sg/cuttlefish/networks/BrowsableNetwork.html#getRandomEdge()" title="getRandomEdge()"><code class="member">getRandomEdge</code></a>, <a href="../../../../../ch/ethz/sg/cuttlefish/networks/BrowsableNetwork.html#init()" title="init()"><code class="member">init</code></a>, <a href="../../../../../ch/ethz/sg/cuttlefish/networks/BrowsableNetwork.html#isIncremental()" title="isIncremental()"><code class="member">isIncremental</code></a>, <a href="../../../../../ch/ethz/sg/cuttlefish/networks/BrowsableNetwork.html#maxColor(Color,Color)" title="maxColor(Color,Color)"><code class="member">maxColor</code></a>, <a href="../../../../../ch/ethz/sg/cuttlefish/networks/BrowsableNetwork.html#setArguments(Hashtable<String,String>)" title="setArguments(Hashtable<String,String>)"><code class="member">setArguments</code></a>, <a href="../../../../../ch/ethz/sg/cuttlefish/networks/BrowsableNetwork.html#setColor(ch.ethz.sg.cuttlefish.misc.Vertex,Color)" title="setColor(Vertex,Color)"><code class="member">setColor</code></a>, <a href="../../../../../ch/ethz/sg/cuttlefish/networks/BrowsableNetwork.html#setIncremental(boolean)" title="setIncremental(boolean)"><code class="member">setIncremental</code></a>, <a href="../../../../../ch/ethz/sg/cuttlefish/networks/BrowsableNetwork.html#setName(String)" title="setName(String)"><code class="member">setName</code></a>, <a href="../../../../../ch/ethz/sg/cuttlefish/networks/BrowsableNetwork.html#setShadowed(ch.ethz.sg.cuttlefish.misc.Vertex,boolean)" title="setShadowed(Vertex,boolean)"><code class="member">setShadowed</code></a>, <a href="../../../../../ch/ethz/sg/cuttlefish/networks/BrowsableNetwork.html#updateAnnotations()" title="updateAnnotations()"><code class="member">updateAnnotations</code></a></td></tr></table></dd></dl><a name="detail-constructors" id="detail-constructors"/><h2 class="section header">Constructor Details</h2><div class="section"><a name="CxfNetwork()" id="CxfNetwork()"/><div class="member detail outer"><h3 class="member detail name">CxfNetwork</h3><pre class="member detail synopsis">public CxfNetwork()</pre><blockquote class="member detail name"><div class="member detail description"> Void general constructor
-</div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div></blockquote></div><hr/><a name="CxfNetwork(File)" id="CxfNetwork(File)"/><div class="member detail outer"><h3 class="member detail name">CxfNetwork</h3><pre class="member detail synopsis">public CxfNetwork(File graphFile)</pre><blockquote class="member detail name"><div class="member detail description"> Constructor that loads directly the graph file
-</div><div class="parameter"><dl><dt class="header"><b>Parameters:</b></dt><dd class="item"><code class="name">graphFile</code><span class="separator"> - </span><span class="description"></span></dd></dl></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div></blockquote></div></div><a name="detail-methods" id="detail-methods"/><h2 class="section header">Method Details</h2><div class="section"><a name="hideEdgeLabels()" id="hideEdgeLabels()"/><div class="member detail outer"><h3 class="member detail name">hideEdgeLabels</h3><pre class="member detail synopsis">public boolean hideEdgeLabels()</pre><blockquote class="member detail name"><div class="member detail description"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div></blockquote></div><hr/><a name="hideVertexLabels()" id="hideVertexLabels()"/><div class="member detail outer"><h3 class="member detail name">hideVertexLabels</h3><pre class="member detail synopsis">public boolean hideVertexLabels()</pre><blockquote class="member detail name"><div class="member detail description"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div></blockquote></div><hr/><a name="load(File)" id="load(File)"/><div class="member detail outer"><h3 class="member detail name">load</h3><pre class="member detail synopsis">public void load(File graphFile)</pre><blockquote class="member detail name"><div class="member detail description"> Loads the data stored in cxf format to the Cxf network
-</div><div class="parameter"><dl><dt class="header"><b>Parameters:</b></dt><dd class="item"><code class="name">graphFile</code><span class="separator"> - </span><span class="description"></span></dd></dl></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div></blockquote></div><hr/><a name="main(argv[])" id="main(argv[])"/><div class="member detail outer"><h3 class="member detail name">main</h3><pre class="member detail synopsis">public static void main(argv[] )</pre><blockquote class="member detail name"><div class="member detail description"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div></blockquote></div><hr/><a name="reload()" id="reload()"/><div class="member detail outer"><h3 class="member detail name">reload</h3><pre class="member detail synopsis">public void reload()</pre><blockquote class="member detail name"><div class="member detail description"> Method that reloads the data from the cxf graph file
-</div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div></blockquote></div></div><p class="navbar bottom spacer"> </p><table class="navbar div bottom"><tr><td><div class="navbar div top"><span class="navbar item enabled"><a href="../../../../../overview-summary.html">Overview</a></span> <span class="navbar item enabled"><a href="package-summary.html">Package</a></span> <span class="navbar item active">Class</span> <span class="navbar item enabled"><a href="CxfNetwork-uses.html">Use</a></span> <span class="navbar item enabled"><a href="tree.html">Tree</a></span> <span class="navbar item enabled"><a href="../../../../../alphaindex-1.html">Index</a></span> <span class="navbar item enabled"><a href="../../../../../deprecated.html">Deprecated</a></span> <span class="navbar item enabled"><a href="../../../../../about.html">About</a></span></div></td></tr></table></body></html>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!--NewPage-->
+<HTML>
+<HEAD>
+<!-- Generated by javadoc (build 1.6.0_24) on Thu Apr 21 12:03:07 CEST 2011 -->
+<TITLE>
+CxfNetwork
+</TITLE>
+
+<META NAME="date" CONTENT="2011-04-21">
+
+<LINK REL ="stylesheet" TYPE="text/css" HREF="../../../../../stylesheet.css" TITLE="Style">
+
+<SCRIPT type="text/javascript">
+function windowTitle()
+{
+    if (location.href.indexOf('is-external=true') == -1) {
+        parent.document.title="CxfNetwork";
+    }
+}
+</SCRIPT>
+<NOSCRIPT>
+</NOSCRIPT>
+
+</HEAD>
+
+<BODY BGCOLOR="white" onload="windowTitle();">
+<HR>
+
+
+<!-- ========= START OF TOP NAVBAR ======= -->
+<A NAME="navbar_top"><!-- --></A>
+<A HREF="#skip-navbar_top" title="Skip navigation links"></A>
+<TABLE BORDER="0" WIDTH="100%" CELLPADDING="1" CELLSPACING="0" SUMMARY="">
+<TR>
+<TD COLSPAN=2 BGCOLOR="#EEEEFF" CLASS="NavBarCell1">
+<A NAME="navbar_top_firstrow"><!-- --></A>
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="3" SUMMARY="">
+  <TR ALIGN="center" VALIGN="top">
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../../../overview-summary.html"><FONT CLASS="NavBarFont1"><B>Overview</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="package-summary.html"><FONT CLASS="NavBarFont1"><B>Package</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#FFFFFF" CLASS="NavBarCell1Rev"> &nbsp;<FONT CLASS="NavBarFont1Rev"><B>Class</B></FONT>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="class-use/CxfNetwork.html"><FONT CLASS="NavBarFont1"><B>Use</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="package-tree.html"><FONT CLASS="NavBarFont1"><B>Tree</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../../../deprecated-list.html"><FONT CLASS="NavBarFont1"><B>Deprecated</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../../../index-files/index-1.html"><FONT CLASS="NavBarFont1"><B>Index</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../../../help-doc.html"><FONT CLASS="NavBarFont1"><B>Help</B></FONT></A>&nbsp;</TD>
+  </TR>
+</TABLE>
+</TD>
+<TD ALIGN="right" VALIGN="top" ROWSPAN=3><EM>
+</EM>
+</TD>
+</TR>
+
+<TR>
+<TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
+&nbsp;<A HREF="../../../../../ch/ethz/sg/cuttlefish/networks/ContestSimulation.html" title="class in ch.ethz.sg.cuttlefish.networks"><B>PREV CLASS</B></A>&nbsp;
+&nbsp;<A HREF="../../../../../ch/ethz/sg/cuttlefish/networks/DBNetwork.html" title="class in ch.ethz.sg.cuttlefish.networks"><B>NEXT CLASS</B></A></FONT></TD>
+<TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
+  <A HREF="../../../../../index.html?ch/ethz/sg/cuttlefish/networks/CxfNetwork.html" target="_top"><B>FRAMES</B></A>  &nbsp;
+&nbsp;<A HREF="CxfNetwork.html" target="_top"><B>NO FRAMES</B></A>  &nbsp;
+&nbsp;<SCRIPT type="text/javascript">
+  <!--
+  if(window==top) {
+    document.writeln('<A HREF="../../../../../allclasses-noframe.html"><B>All Classes</B></A>');
+  }
+  //-->
+</SCRIPT>
+<NOSCRIPT>
+  <A HREF="../../../../../allclasses-noframe.html"><B>All Classes</B></A>
+</NOSCRIPT>
+
+
+</FONT></TD>
+</TR>
+<TR>
+<TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">
+  SUMMARY:&nbsp;NESTED&nbsp;|&nbsp;FIELD&nbsp;|&nbsp;<A HREF="#constructor_summary">CONSTR</A>&nbsp;|&nbsp;<A HREF="#method_summary">METHOD</A></FONT></TD>
+<TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">
+DETAIL:&nbsp;FIELD&nbsp;|&nbsp;<A HREF="#constructor_detail">CONSTR</A>&nbsp;|&nbsp;<A HREF="#method_detail">METHOD</A></FONT></TD>
+</TR>
+</TABLE>
+<A NAME="skip-navbar_top"></A>
+<!-- ========= END OF TOP NAVBAR ========= -->
+
+<HR>
+<!-- ======== START OF CLASS DATA ======== -->
+<H2>
+<FONT SIZE="-1">
+ch.ethz.sg.cuttlefish.networks</FONT>
+<BR>
+Class CxfNetwork</H2>
+<PRE>
+<A HREF="http://java.sun.com/javase/6/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang">java.lang.Object</A>
+  <IMG SRC="../../../../../resources/inherit.gif" ALT="extended by ">edu.uci.ics.jung.graph.AbstractGraph&lt;V,E&gt;
+      <IMG SRC="../../../../../resources/inherit.gif" ALT="extended by ">edu.uci.ics.jung.graph.SparseGraph&lt;<A HREF="../../../../../ch/ethz/sg/cuttlefish/misc/Vertex.html" title="class in ch.ethz.sg.cuttlefish.misc">Vertex</A>,<A HREF="../../../../../ch/ethz/sg/cuttlefish/misc/Edge.html" title="class in ch.ethz.sg.cuttlefish.misc">Edge</A>&gt;
+          <IMG SRC="../../../../../resources/inherit.gif" ALT="extended by "><A HREF="../../../../../ch/ethz/sg/cuttlefish/networks/BrowsableNetwork.html" title="class in ch.ethz.sg.cuttlefish.networks">ch.ethz.sg.cuttlefish.networks.BrowsableNetwork</A>
+              <IMG SRC="../../../../../resources/inherit.gif" ALT="extended by "><B>ch.ethz.sg.cuttlefish.networks.CxfNetwork</B>
+</PRE>
+<DL>
+<DT><B>All Implemented Interfaces:</B> <DD>edu.uci.ics.jung.graph.Graph&lt;<A HREF="../../../../../ch/ethz/sg/cuttlefish/misc/Vertex.html" title="class in ch.ethz.sg.cuttlefish.misc">Vertex</A>,<A HREF="../../../../../ch/ethz/sg/cuttlefish/misc/Edge.html" title="class in ch.ethz.sg.cuttlefish.misc">Edge</A>&gt;, edu.uci.ics.jung.graph.Hypergraph&lt;<A HREF="../../../../../ch/ethz/sg/cuttlefish/misc/Vertex.html" title="class in ch.ethz.sg.cuttlefish.misc">Vertex</A>,<A HREF="../../../../../ch/ethz/sg/cuttlefish/misc/Edge.html" title="class in ch.ethz.sg.cuttlefish.misc">Edge</A>&gt;, <A HREF="http://java.sun.com/javase/6/docs/api/java/io/Serializable.html?is-external=true" title="class or interface in java.io">Serializable</A></DD>
+</DL>
+<DL>
+<DT><B>Direct Known Subclasses:</B> <DD><A HREF="../../../../../ch/ethz/sg/cuttlefish/networks/InteractiveCxfNetwork.html" title="class in ch.ethz.sg.cuttlefish.networks">InteractiveCxfNetwork</A>, <A HREF="../../../../../ch/ethz/sg/cuttlefish/networks/StaticCxfNetwork.html" title="class in ch.ethz.sg.cuttlefish.networks">StaticCxfNetwork</A></DD>
+</DL>
+<HR>
+<DL>
+<DT><PRE>public class <B>CxfNetwork</B><DT>extends <A HREF="../../../../../ch/ethz/sg/cuttlefish/networks/BrowsableNetwork.html" title="class in ch.ethz.sg.cuttlefish.networks">BrowsableNetwork</A></DL>
+</PRE>
+
+<P>
+Class for the loading of network data from the Cuttlefish eXtended Format
+<P>
+
+<P>
+<DL>
+<DT><B>Author:</B></DT>
+  <DD>david</DD>
+<DT><B>See Also:</B><DD><A HREF="../../../../../serialized-form.html#ch.ethz.sg.cuttlefish.networks.CxfNetwork">Serialized Form</A></DL>
+<HR>
+
+<P>
+
+<!-- ======== CONSTRUCTOR SUMMARY ======== -->
+
+<A NAME="constructor_summary"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2">
+<B>Constructor Summary</B></FONT></TH>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD><CODE><B><A HREF="../../../../../ch/ethz/sg/cuttlefish/networks/CxfNetwork.html#CxfNetwork()">CxfNetwork</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Void general constructor</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD><CODE><B><A HREF="../../../../../ch/ethz/sg/cuttlefish/networks/CxfNetwork.html#CxfNetwork(java.io.File)">CxfNetwork</A></B>(<A HREF="http://java.sun.com/javase/6/docs/api/java/io/File.html?is-external=true" title="class or interface in java.io">File</A>&nbsp;graphFile)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Constructor that loads directly the graph file</TD>
+</TR>
+</TABLE>
+&nbsp;
+<!-- ========== METHOD SUMMARY =========== -->
+
+<A NAME="method_summary"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2">
+<B>Method Summary</B></FONT></TH>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="http://java.sun.com/javase/6/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</A></CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../../ch/ethz/sg/cuttlefish/networks/CxfNetwork.html#getCxfName()">getCxfName</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="http://java.sun.com/javase/6/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</A></CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../../ch/ethz/sg/cuttlefish/networks/CxfNetwork.html#getEdgeShape()">getEdgeShape</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../../ch/ethz/sg/cuttlefish/networks/CxfNetwork.html#graphicalInit(ch.ethz.sg.cuttlefish.gui.NetworkInitializer)">graphicalInit</A></B>(<A HREF="../../../../../ch/ethz/sg/cuttlefish/gui/NetworkInitializer.html" title="class in ch.ethz.sg.cuttlefish.gui">NetworkInitializer</A>&nbsp;initializer)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;boolean</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../../ch/ethz/sg/cuttlefish/networks/CxfNetwork.html#hideEdgeLabels()">hideEdgeLabels</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;boolean</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../../ch/ethz/sg/cuttlefish/networks/CxfNetwork.html#hideVertexLabels()">hideVertexLabels</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../../ch/ethz/sg/cuttlefish/networks/CxfNetwork.html#load(java.io.File)">load</A></B>(<A HREF="http://java.sun.com/javase/6/docs/api/java/io/File.html?is-external=true" title="class or interface in java.io">File</A>&nbsp;graphFile)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Loads the data stored in cxf format to the Cxf network</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../../ch/ethz/sg/cuttlefish/networks/CxfNetwork.html#reload()">reload</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Method that reloads the data from the cxf graph file</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../../ch/ethz/sg/cuttlefish/networks/CxfNetwork.html#setEdgeShape(java.lang.String)">setEdgeShape</A></B>(<A HREF="http://java.sun.com/javase/6/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</A>&nbsp;edgeType)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+</TABLE>
+&nbsp;<A NAME="methods_inherited_from_class_ch.ethz.sg.cuttlefish.networks.BrowsableNetwork"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#EEEEFF" CLASS="TableSubHeadingColor">
+<TH ALIGN="left"><B>Methods inherited from class ch.ethz.sg.cuttlefish.networks.<A HREF="../../../../../ch/ethz/sg/cuttlefish/networks/BrowsableNetwork.html" title="class in ch.ethz.sg.cuttlefish.networks">BrowsableNetwork</A></B></TH>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD><CODE><A HREF="../../../../../ch/ethz/sg/cuttlefish/networks/BrowsableNetwork.html#applyShadows()">applyShadows</A>, <A HREF="../../../../../ch/ethz/sg/cuttlefish/networks/BrowsableNetwork.html#clearGraph()">clearGraph</A>, <A HREF="../../../../../ch/ethz/sg/cuttlefish/networks/BrowsableNetwork.html#colorAll(java.awt.Color)">colorAll</A>, <A HREF="../../../../../ch/ethz/sg/cuttlefish/networks/BrowsableNetwork.html#copyIDsToLabels()">copyIDsToLabels</A>, <A HREF="../../../../../ch/ethz/sg/cuttlefish/networks/BrowsableNetwork.html#getArgument(java.lang.String)">getArgument</A>, <A HREF="../../../../../ch/ethz/sg/cuttlefish/networks/BrowsableNetwork.html#getMaxDegree()">getMaxDegree</A>, <A HREF="../../../../../ch/ethz/sg/cuttlefish/networks/BrowsableNetwork.html#getName()">getName</A>, <A HREF="../../../../../ch/ethz/sg/cuttlefish/networks/BrowsableNetwork.html#getRandomEdge()">getRandomEdge</A>, <A HREF="../../../../../ch/ethz/sg/cuttlefish/networks/BrowsableNetwork.html#init()">init</A>, <A HREF="../../../../../ch/ethz/sg/cuttlefish/networks/BrowsableNetwork.html#isIncremental()">isIncremental</A>, <A HREF="../../../../../ch/ethz/sg/cuttlefish/networks/BrowsableNetwork.html#setArguments(java.util.Hashtable)">setArguments</A>, <A HREF="../../../../../ch/ethz/sg/cuttlefish/networks/BrowsableNetwork.html#setIncremental(boolean)">setIncremental</A>, <A HREF="../../../../../ch/ethz/sg/cuttlefish/networks/BrowsableNetwork.html#setName(java.lang.String)">setName</A>, <A HREF="../../../../../ch/ethz/sg/cuttlefish/networks/BrowsableNetwork.html#updateAnnotations()">updateAnnotations</A></CODE></TD>
+</TR>
+</TABLE>
+&nbsp;<A NAME="methods_inherited_from_class_edu.uci.ics.jung.graph.SparseGraph"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#EEEEFF" CLASS="TableSubHeadingColor">
+<TH ALIGN="left"><B>Methods inherited from class edu.uci.ics.jung.graph.SparseGraph</B></TH>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD><CODE>addEdge, addVertex, containsEdge, containsVertex, findEdge, findEdgeSet, getDefaultEdgeType, getDest, getEdgeCount, getEdgeCount, getEdges, getEdges, getEdgeType, getEndpoints, getFactory, getIncidentEdges, getInEdges, getNeighbors, getOutEdges, getPredecessors, getSource, getSuccessors, getVertexCount, getVertices, isDest, isSource, removeEdge, removeVertex</CODE></TD>
+</TR>
+</TABLE>
+&nbsp;<A NAME="methods_inherited_from_class_edu.uci.ics.jung.graph.AbstractGraph"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#EEEEFF" CLASS="TableSubHeadingColor">
+<TH ALIGN="left"><B>Methods inherited from class edu.uci.ics.jung.graph.AbstractGraph</B></TH>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD><CODE>addEdge, addEdge, addEdge, addEdge, addEdge, degree, getIncidentCount, getIncidentVertices, getNeighborCount, getOpposite, getPredecessorCount, getSuccessorCount, inDegree, isIncident, isNeighbor, isPredecessor, isSuccessor, outDegree, toString</CODE></TD>
+</TR>
+</TABLE>
+&nbsp;<A NAME="methods_inherited_from_class_java.lang.Object"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#EEEEFF" CLASS="TableSubHeadingColor">
+<TH ALIGN="left"><B>Methods inherited from class java.lang.<A HREF="http://java.sun.com/javase/6/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang">Object</A></B></TH>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD><CODE><A HREF="http://java.sun.com/javase/6/docs/api/java/lang/Object.html?is-external=true#equals(java.lang.Object)" title="class or interface in java.lang">equals</A>, <A HREF="http://java.sun.com/javase/6/docs/api/java/lang/Object.html?is-external=true#getClass()" title="class or interface in java.lang">getClass</A>, <A HREF="http://java.sun.com/javase/6/docs/api/java/lang/Object.html?is-external=true#hashCode()" title="class or interface in java.lang">hashCode</A>, <A HREF="http://java.sun.com/javase/6/docs/api/java/lang/Object.html?is-external=true#notify()" title="class or interface in java.lang">notify</A>, <A HREF="http://java.sun.com/javase/6/docs/api/java/lang/Object.html?is-external=true#notifyAll()" title="class or interface in java.lang">notifyAll</A>, <A HREF="http://java.sun.com/javase/6/docs/api/java/lang/Object.html?is-external=true#wait()" title="class or interface in java.lang">wait</A>, <A HREF="http://java.sun.com/javase/6/docs/api/java/lang/Object.html?is-external=true#wait(long)" title="class or interface in java.lang">wait</A>, <A HREF="http://java.sun.com/javase/6/docs/api/java/lang/Object.html?is-external=true#wait(long, int)" title="class or interface in java.lang">wait</A></CODE></TD>
+</TR>
+</TABLE>
+&nbsp;<A NAME="methods_inherited_from_class_edu.uci.ics.jung.graph.Graph"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#EEEEFF" CLASS="TableSubHeadingColor">
+<TH ALIGN="left"><B>Methods inherited from interface edu.uci.ics.jung.graph.Graph</B></TH>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD><CODE>addEdge, addEdge, getOpposite, getPredecessorCount, getSuccessorCount, inDegree, isPredecessor, isSuccessor, outDegree</CODE></TD>
+</TR>
+</TABLE>
+&nbsp;<A NAME="methods_inherited_from_class_edu.uci.ics.jung.graph.Hypergraph"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#EEEEFF" CLASS="TableSubHeadingColor">
+<TH ALIGN="left"><B>Methods inherited from interface edu.uci.ics.jung.graph.Hypergraph</B></TH>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD><CODE>addEdge, addEdge, degree, getIncidentCount, getIncidentVertices, getNeighborCount, isIncident, isNeighbor</CODE></TD>
+</TR>
+</TABLE>
+&nbsp;
+<P>
+
+<!-- ========= CONSTRUCTOR DETAIL ======== -->
+
+<A NAME="constructor_detail"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="1"><FONT SIZE="+2">
+<B>Constructor Detail</B></FONT></TH>
+</TR>
+</TABLE>
+
+<A NAME="CxfNetwork()"><!-- --></A><H3>
+CxfNetwork</H3>
+<PRE>
+public <B>CxfNetwork</B>()</PRE>
+<DL>
+<DD>Void general constructor
+<P>
+</DL>
+<HR>
+
+<A NAME="CxfNetwork(java.io.File)"><!-- --></A><H3>
+CxfNetwork</H3>
+<PRE>
+public <B>CxfNetwork</B>(<A HREF="http://java.sun.com/javase/6/docs/api/java/io/File.html?is-external=true" title="class or interface in java.io">File</A>&nbsp;graphFile)</PRE>
+<DL>
+<DD>Constructor that loads directly the graph file
+<P>
+<DL>
+<DT><B>Parameters:</B><DD><CODE>graphFile</CODE> - </DL>
+</DL>
+
+<!-- ============ METHOD DETAIL ========== -->
+
+<A NAME="method_detail"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="1"><FONT SIZE="+2">
+<B>Method Detail</B></FONT></TH>
+</TR>
+</TABLE>
+
+<A NAME="graphicalInit(ch.ethz.sg.cuttlefish.gui.NetworkInitializer)"><!-- --></A><H3>
+graphicalInit</H3>
+<PRE>
+public void <B>graphicalInit</B>(<A HREF="../../../../../ch/ethz/sg/cuttlefish/gui/NetworkInitializer.html" title="class in ch.ethz.sg.cuttlefish.gui">NetworkInitializer</A>&nbsp;initializer)</PRE>
+<DL>
+<DD><DL>
+<DT><B>Overrides:</B><DD><CODE><A HREF="../../../../../ch/ethz/sg/cuttlefish/networks/BrowsableNetwork.html#graphicalInit(ch.ethz.sg.cuttlefish.gui.NetworkInitializer)">graphicalInit</A></CODE> in class <CODE><A HREF="../../../../../ch/ethz/sg/cuttlefish/networks/BrowsableNetwork.html" title="class in ch.ethz.sg.cuttlefish.networks">BrowsableNetwork</A></CODE></DL>
+</DD>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="getEdgeShape()"><!-- --></A><H3>
+getEdgeShape</H3>
+<PRE>
+public <A HREF="http://java.sun.com/javase/6/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</A> <B>getEdgeShape</B>()</PRE>
+<DL>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="setEdgeShape(java.lang.String)"><!-- --></A><H3>
+setEdgeShape</H3>
+<PRE>
+public void <B>setEdgeShape</B>(<A HREF="http://java.sun.com/javase/6/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</A>&nbsp;edgeType)</PRE>
+<DL>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="load(java.io.File)"><!-- --></A><H3>
+load</H3>
+<PRE>
+public void <B>load</B>(<A HREF="http://java.sun.com/javase/6/docs/api/java/io/File.html?is-external=true" title="class or interface in java.io">File</A>&nbsp;graphFile)</PRE>
+<DL>
+<DD>Loads the data stored in cxf format to the Cxf network
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>graphFile</CODE> - </DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="reload()"><!-- --></A><H3>
+reload</H3>
+<PRE>
+public void <B>reload</B>()</PRE>
+<DL>
+<DD>Method that reloads the data from the cxf graph file
+<P>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="hideVertexLabels()"><!-- --></A><H3>
+hideVertexLabels</H3>
+<PRE>
+public boolean <B>hideVertexLabels</B>()</PRE>
+<DL>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="hideEdgeLabels()"><!-- --></A><H3>
+hideEdgeLabels</H3>
+<PRE>
+public boolean <B>hideEdgeLabels</B>()</PRE>
+<DL>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="getCxfName()"><!-- --></A><H3>
+getCxfName</H3>
+<PRE>
+public <A HREF="http://java.sun.com/javase/6/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</A> <B>getCxfName</B>()</PRE>
+<DL>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<!-- ========= END OF CLASS DATA ========= -->
+<HR>
+
+
+<!-- ======= START OF BOTTOM NAVBAR ====== -->
+<A NAME="navbar_bottom"><!-- --></A>
+<A HREF="#skip-navbar_bottom" title="Skip navigation links"></A>
+<TABLE BORDER="0" WIDTH="100%" CELLPADDING="1" CELLSPACING="0" SUMMARY="">
+<TR>
+<TD COLSPAN=2 BGCOLOR="#EEEEFF" CLASS="NavBarCell1">
+<A NAME="navbar_bottom_firstrow"><!-- --></A>
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="3" SUMMARY="">
+  <TR ALIGN="center" VALIGN="top">
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../../../overview-summary.html"><FONT CLASS="NavBarFont1"><B>Overview</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="package-summary.html"><FONT CLASS="NavBarFont1"><B>Package</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#FFFFFF" CLASS="NavBarCell1Rev"> &nbsp;<FONT CLASS="NavBarFont1Rev"><B>Class</B></FONT>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="class-use/CxfNetwork.html"><FONT CLASS="NavBarFont1"><B>Use</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="package-tree.html"><FONT CLASS="NavBarFont1"><B>Tree</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../../../deprecated-list.html"><FONT CLASS="NavBarFont1"><B>Deprecated</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../../../index-files/index-1.html"><FONT CLASS="NavBarFont1"><B>Index</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../../../help-doc.html"><FONT CLASS="NavBarFont1"><B>Help</B></FONT></A>&nbsp;</TD>
+  </TR>
+</TABLE>
+</TD>
+<TD ALIGN="right" VALIGN="top" ROWSPAN=3><EM>
+</EM>
+</TD>
+</TR>
+
+<TR>
+<TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
+&nbsp;<A HREF="../../../../../ch/ethz/sg/cuttlefish/networks/ContestSimulation.html" title="class in ch.ethz.sg.cuttlefish.networks"><B>PREV CLASS</B></A>&nbsp;
+&nbsp;<A HREF="../../../../../ch/ethz/sg/cuttlefish/networks/DBNetwork.html" title="class in ch.ethz.sg.cuttlefish.networks"><B>NEXT CLASS</B></A></FONT></TD>
+<TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
+  <A HREF="../../../../../index.html?ch/ethz/sg/cuttlefish/networks/CxfNetwork.html" target="_top"><B>FRAMES</B></A>  &nbsp;
+&nbsp;<A HREF="CxfNetwork.html" target="_top"><B>NO FRAMES</B></A>  &nbsp;
+&nbsp;<SCRIPT type="text/javascript">
+  <!--
+  if(window==top) {
+    document.writeln('<A HREF="../../../../../allclasses-noframe.html"><B>All Classes</B></A>');
+  }
+  //-->
+</SCRIPT>
+<NOSCRIPT>
+  <A HREF="../../../../../allclasses-noframe.html"><B>All Classes</B></A>
+</NOSCRIPT>
+
+
+</FONT></TD>
+</TR>
+<TR>
+<TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">
+  SUMMARY:&nbsp;NESTED&nbsp;|&nbsp;FIELD&nbsp;|&nbsp;<A HREF="#constructor_summary">CONSTR</A>&nbsp;|&nbsp;<A HREF="#method_summary">METHOD</A></FONT></TD>
+<TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">
+DETAIL:&nbsp;FIELD&nbsp;|&nbsp;<A HREF="#constructor_detail">CONSTR</A>&nbsp;|&nbsp;<A HREF="#method_detail">METHOD</A></FONT></TD>
+</TR>
+</TABLE>
+<A NAME="skip-navbar_bottom"></A>
+<!-- ======== END OF BOTTOM NAVBAR ======= -->
+
+<HR>
+
+</BODY>
+</HTML>
