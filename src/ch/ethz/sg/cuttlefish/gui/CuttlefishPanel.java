@@ -252,7 +252,8 @@ public CuttlefishPanel(File configFile, JMenuBar menu) {
  */
 private void initialize(File configFile) {
 	BrowsableNetwork temp = new BrowsableNetwork();
-	this.setNetwork(temp);	
+	this.setNetwork(temp);
+
 	vertexFactory = new VertexFactory();
     edgeFactory = new EdgeFactory();
 		

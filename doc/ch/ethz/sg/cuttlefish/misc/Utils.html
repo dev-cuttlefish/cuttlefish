@@ -1,19 +1,402 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE html PUBLIC "-//gnu.org///DTD XHTML 1.1 plus Target 1.0//EN" "../../../../../resources/xhtml11-target10.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head><title>Utils</title><script src="../../../../../resources/gjdoc.js" type="text/javascript"><!-- this comment required for konqueror 3.2.2 --></script><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="generator" content="GNU Gjdoc Standard Doclet"/><meta name="keywords" content="ch.ethz.sg.cuttlefish.misc.Utils class"/><meta name="keywords" content="caculateCenter()"/><meta name="keywords" content="writeEdgeList()"/><meta name="keywords" content="createLocalFile()"/><meta name="keywords" content="ensureDecimal()"/><meta name="keywords" content="deleteDoubleEdges()"/><link rel="stylesheet" type="text/css" href="../../../../../resources/gjdochtml-clean-layout.css" title="GNU Clean"/><link rel="stylesheet" type="text/css" href="../../../../../resources/gjdochtml-clean-color1.css" title="GNU Clean"/></head><body class="content class" onload="if(parent.contentPageLoaded)parent.contentPageLoaded(document.title)"><table class="navbar div top"><tr><td class="navbar div top"><div class="navbar div top"><span class="navbar item enabled"><a href="../../../../../overview-summary.html">Overview</a></span> <span class="navbar item enabled"><a href="package-summary.html">Package</a></span> <span class="navbar item active">Class</span> <span class="navbar item enabled"><a href="Utils-uses.html">Use</a></span> <span class="navbar item enabled"><a href="tree.html">Tree</a></span> <span class="navbar item enabled"><a href="../../../../../alphaindex-1.html">Index</a></span> <span class="navbar item enabled"><a href="../../../../../deprecated.html">Deprecated</a></span> <span class="navbar item enabled"><a href="../../../../../about.html">About</a></span></div></td></tr><tr><td class="navi"><a href="../../../../../ch/ethz/sg/cuttlefish/misc/TikzExporter.html">Prev Class</a> | <a href="../../../../../ch/ethz/sg/cuttlefish/misc/Vertex.html">Next Class</a></td><td class="navi"><a href="../../../../../index.html" title="Show in a frameset" target="_top">Frames</a> | <a href="Utils.html" title="Show without frames" target="_top">No Frames</a> </td></tr><tr><td class="navi">Summary: Nested | Field | <a href="#summary-methods">Method</a> | Constr</td><td class="navi">Detail: Nested | Field | <a href="#detail-methods">Method</a> | Constr</td></tr></table><div class="class title outer"><h3 class="class title-package">ch.ethz.sg.cuttlefish.misc</h3><h1 class="class title-class">Class Utils</h1></div><div class="class inheritance-tree"><ul class="inheritance 0"><li class="inheritance 0"><code>java.lang.Object</code></li><li><ul class="inheritance 1"><li class="inheritance 1"><code>ch.ethz.sg.cuttlefish.misc.Utils</code></li><li></li></ul></li></ul></div><hr/><div class="class synopsis outer"><div class="class synopsis declaration"><code>public class <b class="class synopsis name">Utils</b></code></div><div class="class synopsis superclass"><code>extends java.lang.Object</code></div></div><hr/><div class="class description"> Class with static methods of general usage
-</div><div class="taglet"><dl class="tag list"><dt class="tag section header"><b>Author:</b></dt><dd class="tag item">david</dd></dl></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><a name="summary-methods" id="summary-methods"/><dl class="table container"><dd><table class="class summary" border="1" width="100%"><tr class="table header"><td colspan="2"><h2 class="table header">Method Summary</h2></td></tr><tr><td class="left" valign="top"><code class="synopsis">static Point2D</code></td><td class="right"><dl class="list"><dt class="synopsis"><code><a href="#caculateCenter(Layout<Vertex,Edge>,Graph<Vertex,Edge>)">caculateCenter</a>(Layout<Vertex&nbsp;, Edge>&nbsp;layout, Graph<Vertex&nbsp;, Edge>&nbsp;graph)</code></dt><dd class="description"> Calculates the center of masses of a network given its layout and as if the nodes had constant weight.</dd></dl></td></tr><tr><td class="left" valign="top"><code class="synopsis">static File</code></td><td class="right"><dl class="list"><dt class="synopsis"><code><a href="#createLocalFile(String,Object)">createLocalFile</a>(String&nbsp;fileName, Object&nbsp;object)</code></dt><dd class="description"> Creates a local version of a file contained in the jar
-</dd></dl></td></tr><tr><td class="left" valign="top"><code class="synopsis">static void</code></td><td class="right"><dl class="list"><dt class="synopsis"><code><a href="#deleteDoubleEdges(DirectedSparseGraph<Vertex,Edge>)">deleteDoubleEdges</a>(DirectedSparseGraph<Vertex&nbsp;, Edge>&nbsp;graph)</code></dt><dd class="description"> Erases the multiple edges of a graph
-</dd></dl></td></tr><tr><td class="left" valign="top"><code class="synopsis">static String</code></td><td class="right"><dl class="list"><dt class="synopsis"><code><a href="#ensureDecimal(double)">ensureDecimal</a>(double&nbsp;num)</code></dt><dd class="description"> Ensures that the string representaton of the number is not exponential.</dd></dl></td></tr><tr><td class="left" valign="top"><code class="synopsis">static void</code></td><td class="right"><dl class="list"><dt class="synopsis"><code><a href="#writeEdgeList(DirectedSparseGraph<Vertex,Edge>,PrintStream)">writeEdgeList</a>(DirectedSparseGraph<Vertex&nbsp;, Edge>&nbsp;graph, PrintStream&nbsp;ps)</code></dt><dd class="description"> Writes on the output a list of the edges of the network
-</dd></dl></td></tr></table></dd></dl><a name="detail-methods" id="detail-methods"/><h2 class="section header">Method Details</h2><div class="section"><a name="caculateCenter(Layout<Vertex,Edge>,Graph<Vertex,Edge>)" id="caculateCenter(Layout<Vertex,Edge>,Graph<Vertex,Edge>)"/><div class="member detail outer"><h3 class="member detail name">caculateCenter</h3><pre class="member detail synopsis">public static Point2D caculateCenter(Layout<Vertex ,
-                                     Edge> layout,
-                                     Graph<Vertex ,
-                                     Edge> graph)</pre><blockquote class="member detail name"><div class="member detail description"> Calculates the center of masses of a network given its layout and as if the nodes had constant weight.
-</div><div class="parameter"><dl><dt class="header"><b>Parameters:</b></dt><dd class="item"><code class="name">layout</code><span class="separator"> - </span><span class="description">positions of the nodes of the networks</span></dd><dd class="item"><code class="name">graph</code><span class="separator"> - </span><span class="description">network to analyze</span></dd></dl></div><div class="member detail return list"><dl><dt class="member detail return header"><b>Returns:</b></dt><dd class="member detail return item">Point2D with the coordinates of the center</dd></dl></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div></blockquote></div><hr/><a name="createLocalFile(String,Object)" id="createLocalFile(String,Object)"/><div class="member detail outer"><h3 class="member detail name">createLocalFile</h3><pre class="member detail synopsis">public static File createLocalFile(String fileName,
-                                   Object object)</pre><blockquote class="member detail name"><div class="member detail description"> Creates a local version of a file contained in the jar
-</div><div class="parameter"><dl><dt class="header"><b>Parameters:</b></dt><dd class="item"><code class="name">fileName</code><span class="separator"> - </span><span class="description">name of the file in the jar</span></dd><dd class="item"><code class="name">object</code><span class="separator"> - </span><span class="description">usually the object that calls createLocalFile and has the
-reference to the file</span></dd></dl></div><div class="member detail return list"><dl><dt class="member detail return header"><b>Returns:</b></dt><dd class="member detail return item">exact local copy of the file</dd></dl></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div></blockquote></div><hr/><a name="deleteDoubleEdges(DirectedSparseGraph<Vertex,Edge>)" id="deleteDoubleEdges(DirectedSparseGraph<Vertex,Edge>)"/><div class="member detail outer"><h3 class="member detail name">deleteDoubleEdges</h3><pre class="member detail synopsis">public static void deleteDoubleEdges(DirectedSparseGraph<Vertex ,
-                                     Edge> graph)</pre><blockquote class="member detail name"><div class="member detail description"> Erases the multiple edges of a graph
-</div><div class="parameter"><dl><dt class="header"><b>Parameters:</b></dt><dd class="item"><code class="name">graph</code><span class="separator"> - </span><span class="description"></span></dd></dl></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div></blockquote></div><hr/><a name="ensureDecimal(double)" id="ensureDecimal(double)"/><div class="member detail outer"><h3 class="member detail name">ensureDecimal</h3><pre class="member detail synopsis">public static String ensureDecimal(double num)</pre><blockquote class="member detail name"><div class="member detail description"> Ensures that the string representaton of the number is not exponential. 5 digits before "."
-</div><div class="parameter"><dl><dt class="header"><b>Parameters:</b></dt><dd class="item"><code class="name">num</code><span class="separator"> - </span><span class="description"></span></dd></dl></div><div class="member detail return list"><dl><dt class="member detail return header"><b>Returns:</b></dt><dd class="member detail return item">String with a decimal notation of the number</dd></dl></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div></blockquote></div><hr/><a name="writeEdgeList(DirectedSparseGraph<Vertex,Edge>,PrintStream)" id="writeEdgeList(DirectedSparseGraph<Vertex,Edge>,PrintStream)"/><div class="member detail outer"><h3 class="member detail name">writeEdgeList</h3><pre class="member detail synopsis">public static void writeEdgeList(DirectedSparseGraph<Vertex ,
-                                 Edge> graph,
-                                 PrintStream ps)</pre><blockquote class="member detail name"><div class="member detail description"> Writes on the output a list of the edges of the network
-</div><div class="parameter"><dl><dt class="header"><b>Parameters:</b></dt><dd class="item"><code class="name">graph</code><span class="separator"> - </span><span class="description">to print</span></dd><dd class="item"><code class="name">ps</code><span class="separator"> - </span><span class="description">output stream</span></dd></dl></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div></blockquote></div></div><p class="navbar bottom spacer"> </p><table class="navbar div bottom"><tr><td><div class="navbar div top"><span class="navbar item enabled"><a href="../../../../../overview-summary.html">Overview</a></span> <span class="navbar item enabled"><a href="package-summary.html">Package</a></span> <span class="navbar item active">Class</span> <span class="navbar item enabled"><a href="Utils-uses.html">Use</a></span> <span class="navbar item enabled"><a href="tree.html">Tree</a></span> <span class="navbar item enabled"><a href="../../../../../alphaindex-1.html">Index</a></span> <span class="navbar item enabled"><a href="../../../../../deprecated.html">Deprecated</a></span> <span class="navbar item enabled"><a href="../../../../../about.html">About</a></span></div></td></tr></table></body></html>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!--NewPage-->
+<HTML>
+<HEAD>
+<!-- Generated by javadoc (build 1.6.0_24) on Thu Apr 21 12:03:18 CEST 2011 -->
+<TITLE>
+Utils
+</TITLE>
+
+<META NAME="date" CONTENT="2011-04-21">
+
+<LINK REL ="stylesheet" TYPE="text/css" HREF="../../../../../stylesheet.css" TITLE="Style">
+
+<SCRIPT type="text/javascript">
+function windowTitle()
+{
+    if (location.href.indexOf('is-external=true') == -1) {
+        parent.document.title="Utils";
+    }
+}
+</SCRIPT>
+<NOSCRIPT>
+</NOSCRIPT>
+
+</HEAD>
+
+<BODY BGCOLOR="white" onload="windowTitle();">
+<HR>
+
+
+<!-- ========= START OF TOP NAVBAR ======= -->
+<A NAME="navbar_top"><!-- --></A>
+<A HREF="#skip-navbar_top" title="Skip navigation links"></A>
+<TABLE BORDER="0" WIDTH="100%" CELLPADDING="1" CELLSPACING="0" SUMMARY="">
+<TR>
+<TD COLSPAN=2 BGCOLOR="#EEEEFF" CLASS="NavBarCell1">
+<A NAME="navbar_top_firstrow"><!-- --></A>
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="3" SUMMARY="">
+  <TR ALIGN="center" VALIGN="top">
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../../../overview-summary.html"><FONT CLASS="NavBarFont1"><B>Overview</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="package-summary.html"><FONT CLASS="NavBarFont1"><B>Package</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#FFFFFF" CLASS="NavBarCell1Rev"> &nbsp;<FONT CLASS="NavBarFont1Rev"><B>Class</B></FONT>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="class-use/Utils.html"><FONT CLASS="NavBarFont1"><B>Use</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="package-tree.html"><FONT CLASS="NavBarFont1"><B>Tree</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../../../deprecated-list.html"><FONT CLASS="NavBarFont1"><B>Deprecated</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../../../index-files/index-1.html"><FONT CLASS="NavBarFont1"><B>Index</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../../../help-doc.html"><FONT CLASS="NavBarFont1"><B>Help</B></FONT></A>&nbsp;</TD>
+  </TR>
+</TABLE>
+</TD>
+<TD ALIGN="right" VALIGN="top" ROWSPAN=3><EM>
+</EM>
+</TD>
+</TR>
+
+<TR>
+<TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
+&nbsp;<A HREF="../../../../../ch/ethz/sg/cuttlefish/misc/TikzExporter.html" title="class in ch.ethz.sg.cuttlefish.misc"><B>PREV CLASS</B></A>&nbsp;
+&nbsp;<A HREF="../../../../../ch/ethz/sg/cuttlefish/misc/Vertex.html" title="class in ch.ethz.sg.cuttlefish.misc"><B>NEXT CLASS</B></A></FONT></TD>
+<TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
+  <A HREF="../../../../../index.html?ch/ethz/sg/cuttlefish/misc/Utils.html" target="_top"><B>FRAMES</B></A>  &nbsp;
+&nbsp;<A HREF="Utils.html" target="_top"><B>NO FRAMES</B></A>  &nbsp;
+&nbsp;<SCRIPT type="text/javascript">
+  <!--
+  if(window==top) {
+    document.writeln('<A HREF="../../../../../allclasses-noframe.html"><B>All Classes</B></A>');
+  }
+  //-->
+</SCRIPT>
+<NOSCRIPT>
+  <A HREF="../../../../../allclasses-noframe.html"><B>All Classes</B></A>
+</NOSCRIPT>
+
+
+</FONT></TD>
+</TR>
+<TR>
+<TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">
+  SUMMARY:&nbsp;NESTED&nbsp;|&nbsp;FIELD&nbsp;|&nbsp;<A HREF="#constructor_summary">CONSTR</A>&nbsp;|&nbsp;<A HREF="#method_summary">METHOD</A></FONT></TD>
+<TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">
+DETAIL:&nbsp;FIELD&nbsp;|&nbsp;<A HREF="#constructor_detail">CONSTR</A>&nbsp;|&nbsp;<A HREF="#method_detail">METHOD</A></FONT></TD>
+</TR>
+</TABLE>
+<A NAME="skip-navbar_top"></A>
+<!-- ========= END OF TOP NAVBAR ========= -->
+
+<HR>
+<!-- ======== START OF CLASS DATA ======== -->
+<H2>
+<FONT SIZE="-1">
+ch.ethz.sg.cuttlefish.misc</FONT>
+<BR>
+Class Utils</H2>
+<PRE>
+<A HREF="http://java.sun.com/javase/6/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang">java.lang.Object</A>
+  <IMG SRC="../../../../../resources/inherit.gif" ALT="extended by "><B>ch.ethz.sg.cuttlefish.misc.Utils</B>
+</PRE>
+<HR>
+<DL>
+<DT><PRE>public class <B>Utils</B><DT>extends <A HREF="http://java.sun.com/javase/6/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang">Object</A></DL>
+</PRE>
+
+<P>
+Class with static methods of general usage
+<P>
+
+<P>
+<DL>
+<DT><B>Author:</B></DT>
+  <DD>david</DD>
+</DL>
+<HR>
+
+<P>
+
+<!-- ======== CONSTRUCTOR SUMMARY ======== -->
+
+<A NAME="constructor_summary"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2">
+<B>Constructor Summary</B></FONT></TH>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD><CODE><B><A HREF="../../../../../ch/ethz/sg/cuttlefish/misc/Utils.html#Utils()">Utils</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+</TABLE>
+&nbsp;
+<!-- ========== METHOD SUMMARY =========== -->
+
+<A NAME="method_summary"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2">
+<B>Method Summary</B></FONT></TH>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static&nbsp;<A HREF="http://java.sun.com/javase/6/docs/api/java/awt/geom/Point2D.html?is-external=true" title="class or interface in java.awt.geom">Point2D</A></CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../../ch/ethz/sg/cuttlefish/misc/Utils.html#caculateCenter(edu.uci.ics.jung.algorithms.layout.Layout, edu.uci.ics.jung.graph.Graph)">caculateCenter</A></B>(edu.uci.ics.jung.algorithms.layout.Layout&lt;<A HREF="../../../../../ch/ethz/sg/cuttlefish/misc/Vertex.html" title="class in ch.ethz.sg.cuttlefish.misc">Vertex</A>,<A HREF="../../../../../ch/ethz/sg/cuttlefish/misc/Edge.html" title="class in ch.ethz.sg.cuttlefish.misc">Edge</A>&gt;&nbsp;layout,
+               edu.uci.ics.jung.graph.Graph&lt;<A HREF="../../../../../ch/ethz/sg/cuttlefish/misc/Vertex.html" title="class in ch.ethz.sg.cuttlefish.misc">Vertex</A>,<A HREF="../../../../../ch/ethz/sg/cuttlefish/misc/Edge.html" title="class in ch.ethz.sg.cuttlefish.misc">Edge</A>&gt;&nbsp;graph)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Calculates the center of masses of a network given its layout and as if the nodes had constant weight.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static&nbsp;boolean</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../../ch/ethz/sg/cuttlefish/misc/Utils.html#checkForDuplicatedVertexIds(ch.ethz.sg.cuttlefish.networks.BrowsableNetwork)">checkForDuplicatedVertexIds</A></B>(<A HREF="../../../../../ch/ethz/sg/cuttlefish/networks/BrowsableNetwork.html" title="class in ch.ethz.sg.cuttlefish.networks">BrowsableNetwork</A>&nbsp;network)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This method checks if there are duplicated vertices with the
+ same ID.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static&nbsp;<A HREF="http://java.sun.com/javase/6/docs/api/java/io/File.html?is-external=true" title="class or interface in java.io">File</A></CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../../ch/ethz/sg/cuttlefish/misc/Utils.html#createLocalFile(java.lang.String, java.lang.Object)">createLocalFile</A></B>(<A HREF="http://java.sun.com/javase/6/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</A>&nbsp;fileName,
+                <A HREF="http://java.sun.com/javase/6/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang">Object</A>&nbsp;object)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Creates a local version of a file contained in the jar</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../../ch/ethz/sg/cuttlefish/misc/Utils.html#deleteDoubleEdges(edu.uci.ics.jung.graph.DirectedSparseGraph)">deleteDoubleEdges</A></B>(edu.uci.ics.jung.graph.DirectedSparseGraph&lt;<A HREF="../../../../../ch/ethz/sg/cuttlefish/misc/Vertex.html" title="class in ch.ethz.sg.cuttlefish.misc">Vertex</A>,<A HREF="../../../../../ch/ethz/sg/cuttlefish/misc/Edge.html" title="class in ch.ethz.sg.cuttlefish.misc">Edge</A>&gt;&nbsp;graph)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Erases the multiple edges of a graph</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static&nbsp;<A HREF="http://java.sun.com/javase/6/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</A></CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../../ch/ethz/sg/cuttlefish/misc/Utils.html#ensureDecimal(double)">ensureDecimal</A></B>(double&nbsp;num)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Ensures that the string representaton of the number is not exponential.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../../ch/ethz/sg/cuttlefish/misc/Utils.html#reassignVertexIds(ch.ethz.sg.cuttlefish.networks.BrowsableNetwork)">reassignVertexIds</A></B>(<A HREF="../../../../../ch/ethz/sg/cuttlefish/networks/BrowsableNetwork.html" title="class in ch.ethz.sg.cuttlefish.networks">BrowsableNetwork</A>&nbsp;network)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This method assigns unique IDs to vertices.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../../ch/ethz/sg/cuttlefish/misc/Utils.html#writeEdgeList(edu.uci.ics.jung.graph.DirectedSparseGraph, java.io.PrintStream)">writeEdgeList</A></B>(edu.uci.ics.jung.graph.DirectedSparseGraph&lt;<A HREF="../../../../../ch/ethz/sg/cuttlefish/misc/Vertex.html" title="class in ch.ethz.sg.cuttlefish.misc">Vertex</A>,<A HREF="../../../../../ch/ethz/sg/cuttlefish/misc/Edge.html" title="class in ch.ethz.sg.cuttlefish.misc">Edge</A>&gt;&nbsp;graph,
+              <A HREF="http://java.sun.com/javase/6/docs/api/java/io/PrintStream.html?is-external=true" title="class or interface in java.io">PrintStream</A>&nbsp;ps)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Writes on the output a list of the edges of the network</TD>
+</TR>
+</TABLE>
+&nbsp;<A NAME="methods_inherited_from_class_java.lang.Object"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#EEEEFF" CLASS="TableSubHeadingColor">
+<TH ALIGN="left"><B>Methods inherited from class java.lang.<A HREF="http://java.sun.com/javase/6/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang">Object</A></B></TH>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD><CODE><A HREF="http://java.sun.com/javase/6/docs/api/java/lang/Object.html?is-external=true#equals(java.lang.Object)" title="class or interface in java.lang">equals</A>, <A HREF="http://java.sun.com/javase/6/docs/api/java/lang/Object.html?is-external=true#getClass()" title="class or interface in java.lang">getClass</A>, <A HREF="http://java.sun.com/javase/6/docs/api/java/lang/Object.html?is-external=true#hashCode()" title="class or interface in java.lang">hashCode</A>, <A HREF="http://java.sun.com/javase/6/docs/api/java/lang/Object.html?is-external=true#notify()" title="class or interface in java.lang">notify</A>, <A HREF="http://java.sun.com/javase/6/docs/api/java/lang/Object.html?is-external=true#notifyAll()" title="class or interface in java.lang">notifyAll</A>, <A HREF="http://java.sun.com/javase/6/docs/api/java/lang/Object.html?is-external=true#toString()" title="class or interface in java.lang">toString</A>, <A HREF="http://java.sun.com/javase/6/docs/api/java/lang/Object.html?is-external=true#wait()" title="class or interface in java.lang">wait</A>, <A HREF="http://java.sun.com/javase/6/docs/api/java/lang/Object.html?is-external=true#wait(long)" title="class or interface in java.lang">wait</A>, <A HREF="http://java.sun.com/javase/6/docs/api/java/lang/Object.html?is-external=true#wait(long, int)" title="class or interface in java.lang">wait</A></CODE></TD>
+</TR>
+</TABLE>
+&nbsp;
+<P>
+
+<!-- ========= CONSTRUCTOR DETAIL ======== -->
+
+<A NAME="constructor_detail"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="1"><FONT SIZE="+2">
+<B>Constructor Detail</B></FONT></TH>
+</TR>
+</TABLE>
+
+<A NAME="Utils()"><!-- --></A><H3>
+Utils</H3>
+<PRE>
+public <B>Utils</B>()</PRE>
+<DL>
+</DL>
+
+<!-- ============ METHOD DETAIL ========== -->
+
+<A NAME="method_detail"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="1"><FONT SIZE="+2">
+<B>Method Detail</B></FONT></TH>
+</TR>
+</TABLE>
+
+<A NAME="caculateCenter(edu.uci.ics.jung.algorithms.layout.Layout, edu.uci.ics.jung.graph.Graph)"><!-- --></A><H3>
+caculateCenter</H3>
+<PRE>
+public static <A HREF="http://java.sun.com/javase/6/docs/api/java/awt/geom/Point2D.html?is-external=true" title="class or interface in java.awt.geom">Point2D</A> <B>caculateCenter</B>(edu.uci.ics.jung.algorithms.layout.Layout&lt;<A HREF="../../../../../ch/ethz/sg/cuttlefish/misc/Vertex.html" title="class in ch.ethz.sg.cuttlefish.misc">Vertex</A>,<A HREF="../../../../../ch/ethz/sg/cuttlefish/misc/Edge.html" title="class in ch.ethz.sg.cuttlefish.misc">Edge</A>&gt;&nbsp;layout,
+                                     edu.uci.ics.jung.graph.Graph&lt;<A HREF="../../../../../ch/ethz/sg/cuttlefish/misc/Vertex.html" title="class in ch.ethz.sg.cuttlefish.misc">Vertex</A>,<A HREF="../../../../../ch/ethz/sg/cuttlefish/misc/Edge.html" title="class in ch.ethz.sg.cuttlefish.misc">Edge</A>&gt;&nbsp;graph)</PRE>
+<DL>
+<DD>Calculates the center of masses of a network given its layout and as if the nodes had constant weight.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>layout</CODE> - positions of the nodes of the networks<DD><CODE>graph</CODE> - network to analyze
+<DT><B>Returns:</B><DD>Point2D with the coordinates of the center</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="writeEdgeList(edu.uci.ics.jung.graph.DirectedSparseGraph, java.io.PrintStream)"><!-- --></A><H3>
+writeEdgeList</H3>
+<PRE>
+public static void <B>writeEdgeList</B>(edu.uci.ics.jung.graph.DirectedSparseGraph&lt;<A HREF="../../../../../ch/ethz/sg/cuttlefish/misc/Vertex.html" title="class in ch.ethz.sg.cuttlefish.misc">Vertex</A>,<A HREF="../../../../../ch/ethz/sg/cuttlefish/misc/Edge.html" title="class in ch.ethz.sg.cuttlefish.misc">Edge</A>&gt;&nbsp;graph,
+                                 <A HREF="http://java.sun.com/javase/6/docs/api/java/io/PrintStream.html?is-external=true" title="class or interface in java.io">PrintStream</A>&nbsp;ps)</PRE>
+<DL>
+<DD>Writes on the output a list of the edges of the network
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>graph</CODE> - to print<DD><CODE>ps</CODE> - output stream</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="createLocalFile(java.lang.String, java.lang.Object)"><!-- --></A><H3>
+createLocalFile</H3>
+<PRE>
+public static <A HREF="http://java.sun.com/javase/6/docs/api/java/io/File.html?is-external=true" title="class or interface in java.io">File</A> <B>createLocalFile</B>(<A HREF="http://java.sun.com/javase/6/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</A>&nbsp;fileName,
+                                   <A HREF="http://java.sun.com/javase/6/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang">Object</A>&nbsp;object)</PRE>
+<DL>
+<DD>Creates a local version of a file contained in the jar
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>fileName</CODE> - name of the file in the jar<DD><CODE>object</CODE> - usually the object that calls createLocalFile and has the
+ reference to the file
+<DT><B>Returns:</B><DD>exact local copy of the file</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="ensureDecimal(double)"><!-- --></A><H3>
+ensureDecimal</H3>
+<PRE>
+public static <A HREF="http://java.sun.com/javase/6/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</A> <B>ensureDecimal</B>(double&nbsp;num)</PRE>
+<DL>
+<DD>Ensures that the string representaton of the number is not exponential. 5 digits before "."
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>num</CODE> - 
+<DT><B>Returns:</B><DD>String with a decimal notation of the number</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="deleteDoubleEdges(edu.uci.ics.jung.graph.DirectedSparseGraph)"><!-- --></A><H3>
+deleteDoubleEdges</H3>
+<PRE>
+public static void <B>deleteDoubleEdges</B>(edu.uci.ics.jung.graph.DirectedSparseGraph&lt;<A HREF="../../../../../ch/ethz/sg/cuttlefish/misc/Vertex.html" title="class in ch.ethz.sg.cuttlefish.misc">Vertex</A>,<A HREF="../../../../../ch/ethz/sg/cuttlefish/misc/Edge.html" title="class in ch.ethz.sg.cuttlefish.misc">Edge</A>&gt;&nbsp;graph)</PRE>
+<DL>
+<DD>Erases the multiple edges of a graph
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>graph</CODE> - </DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="checkForDuplicatedVertexIds(ch.ethz.sg.cuttlefish.networks.BrowsableNetwork)"><!-- --></A><H3>
+checkForDuplicatedVertexIds</H3>
+<PRE>
+public static boolean <B>checkForDuplicatedVertexIds</B>(<A HREF="../../../../../ch/ethz/sg/cuttlefish/networks/BrowsableNetwork.html" title="class in ch.ethz.sg.cuttlefish.networks">BrowsableNetwork</A>&nbsp;network)</PRE>
+<DL>
+<DD>This method checks if there are duplicated vertices with the
+ same ID. If there are duplicated IDs then we cannot save the
+ network before reassigning unique IDs
+<P>
+<DD><DL>
+
+<DT><B>Returns:</B><DD>true if there are duplicated IDs, false otherwise.</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="reassignVertexIds(ch.ethz.sg.cuttlefish.networks.BrowsableNetwork)"><!-- --></A><H3>
+reassignVertexIds</H3>
+<PRE>
+public static void <B>reassignVertexIds</B>(<A HREF="../../../../../ch/ethz/sg/cuttlefish/networks/BrowsableNetwork.html" title="class in ch.ethz.sg.cuttlefish.networks">BrowsableNetwork</A>&nbsp;network)</PRE>
+<DL>
+<DD>This method assigns unique IDs to vertices.
+<P>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<!-- ========= END OF CLASS DATA ========= -->
+<HR>
+
+
+<!-- ======= START OF BOTTOM NAVBAR ====== -->
+<A NAME="navbar_bottom"><!-- --></A>
+<A HREF="#skip-navbar_bottom" title="Skip navigation links"></A>
+<TABLE BORDER="0" WIDTH="100%" CELLPADDING="1" CELLSPACING="0" SUMMARY="">
+<TR>
+<TD COLSPAN=2 BGCOLOR="#EEEEFF" CLASS="NavBarCell1">
+<A NAME="navbar_bottom_firstrow"><!-- --></A>
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="3" SUMMARY="">
+  <TR ALIGN="center" VALIGN="top">
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../../../overview-summary.html"><FONT CLASS="NavBarFont1"><B>Overview</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="package-summary.html"><FONT CLASS="NavBarFont1"><B>Package</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#FFFFFF" CLASS="NavBarCell1Rev"> &nbsp;<FONT CLASS="NavBarFont1Rev"><B>Class</B></FONT>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="class-use/Utils.html"><FONT CLASS="NavBarFont1"><B>Use</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="package-tree.html"><FONT CLASS="NavBarFont1"><B>Tree</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../../../deprecated-list.html"><FONT CLASS="NavBarFont1"><B>Deprecated</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../../../index-files/index-1.html"><FONT CLASS="NavBarFont1"><B>Index</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../../../help-doc.html"><FONT CLASS="NavBarFont1"><B>Help</B></FONT></A>&nbsp;</TD>
+  </TR>
+</TABLE>
+</TD>
+<TD ALIGN="right" VALIGN="top" ROWSPAN=3><EM>
+</EM>
+</TD>
+</TR>
+
+<TR>
+<TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
+&nbsp;<A HREF="../../../../../ch/ethz/sg/cuttlefish/misc/TikzExporter.html" title="class in ch.ethz.sg.cuttlefish.misc"><B>PREV CLASS</B></A>&nbsp;
+&nbsp;<A HREF="../../../../../ch/ethz/sg/cuttlefish/misc/Vertex.html" title="class in ch.ethz.sg.cuttlefish.misc"><B>NEXT CLASS</B></A></FONT></TD>
+<TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
+  <A HREF="../../../../../index.html?ch/ethz/sg/cuttlefish/misc/Utils.html" target="_top"><B>FRAMES</B></A>  &nbsp;
+&nbsp;<A HREF="Utils.html" target="_top"><B>NO FRAMES</B></A>  &nbsp;
+&nbsp;<SCRIPT type="text/javascript">
+  <!--
+  if(window==top) {
+    document.writeln('<A HREF="../../../../../allclasses-noframe.html"><B>All Classes</B></A>');
+  }
+  //-->
+</SCRIPT>
+<NOSCRIPT>
+  <A HREF="../../../../../allclasses-noframe.html"><B>All Classes</B></A>
+</NOSCRIPT>
+
+
+</FONT></TD>
+</TR>
+<TR>
+<TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">
+  SUMMARY:&nbsp;NESTED&nbsp;|&nbsp;FIELD&nbsp;|&nbsp;<A HREF="#constructor_summary">CONSTR</A>&nbsp;|&nbsp;<A HREF="#method_summary">METHOD</A></FONT></TD>
+<TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">
+DETAIL:&nbsp;FIELD&nbsp;|&nbsp;<A HREF="#constructor_detail">CONSTR</A>&nbsp;|&nbsp;<A HREF="#method_detail">METHOD</A></FONT></TD>
+</TR>
+</TABLE>
+<A NAME="skip-navbar_bottom"></A>
+<!-- ======== END OF BOTTOM NAVBAR ======= -->
+
+<HR>
+
+</BODY>
+</HTML>
