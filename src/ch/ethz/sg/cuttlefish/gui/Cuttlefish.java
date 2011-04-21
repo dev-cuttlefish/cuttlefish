@@ -94,7 +94,7 @@ public class Cuttlefish extends JFrame {
 		this.setSize(1000, 700); //The initial size of the user interface is slightly smaller than 1024x768
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setContentPane(getJContentPane());
-		this.add(menu, BorderLayout.NORTH);
+		//this.add(menu, BorderLayout.NORTH);
 		this.setTitle("Cuttlefish");
 	}
 
