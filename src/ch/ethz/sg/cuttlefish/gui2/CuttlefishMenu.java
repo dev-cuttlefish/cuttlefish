@@ -13,5 +13,6 @@ public class CuttlefishMenu extends JMenuBar {
 	
 	private void initialize() {
 		add(new OpenMenu(networkPanel));
+		add(new LayoutMenu(networkPanel));
 	}
 }
