@@ -20,6 +20,8 @@ import org.apache.commons.collections15.Predicate;
 import org.apache.commons.collections15.Transformer;
 
 import ch.ethz.sg.cuttlefish.gui2.INetworkBrowser;
+import ch.ethz.sg.cuttlefish.gui2.tasks.VisualizationViewerRepaintTask;
+import ch.ethz.sg.cuttlefish.gui2.tasks.VisualizationViewerWorker;
 import ch.ethz.sg.cuttlefish.layout.ARF2Layout;
 import ch.ethz.sg.cuttlefish.layout.FixedLayout;
 import ch.ethz.sg.cuttlefish.layout.KCoreLayout;
@@ -52,13 +54,13 @@ import edu.uci.ics.jung.visualization.control.ModalGraphMouse;
 import edu.uci.ics.jung.visualization.decorators.EdgeShape;
 import edu.uci.ics.jung.visualization.picking.ShapePickSupport;
 
-public class NetworkPanel  extends JPanel implements ItemListener,INetworkBrowser{
+public class NetworkPanel  extends JPanel implements ItemListener,INetworkBrowser, Runnable{
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 	private BrowsableNetwork network = null;
-	private VisualizationViewer<Vertex,Edge> visualizationViewer = null;
+	private VisualizationViewerWorker visualizationViewerWorker = null;
 	private EditingModalGraphMouse<Vertex,Edge> graphMouse;
 	private Layout<Vertex,Edge> layout = null;
 	private String layoutType = null;
@@ -72,17 +74,25 @@ public class NetworkPanel  extends JPanel implements ItemListener,INetworkBrowse
 		initialize();
 	}
 	
+	
 	/**
 	 * Getter for JUNG's VisualizationViewer, creating it if it does not exist
 	 * @return VisualizationViewer	
 	 */
-	private VisualizationViewer<Vertex,Edge> getVisualizationViewer() {
+	public VisualizationViewer<Vertex,Edge> getVisualizationViewer() {
 		//Create it if it didn't exist before
-		if (visualizationViewer == null) {
-			visualizationViewer = new VisualizationViewer<Vertex,Edge>(layout);
-			visualizationViewer.setGraphMouse(graphMouse);
+		if(visualizationViewerWorker == null) {
+			visualizationViewerWorker = new VisualizationViewerWorker(layout);
+			new Thread(visualizationViewerWorker).start();
 		}
-		return visualizationViewer;
+		while(visualizationViewerWorker.getVisualizationViewer() == null);
+		return visualizationViewerWorker.getVisualizationViewer();
+//		if (visualizationViewerWorker == null) {
+//			visualizationViewerWorker = new VisualizationViewerWorker<Vertex,Edge>(layout);
+//			new Thread(visualizationViewerWorker).start();
+//			visualizationViewerWorker.setGraphMouse(graphMouse);
+//		}
+//		return visualizationViewerWorker;
 	}
 	
 	private void initialize() {
@@ -96,14 +106,14 @@ public class NetworkPanel  extends JPanel implements ItemListener,INetworkBrowse
 		vertexFactory = new VertexFactory();
 	    edgeFactory = new EdgeFactory();
 	    
-		graphMouse = new EditingModalGraphMouse<Vertex,Edge>(visualizationViewer.getRenderContext(),
+		graphMouse = new EditingModalGraphMouse<Vertex,Edge>(getVisualizationViewer().getRenderContext(),
 				vertexFactory, edgeFactory);		
 		graphMouse.getAnnotatingPlugin().setAnnotationColor(getForeground());
 	
 		//starting on transforming mode, the most used
 		graphMouse.setMode(ModalGraphMouse.Mode.TRANSFORMING);
 		
-		RenderContext<Vertex,Edge> renderContext = visualizationViewer.getRenderContext();		
+		RenderContext<Vertex,Edge> renderContext = getVisualizationViewer().getRenderContext();		
 
 		/*Vertex rendering*/
 		Transformer<Vertex, Shape> vertexShapeTransformer = new Transformer<Vertex, Shape>() {			
@@ -187,10 +197,10 @@ public class NetworkPanel  extends JPanel implements ItemListener,INetworkBrowse
 		renderContext.setEdgeIncludePredicate(edgeIncludePredicate);
 		
 		/*mouse settings*/
-		visualizationViewer.setPickSupport(new ShapePickSupport<Vertex,Edge>(visualizationViewer));
-	    visualizationViewer.setGraphMouse(graphMouse);
-	    visualizationViewer.getPickedVertexState().addItemListener(this);
-	    visualizationViewer.setDoubleBuffered(true);
+		getVisualizationViewer().setPickSupport(new ShapePickSupport<Vertex,Edge>(getVisualizationViewer()));
+		getVisualizationViewer().setGraphMouse(graphMouse);
+		getVisualizationViewer().getPickedVertexState().addItemListener(this);
+		getVisualizationViewer().setDoubleBuffered(true);
 	
 	}
 	
@@ -201,7 +211,7 @@ public class NetworkPanel  extends JPanel implements ItemListener,INetworkBrowse
 
 	@Override
 	public void repaintViewer() {
-		visualizationViewer.repaint();	
+		visualizationViewerWorker.addTask(new VisualizationViewerRepaintTask(getVisualizationViewer() ));	
 	}
 	
 	/**
@@ -242,11 +252,11 @@ public class NetworkPanel  extends JPanel implements ItemListener,INetworkBrowse
 		network.updateAnnotations();
 		network.applyShadows();
 		System.gc();
-		visualizationViewer.repaint();
+		this.repaintViewer();
 	}
 
 	@Override
-	public void onNetworkChange() {
+	public void onNetworkChange() {		
 		System.out.println("Network changed " + network.getName());
 		
 		//concurrent modification of the ARF layouts for simulation position updates
@@ -263,7 +273,7 @@ public class NetworkPanel  extends JPanel implements ItemListener,INetworkBrowse
 		if (layout instanceof FixedLayout) {
 			((FixedLayout<Vertex, Edge>)layout).update();
 		}
-		getVisualizationViewer().repaint();
+		this.repaintViewer();
 	}
 
 	@Override
@@ -354,7 +364,7 @@ public class NetworkPanel  extends JPanel implements ItemListener,INetworkBrowse
 		
 		getVisualizationViewer().setGraphLayout(layout);
 
-		getVisualizationViewer().repaint();
+		this.repaintViewer();
 	}
 	
 	/**
@@ -381,28 +391,36 @@ public class NetworkPanel  extends JPanel implements ItemListener,INetworkBrowse
 
 	@Override
 	public BufferedImage getSnapshot() {
-		Dimension size = visualizationViewer.getSize();
+		Dimension size = getVisualizationViewer().getSize();
 	     BufferedImage img = new BufferedImage(size.width, size.height,
 	       BufferedImage.TYPE_INT_RGB);
 		 
 	     Graphics2D g2 = img.createGraphics();
-		 visualizationViewer.paint(g2);
+		 getVisualizationViewer().paint(g2);
 		 return img;
 	}
 
 	@Override
 	public Set<Vertex> getPickedVertices() {
-		return visualizationViewer.getPickedVertexState().getPicked();
+		return getVisualizationViewer().getPickedVertexState().getPicked();
 	}
 
 	@Override
 	public Set<Edge> getPickedEdges() {
-		return visualizationViewer.getPickedEdgeState().getPicked();
+		return getVisualizationViewer().getPickedEdgeState().getPicked();
 	}
 
 	@Override
 	public void itemStateChanged(ItemEvent e) {
 		refreshAnnotations();
 	}
+
+
+	@Override
+	public void run() {
+		// TODO Auto-generated method stub
+		while(true);
+	}
+
 
 }
