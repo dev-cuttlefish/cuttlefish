@@ -29,16 +29,16 @@ public class OpenMenu extends AbstractMenu {
 	private ActionListener networkSelectAction;
 	private HashMap<JMenuItem, Class<?> > networkClassMap;
 
-	public OpenMenu(NetworkPanel networkPanel) {
-		super(networkPanel);
+	public OpenMenu(NetworkPanel networkPanel, CuttlefishToolbars toolbars) {
+		super(networkPanel, toolbars);
 		initialize();
 		this.setText("Open");
 	}
 	
 	private void initialize() {
 		cxfNetwork = new JMenuItem("Cxf network");
-		dbNetwork = new JMenuItem("Interactive network");
-		interactiveNetwork = new JMenuItem("Database network");
+		interactiveNetwork = new JMenuItem("Interactive network");
+		dbNetwork = new JMenuItem("Database network");
 		pajekNetwork = new JMenuItem("Pajek network");
 		graphmlNetwork = new JMenuItem("GraphML network");
 		cffNetwork = new JMenuItem("CFF network");
@@ -82,28 +82,28 @@ public class OpenMenu extends AbstractMenu {
 		this.setVisible(true);
 		
 		cxfNetwork.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) { networkSelected(cxfNetwork); }
+			public void actionPerformed(ActionEvent e) { networkSelected(cxfNetwork);  toolbars.getSimulationToolbar().setVisible(false);}
 		});
 		dbNetwork.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) { networkSelected(dbNetwork); }
+			public void actionPerformed(ActionEvent e) { networkSelected(dbNetwork); toolbars.getSimulationToolbar().setVisible(false);}
 		});
 		interactiveNetwork.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) { networkSelected(interactiveNetwork); }
+			public void actionPerformed(ActionEvent e) { networkSelected(interactiveNetwork); toolbars.getSimulationToolbar().setVisible(true); }
 		});
 		pajekNetwork.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) { networkSelected(pajekNetwork); }
+			public void actionPerformed(ActionEvent e) { networkSelected(pajekNetwork); toolbars.getSimulationToolbar().setVisible(false);}
 		});
 		graphmlNetwork.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) { networkSelected(graphmlNetwork); }
+			public void actionPerformed(ActionEvent e) { networkSelected(graphmlNetwork); toolbars.getSimulationToolbar().setVisible(false);}
 		});
 		cffNetwork.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) { networkSelected(cffNetwork); }
+			public void actionPerformed(ActionEvent e) { networkSelected(cffNetwork); toolbars.getSimulationToolbar().setVisible(false); }
 		});
 		baSimulation.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) { networkSelected(baSimulation); }
+			public void actionPerformed(ActionEvent e) { networkSelected(baSimulation); toolbars.getSimulationToolbar().setVisible(true); }
 		});
 		testSimulation.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) { networkSelected(testSimulation); }
+			public void actionPerformed(ActionEvent e) { networkSelected(testSimulation); toolbars.getSimulationToolbar().setVisible(true); }
 		});
 	}
 	
