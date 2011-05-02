@@ -3,6 +3,8 @@ package ch.ethz.sg.cuttlefish.gui2.tasks;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
 
+import javax.swing.JOptionPane;
+
 import ch.ethz.sg.cuttlefish.misc.Edge;
 import ch.ethz.sg.cuttlefish.misc.Vertex;
 import edu.uci.ics.jung.algorithms.layout.Layout;
@@ -31,6 +33,7 @@ public class VisualizationViewerWorker implements Runnable {
 				tasks.take().run();
 				System.out.println("Finished a task");
 			} catch (InterruptedException e) {
+				JOptionPane.showMessageDialog(null, "Could not execute VisualizationViewer Task", "Visualization error", JOptionPane.ERROR_MESSAGE);
 				e.printStackTrace();
 			}
 		}
@@ -40,6 +43,7 @@ public class VisualizationViewerWorker implements Runnable {
 		try {
 			tasks.put(task);
 		} catch (InterruptedException e) {
+			JOptionPane.showMessageDialog(null, "Could add VisualizationTask", "Visualization error", JOptionPane.ERROR_MESSAGE);
 			e.printStackTrace();
 		}
 	}

@@ -288,8 +288,12 @@ public class NetworkPanel  extends JPanel implements ItemListener,INetworkBrowse
 
 	@Override
 	public void resumeLayout() {
-		// TODO Auto-generated method stub
-		
+		setLayout(layoutType);
+		for (Vertex v : getNetwork().getVertices())
+			if (!v.isFixed())
+				layout.lock(v, false);	
+			else
+				layout.setLocation(v, v.getPosition());
 	}
 
 	@Override

@@ -16,7 +16,6 @@ public class LayoutMenu extends AbstractMenu {
 	 */
 	private static final long serialVersionUID = 1L;
 	private ButtonGroup layoutButtons;
-	private JMenuItem startButton;
 	private JMenuItem stopButton;
 	private JMenuItem restartButton;
 	private JRadioButtonMenuItem arf;
@@ -32,9 +31,10 @@ public class LayoutMenu extends AbstractMenu {
 	private JRadioButtonMenuItem radialTree;
 	private Map<JRadioButtonMenuItem, String> layoutMap;
 
-	public LayoutMenu(NetworkPanel networkPanel) {
-		super(networkPanel);
+	public LayoutMenu(NetworkPanel networkPanel, CuttlefishToolbars toolbars) {
+		super(networkPanel, toolbars);
 		initialize();
+		restartButton.doClick();
 		this.setText("Layout");
 	}
 	
@@ -78,11 +78,9 @@ public class LayoutMenu extends AbstractMenu {
 		
 		arf.setSelected(true);
 		
-		startButton = new JMenuItem("Start");
 		stopButton = new JMenuItem("Stop");
 		restartButton = new JMenuItem("Restart");	
 		
-		this.add(startButton);
 		this.add(stopButton);
 		this.add(restartButton);
 		
@@ -99,6 +97,24 @@ public class LayoutMenu extends AbstractMenu {
 		this.add(circle);
 		this.add(tree);
 		this.add(radialTree);
+		
+		stopButton.addActionListener(new ActionListener() {			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				networkPanel.stopLayout();
+				stopButton.setEnabled(false);
+				restartButton.setEnabled(true);
+			}
+		});
+		
+		restartButton.addActionListener(new ActionListener() {			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				networkPanel.resumeLayout();
+				restartButton.setEnabled(false);
+				stopButton.setEnabled(true);
+			}
+		});
 		
 		arf.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) { layoutSelected(arf); }
