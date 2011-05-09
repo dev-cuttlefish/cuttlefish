@@ -34,9 +34,11 @@ public class Cuttlefish extends JFrame {
 		toolbars.getSimulationToolbar().addObserver(mainMenu.getViewMenu());
 		toolbars.getMouseToolbar().addObserver(mainMenu.getViewMenu());
 		toolbars.getZoomToolbar().addObserver(mainMenu.getViewMenu());
+		toolbars.getDBToolbar().addObserver(mainMenu.getViewMenu());
 		toolbars.getSimulationToolbar().setVisible(true);
 		toolbars.getMouseToolbar().setVisible(true);
 		toolbars.getZoomToolbar().setVisible(true);
+		toolbars.getDBToolbar().setVisible(true);
 		this.add(getNetworkPanel(), BorderLayout.CENTER);
 		this.setTitle("Cuttlefish 2.0");
 	}

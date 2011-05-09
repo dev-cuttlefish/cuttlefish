@@ -31,6 +31,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.swing.JOptionPane;
+
+import ch.ethz.sg.cuttlefish.gui.NetworkInitializer;
 import ch.ethz.sg.cuttlefish.misc.Edge;
 import ch.ethz.sg.cuttlefish.misc.Vertex;
 import edu.uci.ics.jung.graph.util.EdgeType;
@@ -70,6 +72,12 @@ public class DBNetwork extends BrowsableNetwork {
 		edgeTableColumns = new ArrayList<String>() {{ add("id_origin"); add("id_dest"); }};
 	}
 	
+
+	@Override
+	public void graphicalInit(NetworkInitializer initializer) {
+		initializer.initDBNetwork(this);
+	}
+	
 	/**
 	 * Setter for the node table
 	 * @param nodeTable
@@ -92,7 +100,8 @@ public class DBNetwork extends BrowsableNetwork {
 	 * @param userName
 	 * @param password
 	 */
-	public void connect(String dbName, String userName, String password) {
+	public boolean connect(String dbName, String userName, String password) {
+		boolean connected = true;
 		if (conn != null)
 			disConnect();
 		try
@@ -104,36 +113,41 @@ public class DBNetwork extends BrowsableNetwork {
 				JOptionPane.showMessageDialog(null,null,"Error connecting to database "+ dbName,JOptionPane.ERROR_MESSAGE);
 		}
 		catch (ClassNotFoundException cnfEx) {
+			connected = false;
 			JOptionPane.showMessageDialog(null,cnfEx.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
 			System.err.println("Class com.mysql.jdc.Driver not found");
-			cnfEx.printStackTrace();
+			//cnfEx.printStackTrace();			
 			}
 		catch (IllegalAccessException iaEx) {
+			connected = false;
 			JOptionPane.showMessageDialog(null,iaEx.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
 			System.err.println("Illegal access in database connection");
-			iaEx.printStackTrace();
+			//iaEx.printStackTrace();
 		}
 		catch (InstantiationException iEx) {
+			connected = false;
 			JOptionPane.showMessageDialog(null,iEx.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
 			System.err.println("Instantation exception");
-			iEx.printStackTrace();
+			//iEx.printStackTrace();
 		}
 		catch (SQLException sqlEx) {
+			connected = false;
 			JOptionPane.showMessageDialog(null,sqlEx.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
 			System.err.println("SQL error");
-			sqlEx.printStackTrace();
+			//sqlEx.printStackTrace();
 		}	
 		catch (HeadlessException hEx) {
+			connected = false;
 			JOptionPane.showMessageDialog(null,hEx.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
 			System.err.println("SQL error");
-			hEx.printStackTrace();
+			//hEx.printStackTrace();
 		}
 		getDirection();
 		schemaName = dbName.substring(dbName.indexOf('/')+1);
 		getNodeTables(schemaName);
 		getEdgeTables(schemaName);
 		System.out.println("Successfully connected to: " + dbName);
-		
+		return connected;
 	}
 	
 	/**
@@ -281,6 +295,30 @@ public class DBNetwork extends BrowsableNetwork {
 		String whereClause = query.substring(whereIndex+5);
 		result = result + " " + filter + " and " + whereClause;		
 		return result;
+	}
+	
+	/**
+	 * Checks if the provided node id exists in the database
+	 */
+	public boolean checkNodeId(String nodeId) {
+		String queryString = "SELECT * FROM " + nodeTable + " WHERE id = '" + nodeId + "'";
+		System.out.println(queryString);
+		Statement st;
+		try {
+			st = conn.createStatement();
+			ResultSet rs = st.executeQuery(queryString);
+			rs.last();
+			System.out.println(rs.getRow());
+			if(rs.getRow() == 1) {
+				return true;
+			} else {
+				return false;
+			}
+		} catch (SQLException e) {
+	    	JOptionPane.showMessageDialog(null,e.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
+			e.printStackTrace();
+		}		
+		return false;
 	}
 	
 	/**

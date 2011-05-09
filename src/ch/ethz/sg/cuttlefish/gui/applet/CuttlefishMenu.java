@@ -3,10 +3,10 @@ package ch.ethz.sg.cuttlefish.gui.applet;
 import javax.swing.JMenuBar;
 
 import ch.ethz.sg.cuttlefish.gui2.CuttlefishToolbars;
-import ch.ethz.sg.cuttlefish.gui2.HelpMenu;
-import ch.ethz.sg.cuttlefish.gui2.LayoutMenu;
 import ch.ethz.sg.cuttlefish.gui2.NetworkPanel;
-import ch.ethz.sg.cuttlefish.gui2.ViewMenu;
+import ch.ethz.sg.cuttlefish.gui2.menus.HelpMenu;
+import ch.ethz.sg.cuttlefish.gui2.menus.LayoutMenu;
+import ch.ethz.sg.cuttlefish.gui2.menus.ViewMenu;
 
 public class CuttlefishMenu extends JMenuBar {
 	private NetworkPanel networkPanel;
