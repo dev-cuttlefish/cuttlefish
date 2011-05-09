@@ -19,7 +19,7 @@ public class Cuttlefish extends Applet {
 	private NetworkPanel networkPanel = null;
 	private CuttlefishMenu menu = null;
 	private CuttlefishToolbars toolbars = null;
-	private final String NETWORK_FILE = "ch/ethz/sg/cuttlefish/examples/network2.cxf";
+	private final String NETWORK_FILE = "ch/ethz/sg/cuttlefish/examples/ABCP.cxf";
 	
     public void init() {
     	try {

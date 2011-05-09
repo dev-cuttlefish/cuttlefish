@@ -64,6 +64,6 @@ public class GraphMLNetwork extends BrowsableNetwork {
 				JOptionPane.showMessageDialog(null,ioEx.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
 				System.err.println("Input error in GraphML");
 				ioEx.printStackTrace();
-			}			
+			}
 	}
 }
