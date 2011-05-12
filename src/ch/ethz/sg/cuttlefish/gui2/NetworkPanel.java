@@ -26,6 +26,7 @@ import ch.ethz.sg.cuttlefish.layout.ARF2Layout;
 import ch.ethz.sg.cuttlefish.layout.FixedLayout;
 import ch.ethz.sg.cuttlefish.layout.KCoreLayout;
 import ch.ethz.sg.cuttlefish.layout.WeightedARF2Layout;
+import ch.ethz.sg.cuttlefish.misc.BrowsableForestNetwork;
 import ch.ethz.sg.cuttlefish.misc.DelegateForest;
 import ch.ethz.sg.cuttlefish.misc.Edge;
 import ch.ethz.sg.cuttlefish.misc.EdgeFactory;
@@ -343,21 +344,28 @@ public class NetworkPanel  extends JPanel implements ItemListener,INetworkBrowse
 			newLayout = new KCoreLayout<Vertex, Edge>(getNetwork(),layout);
 		if( selectedLayout.equalsIgnoreCase("TreeLayout"))
 		{
-			Forest<Vertex, Edge> forest = new DelegateForest<Vertex, Edge>();
+			Forest<Vertex, Edge> forest = new DelegateForest<Vertex, Edge>();		
 			new MinimumSpanningForest<Vertex, Edge>(getNetwork(), forest, getRoots());
-			newLayout = new TreeLayout<Vertex, Edge>(forest);	
+			BrowsableForestNetwork network = new BrowsableForestNetwork(forest);			
+			setNetwork(network);
+			newLayout = new TreeLayout<Vertex, Edge>(network);	
 		}
 		if( selectedLayout.equalsIgnoreCase("BaloonLayout")) 
 		{
-			Forest<Vertex, Edge> forest = new DelegateForest<Vertex, Edge>();
+			Forest<Vertex, Edge> forest = new DelegateForest<Vertex, Edge>();		
 			new MinimumSpanningForest<Vertex, Edge>(getNetwork(), forest, getRoots());
-			newLayout = new BalloonLayout<Vertex, Edge>(forest);	
+			BrowsableForestNetwork network = new BrowsableForestNetwork(forest);
+			setNetwork(network);
+			newLayout = new TreeLayout<Vertex, Edge>(network);			
 		}
 		if( selectedLayout.equalsIgnoreCase("RadialTreeLayout")) 
 		{
 			Forest<Vertex, Edge> forest = new DelegateForest<Vertex, Edge>();		
 			new MinimumSpanningForest<Vertex, Edge>(getNetwork(), forest, getRoots());
-			newLayout = new RadialTreeLayout<Vertex, Edge>(forest);	
+			BrowsableForestNetwork network = new BrowsableForestNetwork(forest);
+			setNetwork(network);
+			newLayout = new RadialTreeLayout<Vertex, Edge>(network);	
+			
 		}
 		layout = newLayout;
 		System.out.println("Set layout to " + layout.getClass());

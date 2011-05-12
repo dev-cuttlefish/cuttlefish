@@ -9,12 +9,12 @@ import javax.swing.JCheckBoxMenuItem;
 
 import ch.ethz.sg.cuttlefish.gui2.CuttlefishToolbars;
 import ch.ethz.sg.cuttlefish.gui2.NetworkPanel;
-import ch.ethz.sg.cuttlefish.gui2.Observer;
-import ch.ethz.sg.cuttlefish.gui2.Subject;
 import ch.ethz.sg.cuttlefish.gui2.toolbars.DBToolbar;
 import ch.ethz.sg.cuttlefish.gui2.toolbars.MouseToolbar;
 import ch.ethz.sg.cuttlefish.gui2.toolbars.SimulationToolbar;
 import ch.ethz.sg.cuttlefish.gui2.toolbars.ZoomToolbar;
+import ch.ethz.sg.cuttlefish.misc.Observer;
+import ch.ethz.sg.cuttlefish.misc.Subject;
 
 public class ViewMenu extends AbstractMenu implements ItemListener, Observer{	
 	
