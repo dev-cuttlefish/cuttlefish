@@ -8,8 +8,8 @@ import javax.swing.JMenu;
 import javax.swing.JToolBar;
 
 import ch.ethz.sg.cuttlefish.gui2.NetworkPanel;
-import ch.ethz.sg.cuttlefish.gui2.Observer;
-import ch.ethz.sg.cuttlefish.gui2.Subject;
+import ch.ethz.sg.cuttlefish.misc.Observer;
+import ch.ethz.sg.cuttlefish.misc.Subject;
 
 public abstract class AbstractToolbar extends JToolBar implements Subject {
 	/**

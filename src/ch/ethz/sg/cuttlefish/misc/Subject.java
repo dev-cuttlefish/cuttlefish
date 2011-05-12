@@ -1,4 +1,4 @@
-package ch.ethz.sg.cuttlefish.gui2;
+package ch.ethz.sg.cuttlefish.misc;
 
 public interface Subject {
 	public void addObserver(Observer o);
