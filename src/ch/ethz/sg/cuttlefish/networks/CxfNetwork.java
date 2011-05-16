@@ -302,6 +302,9 @@ public class CxfNetwork extends BrowsableNetwork {
     		
 		    else if (field.toLowerCase().contains("edge"))
 		    	token = parseEdge(token,field.toLowerCase(), it);
+	    	
+		    else if (field.toLowerCase().contains("label"))
+		    	token = parseLabel(token, field.toLowerCase(), it);
 
 		    else if (lineFields.get(0).equalsIgnoreCase("configuration:"))
     		{
@@ -380,6 +383,21 @@ public class CxfNetwork extends BrowsableNetwork {
 				|| lineLc.startsWith("removenode") || lineLc.startsWith("removeedge")
 				|| lineLc.startsWith("editnode") || lineLc.startsWith("editedge")
 				|| lineLc.startsWith("["));
+	}
+	
+	private Token parseLabel(Token t, String preField, Iterator<String> it) {
+		String field = null;
+		Token token = t;
+		token.type = preField.substring(0,preField.indexOf(":"));
+		while(it.hasNext()) {
+			field = it.next();
+			if (field.startsWith("name") ) {
+				token.label = field.substring(field.indexOf('{')+1,field.indexOf('}'));
+			} else {
+				System.out.println("WARNING: Improper use of label: " + token.line);
+			}
+		}
+		return token;
 	}
 	
 	private Token parseNode(Token t, String preField, Iterator<String> it){

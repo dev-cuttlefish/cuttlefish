@@ -33,16 +33,21 @@ import sun.security.action.GetLongAction;
 
 import ch.ethz.sg.cuttlefish.gui.NetworkInitializer;
 import ch.ethz.sg.cuttlefish.misc.Edge;
+import ch.ethz.sg.cuttlefish.misc.Observer;
+import ch.ethz.sg.cuttlefish.misc.Subject;
 import ch.ethz.sg.cuttlefish.misc.Vertex;
 import edu.uci.ics.jung.graph.util.EdgeType;
 
-public class InteractiveCxfNetwork extends CxfNetwork implements ISimulation{
+public class InteractiveCxfNetwork extends CxfNetwork implements ISimulation, Subject {
 	
 	boolean done;
 	private static final long serialVersionUID = 1L;
+	private ArrayList<Observer> observers;
+	private String currentLabel = "";
 
 	public InteractiveCxfNetwork(){
 		super();
+		observers = new ArrayList<Observer>();
 		setIncremental(true);
 	}
 	
@@ -195,7 +200,17 @@ public class InteractiveCxfNetwork extends CxfNetwork implements ISimulation{
 			}
 
 		}
+		else if (token.type.equalsIgnoreCase("label")) {
+			System.out.println("Changing frame label to " + token.label);
+			currentLabel = token.label;
+			for(Observer o : observers)
+				o.update(this);
+		}
 		return;
+	}
+	
+	public String getCurrentLabel() {
+		return currentLabel;
 	}
 	
 	private void editVertex(Vertex v, Token token){
@@ -273,6 +288,9 @@ public class InteractiveCxfNetwork extends CxfNetwork implements ISimulation{
 	public void reset() {
 		instructionIndex = 0;
 		reload();
+		currentLabel = "";
+		for(Observer o : observers)
+			o.update(this);
 		done = false;
 	}
 
@@ -305,5 +323,15 @@ public class InteractiveCxfNetwork extends CxfNetwork implements ISimulation{
 		}
 		done = !(instructionIndex < instructionTokens.size());
 		return !done;
+	}
+
+	@Override
+	public void addObserver(Observer o) {
+		observers.add(o);
+	}
+
+	@Override
+	public void removeObserver(Observer o) {
+		observers.remove(o);
 	}
 }

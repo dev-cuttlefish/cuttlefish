@@ -7,16 +7,21 @@ import java.awt.event.ItemListener;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
 import ch.ethz.sg.cuttlefish.gui2.NetworkPanel;
+import ch.ethz.sg.cuttlefish.misc.Observer;
+import ch.ethz.sg.cuttlefish.misc.Subject;
 import ch.ethz.sg.cuttlefish.networks.ISimulation;
+import ch.ethz.sg.cuttlefish.networks.InteractiveCxfNetwork;
 
-public class SimulationToolbar extends AbstractToolbar  {
+public class SimulationToolbar extends AbstractToolbar implements Observer  {
 
 	private JButton stepButton;
 	private JButton runButton;
 	private JButton resetButton;
+	private JLabel frameLabel;
 	private final String stepIconFile = "src/ch/ethz/sg/cuttlefish/gui2/icons/step.png";
 	private final String runIconFile = "src/ch/ethz/sg/cuttlefish/gui2/icons/run.png";
 	private final String resetIconFile = "src/ch/ethz/sg/cuttlefish/gui2/icons/stop.png";
@@ -49,6 +54,8 @@ public class SimulationToolbar extends AbstractToolbar  {
 		stepButton = new JButton(new ImageIcon(stepIconFile));
 		runButton = new JButton(new ImageIcon(runIconFile));
 		resetButton = new JButton(new ImageIcon(resetIconFile));
+		frameLabel = new JLabel();
+		frameLabel.setVisible(false);
 		stepButton.addActionListener(new ActionListener() {			
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -106,6 +113,16 @@ public class SimulationToolbar extends AbstractToolbar  {
 		this.add(resetButton);
 		this.add(runButton);
 		this.add(stepButton);
+		this.add(frameLabel);
+	}
+
+	@Override
+	public void update(Subject o) {
+		if(o instanceof InteractiveCxfNetwork) {
+			if(!frameLabel.isVisible())
+				frameLabel.setVisible(true);
+			frameLabel.setText(" " + ((InteractiveCxfNetwork)o).getCurrentLabel() + " ");
+		}
 	}
 
 
