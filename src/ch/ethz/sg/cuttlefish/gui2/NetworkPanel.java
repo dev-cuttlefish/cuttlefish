@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Set;
 
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import org.apache.commons.collections15.Predicate;

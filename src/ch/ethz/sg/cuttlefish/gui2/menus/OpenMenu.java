@@ -13,6 +13,7 @@ import ch.ethz.sg.cuttlefish.gui2.CuttlefishToolbars;
 import ch.ethz.sg.cuttlefish.gui2.NetworkPanel;
 import ch.ethz.sg.cuttlefish.misc.XMLUtil;
 import ch.ethz.sg.cuttlefish.networks.BrowsableNetwork;
+import ch.ethz.sg.cuttlefish.networks.InteractiveCxfNetwork;
 
 public class OpenMenu extends AbstractMenu {
 
@@ -151,6 +152,9 @@ public class OpenMenu extends AbstractMenu {
 		} catch (IllegalAccessException e) {
 			JOptionPane.showMessageDialog (null, "Could not create an instance of the selected network", "Network instance error", JOptionPane.ERROR_MESSAGE);
 			e.printStackTrace();
+		}
+		if(network instanceof InteractiveCxfNetwork) {
+			((InteractiveCxfNetwork)network).addObserver(toolbars.getSimulationToolbar());
 		}
 		network.graphicalInit(new NetworkInitializer() );
 		networkPanel.setNetwork(network);
