@@ -61,9 +61,9 @@ public class DelegateForest<V,E> extends GraphDecorator<V,E> implements Forest<V
 		if(delegate.getVertices().contains(v1) == false) {
 			throw new IllegalArgumentException("Tree must already contain "+v1);
 		}
-		if(delegate.getVertices().contains(v2)) {
-			throw new IllegalArgumentException("Tree must not already contain "+v2);
-		}
+		//if(delegate.getVertices().contains(v2)) {
+		//	throw new IllegalArgumentException("Tree must not already contain "+v2);
+		//}
 		return delegate.addEdge(e, v1, v2, edgeType);
 	}
 

@@ -253,37 +253,6 @@ public class InteractiveCxfNetwork extends CxfNetwork implements ISimulation, Su
 		return;
 	}
 	
-	public static void main(String argv[]){
-		InteractiveCxfNetwork network = new InteractiveCxfNetwork();
-		network.load(new File("testGraph1.cxf"));
-		
-		for (Vertex v : network.getVertices())
-		{
-			System.out.print(v.getId() + " ");
-			System.out.print(v.getLabel() + " ");
-			System.out.print(v.getFillColor() + " ");
-			System.out.print(v.getColor() + " ");
-			System.out.print(v.getSize() + " ");
-			System.out.print(v.getShape() + " ");
-			System.out.print(v.getVar1() + " ");
-			System.out.print(v.getVar2() + "\n");
-		}
-		
-		for(Edge e : network.getEdges())
-		{
-			for (Vertex v : network.getIncidentVertices(e))
-				System.out.print(v.getId() + " ");
-			System.out.print(e.getLabel() + " ");
-			System.out.print(e.getWeight() + " ");
-			System.out.print(e.getWidth() + " ");
-			System.out.print(e.getShape() + " ");
-			System.out.print(e.getVar1() + " ");
-			System.out.print(e.getVar2() + "\n");
-		}
-		
-		
-	}
-
 	@Override
 	public void reset() {
 		instructionIndex = 0;
