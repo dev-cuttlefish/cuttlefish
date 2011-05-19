@@ -27,13 +27,13 @@ import ch.ethz.sg.cuttlefish.layout.ARF2Layout;
 import ch.ethz.sg.cuttlefish.layout.FixedLayout;
 import ch.ethz.sg.cuttlefish.layout.KCoreLayout;
 import ch.ethz.sg.cuttlefish.layout.WeightedARF2Layout;
-import ch.ethz.sg.cuttlefish.misc.BrowsableForestNetwork;
 import ch.ethz.sg.cuttlefish.misc.DelegateForest;
 import ch.ethz.sg.cuttlefish.misc.Edge;
 import ch.ethz.sg.cuttlefish.misc.EdgeFactory;
 import ch.ethz.sg.cuttlefish.misc.MinimumSpanningForest;
 import ch.ethz.sg.cuttlefish.misc.Vertex;
 import ch.ethz.sg.cuttlefish.misc.VertexFactory;
+import ch.ethz.sg.cuttlefish.networks.BrowsableForestNetwork;
 import ch.ethz.sg.cuttlefish.networks.BrowsableNetwork;
 import ch.ethz.sg.cuttlefish.networks.CxfNetwork;
 import edu.uci.ics.jung.algorithms.layout.BalloonLayout;
@@ -170,9 +170,13 @@ public class NetworkPanel  extends JPanel implements ItemListener,INetworkBrowse
 				
 		
 		Transformer<Context<Graph<Vertex,Edge>, Edge>, Shape> edgeShapeTransformer = new Transformer<Context<Graph<Vertex,Edge>, Edge>, Shape>() {
-			public Shape transform(Context<Graph<Vertex, Edge>, Edge> context) {
+			public Shape transform(Context<Graph<Vertex, Edge>, Edge> context) {				
 				if(network instanceof CxfNetwork) {
 					if( ((CxfNetwork)network).getEdgeShape() == "line" ) {
+						return new EdgeShape.Line<Vertex, Edge>().transform(context);
+					}
+				} else if (network instanceof BrowsableForestNetwork) {
+					if( ((BrowsableForestNetwork)network).getEdgeShape() == "line" ) {
 						return new EdgeShape.Line<Vertex, Edge>().transform(context);
 					}
 				}
@@ -275,6 +279,14 @@ public class NetworkPanel  extends JPanel implements ItemListener,INetworkBrowse
 		if (layout instanceof FixedLayout) {
 			((FixedLayout<Vertex, Edge>)layout).update();
 		}
+		if (layout instanceof TreeLayout) {
+			stopLayout();
+			resumeLayout();
+		}
+		if (layout instanceof RadialTreeLayout) {
+			stopLayout();
+			resumeLayout();
+		}
 		this.repaintViewer();
 	}
 
@@ -344,28 +356,16 @@ public class NetworkPanel  extends JPanel implements ItemListener,INetworkBrowse
 		if (selectedLayout.equalsIgnoreCase("KCore"))
 			newLayout = new KCoreLayout<Vertex, Edge>(getNetwork(),layout);
 		if( selectedLayout.equalsIgnoreCase("TreeLayout"))
-		{
-			Forest<Vertex, Edge> forest = new DelegateForest<Vertex, Edge>();		
-			new MinimumSpanningForest<Vertex, Edge>(getNetwork(), forest, getRoots());
-			BrowsableForestNetwork network = new BrowsableForestNetwork(forest);			
+		{			
+			BrowsableForestNetwork network = new BrowsableForestNetwork((BrowsableNetwork)getNetwork());
 			setNetwork(network);
 			newLayout = new TreeLayout<Vertex, Edge>(network);	
 		}
-		if( selectedLayout.equalsIgnoreCase("BaloonLayout")) 
-		{
-			Forest<Vertex, Edge> forest = new DelegateForest<Vertex, Edge>();		
-			new MinimumSpanningForest<Vertex, Edge>(getNetwork(), forest, getRoots());
-			BrowsableForestNetwork network = new BrowsableForestNetwork(forest);
-			setNetwork(network);
-			newLayout = new TreeLayout<Vertex, Edge>(network);			
-		}
 		if( selectedLayout.equalsIgnoreCase("RadialTreeLayout")) 
 		{
-			Forest<Vertex, Edge> forest = new DelegateForest<Vertex, Edge>();		
-			new MinimumSpanningForest<Vertex, Edge>(getNetwork(), forest, getRoots());
-			BrowsableForestNetwork network = new BrowsableForestNetwork(forest);
+			BrowsableForestNetwork network = new BrowsableForestNetwork((BrowsableNetwork)getNetwork());			
 			setNetwork(network);
-			newLayout = new RadialTreeLayout<Vertex, Edge>(network);	
+			newLayout = new RadialTreeLayout<Vertex, Edge>(network);		
 			
 		}
 		layout = newLayout;
@@ -380,19 +380,7 @@ public class NetworkPanel  extends JPanel implements ItemListener,INetworkBrowse
 		this.repaintViewer();
 	}
 	
-	/**
-	 * This is a private method that checks all vertices and extracts
-	 * the root vertices into a collection.
-	 * @return A collection with the root nodes of the Forest
-	 */
-	private Collection<Vertex> getRoots() {
-		Collection<Vertex> roots = new ArrayList<Vertex>();
-		for(Vertex v : network.getVertices() ) {
-			if(v.isRoot() )
-				roots.add(v);
-		}
-		return roots;
-	}
+	
 
 	/**
 	 * Getter for the graph mouse associated to the panel

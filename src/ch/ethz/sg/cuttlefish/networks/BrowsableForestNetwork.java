@@ -1,8 +1,17 @@
-package ch.ethz.sg.cuttlefish.misc;
+package ch.ethz.sg.cuttlefish.networks;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
-import ch.ethz.sg.cuttlefish.networks.BrowsableNetwork;
+import ch.ethz.sg.cuttlefish.misc.DelegateForest;
+import ch.ethz.sg.cuttlefish.misc.Edge;
+import ch.ethz.sg.cuttlefish.misc.MinimumSpanningForest;
+import ch.ethz.sg.cuttlefish.misc.Vertex;
+import edu.uci.ics.jung.algorithms.layout.TreeLayout;
 import edu.uci.ics.jung.graph.Forest;
 import edu.uci.ics.jung.graph.SparseGraph;
 import edu.uci.ics.jung.graph.Tree;
@@ -15,22 +24,35 @@ import edu.uci.ics.jung.graph.util.Pair;
  * @author ptsankov
  *
  */
-public class BrowsableForestNetwork extends BrowsableNetwork implements Forest<Vertex,Edge> {
+public class BrowsableForestNetwork extends BrowsableNetwork implements ISimulation, Forest<Vertex,Edge> {
 
 	Forest<Vertex, Edge> forest;
+	BrowsableNetwork originalNetwork;
+	String edgeShape = "line";
 	/**
 	 * 
 	 */
 	
 	private static final long serialVersionUID = 1L;
 	
-	public BrowsableForestNetwork(Forest<Vertex, Edge> forest) {
+	public BrowsableForestNetwork(BrowsableNetwork originalNetwork) {		
+		Forest<Vertex, Edge> forest = new DelegateForest<Vertex, Edge>();		
+		new MinimumSpanningForest<Vertex, Edge>(originalNetwork, forest, getRoots(originalNetwork));
 		this.forest = forest;
-	}
+		this.originalNetwork = originalNetwork;
+	}	
 	
 	@Override
 	public int getEdgeCount() {
 		return forest.getEdgeCount();
+	}
+	
+	public String getEdgeShape() {
+		return edgeShape;
+	}
+	
+	public void setEdgeShape(String s) {
+		edgeShape = s;
 	}
 	
 	@Override
@@ -52,10 +74,34 @@ public class BrowsableForestNetwork extends BrowsableNetwork implements Forest<V
 		return forest.addEdge(e, v1, v2);
 	}
 	
+/*	private void deepCopyTree(Map<Vertex, List<Vertex> > visited, Vertex v) {
+		if(visited.containsKey(v)) return;
+		visited.put(v, new LinkedList<Vertex>() );
+		for(Edge e : getIncidentEdges(v) ) {
+			Vertex child = getDest(e);
+			if(child != v) {
+				visited.get(v).add(child);
+				deepCopyTree(visited, child);
+			}
+		}
+		forest.removeVertex(v);
+	}
+	
+	private void deepInsertTree(Map<Vertex, List<Vertex> > visited, Vertex v) {
+		for(Vertex v2 : visited.get(v) ) {			
+			Edge e = new Edge();
+			forest.addEdge(e, v, v2, EdgeType.DIRECTED);
+			deepInsertTree(visited, v2);
+		}
+	}*/
+	
 	@Override
 	public boolean addEdge(Edge e, Vertex v1, Vertex v2, EdgeType edge_type) {
-		forest.removeVertex(v2);
-		return forest.addEdge(e, v1, v2, edge_type);
+		//Map<Vertex, List<Vertex> > visited = new HashMap<Vertex, List<Vertex> >();
+		//deepCopyTree(visited, v2);
+		forest.addEdge(e, v1, v2, EdgeType.DIRECTED);
+		//deepInsertTree(visited, v2);
+		return true;
 	}
 	@Override
 	public boolean containsEdge(Edge edge) {
@@ -301,6 +347,49 @@ public class BrowsableForestNetwork extends BrowsableNetwork implements Forest<V
 	@Override
 	public Edge getParentEdge(Vertex v) {
 		return forest.getParentEdge(v);
+	}
+	
+	/**
+	 * This is a private method that checks all vertices and extracts
+	 * the root vertices into a collection.
+	 * @return A collection with the root nodes of the Forest
+	 */
+	private Collection<Vertex> getRoots(SparseGraph<Vertex, Edge> network) {
+		Collection<Vertex> roots = new ArrayList<Vertex>();
+		for(Vertex v : network.getVertices() ) {
+			boolean isRoot = true;
+			for(Edge e : network.getIncidentEdges(v) ) {
+				if(network.getDest(e) == v) {
+					isRoot = false;
+					break;
+				}
+			}
+			if(isRoot)
+				roots.add(v);
+		}
+		return roots;
+	}
+
+	@Override
+	public boolean update(long passedTime) {
+		boolean result = false;
+		if(originalNetwork instanceof ISimulation) {
+			result = ((ISimulation) originalNetwork).update(200);
+			Forest<Vertex, Edge> updatedForest = new DelegateForest<Vertex, Edge>();
+			new MinimumSpanningForest<Vertex, Edge>(originalNetwork, updatedForest , getRoots(originalNetwork));
+			forest = updatedForest;
+		}
+		return result;
+	}
+
+	@Override
+	public void reset() {
+		if(originalNetwork instanceof ISimulation) {
+			((ISimulation) originalNetwork).reset();
+			Forest<Vertex, Edge> updatedForest = new DelegateForest<Vertex, Edge>();
+			new MinimumSpanningForest<Vertex, Edge>(originalNetwork, updatedForest , getRoots(originalNetwork));			
+			forest = updatedForest;
+		}
 	}
 
 }
