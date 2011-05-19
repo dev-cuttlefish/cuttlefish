@@ -13,6 +13,8 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Set;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingDeque;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -22,6 +24,7 @@ import org.apache.commons.collections15.Transformer;
 
 import ch.ethz.sg.cuttlefish.gui2.INetworkBrowser;
 import ch.ethz.sg.cuttlefish.gui2.tasks.VisualizationViewerRepaintTask;
+import ch.ethz.sg.cuttlefish.gui2.tasks.VisualizationViewerTask;
 import ch.ethz.sg.cuttlefish.gui2.tasks.VisualizationViewerWorker;
 import ch.ethz.sg.cuttlefish.layout.ARF2Layout;
 import ch.ethz.sg.cuttlefish.layout.FixedLayout;
@@ -63,6 +66,7 @@ public class NetworkPanel  extends JPanel implements ItemListener,INetworkBrowse
 	private static final long serialVersionUID = 1L;
 	private BrowsableNetwork network = null;
 	private VisualizationViewerWorker visualizationViewerWorker = null;
+	private BlockingQueue<VisualizationViewerTask> viewerTasks;
 	private EditingModalGraphMouse<Vertex,Edge> graphMouse;
 	private Layout<Vertex,Edge> layout = null;
 	private String layoutType = null;
@@ -84,7 +88,8 @@ public class NetworkPanel  extends JPanel implements ItemListener,INetworkBrowse
 	public VisualizationViewer<Vertex,Edge> getVisualizationViewer() {
 		//Create it if it didn't exist before
 		if(visualizationViewerWorker == null) {
-			visualizationViewerWorker = new VisualizationViewerWorker(layout);
+			viewerTasks = new LinkedBlockingDeque<VisualizationViewerTask>();
+			visualizationViewerWorker = new VisualizationViewerWorker(layout, viewerTasks);
 			new Thread(visualizationViewerWorker).start();
 		}
 		while(visualizationViewerWorker.getVisualizationViewer() == null);
@@ -217,7 +222,12 @@ public class NetworkPanel  extends JPanel implements ItemListener,INetworkBrowse
 
 	@Override
 	public void repaintViewer() {
-		visualizationViewerWorker.addTask(new VisualizationViewerRepaintTask(getVisualizationViewer() ));	
+		try {
+			viewerTasks.put(new VisualizationViewerRepaintTask(getVisualizationViewer()));
+		} catch (InterruptedException e) {
+			System.err.println("Could not add a task to the visualization viewer");
+			e.printStackTrace();
+		}
 	}
 	
 	/**

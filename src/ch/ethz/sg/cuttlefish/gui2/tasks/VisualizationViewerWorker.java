@@ -17,11 +17,11 @@ public class VisualizationViewerWorker implements Runnable {
 	private boolean running;
 	private Layout<Vertex, Edge> layout;
 	
-	public VisualizationViewerWorker(Layout<Vertex, Edge> layout) {
+	public VisualizationViewerWorker(Layout<Vertex, Edge> layout, BlockingQueue<VisualizationViewerTask> tasks) {
 		System.out.println("Initializing worker");
+		this.tasks = tasks;
 		running = true;		
 		this.layout = layout;
-		tasks = new LinkedBlockingDeque<VisualizationViewerTask>();
 	}
 	
 	@Override
@@ -39,7 +39,7 @@ public class VisualizationViewerWorker implements Runnable {
 		}
 	}
 	
-	public void addTask(VisualizationViewerTask task) {
+/*	public void addTask(VisualizationViewerTask task) {
 		try {
 			tasks.put(task);
 		} catch (InterruptedException e) {
@@ -47,9 +47,9 @@ public class VisualizationViewerWorker implements Runnable {
 			e.printStackTrace();
 		}
 	}
-
+*/
 	public VisualizationViewer<Vertex, Edge> getVisualizationViewer() {
-		return visualizationViewer;		
+		return visualizationViewer;					
 	}
 
 }
