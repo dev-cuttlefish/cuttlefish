@@ -22,9 +22,9 @@ public class SimulationToolbar extends AbstractToolbar implements Observer  {
 	private JButton runButton;
 	private JButton resetButton;
 	private JLabel frameLabel;
-	private final String stepIconFile = "src/ch/ethz/sg/cuttlefish/gui2/icons/step.png";
-	private final String runIconFile = "src/ch/ethz/sg/cuttlefish/gui2/icons/run.png";
-	private final String resetIconFile = "src/ch/ethz/sg/cuttlefish/gui2/icons/stop.png";
+	private final String stepIconFile = "icons/step.png";
+	private final String runIconFile = "icons/run.png";
+	private final String resetIconFile = "icons/stop.png";
 	private long sleepTime = 200;
 	private Thread thread = null;
 	private boolean isRunning = false;
@@ -51,9 +51,9 @@ public class SimulationToolbar extends AbstractToolbar implements Observer  {
 	}
 	
 	private void initialize() {
-		stepButton = new JButton(new ImageIcon(stepIconFile));
-		runButton = new JButton(new ImageIcon(runIconFile));
-		resetButton = new JButton(new ImageIcon(resetIconFile));
+		stepButton = new JButton(new ImageIcon(getClass().getResource(stepIconFile)));
+		runButton = new JButton(new ImageIcon(getClass().getResource(runIconFile)));
+		resetButton = new JButton(new ImageIcon(getClass().getResource(resetIconFile)));
 		frameLabel = new JLabel();
 		frameLabel.setVisible(false);
 		stepButton.addActionListener(new ActionListener() {			
