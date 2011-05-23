@@ -5,10 +5,13 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Paint;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.Stroke;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
@@ -34,6 +37,8 @@ import ch.ethz.sg.cuttlefish.misc.VertexFactory;
 import ch.ethz.sg.cuttlefish.networks.BrowsableForestNetwork;
 import ch.ethz.sg.cuttlefish.networks.BrowsableNetwork;
 import ch.ethz.sg.cuttlefish.networks.CxfNetwork;
+import edu.uci.ics.jung.algorithms.layout.AbstractLayout;
+import edu.uci.ics.jung.algorithms.layout.CircleLayout;
 import edu.uci.ics.jung.algorithms.layout.FRLayout2;
 import edu.uci.ics.jung.algorithms.layout.ISOMLayout;
 import edu.uci.ics.jung.algorithms.layout.KKLayout;
@@ -45,12 +50,14 @@ import edu.uci.ics.jung.graph.Forest;
 import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.graph.SparseGraph;
 import edu.uci.ics.jung.graph.util.Context;
+import edu.uci.ics.jung.visualization.Layer;
 import edu.uci.ics.jung.visualization.RenderContext;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 import edu.uci.ics.jung.visualization.control.EditingModalGraphMouse;
 import edu.uci.ics.jung.visualization.control.ModalGraphMouse;
 import edu.uci.ics.jung.visualization.decorators.EdgeShape;
 import edu.uci.ics.jung.visualization.picking.ShapePickSupport;
+import edu.uci.ics.jung.visualization.transform.MutableTransformer;
 
 public class NetworkPanel  extends JPanel implements ItemListener,INetworkBrowser, Runnable{
 	/**
@@ -355,7 +362,9 @@ public class NetworkPanel  extends JPanel implements ItemListener,INetworkBrowse
 		if (selectedLayout.equalsIgnoreCase("Fruchterman-Reingold"))
 			newLayout = new FRLayout2<Vertex, Edge>(getNetwork());
 		if (selectedLayout.equalsIgnoreCase("ISOMLayout"))
-			newLayout = new ISOMLayout<Vertex, Edge>(getNetwork());		
+			newLayout = new ISOMLayout<Vertex, Edge>(getNetwork());
+		if (selectedLayout.equalsIgnoreCase("CircleLayout") )
+			newLayout = new CircleLayout<Vertex, Edge>(getNetwork());
 		if (selectedLayout.equalsIgnoreCase("Fixed"))
 			newLayout = new FixedLayout<Vertex, Edge>(getNetwork(),layout);
 		if (selectedLayout.equalsIgnoreCase("KCore"))
@@ -375,14 +384,52 @@ public class NetworkPanel  extends JPanel implements ItemListener,INetworkBrowse
 		}
 		layout = newLayout;
 		System.out.println("Set layout to " + layout.getClass());
-		
 		for (Vertex v : getNetwork().getVertices())
 			if (v.isFixed())
 				layout.lock(v,true);
-		
 		getVisualizationViewer().setGraphLayout(layout);
-
-		this.repaintViewer();
+		centerGraph();
+        this.repaintViewer();
+		
+	}
+	
+	/**
+	 * This method finds the location of the graph relative
+	 * to the viewer and shifts is so that it appears in the
+	 * center of JUNG's VisualizationViewer.
+	 */
+	private void centerGraph() {
+		
+		VisualizationViewer<Vertex, Edge> vv = getVisualizationViewer();
+		MutableTransformer layout2 = vv.getRenderContext().getMultiLayerTransformer().getTransformer(Layer.LAYOUT);
+		double top = Double.MAX_VALUE;
+		double bottom = Double.MAX_VALUE;
+		double left = Double.MAX_VALUE;
+		double right = Double.MAX_VALUE;
+		
+		for(Vertex v : getNetwork().getVertices() ) {
+			Point2D p;
+			if (layout instanceof AbstractLayout )
+				p = ( (AbstractLayout<Vertex, Edge>) layout).transform(v);
+			else
+				p = ( (TreeLayout<Vertex, Edge>) layout).transform(v);
+			Point2D invP = layout2.transform(p);
+			if(top < invP.getY() || top == Double.MAX_VALUE)
+				top = invP.getY();
+			if(bottom > invP.getY() || bottom == Double.MAX_VALUE)
+				bottom = invP.getY();
+			if(left  > invP.getX() || left == Double.MAX_VALUE)
+				left = invP.getX();
+			if(right < invP.getX() || right == Double.MAX_VALUE)
+				right = invP.getX();			
+		}
+		
+		//double scale = vv.getRenderContext().getMultiLayerTransformer().getTransformer(Layer.VIEW).getScale();
+		double deltaX = getVisualizationViewer().getCenter().getX() - (right+left)/2 ;
+		double deltaY = getVisualizationViewer().getCenter().getY() - (top+bottom)/2;
+		System.out.println("Deltas " + deltaX + " " + deltaY);        
+        if( !Double.isInfinite(deltaX) && !Double.isInfinite(deltaY))
+        	layout2.translate(deltaX, deltaY);
 	}
 	
 	
