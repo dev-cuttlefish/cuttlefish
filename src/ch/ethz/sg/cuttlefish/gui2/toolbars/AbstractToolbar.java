@@ -1,10 +1,8 @@
 package ch.ethz.sg.cuttlefish.gui2.toolbars;
 
-import java.awt.BorderLayout;
-import java.awt.event.ActionListener;
+
 import java.util.LinkedList;
 
-import javax.swing.JMenu;
 import javax.swing.JToolBar;
 
 import ch.ethz.sg.cuttlefish.gui2.NetworkPanel;

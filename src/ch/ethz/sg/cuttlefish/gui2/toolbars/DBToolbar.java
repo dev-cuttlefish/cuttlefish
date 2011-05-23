@@ -1,6 +1,5 @@
 package ch.ethz.sg.cuttlefish.gui2.toolbars;
 
-import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
@@ -13,15 +12,17 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JTextField;
+
 
 import ch.ethz.sg.cuttlefish.gui2.NetworkPanel;
 import ch.ethz.sg.cuttlefish.networks.DBNetwork;
-import ch.ethz.sg.cuttlefish.networks.ISimulation;
 
 public class DBToolbar extends AbstractToolbar {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 479370821385607442L;
 	private JButton exploreNetwork = null;
 	private JButton exploreNode = null;
 	private JButton expand = null;
@@ -31,7 +32,6 @@ public class DBToolbar extends AbstractToolbar {
 	private JComboBox nodeTables = null;
 	private JComboBox edgeTables = null;
 	private boolean enabled = false;
-	private JButton[] buttons;
 	private boolean nodeTableInitialized = false;
 	private boolean edgeTableInitialized = false;
 	

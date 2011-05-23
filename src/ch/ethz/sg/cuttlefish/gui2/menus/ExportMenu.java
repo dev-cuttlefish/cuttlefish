@@ -9,7 +9,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
@@ -20,17 +19,19 @@ import com.sun.image.codec.jpeg.JPEGCodec;
 import com.sun.image.codec.jpeg.JPEGEncodeParam;
 import com.sun.image.codec.jpeg.JPEGImageEncoder;
 
-import ch.ethz.sg.cuttlefish.gui.widgets.ExportPanel;
 import ch.ethz.sg.cuttlefish.gui2.CuttlefishToolbars;
 import ch.ethz.sg.cuttlefish.gui2.NetworkPanel;
 import ch.ethz.sg.cuttlefish.misc.TikzExporter;
 import ch.ethz.sg.cuttlefish.networks.BrowsableNetwork;
-import ch.ethz.sg.cuttlefish.networks.ISimulation;
 import ch.ethz.sg.cuttlefish.networks.InteractiveCxfNetwork;
 import edu.uci.ics.jung.algorithms.util.IterativeContext;
 
 public class ExportMenu extends AbstractMenu {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 3697550568255024207L;
 	private JMenuItem toJpeg;
 	private JMenuItem toTikz;
 	private JFileChooser snapshotFileChooser;

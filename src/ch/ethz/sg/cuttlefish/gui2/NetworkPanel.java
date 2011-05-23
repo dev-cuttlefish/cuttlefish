@@ -10,13 +10,10 @@ import java.awt.Stroke;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
 
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import org.apache.commons.collections15.Predicate;
@@ -30,17 +27,13 @@ import ch.ethz.sg.cuttlefish.layout.ARF2Layout;
 import ch.ethz.sg.cuttlefish.layout.FixedLayout;
 import ch.ethz.sg.cuttlefish.layout.KCoreLayout;
 import ch.ethz.sg.cuttlefish.layout.WeightedARF2Layout;
-import ch.ethz.sg.cuttlefish.misc.DelegateForest;
 import ch.ethz.sg.cuttlefish.misc.Edge;
 import ch.ethz.sg.cuttlefish.misc.EdgeFactory;
-import ch.ethz.sg.cuttlefish.misc.MinimumSpanningForest;
 import ch.ethz.sg.cuttlefish.misc.Vertex;
 import ch.ethz.sg.cuttlefish.misc.VertexFactory;
 import ch.ethz.sg.cuttlefish.networks.BrowsableForestNetwork;
 import ch.ethz.sg.cuttlefish.networks.BrowsableNetwork;
 import ch.ethz.sg.cuttlefish.networks.CxfNetwork;
-import edu.uci.ics.jung.algorithms.layout.BalloonLayout;
-import edu.uci.ics.jung.algorithms.layout.CircleLayout;
 import edu.uci.ics.jung.algorithms.layout.FRLayout2;
 import edu.uci.ics.jung.algorithms.layout.ISOMLayout;
 import edu.uci.ics.jung.algorithms.layout.KKLayout;
@@ -362,12 +355,7 @@ public class NetworkPanel  extends JPanel implements ItemListener,INetworkBrowse
 		if (selectedLayout.equalsIgnoreCase("Fruchterman-Reingold"))
 			newLayout = new FRLayout2<Vertex, Edge>(getNetwork());
 		if (selectedLayout.equalsIgnoreCase("ISOMLayout"))
-			newLayout = new ISOMLayout<Vertex, Edge>(getNetwork());
-		if (selectedLayout.equalsIgnoreCase("CircleLayout"))
-		{
-			newLayout = new CircleLayout<Vertex, Edge>(getNetwork());
-			((CircleLayout)newLayout).setRadius(getNetwork().getVertexCount() * 10);
-		}
+			newLayout = new ISOMLayout<Vertex, Edge>(getNetwork());		
 		if (selectedLayout.equalsIgnoreCase("Fixed"))
 			newLayout = new FixedLayout<Vertex, Edge>(getNetwork(),layout);
 		if (selectedLayout.equalsIgnoreCase("KCore"))

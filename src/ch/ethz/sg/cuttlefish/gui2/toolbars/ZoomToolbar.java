@@ -6,12 +6,14 @@ import java.awt.event.MouseWheelEvent;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JSlider;
-
 import ch.ethz.sg.cuttlefish.gui2.NetworkPanel;
 
 public class ZoomToolbar extends AbstractToolbar {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 5121768424551966519L;
 	private JButton zoomInButton;
 	private JButton zoomOutButton;
 	//private JSlider zoomSlider;

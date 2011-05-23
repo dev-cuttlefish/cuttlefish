@@ -21,6 +21,10 @@ import ch.ethz.sg.cuttlefish.networks.DBNetwork;
 
 public class DBExploreNode extends JFrame {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -8502348690688977278L;
 	private NetworkPanel networkPanel;
 	private DBNetwork dbNetwork;
 	private JFrame exploreNode;

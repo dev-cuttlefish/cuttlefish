@@ -9,6 +9,10 @@ import ch.ethz.sg.cuttlefish.gui2.menus.OpenMenu;
 import ch.ethz.sg.cuttlefish.gui2.menus.ViewMenu;
 
 public class CuttlefishMenu extends JMenuBar {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -8478131371832666397L;
 	private NetworkPanel networkPanel;
 	private CuttlefishToolbars toolbars;
 	private OpenMenu openMenu;

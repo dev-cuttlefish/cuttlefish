@@ -1,7 +1,5 @@
 package ch.ethz.sg.cuttlefish.gui2.menus;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
@@ -18,6 +16,10 @@ import ch.ethz.sg.cuttlefish.misc.Subject;
 
 public class ViewMenu extends AbstractMenu implements ItemListener, Observer{	
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -4770350822967430897L;
 	JCheckBoxMenuItem mouseToolbarCheckbox;
 	JCheckBoxMenuItem zoomToolbarCheckbox;
 	JCheckBoxMenuItem simulationToolbarCheckbox;
