@@ -1,21 +1,21 @@
 package ch.ethz.sg.cuttlefish.gui2.toolbars;
 
-import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
-import java.net.URL;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 
-import ch.ethz.sg.cuttlefish.gui.applet.Cuttlefish;
 import ch.ethz.sg.cuttlefish.gui2.NetworkPanel;
 
 import edu.uci.ics.jung.visualization.control.ModalGraphMouse;
 
 public class MouseToolbar extends AbstractToolbar {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 6548020765695598900L;
 	private JButton transformingButton;
 	private JButton pickingButton;
 	private JButton editingButton;

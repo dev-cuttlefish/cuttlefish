@@ -1,8 +1,6 @@
 package ch.ethz.sg.cuttlefish.gui2.tasks;
 
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingDeque;
-
 import javax.swing.JOptionPane;
 
 import ch.ethz.sg.cuttlefish.misc.Edge;

@@ -3,7 +3,6 @@ package ch.ethz.sg.cuttlefish.gui2.menus;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.HashMap;
-import java.util.Map;
 
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
@@ -11,7 +10,6 @@ import javax.swing.JOptionPane;
 import ch.ethz.sg.cuttlefish.gui.NetworkInitializer;
 import ch.ethz.sg.cuttlefish.gui2.CuttlefishToolbars;
 import ch.ethz.sg.cuttlefish.gui2.NetworkPanel;
-import ch.ethz.sg.cuttlefish.misc.XMLUtil;
 import ch.ethz.sg.cuttlefish.networks.BrowsableNetwork;
 import ch.ethz.sg.cuttlefish.networks.InteractiveCxfNetwork;
 
@@ -29,7 +27,7 @@ public class OpenMenu extends AbstractMenu {
 	private JMenuItem cffNetwork;
 	private JMenuItem testSimulation;		
 	private JMenuItem baSimulation;
-	private ActionListener networkSelectAction;
+	
 	private HashMap<JMenuItem, Class<?> > networkClassMap;
 
 	public OpenMenu(NetworkPanel networkPanel, CuttlefishToolbars toolbars) {

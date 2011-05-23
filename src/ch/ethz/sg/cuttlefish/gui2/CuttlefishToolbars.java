@@ -1,19 +1,8 @@
 package ch.ethz.sg.cuttlefish.gui2;
 
-import java.awt.ActiveEvent;
-import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
 
-import javax.swing.Action;
-import javax.swing.BoxLayout;
 import javax.swing.JPanel;
-
-import org.w3c.dom.events.Event;
-import org.w3c.dom.events.EventException;
-import org.w3c.dom.events.EventListener;
-import org.w3c.dom.events.EventTarget;
 
 import ch.ethz.sg.cuttlefish.gui2.toolbars.DBToolbar;
 import ch.ethz.sg.cuttlefish.gui2.toolbars.MouseToolbar;

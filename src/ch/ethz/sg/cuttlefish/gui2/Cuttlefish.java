@@ -1,15 +1,14 @@
 package ch.ethz.sg.cuttlefish.gui2;
 
 import java.awt.BorderLayout;
-import java.awt.GridLayout;
-
 import javax.swing.JFrame;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JPanel;
+
 
 public class Cuttlefish extends JFrame {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2232589699110179555L;
 	private CuttlefishMenu mainMenu = null;
 	private CuttlefishToolbars toolbars = null;
 	private NetworkPanel networkPanel = null;

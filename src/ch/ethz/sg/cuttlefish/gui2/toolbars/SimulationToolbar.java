@@ -1,9 +1,7 @@
 package ch.ethz.sg.cuttlefish.gui2.toolbars;
 
-import java.awt.ItemSelectable;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemListener;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -18,6 +16,10 @@ import ch.ethz.sg.cuttlefish.networks.InteractiveCxfNetwork;
 
 public class SimulationToolbar extends AbstractToolbar implements Observer  {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -103163832608026663L;
 	private JButton stepButton;
 	private JButton runButton;
 	private JButton resetButton;
