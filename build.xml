@@ -53,6 +53,9 @@
   	  index="true"
   	  filesetmanifest="merge">
   	  <fileset dir="${classes}"/>
+  	  <fileset dir="${src}">
+		<include name="ch/ethz/sg/cuttlefish/gui2/toolbars/icons/*.png" />
+  	  </fileset> 
   	  <zipgroupfileset dir="${lib}" includes="*.jar" />
   	</jar>
 

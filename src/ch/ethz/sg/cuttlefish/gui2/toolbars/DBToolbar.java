@@ -35,10 +35,10 @@ public class DBToolbar extends AbstractToolbar {
 	private boolean nodeTableInitialized = false;
 	private boolean edgeTableInitialized = false;
 	
-	private static String expandIcon = "src/ch/ethz/sg/cuttlefish/gui2/icons/plus.png";
-	private static String expandBackIcon = "src/ch/ethz/sg/cuttlefish/gui2/icons/plus_back.png";
-	private static String shrinkIcon = "src/ch/ethz/sg/cuttlefish/gui2/icons/minus.png";
-	private static String shrinkBackIcon = "src/ch/ethz/sg/cuttlefish/gui2/icons/minus_back.png";
+	private static String expandIcon = "icons/plus.png";
+	private static String expandBackIcon = "icons/plus_back.png";
+	private static String shrinkIcon = "icons/minus.png";
+	private static String shrinkBackIcon = "icons/minus_back.png";
 
 	
 	public DBToolbar(NetworkPanel networkPanel) {
@@ -76,10 +76,10 @@ public class DBToolbar extends AbstractToolbar {
 	private void initialize() {
 		exploreNetwork = new JButton("Explore Network");
 		exploreNode = new JButton("Explore Node");
-		expand = new JButton(new ImageIcon(expandIcon));
-		expandBack = new JButton(new ImageIcon(expandBackIcon));
-		shrink = new JButton(new ImageIcon(shrinkIcon));
-		shrinkBack = new JButton(new ImageIcon(shrinkBackIcon));
+		expand = new JButton(new ImageIcon(getClass().getResource(expandIcon)));
+		expandBack = new JButton(new ImageIcon(getClass().getResource(expandBackIcon)));
+		shrink = new JButton(new ImageIcon(getClass().getResource(shrinkIcon)));
+		shrinkBack = new JButton(new ImageIcon(getClass().getResource(shrinkBackIcon)));
 		setExploreButtonsEnabled(false);
 		setNetworkButtonsEnabled(false);
 		

@@ -17,8 +17,8 @@ public class ZoomToolbar extends AbstractToolbar {
 	//private JSlider zoomSlider;
 	//private int sliderPosition;
 
-	private static String zoomInIconFile = "src/ch/ethz/sg/cuttlefish/gui2/icons/zoom-in.png";
-	private static String zoomOutIconFile = "src/ch/ethz/sg/cuttlefish/gui2/icons/zoom-out.png";
+	private static String zoomInIconFile = "icons/zoom-in.png";
+	private static String zoomOutIconFile = "icons/zoom-out.png";
 
 	public ZoomToolbar(NetworkPanel networkPanel) {
 		super(networkPanel);
@@ -27,8 +27,8 @@ public class ZoomToolbar extends AbstractToolbar {
 	}
 
 	private void initialize() {
-		zoomInButton = new JButton(new ImageIcon(zoomInIconFile));
-		zoomOutButton = new JButton(new ImageIcon(zoomOutIconFile));
+		zoomInButton = new JButton(new ImageIcon(getClass().getResource(zoomInIconFile)));
+		zoomOutButton = new JButton(new ImageIcon(getClass().getResource(zoomOutIconFile)));
 
 		this.add(zoomInButton);
 		this.add(zoomOutButton);
