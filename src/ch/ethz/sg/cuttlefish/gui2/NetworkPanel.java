@@ -91,8 +91,15 @@ public class NetworkPanel  extends JPanel implements ItemListener,INetworkBrowse
 			viewerTasks = new LinkedBlockingDeque<VisualizationViewerTask>();
 			visualizationViewerWorker = new VisualizationViewerWorker(layout, viewerTasks);
 			new Thread(visualizationViewerWorker).start();
+			synchronized (visualizationViewerWorker) {
+				try {
+					visualizationViewerWorker.wait();					
+				} catch (InterruptedException e) {
+					System.out.println("Main thread was interrupted");
+					e.printStackTrace();
+				}	
+			}		
 		}
-		while(visualizationViewerWorker.getVisualizationViewer() == null);
 		return visualizationViewerWorker.getVisualizationViewer();
 //		if (visualizationViewerWorker == null) {
 //			visualizationViewerWorker = new VisualizationViewerWorker<Vertex,Edge>(layout);

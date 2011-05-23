@@ -27,6 +27,10 @@ public class VisualizationViewerWorker implements Runnable {
 	@Override
 	public void run() {
 		visualizationViewer = new VisualizationViewer<Vertex, Edge>(layout);
+		synchronized (this) {
+			this.notifyAll();	
+		}
+		
 		while(running) {
 			try {
 				System.out.println("Running a task");
