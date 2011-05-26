@@ -13,6 +13,7 @@ import java.awt.event.KeyListener;
 import java.io.File;
 
 import javax.swing.BoxLayout;
+import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -41,14 +42,15 @@ public class NetworkInitializer {
 	public void initBrowsableNetwork(BrowsableNetwork network) {}
 	
 	public void initCxfNetwork(CxfNetwork cxfNetwork) {
-		 JFileChooser fc = new JFileChooser();
+		 JFileChooser fc;;
+		 fc = new JFileChooser();
 		 fc.setDialogTitle("Select a CXF file");
 		 fc.setFileFilter(new FileNameExtensionFilter(".cxf files", "cxf"));
 		    fc.setCurrentDirectory( new File(System.getProperty("user.dir")));
 			int returnVal = fc.showOpenDialog(null);
 
          if (returnVal == JFileChooser.APPROVE_OPTION) {
-             File file = fc.getSelectedFile();
+             File file = fc.getSelectedFile();             
              cxfNetwork.load(file);
          } else {
              System.out.println("Input cancelled by user");
@@ -116,42 +118,93 @@ public class NetworkInitializer {
         }
 	}
 	
+	
 	public void initDBNetwork(DBNetwork _dbNetwork) {
-		/*final DBNetwork dbNetwork = _dbNetwork;
-		System.out.println("Opening a Database network");
-		final JFrame connectWindow = new JFrame();
-		JPanel connectPanel = new JPanel();
-		
-		JLabel dbURL = new JLabel("Database URL");
-		JLabel username = new JLabel("Username");
-		JLabel password = new JLabel("Password");
-		
-		final JButton connectButton = new JButton("Connect");
-		final JButton cancelButton = new JButton("Cancel");
-		final JTextField urlField = new JTextField("");
-		final JTextField usernameField = new JTextField("");
-		final JPasswordField passwordField = new JPasswordField("");
-		
-		connectPanel.setSize(300, 200);
-		connectPanel.setLayout(new BoxLayout(connectPanel, BoxLayout.Y_AXIS ) );
+	/*
+		final DBNetwork dbNetwork = _dbNetwork;
 
-		connectPanel.add(dbURL);
-		connectPanel.add(urlField);
-		connectPanel.add(username);
-		connectPanel.add(usernameField);
-		connectPanel.add(password);				
-		connectPanel.add(passwordField);
-		connectPanel.add(connectButton);
-		connectPanel.add(cancelButton);	
-		connectWindow.add(connectPanel);
-		connectWindow.setSize(300, 200);
-		connectWindow.setResizable(false);
-		connectWindow.setVisible(true);
-		
-		usernameField.addKeyListener(new KeyListener() {			
+	    final JButton connectButton;
+	    JButton cancelButton;
+	    JLabel urlLabel;
+	    JLabel usernameLabel;
+	    JLabel passwordLabel;
+	    final JTextField urlTextField;
+	    final JTextField usernameTextField;
+	    final JPasswordField passwordTextField;
+		urlLabel = new javax.swing.JLabel();
+	    usernameLabel = new javax.swing.JLabel();
+	    passwordLabel = new javax.swing.JLabel();
+	    connectButton = new javax.swing.JButton();
+	    cancelButton = new javax.swing.JButton();
+	    urlTextField = new javax.swing.JTextField();
+	    usernameTextField = new javax.swing.JTextField();
+	    passwordTextField = new javax.swing.JPasswordField();
+	    
+	    final JFrame connectWindow = new JFrame();
+		JPanel connectPanel = new JPanel();
+	    
+        urlLabel.setText("Database URL"); 
+        usernameLabel.setText("Username"); 
+        passwordLabel.setText("Password");         
+
+        connectButton.setText("Connect");  
+        connectButton.setPreferredSize(new java.awt.Dimension(85, 25));
+        cancelButton.setText("Cancel"); 
+        cancelButton.setPreferredSize(new java.awt.Dimension(85, 25));
+
+        urlTextField.setText(""); 
+
+
+        GroupLayout layout = new GroupLayout(connectPanel);
+	    connectPanel.setLayout(layout);
+	    layout.setHorizontalGroup(
+	    		layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+	    		.addGroup(layout.createSequentialGroup()
+	    		.addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+	    		.addGroup(layout.createSequentialGroup()
+	    		.addGap(30, 30, 30)
+	    		.addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+	    		.addComponent(urlLabel)
+	            .addComponent(usernameLabel)
+	            .addComponent(passwordLabel))
+	            .addGap(18, 18, 18)
+	            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+	            .addComponent(passwordTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 157, javax.swing.GroupLayout.PREFERRED_SIZE)
+	            .addComponent(usernameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 157, javax.swing.GroupLayout.PREFERRED_SIZE)
+	            .addComponent(urlTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 157, javax.swing.GroupLayout.PREFERRED_SIZE)))
+	            .addGroup(layout.createSequentialGroup()
+	            .addGap(47, 47, 47)
+	            .addComponent(connectButton)
+	            .addGap(26, 26, 26)
+	            .addComponent(cancelButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+	            .addContainerGap(43, Short.MAX_VALUE))
+	    );
+	    layout.setVerticalGroup(
+	    	layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+	        .addGroup(layout.createSequentialGroup()
+	        .addGap(26, 26, 26)
+	        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+	        .addComponent(urlLabel)
+	        .addComponent(urlTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+	        .addGap(18, 18, 18)
+	        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+	        .addComponent(usernameLabel)
+	        .addComponent(usernameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+	        .addGap(18, 18, 18)
+	        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+	        .addComponent(passwordLabel)
+	        .addComponent(passwordTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+	        .addGap(37, 37, 37)
+	        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+	        .addComponent(connectButton)
+	        .addComponent(cancelButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+	        .addContainerGap(43, Short.MAX_VALUE))
+	    );
+	    
+	    usernameTextField.addKeyListener(new KeyListener() {			
 			@Override
 			public void keyReleased(KeyEvent e) {
-				if (urlField.getText().length() > 0 && usernameField.getText().length() > 0) {
+				if (urlTextField.getText().length() > 0 && usernameTextField.getText().length() > 0) {
 					connectButton.setEnabled(true);
 				} else {
 					connectButton.setEnabled(false);
@@ -162,10 +215,10 @@ public class NetworkInitializer {
 			@Override
 			public void keyTyped(KeyEvent e) {}
 		});
-		urlField.addKeyListener(new KeyListener() {			
+		urlTextField.addKeyListener(new KeyListener() {			
 			@Override
 			public void keyReleased(KeyEvent e) {
-				if (urlField.getText().length() > 0 && usernameField.getText().length() > 0) {
+				if (urlTextField.getText().length() > 0 && usernameTextField.getText().length() > 0) {
 					connectButton.setEnabled(true);
 				} else {
 					connectButton.setEnabled(false);
@@ -181,13 +234,27 @@ public class NetworkInitializer {
 		connectButton.addActionListener(new ActionListener() {			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				 if (dbNetwork.connect(urlField.getText(),
-						   usernameField.getText(), passwordField.getText())
+				 if (dbNetwork.connect(urlTextField.getText(),
+						   usernameTextField.getText(), passwordTextField.getText())
 				 	) {
 					 connectWindow.setVisible(false);
 				 }
 			}
 		});
-		*/
+		
+		cancelButton.addActionListener(new ActionListener() {			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				connectWindow.setVisible(false);
+			}
+		});
+	    
+	    connectWindow.add(connectPanel);
+	    connectWindow.setSize(330, 220);
+	    connectWindow.setTitle("Connect to database");
+	    connectWindow.setVisible(true);
+	*/
 	}
+	
+		
 }

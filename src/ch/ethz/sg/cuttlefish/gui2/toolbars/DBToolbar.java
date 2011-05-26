@@ -164,6 +164,14 @@ public class DBToolbar extends AbstractToolbar {
 			}
 		});
 		
+		exploreNetwork.addActionListener(new ActionListener() {			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				JFrame exploreNetworkFrame = new DBExploreNetwork(networkPanel);
+				exploreNetworkFrame.setVisible(true);
+			}
+		});
+		
 		exploreNode.addActionListener(new ActionListener() {			
 			@Override
 			public void actionPerformed(ActionEvent e) {
