@@ -424,7 +424,8 @@ public class NetworkPanel  extends JPanel implements ItemListener,INetworkBrowse
 				right = invP.getX();			
 		}
 		
-		//double scale = vv.getRenderContext().getMultiLayerTransformer().getTransformer(Layer.VIEW).getScale();
+		double scale = vv.getRenderContext().getMultiLayerTransformer().getTransformer(Layer.VIEW).getScale();
+		System.out.println("Scaling factor: " + scale);
 		double deltaX = getVisualizationViewer().getCenter().getX() - (right+left)/2 ;
 		double deltaY = getVisualizationViewer().getCenter().getY() - (top+bottom)/2;
 		System.out.println("Deltas " + deltaX + " " + deltaY);        

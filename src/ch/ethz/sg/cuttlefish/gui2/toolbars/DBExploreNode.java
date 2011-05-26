@@ -11,9 +11,11 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
 import javax.swing.BorderFactory;
+import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import ch.ethz.sg.cuttlefish.gui2.NetworkPanel;
@@ -28,6 +30,7 @@ public class DBExploreNode extends JFrame {
 	private NetworkPanel networkPanel;
 	private DBNetwork dbNetwork;
 	private JFrame exploreNode;
+	private JPanel exploreNodePanel;
 	private JLabel nodeInfo;
 	private JLabel distanceInfo;
 	private boolean nodeInputValid;
@@ -39,15 +42,22 @@ public class DBExploreNode extends JFrame {
 	private JButton ok;
 	private JButton cancel;
 	
+	
 	public DBExploreNode(NetworkPanel networkPanel) {
 		this.networkPanel = networkPanel;
-		dbNetwork = (DBNetwork)networkPanel.getNetwork();
-		initialize();
 		exploreNode = this;
 		nodeInputValid = false;
 		distanceInputValid = false;
+		dbNetwork = (DBNetwork)networkPanel.getNetwork();
+		this.setTitle("Explore node");
+		this.setSize(285, 180);
+		initialize();		
 	}
 	
+	/**
+	 * This method checks if the OK button should be
+	 * enabled or not
+	 */
 	private void checkOkEnabled() {		
 		if( nodeInputValid && distanceInputValid ) {
 			ok.setEnabled(true);
@@ -56,6 +66,10 @@ public class DBExploreNode extends JFrame {
 		}
 	}
 	
+	/**
+	 * This method checks if the entered distance is
+	 * a number, e.g., and integer greater than 0
+	 */
 	private void checkDistanceInput() {
 		int distance = -1;
 		distanceInputValid = false;
@@ -67,7 +81,7 @@ public class DBExploreNode extends JFrame {
 		if(distance <= 0) {
 			distanceInputValid = false;
 			distanceField.setBorder(BorderFactory.createLineBorder(Color.red));
-			distanceInfo.setText("Distance must be a number greater than 0");
+			distanceInfo.setText("Invalid distance");
 			distanceInfo.setForeground(Color.red);
 		} else {
 			distanceInputValid = true;
@@ -77,12 +91,17 @@ public class DBExploreNode extends JFrame {
 		checkOkEnabled();
 	}
 	
+	/**
+	 * This method checks if the Node ID selected exists
+	 * in the database. If not, it displays a message
+	 * "Invalid ID".
+	 */
 	private void checkNodeInput() {
 		boolean nodeExists  = dbNetwork.checkNodeId(nodeField.getText());
 		if(nodeExists == false) {
 			nodeInputValid = false;
 			nodeField.setBorder(BorderFactory.createLineBorder(Color.red));
-			nodeInfo.setText("Node id does not exist");
+			nodeInfo.setText("Invalid ID");
 			nodeInfo.setForeground(Color.red);
 		} else {
 			nodeInputValid = true;
@@ -92,15 +111,12 @@ public class DBExploreNode extends JFrame {
 		checkOkEnabled();
 	}
 	
+	
+	/**
+	 * This private method initializes the components
+	 */
 	private void initialize() {	
-		nodeLabel = new JLabel("Node ID");
-		nodeField = new JTextField("Enter node id");
-		nodeInfo = new JLabel("");
-		distanceLabel = new JLabel("Distance");
-		distanceField = new JTextField("Enter explore distance");
-		distanceInfo = new JLabel("Distance must be a number greater than 0");
-		ok = new JButton("OK");
-		cancel = new JButton("Cancel");
+		initComponents();
 		ok.setEnabled(false);
 				
 		nodeField.addKeyListener(new KeyListener() {			
@@ -132,54 +148,128 @@ public class DBExploreNode extends JFrame {
 				exploreNode.setVisible(false);
 			}
 		});
-		
-		this.setLayout(new GridBagLayout());
-		
-		GridBagConstraints x0y0 = new GridBagConstraints();
-		x0y0.fill = GridBagConstraints.HORIZONTAL;
-		x0y0.gridy = 0;
-		x0y0.insets = new Insets(2, 2, 2, 2);
-		x0y0.gridx = 0;
-		
-		GridBagConstraints x0y1 = new GridBagConstraints();
-		x0y0.fill = GridBagConstraints.HORIZONTAL;
-		x0y0.gridy = 1;
-		x0y0.insets = new Insets(2, 2, 2, 2);
-		x0y0.gridx = 0;
-		
-		GridBagConstraints x0y2 = new GridBagConstraints();
-		x0y0.fill = GridBagConstraints.HORIZONTAL;
-		x0y0.gridy = 2;
-		x0y0.insets = new Insets(2, 2, 2, 2);
-		x0y0.gridx = 0;
-		
-		GridBagConstraints x1y0 = new GridBagConstraints();
-		x0y0.fill = GridBagConstraints.HORIZONTAL;
-		x0y0.gridy = 0;
-		x0y0.insets = new Insets(2, 2, 2, 2);
-		x0y0.gridx = 1;
-		
-		GridBagConstraints x1y1 = new GridBagConstraints();
-		x0y0.fill = GridBagConstraints.HORIZONTAL;
-		x0y0.gridy = 1;
-		x0y0.insets = new Insets(2, 2, 2, 2);
-		x0y0.gridx = 1;
-		
-		GridBagConstraints x1y2 = new GridBagConstraints();
-		x0y0.fill = GridBagConstraints.HORIZONTAL;
-		x0y0.gridy = 2;
-		x0y0.insets = new Insets(2, 2, 2, 2);
-		x0y0.gridx = 1;
-		
-		this.add(nodeLabel, x0y0);
-		this.add(distanceLabel, x0y1);
-		this.add(ok, x0y2);		
-		this.add(nodeField, x1y0);
-		this.add(distanceField, x1y1);
-		this.add(cancel, x1y2);
-		//this.add(nodeInfo);				
-		//this.add(distanceInfo);
-		//this.setResizable(false);
-		this.setSize(300, 300);
+				
 	}	
+	
+	/**
+	 * NetBeans generated code for aligning the components
+	 */
+	 private void initComponents() {
+		exploreNodePanel = new JPanel();
+		nodeLabel = new javax.swing.JLabel();
+		distanceLabel = new javax.swing.JLabel();
+		ok = new javax.swing.JButton();
+		cancel = new javax.swing.JButton();
+		nodeField = new javax.swing.JTextField();
+		distanceField = new javax.swing.JTextField();
+		nodeInfo = new javax.swing.JLabel();
+		distanceInfo = new javax.swing.JLabel();
+
+		nodeLabel.setText("Node Id");
+		distanceLabel.setText("Distance");
+		ok.setText("OK");
+		cancel.setText("Cancel");
+		nodeField.setText("");
+		nodeField.setPreferredSize(new java.awt.Dimension(80, 19));
+		distanceField.setText("");
+		distanceField.setPreferredSize(new java.awt.Dimension(80, 19));
+		nodeInfo.setText("");
+		distanceInfo.setText("");
+
+		GroupLayout layout = new GroupLayout(exploreNodePanel);
+		this.add(exploreNodePanel);
+		exploreNodePanel.setLayout(layout);
+		layout.setHorizontalGroup(layout
+				.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+				.addGroup(
+						layout.createSequentialGroup()
+								.addGroup(
+										layout.createParallelGroup(
+												javax.swing.GroupLayout.Alignment.LEADING)
+												.addGroup(
+														layout.createSequentialGroup()
+																.addGap(20, 20,
+																		20)
+																.addGroup(
+																		layout.createParallelGroup(
+																				javax.swing.GroupLayout.Alignment.LEADING)
+																				.addGroup(
+																						layout.createSequentialGroup()
+																								.addComponent(
+																										distanceLabel)
+																								.addPreferredGap(
+																										javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+																								.addComponent(
+																										distanceField,
+																										javax.swing.GroupLayout.PREFERRED_SIZE,
+																										javax.swing.GroupLayout.DEFAULT_SIZE,
+																										javax.swing.GroupLayout.PREFERRED_SIZE)
+																								.addPreferredGap(
+																										javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+																								.addComponent(
+																										distanceInfo))
+																				.addGroup(
+																						layout.createSequentialGroup()
+																								.addComponent(
+																										nodeLabel)
+																								.addPreferredGap(
+																										javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+																								.addComponent(
+																										nodeField,
+																										javax.swing.GroupLayout.PREFERRED_SIZE,
+																										javax.swing.GroupLayout.DEFAULT_SIZE,
+																										javax.swing.GroupLayout.PREFERRED_SIZE)
+																								.addPreferredGap(
+																										javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+																								.addComponent(
+																										nodeInfo))))
+												.addGroup(
+														layout.createSequentialGroup()
+																.addGap(55, 55,
+																		55)
+																.addComponent(
+																		ok)
+																.addPreferredGap(
+																		javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+																.addComponent(
+																		cancel)))
+								.addContainerGap(26, Short.MAX_VALUE)));
+		layout.setVerticalGroup(layout
+				.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+				.addGroup(
+						layout.createSequentialGroup()
+								.addGap(31, 31, 31)
+								.addGroup(
+										layout.createParallelGroup(
+												javax.swing.GroupLayout.Alignment.BASELINE)
+												.addComponent(nodeLabel)
+												.addComponent(
+														nodeField,
+														javax.swing.GroupLayout.PREFERRED_SIZE,
+														javax.swing.GroupLayout.DEFAULT_SIZE,
+														javax.swing.GroupLayout.PREFERRED_SIZE)
+												.addComponent(nodeInfo))
+								.addGap(18, 18, 18)
+								.addGroup(
+										layout.createParallelGroup(
+												javax.swing.GroupLayout.Alignment.TRAILING)
+												.addComponent(distanceLabel)
+												.addGroup(
+														layout.createParallelGroup(
+																javax.swing.GroupLayout.Alignment.BASELINE)
+																.addComponent(
+																		distanceField,
+																		javax.swing.GroupLayout.PREFERRED_SIZE,
+																		javax.swing.GroupLayout.DEFAULT_SIZE,
+																		javax.swing.GroupLayout.PREFERRED_SIZE)
+																.addComponent(
+																		distanceInfo)))
+								.addGap(18, 18, 18)
+								.addGroup(
+										layout.createParallelGroup(
+												javax.swing.GroupLayout.Alignment.BASELINE)
+												.addComponent(ok)
+												.addComponent(cancel))
+								.addContainerGap(34, Short.MAX_VALUE)));
+	}
 }
