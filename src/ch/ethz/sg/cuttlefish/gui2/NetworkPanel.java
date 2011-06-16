@@ -5,14 +5,15 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Paint;
-import java.awt.Point;
-import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.Stroke;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
@@ -32,6 +33,8 @@ import ch.ethz.sg.cuttlefish.layout.KCoreLayout;
 import ch.ethz.sg.cuttlefish.layout.WeightedARF2Layout;
 import ch.ethz.sg.cuttlefish.misc.Edge;
 import ch.ethz.sg.cuttlefish.misc.EdgeFactory;
+import ch.ethz.sg.cuttlefish.misc.Observer;
+import ch.ethz.sg.cuttlefish.misc.Subject;
 import ch.ethz.sg.cuttlefish.misc.Vertex;
 import ch.ethz.sg.cuttlefish.misc.VertexFactory;
 import ch.ethz.sg.cuttlefish.networks.BrowsableForestNetwork;
@@ -54,6 +57,7 @@ import edu.uci.ics.jung.visualization.Layer;
 import edu.uci.ics.jung.visualization.RenderContext;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 import edu.uci.ics.jung.visualization.control.EditingModalGraphMouse;
+import edu.uci.ics.jung.visualization.control.GraphMousePlugin;
 import edu.uci.ics.jung.visualization.control.ModalGraphMouse;
 import edu.uci.ics.jung.visualization.decorators.EdgeShape;
 import edu.uci.ics.jung.visualization.picking.ShapePickSupport;
@@ -75,7 +79,7 @@ public class NetworkPanel  extends JPanel implements ItemListener,INetworkBrowse
 	private VertexFactory vertexFactory = null;
 	private EdgeFactory edgeFactory = null;
 	
-	public NetworkPanel() {
+	public NetworkPanel() {		
 		super();
 		initialize();
 	}
@@ -123,7 +127,7 @@ public class NetworkPanel  extends JPanel implements ItemListener,INetworkBrowse
 		graphMouse = new EditingModalGraphMouse<Vertex,Edge>(getVisualizationViewer().getRenderContext(),
 				vertexFactory, edgeFactory);		
 		graphMouse.getAnnotatingPlugin().setAnnotationColor(getForeground());
-	
+
 		//starting on transforming mode, the most used
 		graphMouse.setMode(ModalGraphMouse.Mode.TRANSFORMING);
 		
@@ -304,7 +308,7 @@ public class NetworkPanel  extends JPanel implements ItemListener,INetworkBrowse
 			stopLayout();
 			resumeLayout();
 		}
-		this.repaintViewer();
+		this.repaintViewer();		
 	}
 
 	@Override

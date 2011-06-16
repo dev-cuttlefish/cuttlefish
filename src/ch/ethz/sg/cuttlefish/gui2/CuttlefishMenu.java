@@ -1,10 +1,12 @@
 package ch.ethz.sg.cuttlefish.gui2;
 
+import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 
 import ch.ethz.sg.cuttlefish.gui2.menus.ExportMenu;
 import ch.ethz.sg.cuttlefish.gui2.menus.HelpMenu;
 import ch.ethz.sg.cuttlefish.gui2.menus.LayoutMenu;
+import ch.ethz.sg.cuttlefish.gui2.menus.NetworkMenu;
 import ch.ethz.sg.cuttlefish.gui2.menus.OpenMenu;
 import ch.ethz.sg.cuttlefish.gui2.menus.ViewMenu;
 
@@ -20,6 +22,7 @@ public class CuttlefishMenu extends JMenuBar {
 	private LayoutMenu layoutMenu;
 	private ViewMenu viewMenu;
 	private HelpMenu helpMenu;
+	private NetworkMenu networkMenu;
 	
 	public CuttlefishMenu(NetworkPanel networkPanel, CuttlefishToolbars toolbars) {
 		super();
@@ -28,14 +31,15 @@ public class CuttlefishMenu extends JMenuBar {
 		initialize();
 	}
 	
-	private void initialize() {
+	private void initialize() {		
 		openMenu = new OpenMenu(networkPanel, toolbars);	
 		exportMenu = new ExportMenu(networkPanel, toolbars);
 		layoutMenu = new LayoutMenu(networkPanel, toolbars);
 		viewMenu = new ViewMenu(networkPanel, toolbars);
 		helpMenu = new HelpMenu(networkPanel, toolbars);
-		add(openMenu);
-		add(exportMenu);
+		JMenu[] menus = {openMenu, exportMenu};
+		networkMenu = new NetworkMenu(networkPanel, toolbars, openMenu, exportMenu );
+		add(networkMenu);		
 		add(layoutMenu);		
 		add(viewMenu);
 		add(helpMenu);		

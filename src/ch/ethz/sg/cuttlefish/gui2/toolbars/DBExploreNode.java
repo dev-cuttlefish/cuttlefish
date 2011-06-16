@@ -15,6 +15,7 @@ import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
@@ -145,6 +146,21 @@ public class DBExploreNode extends JFrame {
 		cancel.addActionListener(new ActionListener() {			
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				exploreNode.setVisible(false);
+			}
+		});
+		
+		ok.addActionListener(new ActionListener() {			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				boolean forward = true;
+				((DBNetwork) networkPanel.getNetwork()).emptyNetwork();
+				int distance = Integer.parseInt(distanceField.getText());				
+				((DBNetwork) networkPanel.getNetwork()).extendNeighborhood(Integer.parseInt(nodeField.getText()), distance, forward);
+				networkPanel.onNetworkChange();
+				networkPanel.getNetworkLayout().reset();
+				networkPanel.repaintViewer();
+				networkPanel.stopLayout();
 				exploreNode.setVisible(false);
 			}
 		});

@@ -47,4 +47,5 @@ public class CuttlefishToolbars extends JPanel {
 	public DBToolbar getDBToolbar() {
 		return dbToolbar;
 	}
+	
 }

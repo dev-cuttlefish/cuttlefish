@@ -1,5 +1,6 @@
 package ch.ethz.sg.cuttlefish.gui2.menus;
 
+import java.awt.Label;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
@@ -8,8 +9,10 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.PrintStream;
 
 import javax.swing.JFileChooser;
+import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -19,8 +22,11 @@ import com.sun.image.codec.jpeg.JPEGCodec;
 import com.sun.image.codec.jpeg.JPEGEncodeParam;
 import com.sun.image.codec.jpeg.JPEGImageEncoder;
 
+import ch.ethz.sg.cuttlefish.gui.widgets.ExportPanel;
 import ch.ethz.sg.cuttlefish.gui2.CuttlefishToolbars;
 import ch.ethz.sg.cuttlefish.gui2.NetworkPanel;
+import ch.ethz.sg.cuttlefish.misc.Conversion;
+import ch.ethz.sg.cuttlefish.misc.FileChooser;
 import ch.ethz.sg.cuttlefish.misc.TikzExporter;
 import ch.ethz.sg.cuttlefish.networks.BrowsableNetwork;
 import ch.ethz.sg.cuttlefish.networks.InteractiveCxfNetwork;
@@ -34,20 +40,28 @@ public class ExportMenu extends AbstractMenu {
 	private static final long serialVersionUID = 3697550568255024207L;
 	private JMenuItem toJpeg;
 	private JMenuItem toTikz;
+	private JMenuItem toAdjMatrix;
+	private JMenuItem toEdgeList;
 	private JFileChooser snapshotFileChooser;
 	private JFileChooser  tikzFileChooser;
+	private JFileChooser datFileChooser;
 	
 	public ExportMenu(NetworkPanel networkPanel, CuttlefishToolbars toolbars) {
 		super(networkPanel, toolbars);
 		initialize();
 		this.setText("Export");	}
 
-	private void initialize() {
+	private void initialize() {		
 		toJpeg = new JMenuItem("JPG");
 		toTikz = new JMenuItem("TikZ");
-		
+		toAdjMatrix = new JMenuItem("Adjacency matrix");
+		toEdgeList = new JMenuItem("Edge list");
 		this.add(toJpeg);
 		this.add(toTikz);
+		this.addSeparator();
+		this.add(toAdjMatrix);
+		this.add(toEdgeList);
+		
 		
 		toJpeg.addActionListener(new ActionListener() {			
 			@Override
@@ -147,6 +161,49 @@ public class ExportMenu extends AbstractMenu {
 			     }
 			}
 		});
+		
+		toAdjMatrix.addActionListener( new ActionListener() {				
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					JFileChooser fc = getDatFileChooser();
+					fc.setSelectedFile(new File(((BrowsableNetwork)networkPanel.getNetwork()).getName()+".dat"));
+					int returnVal = fc.showSaveDialog(networkPanel);
+					
+					if (returnVal == JFileChooser.APPROVE_OPTION) {
+						File file = fc.getSelectedFile();
+						PrintStream p = new PrintStream(file);						
+						int[][] myAdjMatrix = Conversion.graphToAdjacencyMatrix( networkPanel.getNetwork() );
+						Conversion.printMatrix( myAdjMatrix , p );
+					}											
+				} catch (FileNotFoundException fnfEx) {
+					JOptionPane.showMessageDialog(null,fnfEx.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
+					System.err.println("Error trying to write andjacency list file");
+					fnfEx.printStackTrace();
+				}
+			}				
+		});
+		
+		toEdgeList.addActionListener( new ActionListener() {			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					JFileChooser fc = getDatFileChooser();
+					fc.setSelectedFile(new File(((BrowsableNetwork)networkPanel.getNetwork()).getName()+".dat"));
+					int returnVal = fc.showSaveDialog(networkPanel);
+					
+					if (returnVal == JFileChooser.APPROVE_OPTION) {
+						File file = fc.getSelectedFile();
+						PrintStream p = new PrintStream(file);						
+						Conversion.writeEdgeList(networkPanel.getNetwork(), p);
+					}											
+				} catch (FileNotFoundException fnfEx) {
+					JOptionPane.showMessageDialog(null,fnfEx.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
+					System.err.println("Error trying to write andjacency list file");
+					fnfEx.printStackTrace();
+				}
+			}
+		});
 	}
 	
 	/**
@@ -164,12 +221,10 @@ public class ExportMenu extends AbstractMenu {
 	 * @return javax.swing.JFileChooser
 	 */
 	private JFileChooser getSnapshotFileChooser() {
-		if (snapshotFileChooser == null) {
-			snapshotFileChooser = new JFileChooser();
-			snapshotFileChooser.setDialogTitle("Saving cuttlefish network to jpeg...");
-			snapshotFileChooser.setFileFilter(new FileNameExtensionFilter(".jpeg files", "jpeg", "jpg"));
-			snapshotFileChooser.setCurrentDirectory( new File(System.getProperty("user.dir")));
-		}		
+		snapshotFileChooser = new FileChooser();
+		snapshotFileChooser.setDialogTitle("Saving cuttlefish network to jpeg...");
+		snapshotFileChooser.setFileFilter(new FileNameExtensionFilter(".jpeg files", "jpeg", "jpg"));
+		snapshotFileChooser.setCurrentDirectory( new File(System.getProperty("user.dir")));		
 		return snapshotFileChooser;
 	}
 	
@@ -179,14 +234,26 @@ public class ExportMenu extends AbstractMenu {
 	 * @return javax.swing.JFileChooser
 	 */
 	private JFileChooser getTikzFileChooser() {
-		if (tikzFileChooser == null) {
-			tikzFileChooser = new JFileChooser();
-			tikzFileChooser.setDialogTitle("Exporting network to TikZ...");
-			tikzFileChooser.setFileFilter(new FileNameExtensionFilter(".tex files", "tex"));
-			tikzFileChooser.setCurrentDirectory( new File(System.getProperty("user.dir")));
-		}
+		tikzFileChooser = new FileChooser();
+		tikzFileChooser.setDialogTitle("Exporting network to TikZ...");
+		tikzFileChooser.setFileFilter(new FileNameExtensionFilter(".tex files", "tex"));
+		tikzFileChooser.setCurrentDirectory( new File(System.getProperty("user.dir")));
 		return tikzFileChooser;
 	}
+	
+	/**
+	 * This method initializes the file chooser for the edge list and
+	 * adjacency list export buttons.
+	 * 
+	 * @return javax.swing.JFileChooser
+	 */
+	private JFileChooser getDatFileChooser() {
+		datFileChooser = new FileChooser();
+		datFileChooser.setDialogTitle("Exporting cuttlefish network");
+		datFileChooser.setFileFilter(new FileNameExtensionFilter(".dat files", "dat"));
+		datFileChooser.setCurrentDirectory( new File(System.getProperty("user.dir")));
+		return datFileChooser;	
+	}	
 	
 	/**
 	 * Export a file to JPEG format

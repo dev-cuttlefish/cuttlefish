@@ -27,6 +27,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 import sun.misc.Regexp;
 
+import ch.ethz.sg.cuttlefish.misc.FileChooser;
 import ch.ethz.sg.cuttlefish.networks.BrowsableNetwork;
 import ch.ethz.sg.cuttlefish.networks.CxfNetwork;
 import ch.ethz.sg.cuttlefish.networks.DBNetwork;
@@ -41,15 +42,17 @@ public class NetworkInitializer {
 	
 	public void initBrowsableNetwork(BrowsableNetwork network) {}
 	
+	
+	
 	public void initCxfNetwork(CxfNetwork cxfNetwork) {
-		 JFileChooser fc;;
-		 fc = new JFileChooser();
+		 JFileChooser fc = new FileChooser();		 		 
 		 fc.setDialogTitle("Select a CXF file");
 		 fc.setFileFilter(new FileNameExtensionFilter(".cxf files", "cxf"));
-		    fc.setCurrentDirectory( new File(System.getProperty("user.dir")));
-			int returnVal = fc.showOpenDialog(null);
+		 int returnVal = fc.showOpenDialog(null);
 
          if (returnVal == JFileChooser.APPROVE_OPTION) {
+        	 ch.ethz.sg.cuttlefish.gui2.Cuttlefish.currentDirectory = fc.getCurrentDirectory();
+        	 System.out.println("Current directory: " + fc.getCurrentDirectory());
              File file = fc.getSelectedFile();             
              cxfNetwork.load(file);
          } else {
@@ -58,9 +61,8 @@ public class NetworkInitializer {
 	}
 	
 	public void initPajekNetwork(PajekNetwork pajekNetwork) {
-		 JFileChooser fc = new JFileChooser();
+		 JFileChooser fc = new FileChooser();
 		 fc.setDialogTitle("Select a Pajek file");		 
-		 fc.setCurrentDirectory( new File(System.getProperty("user.dir")));
 		 int returnVal = fc.showOpenDialog(null);
 
         if (returnVal == JFileChooser.APPROVE_OPTION) {
@@ -73,10 +75,9 @@ public class NetworkInitializer {
 
 	public void initInteractiveCxfNetwork(InteractiveCxfNetwork interactiveCxfNetwork) {
 		initCxfNetwork(interactiveCxfNetwork);
-		JFileChooser fc = new JFileChooser();
+		JFileChooser fc = new FileChooser();
 		fc.setDialogTitle("Select a CEF file");
 		fc.setFileFilter(new FileNameExtensionFilter(".cef files", "cef"));
-	    fc.setCurrentDirectory( new File(System.getProperty("user.dir")));
 		int returnVal = fc.showOpenDialog(null);
 
         if (returnVal == JFileChooser.APPROVE_OPTION) {
@@ -88,15 +89,13 @@ public class NetworkInitializer {
 	}
 	
 	public void initGraphMLNetwork(GraphMLNetwork graphmlNetwork) {
-		JFileChooser fc = new JFileChooser();
+		JFileChooser fc = new FileChooser();
 		fc.setDialogTitle("Select a GraphML file");
-		fc.setCurrentDirectory( new File(System.getProperty("user.dir")));
 		fc.setFileFilter(new FileNameExtensionFilter(".graphml files", "graphml"));
 		int returnVal = fc.showOpenDialog(null);
 
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             File file = fc.getSelectedFile();
-		    fc.setCurrentDirectory( new File(System.getProperty("user.dir")));
             graphmlNetwork.load(file);
         } else {
             System.out.println("Input cancelled by user");
@@ -104,9 +103,8 @@ public class NetworkInitializer {
 	}
 	
 	public void initUserNetwork(UserNetwork userNetwork) {
-		JFileChooser fc = new JFileChooser();
+		JFileChooser fc = new FileChooser();
 		fc.setDialogTitle("Select a CFF file");
-	    fc.setCurrentDirectory( new File(System.getProperty("user.dir")));
 	    fc.setFileFilter(new FileNameExtensionFilter(".cff files", "cff"));
 		int returnVal = fc.showOpenDialog(null);
 
@@ -120,7 +118,6 @@ public class NetworkInitializer {
 	
 	
 	public void initDBNetwork(DBNetwork _dbNetwork) {
-	/*
 		final DBNetwork dbNetwork = _dbNetwork;
 
 	    final JButton connectButton;
@@ -253,7 +250,6 @@ public class NetworkInitializer {
 	    connectWindow.setSize(330, 220);
 	    connectWindow.setTitle("Connect to database");
 	    connectWindow.setVisible(true);
-	*/
 	}
 	
 		
