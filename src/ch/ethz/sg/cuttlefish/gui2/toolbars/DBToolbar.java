@@ -6,6 +6,9 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
 import java.util.Collection;
 
 import javax.swing.ImageIcon;
@@ -15,7 +18,11 @@ import javax.swing.JFrame;
 
 
 import ch.ethz.sg.cuttlefish.gui2.NetworkPanel;
+import ch.ethz.sg.cuttlefish.misc.Edge;
+import ch.ethz.sg.cuttlefish.misc.Vertex;
 import ch.ethz.sg.cuttlefish.networks.DBNetwork;
+import edu.uci.ics.jung.visualization.control.GraphMousePlugin;
+import edu.uci.ics.jung.visualization.control.PickingGraphMousePlugin;
 
 public class DBToolbar extends AbstractToolbar {
 
@@ -72,6 +79,8 @@ public class DBToolbar extends AbstractToolbar {
 		exploreNetwork.setEnabled(b);
 		exploreNode.setEnabled(b);
 	}
+	
+
 
 	private void initialize() {
 		exploreNetwork = new JButton("Explore Network");
@@ -188,5 +197,49 @@ public class DBToolbar extends AbstractToolbar {
 		this.add(shrinkBack);		
 		this.add(exploreNetwork);
 		this.add(exploreNode);
+		
+		expand.addActionListener(new ActionListener() {			
+			@Override
+			public void actionPerformed(java.awt.event.ActionEvent e) {
+				for (Vertex vertex : networkPanel.getPickedVertices())
+					((DBNetwork) networkPanel.getNetwork()).extendNeighborhood(vertex.getId(), 1, true);
+				networkPanel.onNetworkChange();
+                networkPanel.repaintViewer();
+           }
+		});
+		
+		expandBack.addActionListener(new ActionListener() {			
+			@Override
+			public void actionPerformed(java.awt.event.ActionEvent e) {
+				for (Vertex vertex : networkPanel.getPickedVertices())
+					((DBNetwork) networkPanel.getNetwork()).extendNeighborhood(vertex.getId(), 1, false);
+				networkPanel.onNetworkChange();
+				networkPanel.repaintViewer();
+           }
+		});
+		
+		
+		shrink.addActionListener(new ActionListener() {			
+			@Override
+			public void actionPerformed(java.awt.event.ActionEvent e) {
+				for (Vertex vertex : networkPanel.getPickedVertices())
+					((DBNetwork) networkPanel.getNetwork()).shrinkVertex(vertex);
+				networkPanel.onNetworkChange();
+				networkPanel.repaintViewer();
+    		}
+		});
+		
+		shrinkBack.addActionListener(new ActionListener() {			
+			@Override
+			public void actionPerformed(java.awt.event.ActionEvent e) {
+				for (Vertex vertex : networkPanel.getPickedVertices())
+					((DBNetwork) networkPanel.getNetwork()).backShrinkVertex(vertex);
+				networkPanel.onNetworkChange();
+				networkPanel.repaintViewer();
+    		}
+		});
+
 	}
+
+
 }

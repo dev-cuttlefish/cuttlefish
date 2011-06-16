@@ -2,18 +2,24 @@ package ch.ethz.sg.cuttlefish.gui2.menus;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.KeyStroke;
 
 import ch.ethz.sg.cuttlefish.gui.NetworkInitializer;
 import ch.ethz.sg.cuttlefish.gui2.CuttlefishToolbars;
 import ch.ethz.sg.cuttlefish.gui2.NetworkPanel;
+import ch.ethz.sg.cuttlefish.misc.Observer;
+import ch.ethz.sg.cuttlefish.misc.Subject;
 import ch.ethz.sg.cuttlefish.networks.BrowsableNetwork;
 import ch.ethz.sg.cuttlefish.networks.InteractiveCxfNetwork;
 
-public class OpenMenu extends AbstractMenu {
+public class OpenMenu extends AbstractMenu implements Subject {
 
 	/**
 	 * 
@@ -27,11 +33,13 @@ public class OpenMenu extends AbstractMenu {
 	private JMenuItem cffNetwork;
 	private JMenuItem testSimulation;		
 	private JMenuItem baSimulation;
+	private List<Observer> observers;
 	
 	private HashMap<JMenuItem, Class<?> > networkClassMap;
 
 	public OpenMenu(NetworkPanel networkPanel, CuttlefishToolbars toolbars) {
 		super(networkPanel, toolbars);
+		observers = new ArrayList<Observer>();
 		initialize();
 		this.setText("Open");
 	}
@@ -45,6 +53,11 @@ public class OpenMenu extends AbstractMenu {
 		cffNetwork = new JMenuItem("CFF network");
 		testSimulation = new JMenuItem("Test simulation");		
 		baSimulation = new JMenuItem("BA simulation");
+		
+		cxfNetwork.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, ActionEvent.ALT_MASK));
+		cxfNetwork.setMnemonic('C');
+		dbNetwork.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D, ActionEvent.ALT_MASK));
+		dbNetwork.setMnemonic('D');
 		
 		networkClassMap = new HashMap<JMenuItem, Class<?> >();
 		try {
@@ -84,9 +97,10 @@ public class OpenMenu extends AbstractMenu {
 		
 		cxfNetwork.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) { 
-				networkSelected(cxfNetwork); 
+				networkSelected(cxfNetwork);				
 				toolbars.getSimulationToolbar().setVisible(false);
 				toolbars.getDBToolbar().setVisible(false);
+				notifyObservers();
 			}
 		});
 		dbNetwork.addActionListener(new ActionListener() {
@@ -94,6 +108,7 @@ public class OpenMenu extends AbstractMenu {
 				networkSelected(dbNetwork); 
 				toolbars.getSimulationToolbar().setVisible(false);
 				toolbars.getDBToolbar().setVisible(true);
+				notifyObservers();
 			}
 		});
 		interactiveNetwork.addActionListener(new ActionListener() {
@@ -101,6 +116,7 @@ public class OpenMenu extends AbstractMenu {
 				networkSelected(interactiveNetwork); 
 				toolbars.getSimulationToolbar().setVisible(true); 
 				toolbars.getDBToolbar().setVisible(false);
+				notifyObservers();
 			}
 		});
 		pajekNetwork.addActionListener(new ActionListener() {
@@ -108,6 +124,7 @@ public class OpenMenu extends AbstractMenu {
 				networkSelected(pajekNetwork); 
 				toolbars.getSimulationToolbar().setVisible(false);
 				toolbars.getDBToolbar().setVisible(false);
+				notifyObservers();
 			}
 		});
 		graphmlNetwork.addActionListener(new ActionListener() {
@@ -115,6 +132,7 @@ public class OpenMenu extends AbstractMenu {
 				networkSelected(graphmlNetwork); 
 				toolbars.getSimulationToolbar().setVisible(false);
 				toolbars.getDBToolbar().setVisible(false);
+				notifyObservers();
 			}
 		});
 		cffNetwork.addActionListener(new ActionListener() {
@@ -122,6 +140,7 @@ public class OpenMenu extends AbstractMenu {
 				networkSelected(cffNetwork); 
 				toolbars.getSimulationToolbar().setVisible(false); 
 				toolbars.getDBToolbar().setVisible(false);
+				notifyObservers();
 			}
 		});
 		baSimulation.addActionListener(new ActionListener() {
@@ -129,6 +148,7 @@ public class OpenMenu extends AbstractMenu {
 				networkSelected(baSimulation); 
 				toolbars.getSimulationToolbar().setVisible(true); 
 				toolbars.getDBToolbar().setVisible(false);
+				notifyObservers();
 			}
 		});
 		testSimulation.addActionListener(new ActionListener() {
@@ -136,6 +156,7 @@ public class OpenMenu extends AbstractMenu {
 				networkSelected(testSimulation); 
 				toolbars.getSimulationToolbar().setVisible(true); 
 				toolbars.getDBToolbar().setVisible(false);
+				notifyObservers();
 			}
 		});
 	}
@@ -160,6 +181,22 @@ public class OpenMenu extends AbstractMenu {
         networkPanel.getNetworkLayout().reset();
         networkPanel.repaintViewer();
         networkPanel.stopLayout();	
+	}
+
+	@Override
+	public void addObserver(Observer o) {
+		observers.add(o);
+	}
+
+	@Override
+	public void removeObserver(Observer o) {
+		observers.remove(o);
+	}
+	
+	private void notifyObservers() {
+		for(Observer o : observers) {
+			o.update(this);
+		} 
 	}
 
 }

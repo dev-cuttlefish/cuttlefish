@@ -2,12 +2,14 @@ package ch.ethz.sg.cuttlefish.gui2.menus;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JMenuItem;
 import javax.swing.JRadioButtonMenuItem;
+import javax.swing.KeyStroke;
 
 import ch.ethz.sg.cuttlefish.gui2.CuttlefishToolbars;
 import ch.ethz.sg.cuttlefish.gui2.NetworkPanel;
@@ -82,7 +84,11 @@ public class LayoutMenu extends AbstractMenu {
 		arf.setSelected(true);
 		
 		stopButton = new JMenuItem("Stop");
-		restartButton = new JMenuItem("Restart");	
+		restartButton = new JMenuItem("Restart");
+		
+		restartButton.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, ActionEvent.ALT_MASK));
+		stopButton.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.ALT_MASK));
+
 		
 		this.add(stopButton);
 		this.add(restartButton);

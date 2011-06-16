@@ -11,7 +11,7 @@ public class Cuttlefish extends JFrame {
 	 * 
 	 */
 	private static final long serialVersionUID = 2232589699110179555L;
-	public static File lastDirectory = null;
+	public static File currentDirectory = null;
 	private CuttlefishMenu mainMenu = null;
 	private CuttlefishToolbars toolbars = null;
 	private NetworkPanel networkPanel = null;
@@ -37,6 +37,7 @@ public class Cuttlefish extends JFrame {
 		toolbars.getMouseToolbar().addObserver(mainMenu.getViewMenu());
 		toolbars.getZoomToolbar().addObserver(mainMenu.getViewMenu());
 		toolbars.getDBToolbar().addObserver(mainMenu.getViewMenu());
+		
 		toolbars.getSimulationToolbar().setVisible(true);
 		toolbars.getMouseToolbar().setVisible(true);
 		toolbars.getZoomToolbar().setVisible(true);

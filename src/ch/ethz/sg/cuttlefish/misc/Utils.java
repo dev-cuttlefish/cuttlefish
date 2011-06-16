@@ -30,6 +30,7 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Set;
 
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
 import ch.ethz.sg.cuttlefish.networks.BrowsableNetwork;
@@ -43,7 +44,7 @@ import edu.uci.ics.jung.graph.Graph;
  * @author david
  */
 public class Utils {
-
+	
 	/**
 	 * Calculates the center of masses of a network given its layout and as if the nodes had constant weight.
 	 * @param layout positions of the nodes of the networks
