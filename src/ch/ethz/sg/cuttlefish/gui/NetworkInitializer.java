@@ -149,7 +149,8 @@ public class NetworkInitializer {
         cancelButton.setText("Cancel"); 
         cancelButton.setPreferredSize(new java.awt.Dimension(85, 25));
 
-        urlTextField.setText(""); 
+        urlTextField.setText("localhost/cf");
+        usernameTextField.setText("root");
 
 
         GroupLayout layout = new GroupLayout(connectPanel);

@@ -15,6 +15,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 
 
 import ch.ethz.sg.cuttlefish.gui2.NetworkPanel;
@@ -38,6 +39,8 @@ public class DBToolbar extends AbstractToolbar {
 	private JButton shrinkBack = null;
 	private JComboBox nodeTables = null;
 	private JComboBox edgeTables = null;
+	private JFrame exploreNodeFrame = null;
+	private JFrame exploreNetworkFrame = null;
 	private boolean enabled = false;
 	private boolean nodeTableInitialized = false;
 	private boolean edgeTableInitialized = false;
@@ -80,8 +83,24 @@ public class DBToolbar extends AbstractToolbar {
 		exploreNode.setEnabled(b);
 	}
 	
-
-
+	private void checkPickedVertices() {
+		if(networkPanel.getPickedVertices().size() < 1) {
+			JOptionPane.showMessageDialog(networkPanel, "You need to select at least one node", "No nodes selected", JOptionPane.WARNING_MESSAGE);
+		}
+	}
+	
+	private JFrame getExploreNodeFrame() {
+		if(exploreNodeFrame == null)
+			exploreNodeFrame = new DBExploreNode(networkPanel);
+		return exploreNodeFrame;
+	}
+	
+	private JFrame getExploreNetworkFrame() {
+		if(exploreNetworkFrame == null)
+			exploreNetworkFrame = new DBExploreNetwork(networkPanel);
+		return exploreNetworkFrame;
+	}
+	
 	private void initialize() {
 		exploreNetwork = new JButton("Explore Network");
 		exploreNode = new JButton("Explore Node");
@@ -89,7 +108,7 @@ public class DBToolbar extends AbstractToolbar {
 		expandBack = new JButton(new ImageIcon(getClass().getResource(expandBackIcon)));
 		shrink = new JButton(new ImageIcon(getClass().getResource(shrinkIcon)));
 		shrinkBack = new JButton(new ImageIcon(getClass().getResource(shrinkBackIcon)));
-		setExploreButtonsEnabled(false);
+		setExploreButtonsEnabled(true);
 		setNetworkButtonsEnabled(false);
 		
 		nodeTables = new JComboBox();
@@ -176,16 +195,14 @@ public class DBToolbar extends AbstractToolbar {
 		exploreNetwork.addActionListener(new ActionListener() {			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				JFrame exploreNetworkFrame = new DBExploreNetwork(networkPanel);
-				exploreNetworkFrame.setVisible(true);
+				getExploreNetworkFrame().setVisible(true);
 			}
 		});
 		
 		exploreNode.addActionListener(new ActionListener() {			
 			@Override
-			public void actionPerformed(ActionEvent e) {
-				JFrame exploreNodeFrame = new DBExploreNode(networkPanel);
-				exploreNodeFrame.setVisible(true);				
+			public void actionPerformed(ActionEvent e) {				
+				getExploreNodeFrame().setVisible(true);				
 			}
 		});
 		
@@ -201,6 +218,7 @@ public class DBToolbar extends AbstractToolbar {
 		expand.addActionListener(new ActionListener() {			
 			@Override
 			public void actionPerformed(java.awt.event.ActionEvent e) {
+				checkPickedVertices();
 				for (Vertex vertex : networkPanel.getPickedVertices())
 					((DBNetwork) networkPanel.getNetwork()).extendNeighborhood(vertex.getId(), 1, true);
 				networkPanel.onNetworkChange();
@@ -211,6 +229,7 @@ public class DBToolbar extends AbstractToolbar {
 		expandBack.addActionListener(new ActionListener() {			
 			@Override
 			public void actionPerformed(java.awt.event.ActionEvent e) {
+				checkPickedVertices();
 				for (Vertex vertex : networkPanel.getPickedVertices())
 					((DBNetwork) networkPanel.getNetwork()).extendNeighborhood(vertex.getId(), 1, false);
 				networkPanel.onNetworkChange();
@@ -222,6 +241,7 @@ public class DBToolbar extends AbstractToolbar {
 		shrink.addActionListener(new ActionListener() {			
 			@Override
 			public void actionPerformed(java.awt.event.ActionEvent e) {
+				checkPickedVertices();
 				for (Vertex vertex : networkPanel.getPickedVertices())
 					((DBNetwork) networkPanel.getNetwork()).shrinkVertex(vertex);
 				networkPanel.onNetworkChange();
@@ -232,12 +252,13 @@ public class DBToolbar extends AbstractToolbar {
 		shrinkBack.addActionListener(new ActionListener() {			
 			@Override
 			public void actionPerformed(java.awt.event.ActionEvent e) {
+				checkPickedVertices();
 				for (Vertex vertex : networkPanel.getPickedVertices())
 					((DBNetwork) networkPanel.getNetwork()).backShrinkVertex(vertex);
 				networkPanel.onNetworkChange();
 				networkPanel.repaintViewer();
     		}
-		});
+		});				
 
 	}
 

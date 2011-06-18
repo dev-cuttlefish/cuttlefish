@@ -27,6 +27,10 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -207,6 +211,22 @@ public class DBNetwork extends BrowsableNetwork {
 	 */
 	public Collection<String> getNodeTables(String schemaName) {
 		return getTables(schemaName, nodeTableColumns);
+	}
+	
+	/**
+	 * Returns the name of the nodes table name
+	 * @return
+	 */
+	public String getNodeTable() {
+		return nodeTable;
+	}
+	
+	/**
+	 * Returns the name of the edge table name
+	 * @return
+	 */
+	public String getEdgeTable() {
+		return edgeTable;
 	}
 
 	
@@ -654,6 +674,100 @@ public class DBNetwork extends BrowsableNetwork {
 					sqlEx.printStackTrace();
 			  }
 		}
+	}
+	
+	/**
+	 * Method that counts the number of nodes that match
+	 * the selected nodes filter
+	 * @return
+	 */
+	public int selectedNodesCount() {
+		String sqlQuery = "SELECT count(id) as nodesCount FROM " + nodeTable;
+		String queryString = applyFilter(sqlQuery, nodeFilter);
+	    Statement st;
+		try {
+			st = conn.createStatement();
+			ResultSet rs = st.executeQuery(queryString);
+			rs.next();
+			return rs.getInt("nodesCount");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}	    
+		return -1;
+	}
+	
+	/**
+	 * Method that counts the number of edges that are selected
+	 * according to the nodes filter and the edges filter.
+	 * @return
+	 */
+	public int selectedEdgesCount() {
+		String nodesQuery = "SELECT id FROM " + nodeTable;
+		nodesQuery = applyFilter(nodesQuery, nodeFilter);
+		String edgesQuery = "SELECT count(*) as edgesCount FROM " + edgeTable;
+		if(edgeFilter.length() > 0)
+			edgesQuery = applyFilter(edgesQuery, edgeFilter) + " AND ";
+		else
+			edgesQuery += " WHERE ";
+		edgesQuery += "id_origin IN (" + nodesQuery + ") AND id_dest IN (" + nodesQuery + ")";
+		Statement st;
+		try {
+			st = conn.createStatement();
+			ResultSet rs = st.executeQuery(edgesQuery);
+			rs.next();
+			return rs.getInt("edgesCount");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}	    
+		return -1;
+	}
+	
+	/**
+	 * This method takes a set of nodes as an input and returns a set of reachable
+	 * nodes, i.e., all nodes that have an incoming edge starting from a node
+	 * in the input set.
+	 * @param nodes
+	 * @return
+	 */
+	public Set<Integer> reachableNeighbors(Set<Integer> nodes) {
+		Set<Integer> reachable = new HashSet<Integer>();
+		StringBuilder nodesList = new StringBuilder("(");
+		for(int nodeId : nodes) {
+			nodesList.append(Integer.toString(nodeId) + ',');
+		}
+		nodesList.setCharAt(nodesList.length()-1, ')');		
+		String sqlQuery = "SELECT id_dest FROM " + edgeTable + " WHERE id_origin IN " + nodesList;
+		Statement st;
+		try {
+			st = conn.createStatement();
+			ResultSet rs = st.executeQuery(sqlQuery);
+			while(rs.next()) {
+				reachable.add(rs.getInt("id_dest"));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return reachable;
+	}
+	
+	public int countEdges(Set<Integer> nodes) {
+		StringBuilder nodesList = new StringBuilder("(");
+		for(int nodeId : nodes) {
+			nodesList.append(Integer.toString(nodeId) + ',');
+		}
+		nodesList.setCharAt(nodesList.length()-1, ')');		
+		String sqlQuery = "SELECT count(*) as edgeCount FROM " + edgeTable + " WHERE id_origin IN " + nodesList;
+		System.out.println(sqlQuery);
+		Statement st;
+		try {
+			st = conn.createStatement();
+			ResultSet rs = st.executeQuery(sqlQuery);
+			rs.next();
+			return rs.getInt("edgeCount");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return -1;
 	}
 	
 	/**
