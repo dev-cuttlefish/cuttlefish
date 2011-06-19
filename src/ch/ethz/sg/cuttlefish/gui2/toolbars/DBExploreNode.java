@@ -58,7 +58,8 @@ public class DBExploreNode extends JFrame {
 		distanceInputValid = false;
 		dbNetwork = (DBNetwork)networkPanel.getNetwork();
 		this.setTitle("Explore node");
-		this.setSize(284, 211);
+		this.setSize(282, 261);
+		this.setResizable(false);
 		initialize();		
 	}
 	
@@ -225,33 +226,30 @@ public class DBExploreNode extends JFrame {
 	        getContentPane().setLayout(layout);
 	        layout.setHorizontalGroup(
 	            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-	            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-	                .addGap(34, 34, 34)
+	            .addGroup(layout.createSequentialGroup()
+	                .addContainerGap()
 	                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+	                    .addComponent(warningLabel)
+	                    .addComponent(linksCountLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 205, javax.swing.GroupLayout.PREFERRED_SIZE)
+	                    .addComponent(nodesCountLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 205, javax.swing.GroupLayout.PREFERRED_SIZE)
 	                    .addGroup(layout.createSequentialGroup()
 	                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
 	                            .addComponent(nodeLabel)
 	                            .addComponent(distanceLabel))
 	                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+	                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+	                            .addComponent(nodeField)
+	                            .addComponent(distanceField, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE))
+	                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 	                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-	                            .addComponent(distanceField, javax.swing.GroupLayout.DEFAULT_SIZE, 85, Short.MAX_VALUE)
-	                            .addComponent(nodeField, javax.swing.GroupLayout.DEFAULT_SIZE, 85, Short.MAX_VALUE))
-	                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-	                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-	                            .addGroup(layout.createSequentialGroup()
-	                                .addComponent(nodeInfo)
-	                                .addGap(38, 38, 38))
+	                            .addComponent(nodeInfo)
 	                            .addComponent(distanceInfo)))
-	                    .addComponent(nodesCountLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 205, javax.swing.GroupLayout.PREFERRED_SIZE)
-	                    .addComponent(linksCountLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 205, javax.swing.GroupLayout.PREFERRED_SIZE)
-	                    .addComponent(warningLabel))
+	                    .addGroup(layout.createSequentialGroup()
+	                        .addGap(38, 38, 38)
+	                        .addComponent(ok)
+	                        .addGap(18, 18, 18)
+	                        .addComponent(cancel)))
 	                .addContainerGap())
-	            .addGroup(layout.createSequentialGroup()
-	                .addGap(71, 71, 71)
-	                .addComponent(ok)
-	                .addGap(18, 18, 18)
-	                .addComponent(cancel)
-	                .addContainerGap(74, Short.MAX_VALUE))
 	        );
 	        layout.setVerticalGroup(
 	            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -268,15 +266,15 @@ public class DBExploreNode extends JFrame {
 	                    .addComponent(distanceInfo))
 	                .addGap(18, 18, 18)
 	                .addComponent(nodesCountLabel)
-	                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+	                .addGap(9, 9, 9)
 	                .addComponent(linksCountLabel)
 	                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
 	                .addComponent(warningLabel)
-	                .addGap(18, 18, 18)
+	                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 18, Short.MAX_VALUE)
 	                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
 	                    .addComponent(cancel)
 	                    .addComponent(ok))
-	                .addContainerGap(25, Short.MAX_VALUE))
+	                .addContainerGap())
 	        );
 
 	        pack();
@@ -310,9 +308,9 @@ public class DBExploreNode extends JFrame {
 			}
 			System.out.println("Worker counted " + reachable.size());
 			nodeInfo.setText("Selected nodes: " + reachable.size() );
-			linksInfo.setText("Selected links: " + dbNetwork.countEdges(lastReachable));
+			linksInfo.setText("Selected links: " + dbNetwork.countEdges(lastReachable, reachable));
 			if(reachable.size() > 500)
-				warningInfo.setText("Warning: Selecting more than 500 nodes may take a long time to visualize");
+				warningInfo.setText("Warning: Too many nodes selected");
 			else
 				warningInfo.setText("");
 			return null;

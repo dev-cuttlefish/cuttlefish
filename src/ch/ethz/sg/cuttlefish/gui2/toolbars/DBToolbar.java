@@ -42,8 +42,6 @@ public class DBToolbar extends AbstractToolbar {
 	private JFrame exploreNodeFrame = null;
 	private JFrame exploreNetworkFrame = null;
 	private boolean enabled = false;
-	private boolean nodeTableInitialized = false;
-	private boolean edgeTableInitialized = false;
 	
 	private static String expandIcon = "icons/plus.png";
 	private static String expandBackIcon = "icons/plus_back.png";
@@ -101,6 +99,26 @@ public class DBToolbar extends AbstractToolbar {
 		return exploreNetworkFrame;
 	}
 	
+	public void findDBTables() {
+		nodeTables.removeAllItems();
+		nodeTables.insertItemAt("<Select a node table>", 0);
+		nodeTables.setSelectedIndex(0);
+		Collection<String> tables = ((DBNetwork)networkPanel.getNetwork()).getNodeTables( ((DBNetwork)networkPanel.getNetwork()).getSchemaName());
+		int itemCount = 1;;
+		for(String nodeTable : tables) {
+			nodeTables.insertItemAt(nodeTable, itemCount);
+			itemCount++;
+		}
+		edgeTables.removeAllItems();
+		edgeTables.insertItemAt("<Select an edge table>", 0);
+		edgeTables.setSelectedIndex(0);		
+		tables = ((DBNetwork)networkPanel.getNetwork()).getEdgeTables( ((DBNetwork)networkPanel.getNetwork()).getSchemaName());					
+		itemCount = 1;
+		for(String edgeTable : tables) {
+			edgeTables.insertItemAt(edgeTable, itemCount);
+			itemCount++;
+		}
+	}
 	private void initialize() {
 		exploreNetwork = new JButton("Explore Network");
 		exploreNode = new JButton("Explore Node");
@@ -109,34 +127,11 @@ public class DBToolbar extends AbstractToolbar {
 		shrink = new JButton(new ImageIcon(getClass().getResource(shrinkIcon)));
 		shrinkBack = new JButton(new ImageIcon(getClass().getResource(shrinkBackIcon)));
 		setExploreButtonsEnabled(true);
-		setNetworkButtonsEnabled(false);
-		
+		setNetworkButtonsEnabled(false);		
 		nodeTables = new JComboBox();
 		nodeTables.setEditable(false);
-		nodeTables.insertItemAt("<Select a node table>", 0);
-		nodeTables.setSelectedIndex(0);
 		edgeTables = new JComboBox();
 		edgeTables.setEditable(false);
-		edgeTables.insertItemAt("<Select an edge table>", 0);
-		edgeTables.setSelectedIndex(0);
-		
-		nodeTables.addFocusListener(new FocusListener() {			
-			@Override
-			public void focusLost(FocusEvent e) {		
-			}			
-			@Override
-			public void focusGained(FocusEvent e) {
-				if(!nodeTableInitialized) {
-					Collection<String> tables = ((DBNetwork)networkPanel.getNetwork()).getNodeTables( ((DBNetwork)networkPanel.getNetwork()).getSchemaName());
-					int itemCount = 1;;
-					for(String nodeTable : tables) {
-						nodeTables.insertItemAt(nodeTable, itemCount);
-						itemCount++;
-					}
-					nodeTableInitialized = true;
-				}
-			}
-		});
 		
 		nodeTables.addItemListener(new ItemListener() {			
 			@Override
@@ -146,23 +141,6 @@ public class DBToolbar extends AbstractToolbar {
 			}
 		});
 
-		edgeTables.addFocusListener(new FocusListener() {			
-			@Override
-			public void focusLost(FocusEvent e) {		
-			}			
-			@Override
-			public void focusGained(FocusEvent e) {
-				if(!edgeTableInitialized) {
-					Collection<String> tables = ((DBNetwork)networkPanel.getNetwork()).getEdgeTables( ((DBNetwork)networkPanel.getNetwork()).getSchemaName());					
-					int itemCount = 1;
-					for(String edgeTable : tables) {
-						edgeTables.insertItemAt(edgeTable, itemCount);
-						itemCount++;
-					}
-					edgeTableInitialized = true;
-				}
-			}
-		});
 		edgeTables.addItemListener(new ItemListener() {			
 			@Override
 			public void itemStateChanged(ItemEvent e) {

@@ -25,6 +25,7 @@ import java.awt.Color;
 import java.awt.HeadlessException;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -681,45 +682,22 @@ public class DBNetwork extends BrowsableNetwork {
 	 * the selected nodes filter
 	 * @return
 	 */
-	public int selectedNodesCount() {
-		String sqlQuery = "SELECT count(id) as nodesCount FROM " + nodeTable;
-		String queryString = applyFilter(sqlQuery, nodeFilter);
+	public Set<Integer> getSelectedNodes() {
+		String sqlQuery = "SELECT id FROM " + nodeTable;
+		sqlQuery = applyFilter(sqlQuery, nodeFilter);
 	    Statement st;
-		try {
+	    Set<Integer> selectedNodes = new HashSet<Integer>();
+	    try {
 			st = conn.createStatement();
-			ResultSet rs = st.executeQuery(queryString);
-			rs.next();
-			return rs.getInt("nodesCount");
+			ResultSet rs = st.executeQuery(sqlQuery);
+			while(rs.next()) {
+				selectedNodes.add(rs.getInt("id"));
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
-		}	    
-		return -1;
-	}
-	
-	/**
-	 * Method that counts the number of edges that are selected
-	 * according to the nodes filter and the edges filter.
-	 * @return
-	 */
-	public int selectedEdgesCount() {
-		String nodesQuery = "SELECT id FROM " + nodeTable;
-		nodesQuery = applyFilter(nodesQuery, nodeFilter);
-		String edgesQuery = "SELECT count(*) as edgesCount FROM " + edgeTable;
-		if(edgeFilter.length() > 0)
-			edgesQuery = applyFilter(edgesQuery, edgeFilter) + " AND ";
-		else
-			edgesQuery += " WHERE ";
-		edgesQuery += "id_origin IN (" + nodesQuery + ") AND id_dest IN (" + nodesQuery + ")";
-		Statement st;
-		try {
-			st = conn.createStatement();
-			ResultSet rs = st.executeQuery(edgesQuery);
-			rs.next();
-			return rs.getInt("edgesCount");
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}	    
-		return -1;
+		}
+		System.out.println("Selected nodes " + Arrays.toString(selectedNodes.toArray()));
+		return selectedNodes;
 	}
 	
 	/**
@@ -750,14 +728,27 @@ public class DBNetwork extends BrowsableNetwork {
 		return reachable;
 	}
 	
-	public int countEdges(Set<Integer> nodes) {
-		StringBuilder nodesList = new StringBuilder("(");
-		for(int nodeId : nodes) {
-			nodesList.append(Integer.toString(nodeId) + ',');
+	/**
+	 * This method counts the number of edges starting with an origin
+	 * in the set of origin nodes and with a destination in the
+	 * destination nodes list
+	 * @param originNodes - The set of origin nodes
+	 * @param destNodes - The set of destination nodes
+	 * @return The number of edges
+	 */
+	public int countEdges(Set<Integer> originNodes, Set<Integer> destNodes) {
+		StringBuilder originNodesList = new StringBuilder("(");
+		for(int nodeId : originNodes) {
+			originNodesList.append(Integer.toString(nodeId) + ',');
 		}
-		nodesList.setCharAt(nodesList.length()-1, ')');		
-		String sqlQuery = "SELECT count(*) as edgeCount FROM " + edgeTable + " WHERE id_origin IN " + nodesList;
-		System.out.println(sqlQuery);
+		originNodesList.setCharAt(originNodesList.length()-1, ')');
+		StringBuilder destNodesList = new StringBuilder("(");
+		for(int nodeId : destNodes) {
+			destNodesList.append(Integer.toString(nodeId) + ',');
+		}
+		destNodesList.setCharAt(destNodesList.length()-1, ')');
+		String sqlQuery = "SELECT count(*) as edgeCount FROM " + edgeTable + " WHERE id_origin IN " + originNodesList
+				+ " AND id_dest IN " + destNodesList;
 		Statement st;
 		try {
 			st = conn.createStatement();
