@@ -1,31 +1,20 @@
 package ch.ethz.sg.cuttlefish.gui;
 
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.GridLayout;
-import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.File;
 
-import javax.swing.BoxLayout;
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
-import javax.swing.SpringLayout;
 import javax.swing.filechooser.FileNameExtensionFilter;
-
-import sun.misc.Regexp;
 
 import ch.ethz.sg.cuttlefish.misc.FileChooser;
 import ch.ethz.sg.cuttlefish.networks.BrowsableNetwork;
@@ -149,8 +138,8 @@ public class NetworkInitializer {
         cancelButton.setText("Cancel"); 
         cancelButton.setPreferredSize(new java.awt.Dimension(85, 25));
 
-        urlTextField.setText("localhost/cf");
-        usernameTextField.setText("root");
+        urlTextField.setText("");
+        usernameTextField.setText("");
 
 
         GroupLayout layout = new GroupLayout(connectPanel);
@@ -236,6 +225,9 @@ public class NetworkInitializer {
 						   usernameTextField.getText(), passwordTextField.getText())
 				 	) {
 					 connectWindow.setVisible(false);
+					 synchronized (dbNetwork) {
+						 dbNetwork.notifyAll();	
+					}					 
 				 }
 			}
 		});

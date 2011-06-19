@@ -14,9 +14,11 @@ import javax.swing.KeyStroke;
 import ch.ethz.sg.cuttlefish.gui.NetworkInitializer;
 import ch.ethz.sg.cuttlefish.gui2.CuttlefishToolbars;
 import ch.ethz.sg.cuttlefish.gui2.NetworkPanel;
+import ch.ethz.sg.cuttlefish.gui2.toolbars.DBToolbar;
 import ch.ethz.sg.cuttlefish.misc.Observer;
 import ch.ethz.sg.cuttlefish.misc.Subject;
 import ch.ethz.sg.cuttlefish.networks.BrowsableNetwork;
+import ch.ethz.sg.cuttlefish.networks.DBNetwork;
 import ch.ethz.sg.cuttlefish.networks.InteractiveCxfNetwork;
 
 public class OpenMenu extends AbstractMenu implements Subject {
@@ -107,7 +109,7 @@ public class OpenMenu extends AbstractMenu implements Subject {
 			public void actionPerformed(ActionEvent e) { 
 				networkSelected(dbNetwork); 
 				toolbars.getSimulationToolbar().setVisible(false);
-				toolbars.getDBToolbar().setVisible(true);
+				toolbars.getDBToolbar().setVisible(false);
 				notifyObservers();
 			}
 		});
@@ -175,12 +177,15 @@ public class OpenMenu extends AbstractMenu implements Subject {
 		if(network instanceof InteractiveCxfNetwork) {
 			((InteractiveCxfNetwork)network).addObserver(toolbars.getSimulationToolbar());
 		}
+		if(network instanceof DBNetwork) {
+			new Thread(new DBToolbarInitializer(toolbars.getDBToolbar(), (DBNetwork)network) ).start();
+		}
 		network.graphicalInit(new NetworkInitializer() );
 		networkPanel.setNetwork(network);
         networkPanel.onNetworkChange();
         networkPanel.getNetworkLayout().reset();
         networkPanel.repaintViewer();
-        networkPanel.stopLayout();	
+        networkPanel.stopLayout();        
 	}
 
 	@Override
@@ -197,6 +202,30 @@ public class OpenMenu extends AbstractMenu implements Subject {
 		for(Observer o : observers) {
 			o.update(this);
 		} 
+	}
+	
+	class DBToolbarInitializer implements Runnable {
+		private DBToolbar dbToolbar;
+		private DBNetwork dbNetwork;
+		public DBToolbarInitializer(DBToolbar dbToolbar, DBNetwork dbNetwork) {
+			this.dbToolbar = dbToolbar;
+			this.dbNetwork = dbNetwork;
+		}
+		@Override
+		public void run() {
+			while(!dbNetwork.isConnected() ) {
+				synchronized (dbNetwork) {
+					try {
+						dbNetwork.wait();
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}	
+				}				
+			}
+			dbToolbar.setVisible(true);
+			dbToolbar.findDBTables();
+		}
+		
 	}
 
 }
