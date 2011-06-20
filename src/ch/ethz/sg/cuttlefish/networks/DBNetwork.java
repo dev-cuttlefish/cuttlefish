@@ -147,11 +147,13 @@ public class DBNetwork extends BrowsableNetwork {
 			System.err.println("SQL error");
 			//hEx.printStackTrace();
 		}
-		getDirection();
-		schemaName = dbName.substring(dbName.indexOf('/')+1);
-		getNodeTables(schemaName);
-		getEdgeTables(schemaName);
-		System.out.println("Successfully connected to: " + dbName);
+		if(connected) {
+			getDirection();
+			schemaName = dbName.substring(dbName.indexOf('/')+1);
+			getNodeTables(schemaName);
+			getEdgeTables(schemaName);
+			System.out.println("Successfully connected to: " + dbName);
+		}
 		return connected;
 	}
 	
