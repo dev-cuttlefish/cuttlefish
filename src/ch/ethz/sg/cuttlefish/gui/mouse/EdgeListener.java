@@ -20,9 +20,10 @@
 */
 
 package ch.ethz.sg.cuttlefish.gui.mouse;
+import ch.ethz.sg.cuttlefish.gui2.NetworkPanel;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 
 public interface EdgeListener<E> {
-     void setEdgeView(E edge, VisualizationViewer visualizationViewer); 
+     void setEdgeView(E edge, NetworkPanel networkPanel); 
     
 }

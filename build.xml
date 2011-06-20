@@ -52,6 +52,9 @@
       basedir="${build}"
   	  index="true"
   	  filesetmanifest="merge">
+          <manifest>
+            <attribute name="Main-Class" value="ch.ethz.sg.cuttlefish.gui2.Cuttlefish"/>
+          </manifest>
   	  <fileset dir="${classes}"/>
   	  <fileset dir="${src}">
 		<include name="ch/ethz/sg/cuttlefish/gui2/toolbars/icons/*.png" />

@@ -29,11 +29,15 @@ import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 import javax.swing.JPopupMenu;
 
+import ch.ethz.sg.cuttlefish.gui2.NetworkPanel;
+
 public class PopupMousePlugin<V, E> extends AbstractPopupGraphMousePlugin {
     private JPopupMenu edgePopup, vertexPopup;
+    private NetworkPanel networkPanel;
     
-    public PopupMousePlugin() {
+    public PopupMousePlugin(NetworkPanel networkPanel) {
         this(MouseEvent.BUTTON3_MASK);
+        this.networkPanel = networkPanel;
     }
     
     public PopupMousePlugin(int modifiers) {
@@ -50,12 +54,12 @@ public class PopupMousePlugin<V, E> extends AbstractPopupGraphMousePlugin {
         if(pickSupport != null) {
             final V v = pickSupport.getVertex(vv.getGraphLayout(), p.getX(), p.getY());
             if(v != null) {
-                updateVertexMenu(v, vv, p);
+                updateVertexMenu(v, networkPanel, p);
                 vertexPopup.show(vv, e.getX(), e.getY());
             } else {
                 final E edge = pickSupport.getEdge(vv.getGraphLayout(), p.getX(), p.getY());
                 if(edge != null) {
-                    updateEdgeMenu(edge, vv, p);
+                    updateEdgeMenu(edge, networkPanel, p);
                     edgePopup.show(vv, e.getX(), e.getY());              
                 }
             }
@@ -63,12 +67,12 @@ public class PopupMousePlugin<V, E> extends AbstractPopupGraphMousePlugin {
     }
     
     @SuppressWarnings("unchecked")
-	private void updateVertexMenu(V v, VisualizationViewer vv, Point2D point) {
+	private void updateVertexMenu(V v, NetworkPanel networkPanel, Point2D point) {
         if (vertexPopup == null) return;
         Component[] menuComps = vertexPopup.getComponents();
         for (Component comp: menuComps) {
             if (comp instanceof VertexListener) {
-                ((VertexListener)comp).setVertexView(v, vv);
+                ((VertexListener)comp).setVertexView(v, networkPanel);
             }
             if (comp instanceof MenuPointListener) {
                 ((MenuPointListener)comp).setPoint(point);
@@ -93,12 +97,12 @@ public class PopupMousePlugin<V, E> extends AbstractPopupGraphMousePlugin {
         this.vertexPopup = vertexPopup;
     }
     
-    private void updateEdgeMenu(E edge, VisualizationViewer visualizationViewer, Point2D point) {
+    private void updateEdgeMenu(E edge, NetworkPanel networkPanel, Point2D point) {
         if (edgePopup == null) return;
         Component[] menuComps = edgePopup.getComponents();
         for (Component comp: menuComps) {
             if (comp instanceof EdgeListener) {
-                ((EdgeListener)comp).setEdgeView(edge, visualizationViewer);
+                ((EdgeListener)comp).setEdgeView(edge, networkPanel);
             }
             if (comp instanceof MenuPointListener) {
                 ((MenuPointListener)comp).setPoint(point);

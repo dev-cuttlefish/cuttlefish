@@ -23,6 +23,8 @@ import javax.swing.JPanel;
 import org.apache.commons.collections15.Predicate;
 import org.apache.commons.collections15.Transformer;
 
+import ch.ethz.sg.cuttlefish.gui.mouse.MouseMenus;
+import ch.ethz.sg.cuttlefish.gui.mouse.PopupMousePlugin;
 import ch.ethz.sg.cuttlefish.gui2.INetworkBrowser;
 import ch.ethz.sg.cuttlefish.gui2.tasks.VisualizationViewerRepaintTask;
 import ch.ethz.sg.cuttlefish.gui2.tasks.VisualizationViewerTask;
@@ -56,9 +58,13 @@ import edu.uci.ics.jung.graph.util.Context;
 import edu.uci.ics.jung.visualization.Layer;
 import edu.uci.ics.jung.visualization.RenderContext;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
+import edu.uci.ics.jung.visualization.control.CrossoverScalingControl;
 import edu.uci.ics.jung.visualization.control.EditingModalGraphMouse;
 import edu.uci.ics.jung.visualization.control.GraphMousePlugin;
 import edu.uci.ics.jung.visualization.control.ModalGraphMouse;
+import edu.uci.ics.jung.visualization.control.PluggableGraphMouse;
+import edu.uci.ics.jung.visualization.control.ScalingGraphMousePlugin;
+import edu.uci.ics.jung.visualization.control.TranslatingGraphMousePlugin;
 import edu.uci.ics.jung.visualization.decorators.EdgeShape;
 import edu.uci.ics.jung.visualization.picking.ShapePickSupport;
 import edu.uci.ics.jung.visualization.transform.MutableTransformer;
@@ -130,6 +136,12 @@ public class NetworkPanel  extends JPanel implements ItemListener,INetworkBrowse
 
 		//starting on transforming mode, the most used
 		graphMouse.setMode(ModalGraphMouse.Mode.TRANSFORMING);
+		graphMouse.remove(graphMouse.getPopupEditingPlugin());
+		PopupMousePlugin popupMouse = new PopupMousePlugin<Vertex, Edge>(this);
+		popupMouse.setVertexPopup(new MouseMenus.VertexMenu());
+		popupMouse.setEdgePopup(new MouseMenus.EdgeMenu(null));
+		graphMouse.add(popupMouse);
+		
 		
 		RenderContext<Vertex,Edge> renderContext = getVisualizationViewer().getRenderContext();		
 
