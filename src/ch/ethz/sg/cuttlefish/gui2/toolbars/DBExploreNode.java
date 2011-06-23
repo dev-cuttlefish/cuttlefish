@@ -53,6 +53,7 @@ public class DBExploreNode extends JFrame {
 	
 	public DBExploreNode(NetworkPanel networkPanel) {
 		this.networkPanel = networkPanel;
+		setLocationRelativeTo(networkPanel);
 		exploreNode = this;
 		nodeInputValid = false;
 		distanceInputValid = false;
