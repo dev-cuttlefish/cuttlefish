@@ -404,6 +404,7 @@ public class MouseMenus {
 		@Override
 		public void setEdgeView(Edge edge, NetworkPanel networkPanel) {
 			this.edge = edge;
+			this.networkPanel = networkPanel;
 		}
     }
     
@@ -414,7 +415,7 @@ public class MouseMenus {
 			if(v.getLabel() != null && v.getLabel().length() > 0)
 				this.setText("Label: " + v.getLabel());
 			else
-				this.setText("Label: no label");
+				this.setText("Label: no label");			
         }
     }
     
