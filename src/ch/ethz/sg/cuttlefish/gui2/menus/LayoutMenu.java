@@ -4,17 +4,27 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.KeyStroke;
 
 import ch.ethz.sg.cuttlefish.gui2.CuttlefishToolbars;
 import ch.ethz.sg.cuttlefish.gui2.NetworkPanel;
+import ch.ethz.sg.cuttlefish.misc.Edge;
+import ch.ethz.sg.cuttlefish.misc.Observer;
+import ch.ethz.sg.cuttlefish.misc.Subject;
+import ch.ethz.sg.cuttlefish.misc.Vertex;
+import ch.ethz.sg.cuttlefish.networks.BrowsableForestNetwork;
+import edu.uci.ics.jung.algorithms.filters.KNeighborhoodFilter.EdgeType;
+import edu.uci.ics.jung.graph.SparseGraph;
 
-public class LayoutMenu extends AbstractMenu {
+public class LayoutMenu extends AbstractMenu implements Observer {
 
 	/**
 	 * 
@@ -34,6 +44,7 @@ public class LayoutMenu extends AbstractMenu {
 	private JRadioButtonMenuItem circle;
 	private JRadioButtonMenuItem tree;
 	private JRadioButtonMenuItem radialTree;
+	private JRadioButtonMenuItem lastSelectedLayout;
 	private Map<JRadioButtonMenuItem, String> layoutMap;
 
 	public LayoutMenu(NetworkPanel networkPanel, CuttlefishToolbars toolbars) {
@@ -56,6 +67,15 @@ public class LayoutMenu extends AbstractMenu {
 		circle = new JRadioButtonMenuItem("Circle");
 		tree = new JRadioButtonMenuItem("Tree");
 		radialTree = new JRadioButtonMenuItem("Radial Tree");
+		arf.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_1, ActionEvent.ALT_MASK));
+		kcore.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_2, ActionEvent.ALT_MASK));
+		spring.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_3, ActionEvent.ALT_MASK));
+		kamada.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_4, ActionEvent.ALT_MASK));
+		fruchterman.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_5, ActionEvent.ALT_MASK));
+		isom.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_6, ActionEvent.ALT_MASK));
+		circle.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_7, ActionEvent.ALT_MASK));
+		tree.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_8, ActionEvent.ALT_MASK));
+		radialTree.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_9, ActionEvent.ALT_MASK));
 		layoutButtons.add(arf);
 		layoutButtons.add(kcore);
 		layoutButtons.add(fixed);
@@ -81,7 +101,7 @@ public class LayoutMenu extends AbstractMenu {
 		layoutMap.put(tree, "TreeLayout");
 		layoutMap.put(radialTree, "RadialTreeLayout");
 		
-		arf.setSelected(true);
+		layoutSelected(arf);
 		
 		stopButton = new JMenuItem("Stop");
 		restartButton = new JMenuItem("Restart");
@@ -128,8 +148,14 @@ public class LayoutMenu extends AbstractMenu {
 		arf.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) { layoutSelected(arf); }
 		});
-		kcore.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) { layoutSelected(kcore); }
+		kcore.addActionListener(new ActionListener() {			
+			public void actionPerformed(ActionEvent e) {
+				if(checkKCoreLayout()) {
+					layoutSelected(kcore);
+				}
+				else
+					lastSelectedLayout.setSelected(true);
+			}
 		});
 		fixed.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) { layoutSelected(fixed); }
@@ -150,18 +176,73 @@ public class LayoutMenu extends AbstractMenu {
 			public void actionPerformed(ActionEvent e) { layoutSelected(isom); }
 		});
 		circle.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) { layoutSelected(circle); }
+			public void actionPerformed(ActionEvent e) { layoutSelected(circle);}
 		});
 		tree.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) { layoutSelected(tree); }
+			public void actionPerformed(ActionEvent e) { 
+				if(checkTreeLayout() ) {
+					layoutSelected(tree);
+				} else {
+					lastSelectedLayout.setSelected(true);
+				}
+			}
 		});
-		radialTree.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) { layoutSelected(radialTree); }
+		radialTree.addActionListener(new ActionListener() {			
+				public void actionPerformed(ActionEvent e) { 
+					if(checkTreeLayout() ) {
+						layoutSelected(radialTree);						
+					} else {
+						lastSelectedLayout.setSelected(true);
+					}
+				}
 		});
 	}
 	
+	private Set<Vertex> dfs(SparseGraph<Vertex, Edge> g, Set<Vertex> visited, Vertex v) {
+		for(Vertex w : g.getNeighbors(v) ) {
+			if(!visited.contains(w)) {
+				visited.add(w);
+				dfs(g,visited,w);
+			}
+		}
+		return visited;
+	}
+	
+	private boolean checkTreeLayout() {
+		if(!(networkPanel.getNetwork() instanceof BrowsableForestNetwork) ) {
+			int answer = JOptionPane.showConfirmDialog(networkPanel, "The network is not a forest. This layout applies a Minimum spanning forest algorithm to convert it to a forest, this cannot be undone. Proceed?", "Not a forest warning", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null);
+			if(answer == 0)
+				return true;
+			else
+				return false;
+		}
+		return true;
+	}
+	
+	private boolean checkKCoreLayout() {
+		if(dfs(networkPanel.getNetwork(), new HashSet<Vertex>(), networkPanel.getNetwork().getVertices().iterator().next()).size() < networkPanel.getNetwork().getVertexCount() ) {
+			JOptionPane.showMessageDialog(networkPanel, "This layout currently supports only connected graphs", "Warning message", JOptionPane.WARNING_MESSAGE, null);
+			return false;
+		} 
+		int answer = JOptionPane.showConfirmDialog(networkPanel, "This layout assigns colors to nodes. This operation cannot be undone. Proceed?", "Confirm layout", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null);
+		if(answer == 0)
+			return true;		
+		return false;
+	}
+	
 	private void layoutSelected(JRadioButtonMenuItem selected) {
+		lastSelectedLayout = selected;
+		selected.setSelected(true);	
 		networkPanel.setLayout(layoutMap.get(selected ));
+	}
+
+	@Override
+	public void update(Subject o) {
+		for(JRadioButtonMenuItem layoutButton : layoutMap.keySet() ) {
+			if(layoutMap.get(layoutButton) == networkPanel.getCurrentLayout() ) {
+				layoutButton.setSelected(true);
+			}
+		}
 	}
 
 }

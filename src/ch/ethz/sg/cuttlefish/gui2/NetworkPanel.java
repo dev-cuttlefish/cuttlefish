@@ -5,14 +5,17 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Paint;
+import java.awt.Point;
 import java.awt.Shape;
 import java.awt.Stroke;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
@@ -69,7 +72,7 @@ import edu.uci.ics.jung.visualization.decorators.EdgeShape;
 import edu.uci.ics.jung.visualization.picking.ShapePickSupport;
 import edu.uci.ics.jung.visualization.transform.MutableTransformer;
 
-public class NetworkPanel  extends JPanel implements ItemListener,INetworkBrowser, Runnable{
+public class NetworkPanel  extends JPanel implements Subject, ItemListener,INetworkBrowser, Runnable{
 	/**
 	 * 
 	 */
@@ -79,7 +82,9 @@ public class NetworkPanel  extends JPanel implements ItemListener,INetworkBrowse
 	private BlockingQueue<VisualizationViewerTask> viewerTasks;
 	private EditingModalGraphMouse<Vertex,Edge> graphMouse;
 	private Layout<Vertex,Edge> layout = null;
+	private String currentLayout = null;
 	private String layoutType = null;
+	private List<Observer> observers = null;
 	
 	/*Factories*/
 	private VertexFactory vertexFactory = null;
@@ -119,13 +124,20 @@ public class NetworkPanel  extends JPanel implements ItemListener,INetworkBrowse
 //		return visualizationViewerWorker;
 	}
 	
+	public String getCurrentLayout() {
+		return currentLayout;
+	}
+	
 	private void initialize() {
+		observers = new LinkedList<Observer>();
+
 		BrowsableNetwork temp = new BrowsableNetwork();
 		this.setNetwork(temp);
 		
 		this.setLayout(new BorderLayout());
 		this.setSize(1096, 200);
 		this.add(getVisualizationViewer(), BorderLayout.CENTER);
+		
 		
 		vertexFactory = new VertexFactory();
 	    edgeFactory = new EdgeFactory();
@@ -273,9 +285,12 @@ public class NetworkPanel  extends JPanel implements ItemListener,INetworkBrowse
 		 */
 		if (layout == null)
 			setLayout("ARFLayout");	
-		else if( !(network instanceof Forest) && layout instanceof TreeLayout)
-			setLayout("ARFLayout");
-		else if (layout.getGraph() != network) //consistency check between layout and network
+		else if( layout instanceof TreeLayout) {
+			network = new BrowsableForestNetwork(network);
+			layout.setGraph(network);
+			
+		}
+		if (layout.getGraph() != network) //consistency check between layout and network
 			layout.setGraph(network);
 
 		//maxUpdates in ARF2Layout depends on the network size, this way it's updated if the network changes
@@ -347,7 +362,7 @@ public class NetworkPanel  extends JPanel implements ItemListener,INetworkBrowse
 	public void setLayout(String selectedLayout) {
 		layoutType = selectedLayout;
 		Layout<Vertex,Edge> newLayout = null;
-		
+		currentLayout = selectedLayout;
 		if (selectedLayout.equalsIgnoreCase("ARFLayout"))
 		{	
 			newLayout = new ARF2Layout<Vertex,Edge>(getNetwork(), ((BrowsableNetwork)getNetwork()).isIncremental(),layout);
@@ -404,8 +419,12 @@ public class NetworkPanel  extends JPanel implements ItemListener,INetworkBrowse
 			if (v.isFixed())
 				layout.lock(v,true);
 		getVisualizationViewer().setGraphLayout(layout);
+		// centerGraph() requires double invocation
+		centerGraph();
 		centerGraph();
         this.repaintViewer();
+        for(Observer o : observers)
+        	o.update(this);
 		
 	}
 	
@@ -417,6 +436,7 @@ public class NetworkPanel  extends JPanel implements ItemListener,INetworkBrowse
 	private void centerGraph() {
 		
 		VisualizationViewer<Vertex, Edge> vv = getVisualizationViewer();
+
 		MutableTransformer layout2 = vv.getRenderContext().getMultiLayerTransformer().getTransformer(Layer.LAYOUT);
 		double top = Double.MAX_VALUE;
 		double bottom = Double.MAX_VALUE;
@@ -439,14 +459,19 @@ public class NetworkPanel  extends JPanel implements ItemListener,INetworkBrowse
 			if(right < invP.getX() || right == Double.MAX_VALUE)
 				right = invP.getX();			
 		}
-		
-		double scale = vv.getRenderContext().getMultiLayerTransformer().getTransformer(Layer.VIEW).getScale();
-		System.out.println("Scaling factor: " + scale);
+		if(getMouse() != null) {
+			double scale = 0;
+			do {
+				scale = vv.getRenderContext().getMultiLayerTransformer().getTransformer(Layer.VIEW).getScale();
+				getMouse().mouseWheelMoved(new MouseWheelEvent(getVisualizationViewer(), 0, 0, 0, getVisualizationViewer().getWidth()/2, getVisualizationViewer().getHeight()/2, 1, false, 1, -1, -1) );
+			}while(scale >= 1);
+		}
+		vv.getRenderContext().getMultiLayerTransformer().getTransformer(Layer.VIEW).setScale(1, 1, new Point((int)(getVisualizationViewer().getCenter().getX() - (right+left)/2), (int)(getVisualizationViewer().getCenter().getY() - (top+bottom)/2) ) );
 		double deltaX = getVisualizationViewer().getCenter().getX() - (right+left)/2 ;
 		double deltaY = getVisualizationViewer().getCenter().getY() - (top+bottom)/2;
-		System.out.println("Deltas " + deltaX + " " + deltaY);        
-        if( !Double.isInfinite(deltaX) && !Double.isInfinite(deltaY))
+        if( !Double.isInfinite(deltaX) && !Double.isInfinite(deltaY) && !Double.isNaN(deltaX) && !Double.isNaN(deltaY)){
         	layout2.translate(deltaX, deltaY);
+        }
 	}
 	
 	
@@ -490,6 +515,18 @@ public class NetworkPanel  extends JPanel implements ItemListener,INetworkBrowse
 	public void run() {
 		// TODO Auto-generated method stub
 		while(true);
+	}
+
+
+	@Override
+	public void addObserver(Observer o) {
+		observers.add(o);
+	}
+
+
+	@Override
+	public void removeObserver(Observer o) {
+		observers.remove(o);
 	}
 
 

@@ -1,5 +1,6 @@
 package ch.ethz.sg.cuttlefish.gui2.tasks;
 
+import java.awt.Color;
 import java.awt.Rectangle;
 import java.util.concurrent.BlockingQueue;
 import javax.swing.JOptionPane;

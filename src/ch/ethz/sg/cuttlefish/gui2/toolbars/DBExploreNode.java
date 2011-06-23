@@ -25,6 +25,8 @@ import javax.swing.JTextField;
 import javax.swing.SwingWorker;
 
 import ch.ethz.sg.cuttlefish.gui2.NetworkPanel;
+import ch.ethz.sg.cuttlefish.misc.Vertex;
+import ch.ethz.sg.cuttlefish.networks.BrowsableNetwork;
 import ch.ethz.sg.cuttlefish.networks.DBNetwork;
 
 public class DBExploreNode extends JFrame {
@@ -172,9 +174,16 @@ public class DBExploreNode extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				dbNetwork.setNodeFilter("");
 				dbNetwork.setEdgeFilter("");
-				dbNetwork.emptyNetwork();
-				boolean forward = true;
-				((DBNetwork) networkPanel.getNetwork()).emptyNetwork();
+				dbNetwork.emptyNetwork();				
+				boolean forward = true;				
+				try{
+					((DBNetwork) networkPanel.getNetwork()).emptyNetwork();
+				} catch(java.lang.ClassCastException ex) {
+					//Somebody used the treelayout and changed the
+					//network in networkPanel to a forest network, which
+					//is needed for the tree layout
+					networkPanel.setNetwork(dbNetwork);					
+				}
 				int distance = Integer.parseInt(distanceField.getText());				
 				((DBNetwork) networkPanel.getNetwork()).extendNeighborhood(Integer.parseInt(nodeField.getText()), distance, forward);
 				networkPanel.onNetworkChange();

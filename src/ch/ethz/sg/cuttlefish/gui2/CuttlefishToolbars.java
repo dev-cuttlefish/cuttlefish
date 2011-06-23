@@ -1,5 +1,6 @@
 package ch.ethz.sg.cuttlefish.gui2;
 
+import java.awt.Color;
 import java.awt.FlowLayout;
 
 import javax.swing.JPanel;
