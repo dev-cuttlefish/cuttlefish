@@ -6,10 +6,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
+import java.util.Set;
 
 import org.apache.commons.collections15.map.HashedMap;
 
@@ -23,8 +25,9 @@ import edu.uci.ics.jung.graph.SparseGraph;
 
 public class KCoreLayout<V, E>  extends AbstractLayout<V,E> {
 
+	//private static final double EPSILON = 0.18;
 	private static final double EPSILON = 0.18;
-	private static final double RHO_SCALE = 20;
+	private static final double RHO_SCALE = 400;
 	
 	private Map<V, Integer> coreness;
 	private Map<V, Double> rho;
@@ -44,20 +47,22 @@ public class KCoreLayout<V, E>  extends AbstractLayout<V,E> {
 		alpha = new HashMap<V, Double>();
 
 		computeGraphCoreness(getGraph());
+		//check if all vertices have the same coreness
+		//and if yes, randomly places the nodes
+		if(singleCoreCheck())
+			return;
 		cmax = -1;
 		int maxDegree = -1;
-		double maxSize = -1;
+		double maxSize = 10;
 		for(V v : getGraph().getVertices() ) {			
 			if(cmax < coreness.get(v))
 				cmax = coreness.get(v);
 			if(getGraph().degree(v) > maxDegree)
-				maxDegree = getGraph().degree(v);
-			if(((Vertex)v).getSize() > maxSize)
-				maxSize = ((Vertex)v).getSize(); 
+				maxDegree = getGraph().degree(v);			 
 		}
 		computeRho(getGraph(), cmax);		
 		computeAlpha(getGraph(), cmax);
-		for(V v : getGraph().getVertices()) {
+		for(V v : getGraph().getVertices()) {			
 			double r;
 			if(rho.get(v).equals(java.lang.Double.NaN) || rho.get(v) == 0d) {	
 				r = (new Random()).nextDouble()/2 * cmaxRadius;
@@ -72,9 +77,8 @@ public class KCoreLayout<V, E>  extends AbstractLayout<V,E> {
 				origDegree = 1;
 			vertex.setSize(maxSize * origDegree / Math.log(maxDegree) );
 			float hue = (float)coreness.get(v)/(float)cmax;
-			System.out.println("Coreness: " + coreness.get(v) + " cmax " + cmax + " hue " + hue);
 			vertex.setFillColor(Color.getHSBColor(hue, 1f, 1f));
-			locations.put(v, new Point2D.Double(x*RHO_SCALE,y*RHO_SCALE));
+			locations.put(v, new Point2D.Double(x*RHO_SCALE/cmax,y*RHO_SCALE/cmax));
 		}
 	}
 
@@ -110,8 +114,25 @@ public class KCoreLayout<V, E>  extends AbstractLayout<V,E> {
 		}
 	}
 	
+	private boolean singleCoreCheck() {
+		Set<Integer> cores = new HashSet<Integer>();
+		for(V v : coreness.keySet()) {
+			if(!cores.contains(coreness.get(v)) ) {
+				cores.add(coreness.get(v));
+			}
+		}
+		if(cores.size() == 1) {
+			Random r = new Random();
+			for(V v : getGraph().getVertices() ) {
+				locations.put(v, new Point2D.Double(r.nextDouble()*500*(r.nextBoolean() ? 1 : 0),r.nextDouble()*500*(r.nextBoolean() ? 1 : 0)));
+			}
+			return true;
+		}
+		return false;
+	}
+	
 	private void computeAlpha(Graph<V, E> g, int cmax) {
-		for(int shellId = 1; shellId <= cmax; shellId++) {
+		for(int shellId = 0; shellId <= cmax; shellId++) {
 			//compute vertices that belong to this shell
 			List<V> shell = new ArrayList<V>();
 			for(V v : g.getVertices() ) {
@@ -190,10 +211,8 @@ public class KCoreLayout<V, E>  extends AbstractLayout<V,E> {
 	}
 	
 	private void computeCore(Map<V, Integer> degree, int core) {
-		System.out.println("Computing core: " + core);
 		Color c = new Color(new Random().nextInt());
 		List<V> shell = new ArrayList<V>();
-		Random r = new Random();
 		for(V v : degree.keySet() ) {
 			if(degree.get(v) <= core) {
 				coreness.put(v, core);

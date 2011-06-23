@@ -164,7 +164,7 @@ public class OpenMenu extends AbstractMenu implements Subject {
 	}
 	
 	private void networkSelected(JMenuItem selected) {
-		BrowsableNetwork network = null;
+		BrowsableNetwork network = null;      
 		try {
 			network = (BrowsableNetwork) networkClassMap.get(selected).newInstance();
 		} catch (InstantiationException e) {
@@ -184,8 +184,8 @@ public class OpenMenu extends AbstractMenu implements Subject {
 		networkPanel.setNetwork(network);
         networkPanel.onNetworkChange();
         networkPanel.getNetworkLayout().reset();
-        networkPanel.repaintViewer();
-        networkPanel.stopLayout();        
+        networkPanel.repaintViewer();   
+		networkPanel.stopLayout();  
 	}
 
 	@Override
