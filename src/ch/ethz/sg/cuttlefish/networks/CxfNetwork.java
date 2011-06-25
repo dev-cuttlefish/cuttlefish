@@ -213,7 +213,6 @@ public class CxfNetwork extends BrowsableNetwork {
 				}
 				else
 				{
-					System.out.println("adding edge ("+ source.getId() + "," + dest.getId()+")");
 					Edge e = createEdge(t);
 					EdgeType et = EdgeType.DIRECTED;
 					if (!directed)
