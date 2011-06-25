@@ -2,13 +2,8 @@ package ch.ethz.sg.cuttlefish.gui2.toolbars;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.MouseEvent;
 import java.util.Collection;
 
 import javax.swing.ImageIcon;
@@ -19,11 +14,8 @@ import javax.swing.JOptionPane;
 
 
 import ch.ethz.sg.cuttlefish.gui2.NetworkPanel;
-import ch.ethz.sg.cuttlefish.misc.Edge;
 import ch.ethz.sg.cuttlefish.misc.Vertex;
 import ch.ethz.sg.cuttlefish.networks.DBNetwork;
-import edu.uci.ics.jung.visualization.control.GraphMousePlugin;
-import edu.uci.ics.jung.visualization.control.PickingGraphMousePlugin;
 
 public class DBToolbar extends AbstractToolbar {
 

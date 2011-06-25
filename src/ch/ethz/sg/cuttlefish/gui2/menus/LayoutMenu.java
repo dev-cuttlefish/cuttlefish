@@ -13,6 +13,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.KeyStroke;
+import javax.swing.SwingWorker;
 
 import ch.ethz.sg.cuttlefish.gui2.CuttlefishToolbars;
 import ch.ethz.sg.cuttlefish.gui2.NetworkPanel;
@@ -21,7 +22,6 @@ import ch.ethz.sg.cuttlefish.misc.Observer;
 import ch.ethz.sg.cuttlefish.misc.Subject;
 import ch.ethz.sg.cuttlefish.misc.Vertex;
 import ch.ethz.sg.cuttlefish.networks.BrowsableForestNetwork;
-import edu.uci.ics.jung.algorithms.filters.KNeighborhoodFilter.EdgeType;
 import edu.uci.ics.jung.graph.SparseGraph;
 
 public class LayoutMenu extends AbstractMenu implements Observer {
@@ -233,7 +233,8 @@ public class LayoutMenu extends AbstractMenu implements Observer {
 	private void layoutSelected(JRadioButtonMenuItem selected) {
 		lastSelectedLayout = selected;
 		selected.setSelected(true);	
-		networkPanel.setLayout(layoutMap.get(selected ));
+		//networkPanel.setLayout(layoutMap.get(selected ));
+		new SetLayoutWorker(layoutMap.get(selected ), networkPanel).execute();
 	}
 
 	@Override
@@ -244,5 +245,20 @@ public class LayoutMenu extends AbstractMenu implements Observer {
 			}
 		}
 	}
-
+	
+	class SetLayoutWorker extends SwingWorker<Object, Object> {
+		NetworkPanel networkPanel;
+		String layoutName;
+		public SetLayoutWorker(String layoutName, NetworkPanel networkPanel) {
+			this.networkPanel = networkPanel;
+			this.layoutName = layoutName;
+		}
+		@Override
+		protected Object doInBackground() throws Exception {
+			networkPanel.getStatusBar().setBusyMessage("Setting layout to " + layoutName, this);
+			networkPanel.setLayout(layoutName);
+			networkPanel.getStatusBar().setMessage("Done setting layout");
+			return null;
+		}
+	}
 }

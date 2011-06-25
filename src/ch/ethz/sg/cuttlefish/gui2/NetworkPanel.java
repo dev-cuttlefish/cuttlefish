@@ -10,16 +10,12 @@ import java.awt.Shape;
 import java.awt.Stroke;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingDeque;
 
 import javax.swing.JPanel;
 
@@ -29,9 +25,6 @@ import org.apache.commons.collections15.Transformer;
 import ch.ethz.sg.cuttlefish.gui.mouse.MouseMenus;
 import ch.ethz.sg.cuttlefish.gui.mouse.PopupMousePlugin;
 import ch.ethz.sg.cuttlefish.gui2.INetworkBrowser;
-import ch.ethz.sg.cuttlefish.gui2.tasks.VisualizationViewerRepaintTask;
-import ch.ethz.sg.cuttlefish.gui2.tasks.VisualizationViewerTask;
-import ch.ethz.sg.cuttlefish.gui2.tasks.VisualizationViewerWorker;
 import ch.ethz.sg.cuttlefish.layout.ARF2Layout;
 import ch.ethz.sg.cuttlefish.layout.FixedLayout;
 import ch.ethz.sg.cuttlefish.layout.KCoreLayout;
@@ -54,20 +47,14 @@ import edu.uci.ics.jung.algorithms.layout.Layout;
 import edu.uci.ics.jung.algorithms.layout.RadialTreeLayout;
 import edu.uci.ics.jung.algorithms.layout.SpringLayout2;
 import edu.uci.ics.jung.algorithms.layout.TreeLayout;
-import edu.uci.ics.jung.graph.Forest;
 import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.graph.SparseGraph;
 import edu.uci.ics.jung.graph.util.Context;
 import edu.uci.ics.jung.visualization.Layer;
 import edu.uci.ics.jung.visualization.RenderContext;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
-import edu.uci.ics.jung.visualization.control.CrossoverScalingControl;
 import edu.uci.ics.jung.visualization.control.EditingModalGraphMouse;
-import edu.uci.ics.jung.visualization.control.GraphMousePlugin;
 import edu.uci.ics.jung.visualization.control.ModalGraphMouse;
-import edu.uci.ics.jung.visualization.control.PluggableGraphMouse;
-import edu.uci.ics.jung.visualization.control.ScalingGraphMousePlugin;
-import edu.uci.ics.jung.visualization.control.TranslatingGraphMousePlugin;
 import edu.uci.ics.jung.visualization.decorators.EdgeShape;
 import edu.uci.ics.jung.visualization.picking.ShapePickSupport;
 import edu.uci.ics.jung.visualization.transform.MutableTransformer;
@@ -78,13 +65,13 @@ public class NetworkPanel  extends JPanel implements Subject, ItemListener,INetw
 	 */
 	private static final long serialVersionUID = 1L;
 	private BrowsableNetwork network = null;
-	private VisualizationViewerWorker visualizationViewerWorker = null;
-	private BlockingQueue<VisualizationViewerTask> viewerTasks;
+	private VisualizationViewer<Vertex, Edge> visualizationViewer = null;
 	private EditingModalGraphMouse<Vertex,Edge> graphMouse;
 	private Layout<Vertex,Edge> layout = null;
 	private String currentLayout = null;
 	private String layoutType = null;
 	private List<Observer> observers = null;
+	private StatusBar statusBar = null;
 	
 	/*Factories*/
 	private VertexFactory vertexFactory = null;
@@ -102,26 +89,16 @@ public class NetworkPanel  extends JPanel implements Subject, ItemListener,INetw
 	 */
 	public VisualizationViewer<Vertex,Edge> getVisualizationViewer() {
 		//Create it if it didn't exist before
-		if(visualizationViewerWorker == null) {
-			viewerTasks = new LinkedBlockingDeque<VisualizationViewerTask>();
-			visualizationViewerWorker = new VisualizationViewerWorker(layout, viewerTasks);
-			new Thread(visualizationViewerWorker).start();
-			synchronized (visualizationViewerWorker) {
-				try {
-					visualizationViewerWorker.wait();					
-				} catch (InterruptedException e) {
-					System.out.println("Main thread was interrupted");
-					e.printStackTrace();
-				}	
-			}		
-		}
-		return visualizationViewerWorker.getVisualizationViewer();
-//		if (visualizationViewerWorker == null) {
-//			visualizationViewerWorker = new VisualizationViewerWorker<Vertex,Edge>(layout);
-//			new Thread(visualizationViewerWorker).start();
-//			visualizationViewerWorker.setGraphMouse(graphMouse);
-//		}
-//		return visualizationViewerWorker;
+		if(visualizationViewer == null) {
+			visualizationViewer = new VisualizationViewer<Vertex, Edge>(layout);
+		}		
+		return visualizationViewer;
+	}
+	
+	public StatusBar getStatusBar() {
+		if(statusBar == null)
+			statusBar = new StatusBar();
+		return statusBar;
 	}
 	
 	public String getCurrentLayout() {
@@ -133,8 +110,9 @@ public class NetworkPanel  extends JPanel implements Subject, ItemListener,INetw
 
 		BrowsableNetwork temp = new BrowsableNetwork();
 		this.setNetwork(temp);
-		
+ 
 		this.setLayout(new BorderLayout());
+		this.add(getStatusBar(), BorderLayout.SOUTH);
 		this.setSize(1096, 200);
 		this.add(getVisualizationViewer(), BorderLayout.CENTER);
 		
@@ -149,7 +127,7 @@ public class NetworkPanel  extends JPanel implements Subject, ItemListener,INetw
 		//starting on transforming mode, the most used
 		graphMouse.setMode(ModalGraphMouse.Mode.TRANSFORMING);
 		graphMouse.remove(graphMouse.getPopupEditingPlugin());
-		PopupMousePlugin popupMouse = new PopupMousePlugin<Vertex, Edge>(this);
+		PopupMousePlugin<Vertex, Edge> popupMouse = new PopupMousePlugin<Vertex, Edge>(this);
 		popupMouse.setVertexPopup(new MouseMenus.VertexMenu());
 		popupMouse.setEdgePopup(new MouseMenus.EdgeMenu(null));
 		graphMouse.add(popupMouse);
@@ -257,12 +235,7 @@ public class NetworkPanel  extends JPanel implements Subject, ItemListener,INetw
 
 	@Override
 	public void repaintViewer() {
-		try {
-			viewerTasks.put(new VisualizationViewerRepaintTask(getVisualizationViewer()));
-		} catch (InterruptedException e) {
-			System.err.println("Could not add a task to the visualization viewer");
-			e.printStackTrace();
-		}
+		visualizationViewer.repaint();
 	}
 	
 	/**

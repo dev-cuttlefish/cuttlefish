@@ -1,6 +1,5 @@
 package ch.ethz.sg.cuttlefish.gui2.menus;
 
-import java.awt.Label;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
@@ -12,7 +11,6 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 
 import javax.swing.JFileChooser;
-import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -22,7 +20,6 @@ import com.sun.image.codec.jpeg.JPEGCodec;
 import com.sun.image.codec.jpeg.JPEGEncodeParam;
 import com.sun.image.codec.jpeg.JPEGImageEncoder;
 
-import ch.ethz.sg.cuttlefish.gui.widgets.ExportPanel;
 import ch.ethz.sg.cuttlefish.gui2.CuttlefishToolbars;
 import ch.ethz.sg.cuttlefish.gui2.NetworkPanel;
 import ch.ethz.sg.cuttlefish.misc.Conversion;

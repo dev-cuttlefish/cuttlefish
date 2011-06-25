@@ -1,7 +1,5 @@
 package ch.ethz.sg.cuttlefish.gui2.tasks;
 
-import java.awt.Color;
-import java.awt.Rectangle;
 import java.util.concurrent.BlockingQueue;
 import javax.swing.JOptionPane;
 
@@ -43,15 +41,6 @@ public class VisualizationViewerWorker implements Runnable {
 		}
 	}
 	
-/*	public void addTask(VisualizationViewerTask task) {
-		try {
-			tasks.put(task);
-		} catch (InterruptedException e) {
-			JOptionPane.showMessageDialog(null, "Could add VisualizationTask", "Visualization error", JOptionPane.ERROR_MESSAGE);
-			e.printStackTrace();
-		}
-	}
-*/
 	public VisualizationViewer<Vertex, Edge> getVisualizationViewer() {
 		return visualizationViewer;					
 	}
