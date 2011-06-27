@@ -169,7 +169,13 @@ public void advancePositions() {
 	            Point2D c = transform((V) v);
 	            if(c != null){
 	                Point2D f = getForceforNode(v);
-	                double deltaIndividual = getGraph().degree((V)v) > 1 ? deltaT / Math.pow(getGraph().degree((V)v), 0.4) : deltaT;
+	                double deltaIndividual = 0;
+	                try {
+	                	deltaIndividual = getGraph().degree((V)v) > 1 ? deltaT / Math.pow(getGraph().degree((V)v), 0.4) : deltaT;
+	                } catch(java.lang.IllegalArgumentException ex) {
+	                	System.out.println("Error: vertex not found in the graph");
+	                	this.reset();
+	                }
 	                f.setLocation(f.getX()*deltaIndividual, f.getY()*deltaIndividual);
 	                c.setLocation(c.getX() + f.getX(), c.getY() + f.getY());
 	            }

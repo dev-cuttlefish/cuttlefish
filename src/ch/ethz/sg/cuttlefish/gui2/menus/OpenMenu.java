@@ -208,7 +208,7 @@ public class OpenMenu extends AbstractMenu implements Subject {
         networkPanel.onNetworkChange();
         networkPanel.getNetworkLayout().reset();
         networkPanel.repaintViewer();   
-		networkPanel.stopLayout();  
+		networkPanel.stopLayout();
 		//new OpenNetworkTask(networkPanel, network).execute();
 		
 	}
