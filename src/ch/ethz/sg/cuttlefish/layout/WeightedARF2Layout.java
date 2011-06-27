@@ -256,8 +256,8 @@ private Point2D getForceforNode(Vertex node) {
             temp.setLocation(temp.getX() - x.getX(), temp.getY() - x.getY());
   
             Edge e = (Edge)getGraph().findEdge((V)node,(V)otherNode);
-            double multiplier = isEdgeInGraph(node, otherNode) ? (a * e.getWeight()) : 1;
 
+            double multiplier = isEdgeInGraph(node, otherNode) ? (a * e.getWeight()) : 1;
             multiplier *= attraction / Math.sqrt(numNodes);
 
             Point2D addition = (Point2D) temp.clone();
@@ -354,7 +354,7 @@ private boolean isEdgeInGraph(Vertex node, Vertex node2) {
 		e = (Edge) getGraph().findEdge((V)node2, (V)node);
 	}
 	if(e!=null){
-		return e.isExcluded();
+		return !e.isExcluded();
 	}else{
 		return false;
 	}
