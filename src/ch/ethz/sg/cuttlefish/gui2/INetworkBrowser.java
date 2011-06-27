@@ -1,6 +1,7 @@
 /*
   
-    Copyright (C) 2009  Markus Michael Geipel, David Garcia Becerra
+    Copyright (C) 2011  Markus Michael Geipel, David Garcia Becerra,
+    Petar Tsankov
 
 	This file is part of Cuttlefish.
 	
@@ -18,6 +19,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  
 */
+
+
 
 package ch.ethz.sg.cuttlefish.gui2;
 

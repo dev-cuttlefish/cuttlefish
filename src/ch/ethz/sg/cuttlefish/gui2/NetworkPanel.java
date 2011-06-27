@@ -1,3 +1,25 @@
+/*
+  
+    Copyright (C) 2011  Markus Michael Geipel, David Garcia Becerra,
+    Petar Tsankov
+
+	This file is part of Cuttlefish.
+	
+ 	Cuttlefish is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ 
+*/
+
 package ch.ethz.sg.cuttlefish.gui2;
 
 import java.awt.BasicStroke;
@@ -25,6 +47,7 @@ import org.apache.commons.collections15.Transformer;
 import ch.ethz.sg.cuttlefish.gui.mouse.MouseMenus;
 import ch.ethz.sg.cuttlefish.gui.mouse.PopupMousePlugin;
 import ch.ethz.sg.cuttlefish.gui2.INetworkBrowser;
+import ch.ethz.sg.cuttlefish.gui2.tasks.SetLayoutWorker;
 import ch.ethz.sg.cuttlefish.layout.ARF2Layout;
 import ch.ethz.sg.cuttlefish.layout.FixedLayout;
 import ch.ethz.sg.cuttlefish.layout.KCoreLayout;
@@ -47,6 +70,7 @@ import edu.uci.ics.jung.algorithms.layout.Layout;
 import edu.uci.ics.jung.algorithms.layout.RadialTreeLayout;
 import edu.uci.ics.jung.algorithms.layout.SpringLayout2;
 import edu.uci.ics.jung.algorithms.layout.TreeLayout;
+import edu.uci.ics.jung.algorithms.util.IterativeContext;
 import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.graph.SparseGraph;
 import edu.uci.ics.jung.graph.util.Context;
@@ -90,6 +114,15 @@ public class NetworkPanel  extends JPanel implements Subject, ItemListener,INetw
 	public VisualizationViewer<Vertex,Edge> getVisualizationViewer() {
 		//Create it if it didn't exist before
 		if(visualizationViewer == null) {
+			if(layout == null) {
+				synchronized (this) {
+					try {
+						this.wait();
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+			}
 			visualizationViewer = new VisualizationViewer<Vertex, Edge>(layout);
 		}		
 		return visualizationViewer;
@@ -235,7 +268,7 @@ public class NetworkPanel  extends JPanel implements Subject, ItemListener,INetw
 
 	@Override
 	public void repaintViewer() {
-		visualizationViewer.repaint();
+		getVisualizationViewer().repaint();
 	}
 	
 	/**
@@ -260,14 +293,13 @@ public class NetworkPanel  extends JPanel implements Subject, ItemListener,INetw
 			setLayout("ARFLayout");	
 		else if( layout instanceof TreeLayout) {
 			network = new BrowsableForestNetwork(network);
-			layout.setGraph(network);
-			
+			layout.setGraph(network);			
 		}
-		if (layout.getGraph() != network) //consistency check between layout and network
+		if (layout != null && layout.getGraph() != network) //consistency check between layout and network
 			layout.setGraph(network);
 
 		//maxUpdates in ARF2Layout depends on the network size, this way it's updated if the network changes
-		if ((layout instanceof ARF2Layout) && (((ARF2Layout<Vertex,Edge>)layout).getMaxUpdates() < getNetwork().getVertexCount()))
+		if ((layout != null && layout instanceof ARF2Layout) && (((ARF2Layout<Vertex,Edge>)layout).getMaxUpdates() < getNetwork().getVertexCount()))
 				((ARF2Layout<Vertex,Edge>)layout).setMaxUpdates(getNetwork().getVertexCount());		
 		
 		network.init();
@@ -291,12 +323,19 @@ public class NetworkPanel  extends JPanel implements Subject, ItemListener,INetw
 		{
 			((ARF2Layout<Vertex,Edge>)layout).step();
 			((ARF2Layout<Vertex,Edge>)layout).resetUpdates();
-		}
-		if (layout instanceof WeightedARF2Layout)
+		} else if (layout instanceof WeightedARF2Layout)
 		{
 			((WeightedARF2Layout<Vertex,Edge>)layout).step();
 			((WeightedARF2Layout<Vertex,Edge>)layout).resetUpdates();
 		}
+		else if (layout instanceof IterativeContext) {
+			System.out.println("Iterative layout");
+			for(int i = 0; i < network.getVertexCount(); ++i) {
+				System.out.println("Step " + i);
+				((IterativeContext)layout).step();
+			}
+		}
+		
 		if (layout instanceof FixedLayout) {
 			((FixedLayout<Vertex, Edge>)layout).update();
 		}
@@ -308,6 +347,7 @@ public class NetworkPanel  extends JPanel implements Subject, ItemListener,INetw
 			stopLayout();
 			resumeLayout();
 		}
+
 		this.repaintViewer();		
 	}
 
@@ -333,6 +373,10 @@ public class NetworkPanel  extends JPanel implements Subject, ItemListener,INetw
 
 	@Override
 	public void setLayout(String selectedLayout) {
+		(new SetLayoutWorker(selectedLayout, this)).execute();
+	}
+
+	public void setLayoutByName(String selectedLayout) {
 		layoutType = selectedLayout;
 		Layout<Vertex,Edge> newLayout = null;
 		currentLayout = selectedLayout;
@@ -363,10 +407,12 @@ public class NetworkPanel  extends JPanel implements Subject, ItemListener,INetw
 			((KKLayout<Vertex,Edge>)newLayout).setDisconnectedDistanceMultiplier(3);
 			((KKLayout<Vertex,Edge>)newLayout).setLengthFactor(0.15);
 		}
-		if (selectedLayout.equalsIgnoreCase("Fruchterman-Reingold"))
+		if (selectedLayout.equalsIgnoreCase("Fruchterman-Reingold")) {
 			newLayout = new FRLayout2<Vertex, Edge>(getNetwork());
-		if (selectedLayout.equalsIgnoreCase("ISOMLayout"))
+		}
+		if (selectedLayout.equalsIgnoreCase("ISOMLayout")) {
 			newLayout = new ISOMLayout<Vertex, Edge>(getNetwork());
+		}
 		if (selectedLayout.equalsIgnoreCase("CircleLayout") )
 			newLayout = new CircleLayout<Vertex, Edge>(getNetwork());
 		if (selectedLayout.equalsIgnoreCase("Fixed"))

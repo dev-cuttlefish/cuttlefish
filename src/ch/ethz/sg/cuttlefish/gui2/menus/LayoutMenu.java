@@ -1,3 +1,25 @@
+/*
+  
+    Copyright (C) 2011  Markus Michael Geipel, David Garcia Becerra,
+    Petar Tsankov
+
+	This file is part of Cuttlefish.
+	
+ 	Cuttlefish is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ 
+*/
+
 package ch.ethz.sg.cuttlefish.gui2.menus;
 
 import java.awt.event.ActionEvent;
@@ -33,6 +55,7 @@ public class LayoutMenu extends AbstractMenu implements Observer {
 	private ButtonGroup layoutButtons;
 	private JMenuItem stopButton;
 	private JMenuItem restartButton;
+	private JMenuItem repaintButton;
 	private JRadioButtonMenuItem arf;
 	private JRadioButtonMenuItem kcore;
 	private JRadioButtonMenuItem fixed;
@@ -50,7 +73,7 @@ public class LayoutMenu extends AbstractMenu implements Observer {
 	public LayoutMenu(NetworkPanel networkPanel, CuttlefishToolbars toolbars) {
 		super(networkPanel, toolbars);
 		initialize();
-		restartButton.doClick();
+		//restartButton.doClick();
 		this.setText("Layout");
 	}
 	
@@ -103,16 +126,25 @@ public class LayoutMenu extends AbstractMenu implements Observer {
 		
 		layoutSelected(arf);
 		
-		stopButton = new JMenuItem("Stop");
-		restartButton = new JMenuItem("Restart");
+		//stopButton = new JMenuItem("Stop");
+		//restartButton = new JMenuItem("Restart");
 		
-		restartButton.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, ActionEvent.ALT_MASK));
-		stopButton.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.ALT_MASK));
-
+		//restartButton.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, ActionEvent.ALT_MASK));
+		//stopButton.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.ALT_MASK));
 		
-		this.add(stopButton);
+		repaintButton = new JMenuItem("Restart layout");
+		repaintButton.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, ActionEvent.ALT_MASK));
+		repaintButton.addActionListener(new ActionListener() {			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				networkPanel.resumeLayout();
+			}
+		});
+		
+		/*this.add(stopButton);
 		this.add(restartButton);
-		
+		*/
+		this.add(repaintButton);
 		this.addSeparator();
 		
 		this.add(arf);
@@ -127,7 +159,7 @@ public class LayoutMenu extends AbstractMenu implements Observer {
 		this.add(tree);
 		this.add(radialTree);
 		
-		stopButton.addActionListener(new ActionListener() {			
+		/*stopButton.addActionListener(new ActionListener() {			
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				networkPanel.stopLayout();
@@ -143,7 +175,7 @@ public class LayoutMenu extends AbstractMenu implements Observer {
 				restartButton.setEnabled(false);
 				stopButton.setEnabled(true);
 			}
-		});
+		});*/
 		
 		arf.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) { layoutSelected(arf); }
@@ -233,8 +265,7 @@ public class LayoutMenu extends AbstractMenu implements Observer {
 	private void layoutSelected(JRadioButtonMenuItem selected) {
 		lastSelectedLayout = selected;
 		selected.setSelected(true);	
-		//networkPanel.setLayout(layoutMap.get(selected ));
-		new SetLayoutWorker(layoutMap.get(selected ), networkPanel).execute();
+		networkPanel.setLayout(layoutMap.get(selected ));		
 	}
 
 	@Override
@@ -246,19 +277,4 @@ public class LayoutMenu extends AbstractMenu implements Observer {
 		}
 	}
 	
-	class SetLayoutWorker extends SwingWorker<Object, Object> {
-		NetworkPanel networkPanel;
-		String layoutName;
-		public SetLayoutWorker(String layoutName, NetworkPanel networkPanel) {
-			this.networkPanel = networkPanel;
-			this.layoutName = layoutName;
-		}
-		@Override
-		protected Object doInBackground() throws Exception {
-			networkPanel.getStatusBar().setBusyMessage("Setting layout to " + layoutName, this);
-			networkPanel.setLayout(layoutName);
-			networkPanel.getStatusBar().setMessage("Done setting layout");
-			return null;
-		}
-	}
 }
