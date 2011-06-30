@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package ch.ethz.sg.cuttlefish.layout;
 
+import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.util.Collection;
 import java.util.ConcurrentModificationException;
@@ -49,6 +50,11 @@ public class WeightedARF2Layout<V,E> extends AbstractLayout<V,E> implements Iter
  * number of position updates before the graph is rendered 
  */
 private int updatesPerFrame = 1;
+
+/**
+ * time to sleep between steps in ms
+ */
+private int sleepTime = 0;
 
 /**
  * the parameter a controls the attraction between connected nodes. 
@@ -124,6 +130,14 @@ public WeightedARF2Layout(Graph<V,E> g) {
 }
 
 /**
+ * Setter for the sleep time
+ * @param time
+ */
+public void setSleepTime(int time) {
+	this.sleepTime = time;
+}
+
+/**
  * Generates a new Layout for graph g. if incremental is false the layout will not be interactive.
  * @param g
  * @param incremental
@@ -174,7 +188,7 @@ public void advancePositions() {
 	                c.setLocation(c.getX() + f.getX(), c.getY() + f.getY());
                 }
             }
-        }
+        }    	
     }
    align(100,100);
 }
@@ -257,7 +271,8 @@ private Point2D getForceforNode(Vertex node) {
   
             Edge e = (Edge)getGraph().findEdge((V)node,(V)otherNode);
 
-            double multiplier = isEdgeInGraph(node, otherNode) ? (a * e.getWeight()) : 1;
+            // default edge weight is 1
+            double multiplier = isEdgeInGraph(node, otherNode) ? (a * ((e.getWeight() == 0) ?  1 : e.getWeight())) : 1;
             multiplier *= attraction / Math.sqrt(numNodes);
 
             Point2D addition = (Point2D) temp.clone();
@@ -271,7 +286,9 @@ private Point2D getForceforNode(Vertex node) {
             mDot.setLocation(mDot.getX() - addition.getX(), mDot.getY() - addition.getY());            
        }
 		}
-		catch (ConcurrentModificationException e){}
+		catch (ConcurrentModificationException e){
+			throw e;
+		}
        
     }
     
@@ -309,7 +326,7 @@ public Point2D assignPositionToVertex(Vertex vertex) {
 	
 	if (!visualizedVertices.contains(vertex))
 	{	
-		c = getRandomPoint(((int)Math.sqrt(graph.getVertices().size())*50)+1);
+		c = new Point(rnd.nextInt(10),rnd.nextInt(10));
 		locations.put((V)vertex, c);
 		visualizedVertices.add(vertex);
 		done = false;
@@ -334,7 +351,7 @@ public void updateVertices(){
 		for (Vertex vertex2 : nvertices) {
 			c = getRandomPoint(((int)Math.sqrt(graph.getVertices().size())*50)+1);
 			locations.put((V)vertex2, c);
-		}
+		}	
 		done = false;
 		countUpdates = 0;
 	}
@@ -532,6 +549,7 @@ public void initialize() {
 		{
 		// randomized initialization	
 			randomPoint = getRandomPoint(((int)Math.sqrt(graph.getVertices().size())*50)+1);
+			//randomPoint = new Point(0, 0);
 			locations.put((V) v, randomPoint);
 			visualizedVertices.add(v);
 		}
@@ -554,15 +572,25 @@ public boolean done() {
 
 @Override
 public void step() {
-//	System.out.println("step");
+	System.out.println("Step " + countUpdates);
 	countUpdates++;
-//	System.out.println("count: " + countUpdates + " max: " + maxUpdates);
 	done = (countUpdates > maxUpdates);
-		
+	try{
+		Thread.sleep(sleepTime);
+	} catch (InterruptedException e) {
+		System.out.println("Ouch");
+		reset();
+	}
 	if (!done)
 	{
 		update();
-		advancePositions();
+		try{
+			advancePositions();
+		} catch (ConcurrentModificationException e) {
+			System.out.println("Something went wrong... reseting");
+			reset();
+		}
+		
 	}
 }
 

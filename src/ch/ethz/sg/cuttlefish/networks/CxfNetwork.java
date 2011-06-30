@@ -92,6 +92,10 @@ public class CxfNetwork extends BrowsableNetwork {
 		
 		Point2D position = null;
 		
+		int sleepTime = 0;
+		
+		int maxUpdateSteps = 50;
+		
 		boolean hide = false;
 		
 		boolean isRoot = false;
@@ -105,8 +109,7 @@ public class CxfNetwork extends BrowsableNetwork {
 	/**
 	 * Void general constructor
 	 */
-	public CxfNetwork(){
-	}
+	public CxfNetwork(){}
 	
 	/**
 	 * Constructor that loads directly the graph file
@@ -154,11 +157,12 @@ public class CxfNetwork extends BrowsableNetwork {
 		return true;
 	} 
 	
+	
 	/**
 	 * Loads the data stored in cxf format to the Cxf network
 	 * @param graphFile
 	 */
-	public void load(File graphFile){		
+	public void load(File graphFile){	
 		this.graphFile = graphFile;
 		hash = new HashMap<Integer,Vertex>();
 		directed = true;
@@ -302,8 +306,8 @@ public class CxfNetwork extends BrowsableNetwork {
 		    else if (field.toLowerCase().contains("edge"))
 		    	token = parseEdge(token,field.toLowerCase(), it);
 	    	
-		    else if (field.toLowerCase().contains("label"))
-		    	token = parseLabel(token, field.toLowerCase(), it);
+		    else if (field.toLowerCase().contains("options"))
+		    	token = parseOptions(token, field.toLowerCase(), it);
 
 		    else if (lineFields.get(0).equalsIgnoreCase("configuration:"))
     		{
@@ -384,14 +388,18 @@ public class CxfNetwork extends BrowsableNetwork {
 				|| lineLc.startsWith("["));
 	}
 	
-	private Token parseLabel(Token t, String preField, Iterator<String> it) {
+	private Token parseOptions(Token t, String preField, Iterator<String> it) {
 		String field = null;
 		Token token = t;
 		token.type = preField.substring(0,preField.indexOf(":"));
 		while(it.hasNext()) {
 			field = it.next();
-			if (field.startsWith("name") ) {
+			if (field.startsWith("label") ) {
 				token.label = field.substring(field.indexOf('{')+1,field.indexOf('}'));
+			} else if( field.startsWith("sleepTime") ) {
+				token.sleepTime = Integer.parseInt(field.substring(field.indexOf('{')+1,field.indexOf('}')));
+			} else if( field.startsWith("maxUpdateSteps") ) {
+				token.maxUpdateSteps = Integer.parseInt(field.substring(field.indexOf('{')+1,field.indexOf('}')));
 			} else {
 				System.out.println("WARNING: Improper use of label: " + token.line);
 			}
@@ -620,5 +628,59 @@ public class CxfNetwork extends BrowsableNetwork {
 	public String getCxfName(){
 		return networkFileName;
 	}
+	
+	
+	/**
+	 * Overriding addEdge method from SparseGraph to conform
+	 * to the
+	 */
+	@Override
+	public boolean addEdge(Edge arg0, java.util.Collection<? extends Vertex> arg1, EdgeType arg2) {
+		if(directed)
+			return super.addEdge(arg0, arg1, EdgeType.DIRECTED);
+		else
+			return super.addEdge(arg0, arg1, EdgeType.UNDIRECTED);
+	};
+	
+	@Override
+	public boolean addEdge(Edge e, Vertex v1, Vertex v2, EdgeType edge_type) {
+		if(directed)
+			return super.addEdge(e, v1, v2, EdgeType.DIRECTED);
+		else
+			return super.addEdge(e, v1, v2, EdgeType.UNDIRECTED);
+	};
+	
+	@Override
+	public boolean addEdge(Edge e, Vertex v1, Vertex v2) {
+		if(directed)
+			return super.addEdge(e, v1, v2, EdgeType.DIRECTED);
+		else
+			return super.addEdge(e, v1, v2, EdgeType.UNDIRECTED);
+	};
+	
+	@Override
+	public boolean addEdge(Edge edge, java.util.Collection<? extends Vertex> vertices) {
+		if(directed)
+			return super.addEdge(edge, vertices, EdgeType.DIRECTED);
+		else
+			return super.addEdge(edge, vertices, EdgeType.UNDIRECTED);
+	};
+	
+	@Override
+	public boolean addEdge(Edge edge, edu.uci.ics.jung.graph.util.Pair<? extends Vertex> endpoints) {
+		if(directed)
+			return super.addEdge(edge, endpoints, EdgeType.DIRECTED);
+		else
+			return super.addEdge(edge, endpoints, EdgeType.UNDIRECTED);
+	};
+	
+	@Override
+	public boolean addEdge(Edge edge, edu.uci.ics.jung.graph.util.Pair<? extends Vertex> endpoints, EdgeType edgeType) {
+		if(directed)
+			return super.addEdge(edge, endpoints, EdgeType.DIRECTED);
+		else
+			return super.addEdge(edge, endpoints, EdgeType.UNDIRECTED);
+	};
+	
 		
 }

@@ -35,6 +35,7 @@ import java.awt.event.ItemListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
+import java.util.ConcurrentModificationException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -321,10 +322,12 @@ public class NetworkPanel  extends JPanel implements Subject, ItemListener,INetw
 		//concurrent modification of the ARF layouts for simulation position updates
 		if (layout instanceof ARF2Layout)
 		{
+			System.out.println("here1");
 			((ARF2Layout<Vertex,Edge>)layout).step();
 			((ARF2Layout<Vertex,Edge>)layout).resetUpdates();
 		} else if (layout instanceof WeightedARF2Layout)
 		{
+			System.out.println("here2");
 			((WeightedARF2Layout<Vertex,Edge>)layout).step();
 			((WeightedARF2Layout<Vertex,Edge>)layout).resetUpdates();
 		}
@@ -333,6 +336,7 @@ public class NetworkPanel  extends JPanel implements Subject, ItemListener,INetw
 			for(int i = 0; i < network.getVertexCount(); ++i) {
 				System.out.println("Step " + i);
 				((IterativeContext)layout).step();
+				
 			}
 		}
 		

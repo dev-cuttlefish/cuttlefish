@@ -594,13 +594,13 @@ public void onNetworkChange() {
 	//concurrent modification of the ARF layouts for simulation position updates
 	if (layout instanceof ARF2Layout)
 	{
-		((ARF2Layout<Vertex,Edge>)layout).step();
 		((ARF2Layout<Vertex,Edge>)layout).resetUpdates();
+		((ARF2Layout<Vertex,Edge>)layout).step();		
 	}
 	if (layout instanceof WeightedARF2Layout)
 	{
-		((WeightedARF2Layout<Vertex,Edge>)layout).step();
 		((WeightedARF2Layout<Vertex,Edge>)layout).resetUpdates();
+		((WeightedARF2Layout<Vertex,Edge>)layout).step();		
 	}
 	if (layout instanceof FixedLayout) {
 		((FixedLayout<Vertex, Edge>)layout).update();
