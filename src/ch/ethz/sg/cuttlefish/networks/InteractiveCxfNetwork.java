@@ -44,6 +44,8 @@ public class InteractiveCxfNetwork extends CxfNetwork implements ISimulation, Su
 	private static final long serialVersionUID = 1L;
 	private ArrayList<Observer> observers;
 	private String currentLabel = "";
+	private int currentSleepTime = 0;
+	private int currentMaxStepUpdates = 50;
 
 	public InteractiveCxfNetwork(){
 		super();
@@ -82,6 +84,13 @@ public class InteractiveCxfNetwork extends CxfNetwork implements ISimulation, Su
 			instructionTokens.add(token);
 		
 		return;
+	}
+	
+	public int getCurrentSleepTime() {
+		return currentSleepTime;
+	}
+	public int getCurrentMaxStepUpdates() {
+		return currentMaxStepUpdates;
 	}
 
 	
@@ -200,12 +209,14 @@ public class InteractiveCxfNetwork extends CxfNetwork implements ISimulation, Su
 			}
 
 		}
-		else if (token.type.equalsIgnoreCase("label")) {
+		else if (token.type.equalsIgnoreCase("options")) {
 			System.out.println("Changing frame label to " + token.label);
 			currentLabel = token.label;
+			currentSleepTime = token.sleepTime;
+			currentMaxStepUpdates = token.maxUpdateSteps;
 			for(Observer o : observers)
 				o.update(this);
-		}
+		}		
 		return;
 	}
 	
