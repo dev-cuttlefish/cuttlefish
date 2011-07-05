@@ -242,8 +242,7 @@ public class ExportMenu extends AbstractMenu {
 	private JFileChooser getSnapshotFileChooser() {
 		snapshotFileChooser = new FileChooser();
 		snapshotFileChooser.setDialogTitle("Saving cuttlefish network to jpeg...");
-		snapshotFileChooser.setFileFilter(new FileNameExtensionFilter(".jpeg files", "jpeg", "jpg"));
-		snapshotFileChooser.setCurrentDirectory( new File(System.getProperty("user.dir")));		
+		snapshotFileChooser.setFileFilter(new FileNameExtensionFilter(".jpeg files", "jpeg", "jpg"));		
 		return snapshotFileChooser;
 	}
 	
@@ -256,7 +255,6 @@ public class ExportMenu extends AbstractMenu {
 		tikzFileChooser = new FileChooser();
 		tikzFileChooser.setDialogTitle("Exporting network to TikZ...");
 		tikzFileChooser.setFileFilter(new FileNameExtensionFilter(".tex files", "tex"));
-		tikzFileChooser.setCurrentDirectory( new File(System.getProperty("user.dir")));
 		return tikzFileChooser;
 	}
 	
@@ -270,7 +268,6 @@ public class ExportMenu extends AbstractMenu {
 		datFileChooser = new FileChooser();
 		datFileChooser.setDialogTitle("Exporting cuttlefish network");
 		datFileChooser.setFileFilter(new FileNameExtensionFilter(".dat files", "dat"));
-		datFileChooser.setCurrentDirectory( new File(System.getProperty("user.dir")));
 		return datFileChooser;	
 	}	
 	

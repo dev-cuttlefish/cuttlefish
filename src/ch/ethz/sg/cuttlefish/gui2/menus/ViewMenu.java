@@ -75,19 +75,15 @@ public class ViewMenu extends AbstractMenu implements ItemListener, Observer{
 	@Override
 	public void itemStateChanged(ItemEvent e) {
 		if (e.getItem() == mouseToolbarCheckbox) {
-			toolbars.getMouseToolbar().setVisible(mouseToolbarCheckbox.getState() );
-			System.out.println("Setting mouse toolbar's visibility to " + mouseToolbarCheckbox.getState() );			
+			toolbars.getMouseToolbar().setVisible(mouseToolbarCheckbox.getState() );			
 		} else if (e.getItem() == zoomToolbarCheckbox) {
 			toolbars.getZoomToolbar().setVisible(zoomToolbarCheckbox.getState() );
-			System.out.println("Setting zoom toolbar's visibility to " + zoomToolbarCheckbox.getState() );
 		} else if (e.getItem() == simulationToolbarCheckbox) {
 			toolbars.getSimulationToolbar().setVisible(simulationToolbarCheckbox.getState() );
-			System.out.println("Setting simulation toolbar's visibility to " + zoomToolbarCheckbox.getState() );
 		} else if (e.getItem() == dbToolbarCheckbox) {
 			toolbars.getDBToolbar().setVisible(dbToolbarCheckbox.getState() );
-			System.out.println("Setting database toolbar's visibility to " + dbToolbarCheckbox.getState() );
 		} else {
-			System.out.println("Unknown event");
+			System.err.println("Unknown event");
 		}
 	}
 

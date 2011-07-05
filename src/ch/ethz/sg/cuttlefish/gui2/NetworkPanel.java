@@ -317,24 +317,19 @@ public class NetworkPanel  extends JPanel implements Subject, ItemListener,INetw
 
 	@Override
 	public void onNetworkChange() {		
-		System.out.println("Network changed " + network.getName());
 		
 		//concurrent modification of the ARF layouts for simulation position updates
 		if (layout instanceof ARF2Layout)
 		{
-			System.out.println("here1");
 			((ARF2Layout<Vertex,Edge>)layout).step();
 			((ARF2Layout<Vertex,Edge>)layout).resetUpdates();
 		} else if (layout instanceof WeightedARF2Layout)
 		{
-			System.out.println("here2");
 			((WeightedARF2Layout<Vertex,Edge>)layout).step();
 			((WeightedARF2Layout<Vertex,Edge>)layout).resetUpdates();
 		}
 		else if (layout instanceof IterativeContext) {
-			System.out.println("Iterative layout");
 			for(int i = 0; i < network.getVertexCount(); ++i) {
-				System.out.println("Step " + i);
 				((IterativeContext)layout).step();
 				
 			}
@@ -399,8 +394,6 @@ public class NetworkPanel  extends JPanel implements Subject, ItemListener,INetw
 		if (selectedLayout.equalsIgnoreCase("SpringLayout"))
 		{	
 			newLayout = new SpringLayout2<Vertex, Edge>(getNetwork());
-			//System.out.println("rep: "+((SpringLayout2<Vertex,Edge>) newLayout).getRepulsionRange());
-			//System.out.println("force: "+((SpringLayout2<Vertex,Edge>) newLayout).getForceMultiplier());
 			((SpringLayout2<Vertex,Edge>) newLayout).setForceMultiplier(10);
 
 		}
@@ -437,7 +430,6 @@ public class NetworkPanel  extends JPanel implements Subject, ItemListener,INetw
 			
 		}
 		layout = newLayout;
-		System.out.println("Set layout to " + layout.getClass());
 		for (Vertex v : getNetwork().getVertices())
 			if (v.isFixed())
 				layout.lock(v,true);
