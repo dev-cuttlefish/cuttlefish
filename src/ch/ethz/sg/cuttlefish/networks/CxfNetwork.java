@@ -345,6 +345,10 @@ public class CxfNetwork extends BrowsableNetwork {
 		return token;
 	}
 	
+	public void setDirected(boolean d) {
+		directed = d;
+	}
+	
 	private ArrayList<String> getFields(String line){
 		ArrayList<String> lineFields = new ArrayList<String>();
 	    String currentDelims = WHITESPACES;

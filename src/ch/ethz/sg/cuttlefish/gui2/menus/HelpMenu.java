@@ -24,11 +24,19 @@ package ch.ethz.sg.cuttlefish.gui2.menus;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 
 
 import ch.ethz.sg.cuttlefish.gui2.CuttlefishToolbars;
 import ch.ethz.sg.cuttlefish.gui2.NetworkPanel;
+import ch.ethz.sg.cuttlefish.gui2.toolbars.AboutWindow;
 
 public class HelpMenu extends AbstractMenu {	
 	
@@ -36,7 +44,9 @@ public class HelpMenu extends AbstractMenu {
 	 * 
 	 */
 	private static final long serialVersionUID = 4251419612908498161L;
-	JMenuItem about;
+	private JMenuItem about;
+	private AboutWindow aboutWindow;
+
 	
 	public HelpMenu(NetworkPanel networkPanel, CuttlefishToolbars toolbars) {
 		super(networkPanel, toolbars);
@@ -45,14 +55,17 @@ public class HelpMenu extends AbstractMenu {
 	}
 	
 	private void initialize() {
+		aboutWindow = new AboutWindow(networkPanel);
 		about = new JMenuItem("About");
 		this.add(about);
 		about.addActionListener(new ActionListener() {		
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				//JOptionPane.showMessageDialog(this, "hellp");
+				aboutWindow.setVisible(true);
 			}
 		});
 	}
+	
+	
 
 }
