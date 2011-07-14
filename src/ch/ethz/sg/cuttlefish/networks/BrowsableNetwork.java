@@ -94,7 +94,6 @@ public class BrowsableNetwork extends SparseGraph<Vertex, Edge> {
 			catch (ConcurrentModificationException e)
 			{}
 		}
-		System.out.println("erasing complete");
 	}
 	
 	public final void setName(String name){
