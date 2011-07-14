@@ -67,6 +67,7 @@ public class StatusBar extends JPanel {
 				terminateTask.setEnabled(false);
 			}
 		});
+		
 	}
 	
 	public void setMessage(String message) {
@@ -78,7 +79,6 @@ public class StatusBar extends JPanel {
 	public void setBusyMessage(String message, SwingWorker task) {
 		currentTask = task;		
 		progressBar.setIndeterminate(true);
-		progressBar.setString("Changing layout");
 		label.setText(" " + message);
 		terminateTask.setEnabled(true);
 	}	

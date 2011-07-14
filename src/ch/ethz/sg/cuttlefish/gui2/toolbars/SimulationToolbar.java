@@ -25,6 +25,7 @@ package ch.ethz.sg.cuttlefish.gui2.toolbars;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -47,10 +48,14 @@ public class SimulationToolbar extends AbstractToolbar implements Observer  {
 	private JButton stepButton;
 	private JButton runButton;
 	private JButton resetButton;
+	private JButton settingsButton;
 	private JLabel frameLabel;
 	private final String stepIconFile = "icons/step.png";
 	private final String runIconFile = "icons/run.png";
 	private final String resetIconFile = "icons/stop.png";
+	private final String pauseIconFile = "icons/pause.png";
+	private Icon runIcon = null;
+	private Icon pauseIcon = null;
 	private long sleepTime = 200;
 	private Thread thread = null;
 	private boolean isRunning = false;
@@ -76,10 +81,23 @@ public class SimulationToolbar extends AbstractToolbar implements Observer  {
 		return enabled;
 	}
 	
+	private Icon getRunIcon() {
+		if(runIcon == null)
+			runIcon = new ImageIcon(getClass().getResource(runIconFile));
+		return runIcon;
+	}
+	
+	private Icon getPauseIcon() {
+		if(pauseIcon == null)
+			pauseIcon = new ImageIcon(getClass().getResource(pauseIconFile));
+		return pauseIcon;
+	}
+	
 	private void initialize() {
 		stepButton = new JButton(new ImageIcon(getClass().getResource(stepIconFile)));
-		runButton = new JButton(new ImageIcon(getClass().getResource(runIconFile)));
+		runButton = new JButton(getRunIcon());
 		resetButton = new JButton(new ImageIcon(getClass().getResource(resetIconFile)));
+		settingsButton = new JButton("Settings");
 		frameLabel = new JLabel();
 		frameLabel.setVisible(false);
 		stepButton.addActionListener(new ActionListener() {			
@@ -90,13 +108,27 @@ public class SimulationToolbar extends AbstractToolbar implements Observer  {
 				networkPanel.onNetworkChange();
 			}
 		});
+		settingsButton.addActionListener(new ActionListener() {			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String sleepTimeStr = (String)JOptionPane.showInputDialog(networkPanel, "Enter time between frames in milliseconds", "Time between frames", JOptionPane.QUESTION_MESSAGE, null, null, sleepTime);
+				if(sleepTimeStr != null) {
+					try {
+						sleepTime = Long.parseLong(sleepTimeStr);
+					} catch (NumberFormatException ex) {
+						JOptionPane.showMessageDialog(networkPanel, "The value that you enter is not an integer", "Incorrect input", JOptionPane.WARNING_MESSAGE, null);
+					}
+				}
+			}
+		});
 		
 		runButton.addActionListener(new ActionListener() {			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (thread == null) {
+				if (thread == null || !thread.isAlive()) {
 					resetButton.setEnabled(true);
-					runButton.setEnabled(false);					
+					runButton.setIcon(getPauseIcon());
+					stepButton.setEnabled(false);
                    	thread = new Thread() {
                    		@Override
                    		public void run() {
@@ -112,13 +144,19 @@ public class SimulationToolbar extends AbstractToolbar implements Observer  {
                     				System.err.println("Interrupted simulation process");
                     				iEx.printStackTrace();
                    				}
-                   			}
+                   			}      
+                   			runButton.setIcon(getRunIcon());
                    		}
-
                    	};
-                   	thread.start();
+                   	thread.start();                   	
+				} else {
+					isRunning = false;
+					thread = null;
+					resetButton.setEnabled(true);
+					runButton.setIcon(getRunIcon());
+					stepButton.setEnabled(true);
 				}
-				networkPanel.resumeLayout();								
+				//networkPanel.resumeLayout();								
 			}
 		});
 		
@@ -129,8 +167,9 @@ public class SimulationToolbar extends AbstractToolbar implements Observer  {
 				thread = null;
 				((ISimulation)networkPanel.getNetwork()).reset();
 				System.out.println("ResetChange");
-				networkPanel.onNetworkChange();
-				runButton.setEnabled(true);
+				networkPanel.onNetworkChange();				
+				runButton.setIcon(getRunIcon());
+				stepButton.setEnabled(true);
 				resetButton.setEnabled(false);
 			}
 		});
@@ -138,6 +177,7 @@ public class SimulationToolbar extends AbstractToolbar implements Observer  {
 		this.add(resetButton);
 		this.add(runButton);
 		this.add(stepButton);
+		this.add(settingsButton);
 		this.add(frameLabel);
 	}
 

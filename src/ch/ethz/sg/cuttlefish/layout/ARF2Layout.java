@@ -70,6 +70,7 @@ private double b = 8;
  */
 private double deltaT = 2;
 
+
 private boolean done = false;
 
 private int maxUpdates = 50;
@@ -123,6 +124,7 @@ public ARF2Layout(Graph<V,E> g) {
    // update();
 }
 
+
 /**
  * Generates a new Layout for graph g. if incremental is false the layout will not be interactive.
  * @param g
@@ -163,6 +165,7 @@ protected void initialize_local_vertex(Vertex v) {
 @SuppressWarnings("unchecked")
 public void advancePositions() {
     for (int i = 0; i < updatesPerFrame; i++) {
+    	try{
 		for (Object o : graph.getVertices()) {
 	        Vertex v = (Vertex) o;
 	        if(!isFixed(v)){
@@ -181,6 +184,7 @@ public void advancePositions() {
 	            }
 	        }
 	    }
+    	} catch (ConcurrentModificationException e) {}
     }
 	align(100,100);
 }

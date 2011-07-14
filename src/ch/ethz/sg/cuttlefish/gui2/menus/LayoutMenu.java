@@ -44,6 +44,7 @@ import ch.ethz.sg.cuttlefish.misc.Observer;
 import ch.ethz.sg.cuttlefish.misc.Subject;
 import ch.ethz.sg.cuttlefish.misc.Vertex;
 import ch.ethz.sg.cuttlefish.networks.BrowsableForestNetwork;
+import edu.uci.ics.jung.algorithms.layout.AbstractLayout;
 import edu.uci.ics.jung.graph.SparseGraph;
 
 public class LayoutMenu extends AbstractMenu implements Observer {
@@ -126,7 +127,7 @@ public class LayoutMenu extends AbstractMenu implements Observer {
 		
 		layoutSelected(arf);
 		
-		//stopButton = new JMenuItem("Stop");
+		stopButton = new JMenuItem("Lock");
 		//restartButton = new JMenuItem("Restart");
 		
 		//restartButton.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, ActionEvent.ALT_MASK));
@@ -141,7 +142,8 @@ public class LayoutMenu extends AbstractMenu implements Observer {
 			}
 		});
 		
-		/*this.add(stopButton);
+		this.add(stopButton);
+		/*
 		this.add(restartButton);
 		*/
 		this.add(repaintButton);
@@ -159,15 +161,15 @@ public class LayoutMenu extends AbstractMenu implements Observer {
 		this.add(tree);
 		this.add(radialTree);
 		
-		/*stopButton.addActionListener(new ActionListener() {			
+		stopButton.addActionListener(new ActionListener() {			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				networkPanel.stopLayout();
-				stopButton.setEnabled(false);
-				restartButton.setEnabled(true);
+				if(networkPanel.getNetworkLayout() instanceof AbstractLayout) {
+					((AbstractLayout)networkPanel.getNetworkLayout()).lock(true);
+				}
 			}
 		});
-		
+		/*
 		restartButton.addActionListener(new ActionListener() {			
 			@Override
 			public void actionPerformed(ActionEvent e) {

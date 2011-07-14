@@ -572,13 +572,11 @@ public boolean done() {
 
 @Override
 public void step() {
-	System.out.println("Step " + countUpdates);
 	countUpdates++;
 	done = (countUpdates > maxUpdates);
 	try{
 		Thread.sleep(sleepTime);
 	} catch (InterruptedException e) {
-		System.out.println("Ouch");
 		reset();
 	}
 	if (!done)
@@ -586,14 +584,15 @@ public void step() {
 		update();
 		try{
 			advancePositions();
-		} catch (ConcurrentModificationException e) {
-			System.out.println("Something went wrong... reseting");
-			reset();
-		}
+		} catch (ConcurrentModificationException e) {}
 		
 	}
 }
 
-
+@Override
+public void lock(boolean arg0) {
+	super.lock(arg0);
+	countUpdates = Integer.MAX_VALUE;
+};
 
 }
