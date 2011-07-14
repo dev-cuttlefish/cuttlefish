@@ -107,7 +107,6 @@ public class NetworkPanel  extends JPanel implements Subject, ItemListener,INetw
 		initialize();
 	}
 	
-	
 	/**
 	 * Getter for JUNG's VisualizationViewer, creating it if it does not exist
 	 * @return VisualizationViewer	

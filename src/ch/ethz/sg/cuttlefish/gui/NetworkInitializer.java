@@ -8,6 +8,7 @@ import java.io.File;
 
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -114,12 +115,16 @@ public class NetworkInitializer {
 	    JLabel urlLabel;
 	    JLabel usernameLabel;
 	    JLabel passwordLabel;
+	    JLabel driverLabel;
 	    final JTextField urlTextField;
 	    final JTextField usernameTextField;
 	    final JPasswordField passwordTextField;
+	    final JComboBox driverComboBox;
+	    driverComboBox = new JComboBox(new String[]{"MySQL", "PostgreSQL"});
 		urlLabel = new javax.swing.JLabel();
 	    usernameLabel = new javax.swing.JLabel();
 	    passwordLabel = new javax.swing.JLabel();
+	    driverLabel = new JLabel();
 	    connectButton = new javax.swing.JButton();
 	    cancelButton = new javax.swing.JButton();
 	    urlTextField = new javax.swing.JTextField();
@@ -129,6 +134,7 @@ public class NetworkInitializer {
 	    final JFrame connectWindow = new JFrame();
 		JPanel connectPanel = new JPanel();
 	    
+		driverLabel.setText("Database Driver");
         urlLabel.setText("Database URL"); 
         usernameLabel.setText("Username"); 
         passwordLabel.setText("Password");         
@@ -145,48 +151,55 @@ public class NetworkInitializer {
         GroupLayout layout = new GroupLayout(connectPanel);
 	    connectPanel.setLayout(layout);
 	    layout.setHorizontalGroup(
-	    		layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-	    		.addGroup(layout.createSequentialGroup()
-	    		.addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-	    		.addGroup(layout.createSequentialGroup()
-	    		.addGap(30, 30, 30)
-	    		.addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-	    		.addComponent(urlLabel)
-	            .addComponent(usernameLabel)
-	            .addComponent(passwordLabel))
-	            .addGap(18, 18, 18)
-	            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-	            .addComponent(passwordTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 157, javax.swing.GroupLayout.PREFERRED_SIZE)
-	            .addComponent(usernameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 157, javax.swing.GroupLayout.PREFERRED_SIZE)
-	            .addComponent(urlTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 157, javax.swing.GroupLayout.PREFERRED_SIZE)))
+	            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
 	            .addGroup(layout.createSequentialGroup()
-	            .addGap(47, 47, 47)
-	            .addComponent(connectButton)
-	            .addGap(26, 26, 26)
-	            .addComponent(cancelButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-	            .addContainerGap(43, Short.MAX_VALUE))
-	    );
-	    layout.setVerticalGroup(
-	    	layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-	        .addGroup(layout.createSequentialGroup()
-	        .addGap(26, 26, 26)
-	        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-	        .addComponent(urlLabel)
-	        .addComponent(urlTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-	        .addGap(18, 18, 18)
-	        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-	        .addComponent(usernameLabel)
-	        .addComponent(usernameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-	        .addGap(18, 18, 18)
-	        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-	        .addComponent(passwordLabel)
-	        .addComponent(passwordTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-	        .addGap(37, 37, 37)
-	        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-	        .addComponent(connectButton)
-	        .addComponent(cancelButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-	        .addContainerGap(43, Short.MAX_VALUE))
-	    );
+	                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+	                    .addGroup(layout.createSequentialGroup()
+	                        .addContainerGap()
+	                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+	                            .addComponent(driverLabel)
+	                            .addComponent(urlLabel)
+	                            .addComponent(usernameLabel)
+	                            .addComponent(passwordLabel))
+	                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+	                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+	                            .addComponent(passwordTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 153, Short.MAX_VALUE)
+	                            .addComponent(usernameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 153, Short.MAX_VALUE)
+	                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+	                                .addComponent(urlTextField)
+	                                .addComponent(driverComboBox, 0, 153, Short.MAX_VALUE))))
+	                    .addGroup(layout.createSequentialGroup()
+	                        .addGap(56, 56, 56)
+	                        .addComponent(connectButton)
+	                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+	                        .addComponent(cancelButton)))
+	                .addContainerGap())
+	        );
+	        layout.setVerticalGroup(
+	            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+	            .addGroup(layout.createSequentialGroup()
+	                .addContainerGap()
+	                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+	                    .addComponent(driverLabel)
+	                    .addComponent(driverComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+	                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+	                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+	                    .addComponent(urlLabel)
+	                    .addComponent(urlTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+	                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+	                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+	                    .addComponent(usernameLabel)
+	                    .addComponent(usernameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+	                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+	                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+	                    .addComponent(passwordLabel)
+	                    .addComponent(passwordTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+	                .addGap(18, 18, 18)
+	                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+	                    .addComponent(connectButton)
+	                    .addComponent(cancelButton))
+	                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+	        );
 	    
 	    usernameTextField.addKeyListener(new KeyListener() {			
 			@Override
@@ -240,7 +253,8 @@ public class NetworkInitializer {
 		});
 	    
 	    connectWindow.add(connectPanel);
-	    connectWindow.setSize(330, 220);
+	    connectWindow.setSize(287, 214);
+	    connectWindow.setResizable(false);
 	    connectWindow.setTitle("Connect to database");
 	    connectWindow.setVisible(true);
 	}
