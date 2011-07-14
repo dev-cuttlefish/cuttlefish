@@ -2,6 +2,7 @@ package ch.ethz.sg.cuttlefish.gui2.tasks;
 
 import javax.swing.SwingWorker;
 import ch.ethz.sg.cuttlefish.gui2.NetworkPanel;
+import edu.uci.ics.jung.algorithms.util.IterativeContext;
 
 public class SetLayoutWorker extends SwingWorker<Object, Object> {
 		NetworkPanel networkPanel;
@@ -16,8 +17,14 @@ public class SetLayoutWorker extends SwingWorker<Object, Object> {
 			networkPanel.setLayoutByName(layoutName);
 			synchronized (networkPanel) {
 				networkPanel.notifyAll();	
-			}			
-			networkPanel.getStatusBar().setMessage("Done setting layout");
+			}	
 			return null;
 		}
+		
+		@Override
+		protected void done() {
+			super.done();
+			networkPanel.getStatusBar().setMessage("Done setting layout");
+		}
+		
 	}

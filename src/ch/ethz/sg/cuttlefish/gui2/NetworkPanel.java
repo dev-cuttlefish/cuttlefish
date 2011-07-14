@@ -328,12 +328,12 @@ public class NetworkPanel  extends JPanel implements Subject, ItemListener,INetw
 			((WeightedARF2Layout<Vertex,Edge>)layout).step();
 			((WeightedARF2Layout<Vertex,Edge>)layout).resetUpdates();
 		}
-		else if (layout instanceof IterativeContext) {
+		/*else if (layout instanceof IterativeContext) {
 			for(int i = 0; i < network.getVertexCount(); ++i) {
 				((IterativeContext)layout).step();
 				
 			}
-		}
+		}*/
 		
 		if (layout instanceof FixedLayout) {
 			((FixedLayout<Vertex, Edge>)layout).update();
