@@ -2,7 +2,6 @@ package ch.ethz.sg.cuttlefish.gui.applet;
 
 import java.applet.Applet;
 import java.awt.BorderLayout;
-import java.io.File;
 
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
@@ -11,15 +10,18 @@ import javax.swing.SwingUtilities;
 import ch.ethz.sg.cuttlefish.gui2.CuttlefishToolbars;
 import ch.ethz.sg.cuttlefish.gui2.NetworkPanel;
 import ch.ethz.sg.cuttlefish.networks.BrowsableNetwork;
-import ch.ethz.sg.cuttlefish.networks.CxfNetwork;
+import ch.ethz.sg.cuttlefish.networks.JsonNetwork;
 
 public class Cuttlefish extends Applet {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private BrowsableNetwork network = null;
 	private NetworkPanel networkPanel = null;
 	private CuttlefishMenu menu = null;
 	private CuttlefishToolbars toolbars = null;
-	private final String NETWORK_FILE = "ch/ethz/sg/cuttlefish/examples/ABCP.cxf";
 	
     public void init() {
     	try {
@@ -76,7 +78,7 @@ public class Cuttlefish extends Applet {
     
     private BrowsableNetwork getNetwork() {
     	if(network == null) {    		
-    		network = new CxfNetwork(new File(NETWORK_FILE));
+    		network = new JsonNetwork();
     	}
     	return network;
     }

@@ -24,5 +24,6 @@
 	<classpathentry kind="lib" path="lib/hibernate/slf4j-api-1.6.1.jar"/>
 	<classpathentry kind="lib" path="lib/hibernate/hibernate-jpa-2.0-api-1.0.0.Final.jar"/>
 	<classpathentry kind="lib" path="lib/hibernate/dom4j-1.6.1.jar"/>
+	<classpathentry kind="lib" path="lib/gson-1.7.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
