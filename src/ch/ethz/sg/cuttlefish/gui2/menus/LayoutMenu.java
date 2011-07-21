@@ -165,7 +165,7 @@ public class LayoutMenu extends AbstractMenu implements Observer {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if(networkPanel.getNetworkLayout() instanceof AbstractLayout) {
-					((AbstractLayout)networkPanel.getNetworkLayout()).lock(true);
+					((AbstractLayout<Vertex,Edge>)networkPanel.getNetworkLayout()).lock(true);
 				}
 			}
 		});

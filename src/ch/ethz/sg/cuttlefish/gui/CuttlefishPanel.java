@@ -704,7 +704,7 @@ public void setLayout(String selectedLayout){
 	if (selectedLayout.equalsIgnoreCase("CircleLayout"))
 	{
 		newLayout = new CircleLayout<Vertex, Edge>(getNetwork());
-		((CircleLayout)newLayout).setRadius(getNetwork().getVertexCount() * 10);
+		((CircleLayout<Vertex,Edge>)newLayout).setRadius(getNetwork().getVertexCount() * 10);
 	}
 	if (selectedLayout.equalsIgnoreCase("Fixed"))
 		newLayout = new FixedLayout<Vertex, Edge>(getNetwork(),layout);
