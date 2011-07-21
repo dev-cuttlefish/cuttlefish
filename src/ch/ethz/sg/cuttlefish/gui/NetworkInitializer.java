@@ -107,9 +107,9 @@ public class NetworkInitializer {
 	}
 	
 	
-	public void initDBNetwork(DBNetwork _dbNetwork) {
+	public void initDBNetwork(DBNetwork _dbNetwork) {		
+		
 		final DBNetwork dbNetwork = _dbNetwork;
-
 	    final JButton connectButton;
 	    JButton cancelButton;
 	    JLabel urlLabel;
@@ -234,7 +234,16 @@ public class NetworkInitializer {
 		connectButton.addActionListener(new ActionListener() {			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				 if (dbNetwork.connect(urlTextField.getText(),
+				String driverName;
+				String urlName;
+				if(driverComboBox.getSelectedIndex() == 0) {
+					driverName = "com.mysql.jdbc.Driver";
+					urlName = "jdbc:mysql://";
+				} else {
+					driverName = "org.postgresql.Driver";
+					urlName = "jdbc:postgresql://";
+				}
+				 if (dbNetwork.connect(driverName, urlName, urlTextField.getText(),
 						   usernameTextField.getText(), passwordTextField.getText())
 				 	) {
 					 connectWindow.setVisible(false);
