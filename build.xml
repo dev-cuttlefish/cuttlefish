@@ -51,7 +51,8 @@
   	<jar destfile="${dist}/cuttlefish.jar"
       basedir="${build}"
   	  index="true"
-  	  filesetmanifest="merge">
+  	  filesetmanifest="merge"
+  	  duplicate="preserve">
           <manifest>
             <attribute name="Main-Class" value="ch.ethz.sg.cuttlefish.gui2.Cuttlefish"/>
           </manifest>

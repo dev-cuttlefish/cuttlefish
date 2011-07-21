@@ -7,7 +7,6 @@ import javax.swing.JMenu;
 import ch.ethz.sg.cuttlefish.networks.BrowsableNetwork;
 
 public abstract class BrowserMenu extends JMenu {
-
 	private static final long serialVersionUID = 1L;
 	private String condition;
 	protected Hashtable<String, String> arguments = new Hashtable<String, String>();
