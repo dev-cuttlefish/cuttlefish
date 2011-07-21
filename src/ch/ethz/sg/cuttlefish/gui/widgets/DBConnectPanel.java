@@ -230,7 +230,7 @@ public class DBConnectPanel extends BrowserWidget {
 			connectButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
 					DBNetwork dbNetwork = (DBNetwork) getNetwork();
-				   ((DBNetwork) getNetwork()).connect(getUrlField().getText(),
+				   ((DBNetwork) getNetwork()).connect("com.mysql.jdbc.Driver", "jdbc:mysql://", getUrlField().getText(),
 						   getUserNameField().getText(), getPasswordField().getText());
 				   int itemCount = 0;
 				   nodeTables.removeAllItems();

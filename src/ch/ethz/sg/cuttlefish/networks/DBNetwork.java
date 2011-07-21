@@ -49,7 +49,9 @@ import edu.uci.ics.jung.graph.util.EdgeType;
 public class DBNetwork extends BrowsableNetwork {
 
 	private static final long serialVersionUID = 1L;
-	
+
+	private String driverName = "";
+	private String urlName = "";
 	private Connection conn;
 	private HashMap<Integer,Vertex> hash = new HashMap<Integer,Vertex>();
 	private String nodeFilter = "";
@@ -105,14 +107,18 @@ public class DBNetwork extends BrowsableNetwork {
 	 * @param userName
 	 * @param password
 	 */
-	public boolean connect(String dbName, String userName, String password) {
+	public boolean connect(String driverName, String urlName, String dbName, String userName, String password) {
+		this.driverName = driverName;
+		this.urlName = urlName;
 		boolean connected = true;
 		if (conn != null)
 			disConnect();
+		//"com.mysql.jdbc.Driver"
+		//"jdbc:mysql://"
 		try
 		{
-		  Class.forName("com.mysql.jdbc.Driver").newInstance();
-		  String url = "jdbc:mysql://" + dbName;
+		  Class.forName(driverName).newInstance();
+		  String url = urlName + dbName;
 		  conn = DriverManager.getConnection(url, userName, password);
 		  if ((conn == null) || (!conn.isValid(100)))
 				JOptionPane.showMessageDialog(null,null,"Error connecting to database "+ dbName,JOptionPane.ERROR_MESSAGE);

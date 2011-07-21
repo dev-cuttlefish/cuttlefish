@@ -4,6 +4,7 @@ import java.applet.Applet;
 import java.awt.BorderLayout;
 
 import javax.swing.BoxLayout;
+import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
@@ -59,13 +60,17 @@ public class Cuttlefish extends Applet {
     	container.add(controlContainer, BorderLayout.NORTH);
     	container.add(getNetworkPanel(), BorderLayout.CENTER);
     	this.add(container);
-    	
-		toolbars.getSimulationToolbar().addObserver(menu.getViewMenu());
-		toolbars.getMouseToolbar().addObserver(menu.getViewMenu());
-		toolbars.getZoomToolbar().addObserver(menu.getViewMenu());
+    		
+		toolbars.getSimulationToolbar().addObserver(getMenu().getViewMenu());
+		toolbars.getMouseToolbar().addObserver(getMenu().getViewMenu());
+		toolbars.getZoomToolbar().addObserver(getMenu().getViewMenu());
+		toolbars.getDBToolbar().addObserver(getMenu().getViewMenu());
+		
 		toolbars.getSimulationToolbar().setVisible(true);
 		toolbars.getMouseToolbar().setVisible(true);
 		toolbars.getZoomToolbar().setVisible(true);
+		toolbars.getDBToolbar().setVisible(true);
+		networkPanel.addObserver(getMenu().getLayoutMenu());
     }
     
     private NetworkPanel getNetworkPanel() {
