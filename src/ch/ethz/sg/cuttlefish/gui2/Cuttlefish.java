@@ -27,7 +27,6 @@ import java.io.File;
 
 import javax.swing.JFrame;
 
-
 public class Cuttlefish extends JFrame {
 	/**
 	 * 
