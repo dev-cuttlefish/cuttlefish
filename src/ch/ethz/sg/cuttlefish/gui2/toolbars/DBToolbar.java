@@ -51,8 +51,7 @@ public class DBToolbar extends AbstractToolbar {
 	private JButton expandBack = null;
 	private JButton shrink = null;
 	private JButton shrinkBack = null;
-	private JComboBox nodeTables = null;
-	private JComboBox edgeTables = null;
+	private JComboBox networkNames = null;
 	private JFrame exploreNodeFrame = null;
 	private JFrame exploreNetworkFrame = null;
 	private boolean enabled = false;
@@ -113,26 +112,18 @@ public class DBToolbar extends AbstractToolbar {
 		return exploreNetworkFrame;
 	}
 	
-	public void findDBTables() {
-		nodeTables.removeAllItems();
-		nodeTables.insertItemAt("<Select a node table>", 0);
-		nodeTables.setSelectedIndex(0);
-		Collection<String> tables = ((DBNetwork)networkPanel.getNetwork()).getNodeTables( ((DBNetwork)networkPanel.getNetwork()).getSchemaName());
-		int itemCount = 1;;
-		for(String nodeTable : tables) {
-			nodeTables.insertItemAt(nodeTable, itemCount);
-			itemCount++;
-		}
-		edgeTables.removeAllItems();
-		edgeTables.insertItemAt("<Select an edge table>", 0);
-		edgeTables.setSelectedIndex(0);		
-		tables = ((DBNetwork)networkPanel.getNetwork()).getEdgeTables( ((DBNetwork)networkPanel.getNetwork()).getSchemaName());					
-		itemCount = 1;
-		for(String edgeTable : tables) {
-			edgeTables.insertItemAt(edgeTable, itemCount);
+	public void findDBTables() {		
+		networkNames.removeAllItems();
+		networkNames.insertItemAt("<Select a network>", 0);
+		networkNames.setSelectedIndex(0);		
+		Collection<String> networks = ((DBNetwork)networkPanel.getNetwork()).getNetworkNames( ((DBNetwork)networkPanel.getNetwork()).getSchemaName());					
+		int itemCount = 1;
+		for(String networkName : networks) {
+			networkNames.insertItemAt(networkName, itemCount);
 			itemCount++;
 		}
 	}
+	
 	private void initialize() {
 		exploreNetwork = new JButton("Explore Network");
 		exploreNode = new JButton("Explore Node");
@@ -142,47 +133,28 @@ public class DBToolbar extends AbstractToolbar {
 		shrinkBack = new JButton(new ImageIcon(getClass().getResource(shrinkBackIcon)));
 		setExploreButtonsEnabled(true);
 		setNetworkButtonsEnabled(false);		
-		nodeTables = new JComboBox();
-		nodeTables.setEditable(false);
-		edgeTables = new JComboBox();
-		edgeTables.setEditable(false);
+		networkNames = new JComboBox();
+		networkNames .setEditable(false);
 		
-		nodeTables.addItemListener(new ItemListener() {			
+		networkNames.addItemListener(new ItemListener() {			
 			@Override
 			public void itemStateChanged(ItemEvent e) {
-				if(nodeTables.getSelectedIndex() > 0)
-					((DBNetwork)networkPanel.getNetwork()).setNodeTable((String)nodeTables.getSelectedItem());
+				if(networkNames.getSelectedIndex() > 0) {
+					setNetworkButtonsEnabled(true);
+				} else {
+					setNetworkButtonsEnabled(false);
+				}
+			}
+		});
+		
+		networkNames.addItemListener(new ItemListener() {			
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				if(networkNames.getSelectedIndex() > 0)
+					((DBNetwork)networkPanel.getNetwork()).setNetwork((String)networkNames.getSelectedItem());
 			}
 		});
 
-		edgeTables.addItemListener(new ItemListener() {			
-			@Override
-			public void itemStateChanged(ItemEvent e) {
-				if(edgeTables.getSelectedIndex() > 0 && nodeTables.getSelectedIndex() > 0) {
-					setNetworkButtonsEnabled(true);
-				} else {
-					setNetworkButtonsEnabled(false);
-				}
-			}
-		});
-		
-		edgeTables.addItemListener(new ItemListener() {			
-			@Override
-			public void itemStateChanged(ItemEvent e) {
-				if(edgeTables.getSelectedIndex() > 0)
-					((DBNetwork)networkPanel.getNetwork()).setEdgeTable((String)edgeTables.getSelectedItem());
-			}
-		});
-		nodeTables.addItemListener(new ItemListener() {			
-			@Override
-			public void itemStateChanged(ItemEvent e) {
-				if(edgeTables.getSelectedIndex() > 0 && nodeTables.getSelectedIndex() > 0) {
-					setNetworkButtonsEnabled(true);
-				} else {
-					setNetworkButtonsEnabled(false);
-				}
-			}
-		});
 		
 		exploreNetwork.addActionListener(new ActionListener() {			
 			@Override
@@ -198,8 +170,7 @@ public class DBToolbar extends AbstractToolbar {
 			}
 		});
 		
-		this.add(nodeTables);
-		this.add(edgeTables);
+		this.add(networkNames);
 		this.add(expand);
 		this.add(expandBack);
 		this.add(shrink);
