@@ -234,14 +234,14 @@ public class DBConnectPanel extends BrowserWidget {
 						   getUserNameField().getText(), getPasswordField().getText());
 				   int itemCount = 0;
 				   nodeTables.removeAllItems();
-				   for(String nodeTable : dbNetwork.getNodeTables(dbNetwork.getSchemaName())) {
-					   nodeTables.insertItemAt(nodeTable, itemCount);
-				   }
+				   //for(String nodeTable : dbNetwork.getNodeTables(dbNetwork.getSchemaName())) {
+					   //nodeTables.insertItemAt(nodeTable, itemCount);
+				   //}
 				   itemCount = 0;
 				   edgeTables.removeAllItems();
-				   for(String edgeTable : dbNetwork.getEdgeTables(dbNetwork.getSchemaName())) {
-					   edgeTables.insertItemAt(edgeTable, itemCount);
-				   }
+				   //for(String edgeTable : dbNetwork.getEdgeTables(dbNetwork.getSchemaName())) {
+					   //edgeTables.insertItemAt(edgeTable, itemCount);
+				   //}
 				}
 			});
 		}
