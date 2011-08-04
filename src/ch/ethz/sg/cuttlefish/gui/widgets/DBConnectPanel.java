@@ -26,15 +26,11 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Collection;
-
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
-
-import com.sun.corba.se.spi.ior.MakeImmutable;
 
 import ch.ethz.sg.cuttlefish.gui.BrowserWidget;
 import ch.ethz.sg.cuttlefish.networks.DBNetwork;
@@ -229,15 +225,9 @@ public class DBConnectPanel extends BrowserWidget {
 			connectButton.setEnabled(true);
 			connectButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
-					DBNetwork dbNetwork = (DBNetwork) getNetwork();
-				   ((DBNetwork) getNetwork()).connect("com.mysql.jdbc.Driver", "jdbc:mysql://", getUrlField().getText(),
+					((DBNetwork) getNetwork()).connect("com.mysql.jdbc.Driver", "jdbc:mysql://", getUrlField().getText(),
 						   getUserNameField().getText(), getPasswordField().getText());
-				   int itemCount = 0;
 				   nodeTables.removeAllItems();
-				   //for(String nodeTable : dbNetwork.getNodeTables(dbNetwork.getSchemaName())) {
-					   //nodeTables.insertItemAt(nodeTable, itemCount);
-				   //}
-				   itemCount = 0;
 				   edgeTables.removeAllItems();
 				   //for(String edgeTable : dbNetwork.getEdgeTables(dbNetwork.getSchemaName())) {
 					   //edgeTables.insertItemAt(edgeTable, itemCount);

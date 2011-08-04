@@ -22,7 +22,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package ch.ethz.sg.cuttlefish.layout;
 
 import edu.uci.ics.jung.algorithms.layout.AbstractLayout;
-import edu.uci.ics.jung.algorithms.scoring.EigenvectorCentrality;
 import edu.uci.ics.jung.algorithms.util.IterativeContext;
 import edu.uci.ics.jung.graph.Graph;
 
@@ -35,8 +34,6 @@ public class EigenVectorCentralityLayout<V,E> extends AbstractLayout<V,E> implem
 
 	protected EigenVectorCentralityLayout(Graph<V, E> graph) {
 		super(graph);
-		
-		EigenvectorCentrality<V,E> centralityCalculator = new EigenvectorCentrality<V, E>(graph);
 	}
 
 	@Override

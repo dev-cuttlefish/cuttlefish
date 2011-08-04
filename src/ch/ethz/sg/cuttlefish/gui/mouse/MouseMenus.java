@@ -25,15 +25,11 @@ import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import edu.uci.ics.jung.visualization.VisualizationViewer;
-
 import javax.swing.JButton;
 import javax.swing.JColorChooser;
 import javax.swing.JFrame;
-import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 
 import ch.ethz.sg.cuttlefish.gui2.NetworkPanel;
@@ -44,7 +40,12 @@ import ch.ethz.sg.cuttlefish.misc.Vertex;
 public class MouseMenus {
     
     public static class EdgeMenu extends JPopupMenu {         
-        public EdgeMenu(final JFrame frame) {
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		public EdgeMenu(final JFrame frame) {
             super("Edge Menu");
             this.add(new EdgeLabelDisplay());
             this.add(new WeightDisplay());
@@ -85,7 +86,11 @@ public class MouseMenus {
     }
     
     public static class EdgeSetLabel extends JMenuItem implements EdgeListener<Edge> {
-    	private Edge edge;
+    	/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		private Edge edge;
     	private NetworkPanel networkPanel;
     	public EdgeSetLabel() {
     		this.setText("Set label...");
@@ -105,7 +110,11 @@ public class MouseMenus {
     }
     
     public static class EdgeDelete extends JMenuItem implements EdgeListener<Edge> {
-    	private Edge edge;
+    	/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		private Edge edge;
     	private NetworkPanel networkPanel;
     	public EdgeDelete() {
     		this.setText("Delete");
@@ -124,7 +133,11 @@ public class MouseMenus {
     }
     
     public static class EdgeSetWidth extends JMenuItem implements EdgeListener<Edge> {
-    	private Edge edge;
+    	/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		private Edge edge;
     	private NetworkPanel networkPanel;
     	public EdgeSetWidth() {
     		this.setText("Set width...");
@@ -152,7 +165,11 @@ public class MouseMenus {
     }
     
     public static class EdgeSetWeight extends JMenuItem implements EdgeListener<Edge> {
-    	private Edge edge;
+    	/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		private Edge edge;
     	private NetworkPanel networkPanel;
     	public EdgeSetWeight() {
     		this.setText("Set weight...");
@@ -197,7 +214,12 @@ public class MouseMenus {
 
     
     public static class VertexMenu extends JPopupMenu {
-        public VertexMenu() {
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		public VertexMenu() {
             super("Vertex Menu");
             this.add(new VertexIdDisplay());
             this.add(new VertexLabelDisplay());
@@ -215,7 +237,11 @@ public class MouseMenus {
     }
     
     public static class VertexSetSize extends JMenuItem implements VertexListener<Vertex> {				
-    	private Vertex vertex;
+    	/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		private Vertex vertex;
     	private NetworkPanel networkPanel;
     	public VertexSetSize() {
     		this.setText("Set size...");
@@ -244,7 +270,11 @@ public class MouseMenus {
     }
     
     public static class VertexSetBorderWidth extends JMenuItem implements VertexListener<Vertex> {				
-    	private Vertex vertex;
+    	/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		private Vertex vertex;
     	private NetworkPanel networkPanel;
     	public VertexSetBorderWidth() {
     		this.setText("Set border width...");
@@ -273,7 +303,11 @@ public class MouseMenus {
     }
     
     public static class VertexSetLabel extends JMenuItem implements VertexListener<Vertex> {				
-    	private Vertex vertex;
+    	/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		private Vertex vertex;
     	private NetworkPanel networkPanel;
     	public VertexSetLabel() {
     		this.setText("Set label...");
@@ -296,7 +330,11 @@ public class MouseMenus {
     }
     
     public static class VertexDelete extends JMenuItem implements VertexListener<Vertex> {				
-    	private Vertex vertex;
+    	/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		private Vertex vertex;
     	private NetworkPanel networkPanel;
     	public VertexDelete() {
     		this.setText("Delete node");
@@ -316,7 +354,11 @@ public class MouseMenus {
     }
     
     public static class VertexSetShape extends JMenuItem implements VertexListener<Vertex> {				
-    	private Vertex vertex;
+    	/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		private Vertex vertex;
     	private NetworkPanel networkPanel;
     	public VertexSetShape() {
     		this.setText("Set shape...");
@@ -339,14 +381,17 @@ public class MouseMenus {
     }
     
     public static class SetColor extends JMenuItem implements VertexListener<Vertex>, EdgeListener<Edge> {				
-    	private Vertex vertex;
+    	/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		private Vertex vertex;
     	private Edge edge;
     	private JFrame colorPanel;
     	private JButton ok;
     	private JButton cancel;
     	final String attribute;
     	private JColorChooser colorChooser;
-    	private NetworkPanel networkPanel;
     	public SetColor(final String attribute) {
     		this.attribute = attribute;
     		if(attribute == "fill")
@@ -404,13 +449,11 @@ public class MouseMenus {
 		@Override
 		public void setEdgeView(Edge edge, NetworkPanel networkPanel) {
 			this.edge = edge;
-			this.networkPanel = networkPanel;
 		}
     }
     
     public static class VertexLabelDisplay extends JMenuItem implements VertexListener<Vertex> {    	
     	private static final long serialVersionUID = 1L;
-		@SuppressWarnings("unchecked")
 		public void setVertexView(Vertex v, NetworkPanel networkPanel) {
 			if(v.getLabel() != null && v.getLabel().length() > 0)
 				this.setText("Label: " + v.getLabel());
@@ -423,7 +466,6 @@ public class MouseMenus {
     
     public static class VertexSizeDisplay extends JMenuItem implements VertexListener<Vertex> {    	
     	private static final long serialVersionUID = 1L;
-		@SuppressWarnings("unchecked")
 		public void setVertexView(Vertex v, NetworkPanel networkPanel) {
 			this.setText("Size: " + v.getSize());
         }
@@ -431,7 +473,6 @@ public class MouseMenus {
     
     public static class VertexIdDisplay extends JMenuItem implements VertexListener<Vertex> {    	
     	private static final long serialVersionUID = 1L;
-		@SuppressWarnings("unchecked")
 		public void setVertexView(Vertex v, NetworkPanel networkPanel) {
 			this.setText("Id: " + v.getId());
         }

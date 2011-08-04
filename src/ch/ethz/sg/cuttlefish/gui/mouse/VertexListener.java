@@ -21,7 +21,6 @@
 
 package ch.ethz.sg.cuttlefish.gui.mouse;
 import ch.ethz.sg.cuttlefish.gui2.NetworkPanel;
-import edu.uci.ics.jung.visualization.VisualizationViewer;
 
 public interface VertexListener<V> {
     void setVertexView(V vertex, NetworkPanel networkPanel);    

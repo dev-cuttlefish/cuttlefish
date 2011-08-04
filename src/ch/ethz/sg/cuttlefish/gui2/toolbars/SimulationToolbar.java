@@ -35,7 +35,6 @@ import ch.ethz.sg.cuttlefish.gui2.NetworkPanel;
 import ch.ethz.sg.cuttlefish.layout.WeightedARF2Layout;
 import ch.ethz.sg.cuttlefish.misc.Observer;
 import ch.ethz.sg.cuttlefish.misc.Subject;
-import ch.ethz.sg.cuttlefish.misc.Vertex;
 import ch.ethz.sg.cuttlefish.networks.ISimulation;
 import ch.ethz.sg.cuttlefish.networks.InteractiveCxfNetwork;
 
@@ -188,8 +187,8 @@ public class SimulationToolbar extends AbstractToolbar implements Observer  {
 				frameLabel.setVisible(true);
 			frameLabel.setText(" " + ((InteractiveCxfNetwork)o).getCurrentLabel() + " ");
 			if(networkPanel.getNetworkLayout() instanceof WeightedARF2Layout) {
-				((WeightedARF2Layout)networkPanel.getNetworkLayout()).setSleepTime(((InteractiveCxfNetwork)o).getCurrentSleepTime());
-				((WeightedARF2Layout)networkPanel.getNetworkLayout()).setMaxUpdates(((InteractiveCxfNetwork)o).getCurrentMaxStepUpdates());
+				((WeightedARF2Layout<?, ?>)networkPanel.getNetworkLayout()).setSleepTime(((InteractiveCxfNetwork)o).getCurrentSleepTime());
+				((WeightedARF2Layout<?, ?>)networkPanel.getNetworkLayout()).setMaxUpdates(((InteractiveCxfNetwork)o).getCurrentMaxStepUpdates());
 			}
 		}
 	}

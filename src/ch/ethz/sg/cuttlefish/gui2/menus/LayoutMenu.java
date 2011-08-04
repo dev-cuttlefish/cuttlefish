@@ -35,8 +35,6 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.KeyStroke;
-import javax.swing.SwingWorker;
-
 import ch.ethz.sg.cuttlefish.gui2.CuttlefishToolbars;
 import ch.ethz.sg.cuttlefish.gui2.NetworkPanel;
 import ch.ethz.sg.cuttlefish.misc.Edge;
@@ -55,7 +53,6 @@ public class LayoutMenu extends AbstractMenu implements Observer {
 	private static final long serialVersionUID = 1L;
 	private ButtonGroup layoutButtons;
 	private JMenuItem stopButton;
-	private JMenuItem restartButton;
 	private JMenuItem repaintButton;
 	private JRadioButtonMenuItem arf;
 	private JRadioButtonMenuItem kcore;

@@ -232,6 +232,7 @@ public class NetworkInitializer {
 		connectButton.setEnabled(false);
 		cancelButton.setEnabled(true);
 		connectButton.addActionListener(new ActionListener() {			
+			@SuppressWarnings("deprecation")
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				String driverName;

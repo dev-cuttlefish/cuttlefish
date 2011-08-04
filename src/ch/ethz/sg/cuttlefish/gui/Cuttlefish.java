@@ -61,8 +61,7 @@ public class Cuttlefish extends JFrame {
 		else
 			filename = args[0];
 		
-		File configfile = new File(filename);
-	    f = new Cuttlefish(filename);		
+		f = new Cuttlefish(filename);		
 		f.setVisible(true);
 	}
 	

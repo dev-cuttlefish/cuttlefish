@@ -37,7 +37,7 @@ public class StatusBar extends JPanel {
 	/**
 	 * 
 	 */
-	private SwingWorker currentTask;
+	private SwingWorker<?, ?> currentTask;
 	private JLabel label = null;
 	private JLabel label1 = null;
 	public JButton terminateTask;
@@ -76,7 +76,7 @@ public class StatusBar extends JPanel {
 		terminateTask.setEnabled(false);
 	}
 	
-	public void setBusyMessage(String message, SwingWorker task) {
+	public void setBusyMessage(String message, SwingWorker<?, ?> task) {
 		currentTask = task;		
 		progressBar.setIndeterminate(true);
 		label.setText(" " + message);

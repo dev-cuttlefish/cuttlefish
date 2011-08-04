@@ -2,8 +2,6 @@ package ch.ethz.sg.cuttlefish.gui.applet;
 
 import java.applet.Applet;
 import java.awt.BorderLayout;
-import java.io.File;
-
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;

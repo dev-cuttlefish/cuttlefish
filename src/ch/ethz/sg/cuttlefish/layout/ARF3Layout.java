@@ -22,18 +22,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package ch.ethz.sg.cuttlefish.layout;
 
 import java.awt.geom.Point2D;
-import java.awt.geom.Point2D.Double;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
 import ch.ethz.sg.cuttlefish.misc.Edge;
 import ch.ethz.sg.cuttlefish.misc.Vertex;
-import ch.ethz.sg.cuttlefish.networks.BrowsableNetwork;
-
 import edu.uci.ics.jung.algorithms.layout.AbstractLayout;
 import edu.uci.ics.jung.algorithms.util.IterativeContext;
 import edu.uci.ics.jung.graph.Graph;
@@ -166,18 +161,7 @@ public void advancePositions() {
 
         for (int i = 0; i < updatesPerFrame; i++) {
         	
-        	
-        	Map <V, Point2D> nodeForces = new HashMap<V,Point2D>();	
-       
-        	for (E e : getGraph().getEdges())
-        	{
-        		V v1 = getGraph().getSource(e);
-        		V v2 = getGraph().getDest(e);
-        		
-        		Point2D c1 = transform(v1);
-        		Point2D c2 = transform(v2);
-        		
-        	}
+
         	
         	for (Object o : graph.getVertices()) {
                 Vertex v = (Vertex) o;
@@ -348,6 +332,7 @@ public Point2D assignPositionToVertex(Vertex vertex) {
 	return c;
 }
 
+@SuppressWarnings("unchecked")
 public void updateVertices(){
 	Set<Vertex> nvertices = new HashSet<Vertex>();
 	for (Vertex vertex2 : (Collection<Vertex> )getGraph().getVertices()) {
@@ -371,7 +356,7 @@ public void updateVertices(){
  * @param node2
  * @return true if node and node2 are connected
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings({ "unchecked", "unused" })
 private boolean isEdgeInGraph(Vertex node, Vertex node2) {
 
 	Edge e = (Edge) getGraph().findEdge((V)node, (V)node2);

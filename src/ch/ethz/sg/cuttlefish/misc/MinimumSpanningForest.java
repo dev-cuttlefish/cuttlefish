@@ -1,14 +1,8 @@
 package ch.ethz.sg.cuttlefish.misc;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
-
-import org.apache.commons.collections15.Factory;
-import org.apache.commons.collections15.functors.ConstantTransformer;
-import org.apache.commons.collections15.map.LazyMap;
 
 import edu.uci.ics.jung.graph.Forest;
 import edu.uci.ics.jung.graph.Graph;
@@ -42,7 +36,6 @@ public class MinimumSpanningForest<V,E> {
      * @param forest the Forest to populate. Must be empty
      * @param root first Tree root, may be null
      */
-    @SuppressWarnings("unchecked")
     public MinimumSpanningForest(Graph<V, E> graph, Forest<V,E> forest, 
             Collection<V> roots) {
         
@@ -69,7 +62,6 @@ public class MinimumSpanningForest<V,E> {
 	}
 	
 	protected void updateForest(Collection<V> tv, Collection<E> unfinishedEdges, Collection<V> roots) {
-		double minCost = Double.MAX_VALUE;
 		E nextEdge = null;
 		V nextVertex = null;
 		V currentVertex = null;

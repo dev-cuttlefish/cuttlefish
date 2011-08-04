@@ -30,7 +30,6 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Set;
 
-import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
 import ch.ethz.sg.cuttlefish.networks.BrowsableNetwork;
