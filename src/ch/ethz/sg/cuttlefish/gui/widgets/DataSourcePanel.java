@@ -46,7 +46,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import ch.ethz.sg.cuttlefish.gui.BrowserWidget;
-import ch.ethz.sg.cuttlefish.gui.NetworkInitializer;
+import ch.ethz.sg.cuttlefish.gui2.NetworkInitializer;
 import ch.ethz.sg.cuttlefish.misc.Utils;
 import ch.ethz.sg.cuttlefish.misc.XMLUtil;
 import ch.ethz.sg.cuttlefish.networks.BrowsableNetwork;

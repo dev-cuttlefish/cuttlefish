@@ -32,7 +32,7 @@ import java.util.HashMap;
 import javax.swing.JOptionPane;
 
 
-import ch.ethz.sg.cuttlefish.gui.NetworkInitializer;
+import ch.ethz.sg.cuttlefish.gui2.NetworkInitializer;
 import ch.ethz.sg.cuttlefish.misc.Edge;
 import ch.ethz.sg.cuttlefish.misc.Vertex;
 
