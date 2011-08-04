@@ -18,7 +18,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  
-*/
+ */
 
 package ch.ethz.sg.cuttlefish.gui2.toolbars;
 
@@ -33,7 +33,6 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-
 
 import ch.ethz.sg.cuttlefish.gui2.NetworkPanel;
 import ch.ethz.sg.cuttlefish.misc.Vertex;
@@ -55,21 +54,20 @@ public class DBToolbar extends AbstractToolbar {
 	private JFrame exploreNodeFrame = null;
 	private JFrame exploreNetworkFrame = null;
 	private boolean enabled = false;
-	
+
 	private static String expandIcon = "icons/plus.png";
 	private static String expandBackIcon = "icons/plus_back.png";
 	private static String shrinkIcon = "icons/minus.png";
 	private static String shrinkBackIcon = "icons/minus_back.png";
 
-	
 	public DBToolbar(NetworkPanel networkPanel) {
 		super(networkPanel);
 		initialize();
 	}
-	
+
 	@Override
 	public void setVisible(boolean b) {
-		if( networkPanel.getNetwork() instanceof DBNetwork) {
+		if (networkPanel.getNetwork() instanceof DBNetwork) {
 			super.setVisible(b);
 			enabled = true;
 		} else {
@@ -77,153 +75,165 @@ public class DBToolbar extends AbstractToolbar {
 			enabled = false;
 		}
 	}
-		
+
 	public boolean isEnabled() {
 		return enabled;
 	}
-	
+
 	private void setExploreButtonsEnabled(boolean b) {
 		expand.setEnabled(b);
 		expandBack.setEnabled(b);
 		shrink.setEnabled(b);
 		shrinkBack.setEnabled(b);
 	}
-	
+
 	private void setNetworkButtonsEnabled(boolean b) {
 		exploreNetwork.setEnabled(b);
 		exploreNode.setEnabled(b);
 	}
-	
+
 	private void checkPickedVertices() {
-		if(networkPanel.getPickedVertices().size() < 1) {
-			JOptionPane.showMessageDialog(networkPanel, "You need to select at least one node", "No nodes selected", JOptionPane.WARNING_MESSAGE);
+		if (networkPanel.getPickedVertices().size() < 1) {
+			JOptionPane.showMessageDialog(networkPanel,
+					"You need to select at least one node",
+					"No nodes selected", JOptionPane.WARNING_MESSAGE);
 		}
 	}
-	
+
 	private JFrame getExploreNodeFrame() {
-		if(exploreNodeFrame == null)
+		if (exploreNodeFrame == null)
 			exploreNodeFrame = new DBExploreNode(networkPanel);
 		return exploreNodeFrame;
 	}
-	
+
 	private JFrame getExploreNetworkFrame() {
-		if(exploreNetworkFrame == null)
+		if (exploreNetworkFrame == null)
 			exploreNetworkFrame = new DBExploreNetwork(networkPanel);
 		return exploreNetworkFrame;
 	}
-	
-	public void findDBTables() {		
+
+	public void findDBTables() {
 		networkNames.removeAllItems();
 		networkNames.insertItemAt("<Select a network>", 0);
-		networkNames.setSelectedIndex(0);		
-		Collection<String> networks = ((DBNetwork)networkPanel.getNetwork()).getNetworkNames( ((DBNetwork)networkPanel.getNetwork()).getSchemaName());					
+		networkNames.setSelectedIndex(0);
+		Collection<String> networks = ((DBNetwork) networkPanel.getNetwork())
+				.getNetworkNames(((DBNetwork) networkPanel.getNetwork())
+						.getSchemaName());
 		int itemCount = 1;
-		for(String networkName : networks) {
+		for (String networkName : networks) {
 			networkNames.insertItemAt(networkName, itemCount);
 			itemCount++;
 		}
 	}
-	
+
 	private void initialize() {
 		exploreNetwork = new JButton("Explore Network");
 		exploreNode = new JButton("Explore Node");
 		expand = new JButton(new ImageIcon(getClass().getResource(expandIcon)));
-		expandBack = new JButton(new ImageIcon(getClass().getResource(expandBackIcon)));
+		expandBack = new JButton(new ImageIcon(getClass().getResource(
+				expandBackIcon)));
 		shrink = new JButton(new ImageIcon(getClass().getResource(shrinkIcon)));
-		shrinkBack = new JButton(new ImageIcon(getClass().getResource(shrinkBackIcon)));
+		shrinkBack = new JButton(new ImageIcon(getClass().getResource(
+				shrinkBackIcon)));
 		setExploreButtonsEnabled(true);
-		setNetworkButtonsEnabled(false);		
+		setNetworkButtonsEnabled(false);
 		networkNames = new JComboBox();
-		networkNames .setEditable(false);
-		
-		networkNames.addItemListener(new ItemListener() {			
+		networkNames.setEditable(false);
+
+		networkNames.addItemListener(new ItemListener() {
 			@Override
 			public void itemStateChanged(ItemEvent e) {
-				if(networkNames.getSelectedIndex() > 0) {
-					setNetworkButtonsEnabled(true);
+				if (networkNames.getSelectedIndex() > 0) {
+					if (((DBNetwork) networkPanel.getNetwork()).getEdgeTable()
+							.compareToIgnoreCase(
+									(String) networkNames.getSelectedItem()) != 0) {
+						setNetworkButtonsEnabled(true);
+						((DBNetwork) networkPanel.getNetwork())
+								.setNetwork((String) networkNames
+										.getSelectedItem());
+						if (((DBNetwork) networkPanel.getNetwork()).nodeTableIsDerived()) {
+							Object selected = JOptionPane.showInputDialog(networkPanel, "Could not find a matching table with nodes for the selected network.\n\nSelect a table with nodes from the drop down menu,\nor click Cancel if there isn't one", "Could not find a table with nodes", JOptionPane.QUESTION_MESSAGE, null, ((DBNetwork)networkPanel.getNetwork()).availableNodeTables().toArray(), null);
+							String selectedNodeTable = (String)selected;
+							if(selectedNodeTable != null)
+								((DBNetwork)networkPanel.getNetwork()).setNodeTable(selectedNodeTable);
+						}
+					}
 				} else {
 					setNetworkButtonsEnabled(false);
 				}
 			}
 		});
-		
-		networkNames.addItemListener(new ItemListener() {			
-			@Override
-			public void itemStateChanged(ItemEvent e) {
-				if(networkNames.getSelectedIndex() > 0)
-					((DBNetwork)networkPanel.getNetwork()).setNetwork((String)networkNames.getSelectedItem());
-			}
-		});
 
-		
-		exploreNetwork.addActionListener(new ActionListener() {			
+		exploreNetwork.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				getExploreNetworkFrame().setVisible(true);
 			}
 		});
-		
-		exploreNode.addActionListener(new ActionListener() {			
+
+		exploreNode.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent e) {				
-				getExploreNodeFrame().setVisible(true);				
+			public void actionPerformed(ActionEvent e) {
+				getExploreNodeFrame().setVisible(true);
 			}
 		});
-		
+
 		this.add(networkNames);
 		this.add(expand);
 		this.add(expandBack);
 		this.add(shrink);
-		this.add(shrinkBack);		
+		this.add(shrinkBack);
 		this.add(exploreNetwork);
 		this.add(exploreNode);
-		
-		expand.addActionListener(new ActionListener() {			
+
+		expand.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(java.awt.event.ActionEvent e) {
 				checkPickedVertices();
 				for (Vertex vertex : networkPanel.getPickedVertices())
-					((DBNetwork) networkPanel.getNetwork()).extendNeighborhood(vertex.getId(), 1, true);
-				networkPanel.onNetworkChange();
-                networkPanel.repaintViewer();
-           }
-		});
-		
-		expandBack.addActionListener(new ActionListener() {			
-			@Override
-			public void actionPerformed(java.awt.event.ActionEvent e) {
-				checkPickedVertices();
-				for (Vertex vertex : networkPanel.getPickedVertices())
-					((DBNetwork) networkPanel.getNetwork()).extendNeighborhood(vertex.getId(), 1, false);
+					((DBNetwork) networkPanel.getNetwork()).extendNeighborhood(
+							vertex.getId(), 1, true);
 				networkPanel.onNetworkChange();
 				networkPanel.repaintViewer();
-           }
+			}
 		});
-		
-		
-		shrink.addActionListener(new ActionListener() {			
+
+		expandBack.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(java.awt.event.ActionEvent e) {
 				checkPickedVertices();
 				for (Vertex vertex : networkPanel.getPickedVertices())
-					((DBNetwork) networkPanel.getNetwork()).shrinkVertex(vertex);
+					((DBNetwork) networkPanel.getNetwork()).extendNeighborhood(
+							vertex.getId(), 1, false);
 				networkPanel.onNetworkChange();
 				networkPanel.repaintViewer();
-    		}
+			}
 		});
-		
-		shrinkBack.addActionListener(new ActionListener() {			
+
+		shrink.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(java.awt.event.ActionEvent e) {
 				checkPickedVertices();
 				for (Vertex vertex : networkPanel.getPickedVertices())
-					((DBNetwork) networkPanel.getNetwork()).backShrinkVertex(vertex);
+					((DBNetwork) networkPanel.getNetwork())
+							.shrinkVertex(vertex);
 				networkPanel.onNetworkChange();
 				networkPanel.repaintViewer();
-    		}
-		});				
+			}
+		});
+
+		shrinkBack.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(java.awt.event.ActionEvent e) {
+				checkPickedVertices();
+				for (Vertex vertex : networkPanel.getPickedVertices())
+					((DBNetwork) networkPanel.getNetwork())
+							.backShrinkVertex(vertex);
+				networkPanel.onNetworkChange();
+				networkPanel.repaintViewer();
+			}
+		});
 
 	}
-
 
 }

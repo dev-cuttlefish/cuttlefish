@@ -327,7 +327,6 @@ public class DBExploreNode extends JFrame {
 				if(curDistance == distance-1)
 					lastReachable.addAll(reachable);
 			}
-			System.out.println("Worker counted " + reachable.size());
 			nodeInfo.setText("Selected nodes: " + reachable.size() );
 			linksInfo.setText("Selected links: " + dbNetwork.countEdges(lastReachable, reachable));
 			if(reachable.size() > 500)
