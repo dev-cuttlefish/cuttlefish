@@ -138,7 +138,7 @@ public class DBConnectPanel extends BrowserWidget {
 				new ActionListener() {				
 					@Override
 					public void actionPerformed(ActionEvent e) {
-						((DBNetwork)getNetwork()).setNodeTable((String)nodeTables.getSelectedItem());
+						//((DBNetwork)getNetwork()).setNodeTable((String)nodeTables.getSelectedItem());
 					}
 				}
 			);
@@ -157,7 +157,7 @@ public class DBConnectPanel extends BrowserWidget {
 				new ActionListener() {				
 					@Override
 					public void actionPerformed(ActionEvent e) {
-						((DBNetwork)getNetwork()).setEdgeTable((String)edgeTables.getSelectedItem());
+						//((DBNetwork)getNetwork()).setEdgeTable((String)edgeTables.getSelectedItem());
 					}
 				}
 			);

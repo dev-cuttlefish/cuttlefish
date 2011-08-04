@@ -21,12 +21,10 @@ public class AboutWindow extends JFrame {
 		private JLabel authors;
 		private JLabel info;
 		private JButton close;
-		private NetworkPanel networkPanel;
 		
 		public AboutWindow(NetworkPanel networkPanel) {
 			initialize();
 			this.setTitle("About");
-			this.networkPanel = networkPanel;
 			setLocationRelativeTo(networkPanel);
 			this.setTitle("About");
 			this.setSize(430, 323);
