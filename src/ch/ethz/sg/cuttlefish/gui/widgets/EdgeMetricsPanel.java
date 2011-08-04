@@ -21,35 +21,21 @@ package ch.ethz.sg.cuttlefish.gui.widgets;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
 import java.io.PrintStream;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
 import ch.ethz.sg.cuttlefish.gui.BrowserWidget;
 
-import com.sun.image.codec.jpeg.*;
-
 import ch.ethz.sg.cuttlefish.misc.Edge;
-import ch.ethz.sg.cuttlefish.misc.PSTricksExporter;
-import ch.ethz.sg.cuttlefish.misc.TikzExporter;
-import ch.ethz.sg.cuttlefish.misc.Conversion;
 import ch.ethz.sg.cuttlefish.misc.Vertex;
-import ch.ethz.sg.cuttlefish.networks.TemporalNetwork;
 
 
 public class EdgeMetricsPanel extends BrowserWidget  {

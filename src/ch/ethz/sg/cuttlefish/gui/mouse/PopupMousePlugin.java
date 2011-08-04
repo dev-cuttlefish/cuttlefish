@@ -72,7 +72,7 @@ public class PopupMousePlugin<V, E> extends AbstractPopupGraphMousePlugin {
         Component[] menuComps = vertexPopup.getComponents();
         for (Component comp: menuComps) {
             if (comp instanceof VertexListener) {
-                ((VertexListener)comp).setVertexView(v, networkPanel);
+                ((VertexListener<V>)comp).setVertexView(v, networkPanel);
             }
             if (comp instanceof MenuPointListener) {
                 ((MenuPointListener)comp).setPoint(point);
@@ -97,12 +97,13 @@ public class PopupMousePlugin<V, E> extends AbstractPopupGraphMousePlugin {
         this.vertexPopup = vertexPopup;
     }
     
-    private void updateEdgeMenu(E edge, NetworkPanel networkPanel, Point2D point) {
+    @SuppressWarnings("unchecked")
+	private void updateEdgeMenu(E edge, NetworkPanel networkPanel, Point2D point) {
         if (edgePopup == null) return;
         Component[] menuComps = edgePopup.getComponents();
         for (Component comp: menuComps) {
             if (comp instanceof EdgeListener) {
-                ((EdgeListener)comp).setEdgeView(edge, networkPanel);
+                ((EdgeListener<E>)comp).setEdgeView(edge, networkPanel);
             }
             if (comp instanceof MenuPointListener) {
                 ((MenuPointListener)comp).setPoint(point);

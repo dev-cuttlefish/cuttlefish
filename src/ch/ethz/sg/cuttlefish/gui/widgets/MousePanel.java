@@ -70,10 +70,9 @@ public class MousePanel extends BrowserWidget  {
 	 * 	
 	 * @return javax.swing.JComboBox	
 	 */
-	@SuppressWarnings("unchecked")
 	private JComboBox getJComboBox() {
 		if (jComboBox == null) {
-			EditingModalGraphMouse gm = getBrowser().getMouse();
+			EditingModalGraphMouse<?, ?> gm = getBrowser().getMouse();
 			gm.getModeComboBox().setSelectedIndex(0);
 			jComboBox = gm.getModeComboBox();
 		}

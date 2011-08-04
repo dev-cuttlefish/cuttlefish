@@ -20,9 +20,7 @@
 */
 
 package ch.ethz.sg.cuttlefish.networks;
-import edu.uci.ics.jung.algorithms.layout.Layout;
 import java.awt.Color;
-import java.awt.Shape;
 import java.awt.geom.Point2D;
 import java.io.BufferedReader;
 import java.io.File;
@@ -37,7 +35,6 @@ import java.util.Iterator;
 import java.util.StringTokenizer;
 
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 
 import ch.ethz.sg.cuttlefish.gui.NetworkInitializer;
 import ch.ethz.sg.cuttlefish.misc.Edge;

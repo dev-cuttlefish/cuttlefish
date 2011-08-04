@@ -25,9 +25,6 @@ import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
-import java.util.HashSet;
-import java.util.Set;
-
 import javax.swing.JOptionPane;
 
 import ch.ethz.sg.cuttlefish.networks.BrowsableNetwork;

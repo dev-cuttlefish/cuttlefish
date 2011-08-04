@@ -2,16 +2,10 @@ package ch.ethz.sg.cuttlefish.networks;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
 import ch.ethz.sg.cuttlefish.misc.DelegateForest;
 import ch.ethz.sg.cuttlefish.misc.Edge;
 import ch.ethz.sg.cuttlefish.misc.MinimumSpanningForest;
 import ch.ethz.sg.cuttlefish.misc.Vertex;
-import edu.uci.ics.jung.algorithms.layout.TreeLayout;
 import edu.uci.ics.jung.graph.Forest;
 import edu.uci.ics.jung.graph.SparseGraph;
 import edu.uci.ics.jung.graph.Tree;

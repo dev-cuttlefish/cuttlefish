@@ -34,9 +34,6 @@ import edu.uci.ics.jung.graph.util.EdgeType;
 public class ContestSimulation extends BrowsableNetwork implements ISimulation {
 
 	private static final long serialVersionUID = 1L;
-	private Vertex lastInsert = null;
-	
-	
 	private int contest_size = 25;
 	private int voters_size = 25;
 	private int[] votes = {1,2,3,4,5,6,7,8,10,12};
@@ -48,7 +45,6 @@ public class ContestSimulation extends BrowsableNetwork implements ISimulation {
 	}
 	public void reset() {
 		setIncremental(true);
-		lastInsert = null;
 		for (Edge edge : super.getEdges())
 			super.removeEdge(edge);
 

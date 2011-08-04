@@ -36,7 +36,6 @@ import javax.swing.KeyStroke;
 import ch.ethz.sg.cuttlefish.gui.NetworkInitializer;
 import ch.ethz.sg.cuttlefish.gui2.CuttlefishToolbars;
 import ch.ethz.sg.cuttlefish.gui2.NetworkPanel;
-import ch.ethz.sg.cuttlefish.gui2.tasks.OpenNetworkTask;
 import ch.ethz.sg.cuttlefish.gui2.toolbars.DBToolbar;
 import ch.ethz.sg.cuttlefish.misc.Observer;
 import ch.ethz.sg.cuttlefish.misc.Subject;
