@@ -140,6 +140,14 @@ public class CxfNetwork extends BrowsableNetwork {
 		return edgeShape;
 	}
 	
+	/**
+	 * Getter for directed
+	 * @return
+	 */
+	public boolean isDirected() {
+		return directed;
+	}
+	
 	public void  setEdgeShape(String edgeType) {
 		this.edgeShape = edgeType;
 	}

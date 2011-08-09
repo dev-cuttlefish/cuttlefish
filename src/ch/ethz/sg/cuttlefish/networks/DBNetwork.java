@@ -48,7 +48,7 @@ public class DBNetwork extends BrowsableNetwork {
 
 	private static final long serialVersionUID = 1L;
 
-	private Connection conn;
+	protected Connection conn;
 	private HashMap<Integer, Vertex> hash = new HashMap<Integer, Vertex>();
 	private String nodeFilter = "";
 	private String edgeFilter = "";
@@ -86,11 +86,11 @@ public class DBNetwork extends BrowsableNetwork {
 	public void graphicalInit(NetworkInitializer initializer) {
 		initializer.initDBNetwork(this);
 	}
-	
+
 	public boolean nodeTableIsDerived() {
 		return derivedNodeTable;
 	}
-	
+
 	public Set<String> availableNodeTables() {
 		return availableNodeTables;
 	}
@@ -158,6 +158,7 @@ public class DBNetwork extends BrowsableNetwork {
 		return connected;
 	}
 
+	
 	/**
 	 * Public method that returns the database schema name of the connection.
 	 * 
@@ -257,21 +258,22 @@ public class DBNetwork extends BrowsableNetwork {
 			derivedNodeTable = false;
 		} else {
 			// If no node table exists, then use a derived table
-			// that contains the IDs of the nodes			
+			// that contains the IDs of the nodes
 			derivedNodeTable = true;
 			nodeTable = "(SELECT DISTINCT id_origin AS id FROM " + edgeTable
 					+ " UNION SELECT DISTINCT id_dest AS id FROM " + edgeTable
 					+ ") derived_node_table";
 		}
 	}
-	
+
 	public boolean isView(String tableName) {
 		boolean isView = false;
 		try {
 			DatabaseMetaData metaData = conn.getMetaData();
-			ResultSet rs = metaData.getTables(null, schemaName, tableName, null);
-			while(rs.next()) {
-				if(rs.getString("TABLE_TYPE").compareToIgnoreCase("VIEW") == 0 ) {
+			ResultSet rs = metaData
+					.getTables(null, schemaName, tableName, null);
+			while (rs.next()) {
+				if (rs.getString("TABLE_TYPE").compareToIgnoreCase("VIEW") == 0) {
 					isView = true;
 				}
 			}
@@ -398,13 +400,16 @@ public class DBNetwork extends BrowsableNetwork {
 		try {
 			st = conn.createStatement();
 			ResultSet rs = st.executeQuery(queryString);
-			rs.last();
-			if (rs.getRow() == 1) {
+			int count = 0;
+			//there should be at most 1 row since the id is a primary key
+			while(rs.next())
+				count++;
+			if (count == 1) {
 				return true;
 			} else {
 				return false;
 			}
-		} catch (SQLException e) {
+		} catch (SQLException e) {			
 			JOptionPane.showMessageDialog(null, e.getMessage(), "Error",
 					JOptionPane.ERROR_MESSAGE);
 			e.printStackTrace();

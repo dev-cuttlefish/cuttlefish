@@ -40,6 +40,7 @@ import ch.ethz.sg.cuttlefish.gui2.toolbars.DBToolbar;
 import ch.ethz.sg.cuttlefish.misc.Observer;
 import ch.ethz.sg.cuttlefish.misc.Subject;
 import ch.ethz.sg.cuttlefish.networks.BrowsableNetwork;
+import ch.ethz.sg.cuttlefish.networks.CxfDBNetwork;
 import ch.ethz.sg.cuttlefish.networks.DBNetwork;
 import ch.ethz.sg.cuttlefish.networks.InteractiveCxfNetwork;
 
@@ -52,6 +53,7 @@ public class OpenMenu extends AbstractMenu implements Subject {
 	private JMenuItem cxfNetwork;
 	private JMenuItem dbNetwork;
 	private JMenuItem interactiveNetwork;
+	private JMenuItem exploreNetwork;
 	private JMenuItem pajekNetwork;
 	private JMenuItem graphmlNetwork;
 	private JMenuItem cffNetwork;
@@ -71,6 +73,7 @@ public class OpenMenu extends AbstractMenu implements Subject {
 	private void initialize() {
 		cxfNetwork = new JMenuItem("Cxf network");
 		interactiveNetwork = new JMenuItem("Interactive network");
+		exploreNetwork = new JMenuItem("Explore cxf network");
 		dbNetwork = new JMenuItem("Database network");
 		pajekNetwork = new JMenuItem("Pajek network");
 		graphmlNetwork = new JMenuItem("GraphML network");
@@ -80,12 +83,15 @@ public class OpenMenu extends AbstractMenu implements Subject {
 		
 		cxfNetwork.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, ActionEvent.ALT_MASK));
 		cxfNetwork.setMnemonic('C');
+		exploreNetwork.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_E, ActionEvent.ALT_MASK));
+		cxfNetwork.setMnemonic('E');
 		dbNetwork.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D, ActionEvent.ALT_MASK));
 		dbNetwork.setMnemonic('D');
 		
 		networkClassMap = new HashMap<JMenuItem, Class<?> >();
 		try {
 			networkClassMap.put(cxfNetwork, Class.forName("ch.ethz.sg.cuttlefish.networks.CxfNetwork") );
+			networkClassMap.put(exploreNetwork, Class.forName("ch.ethz.sg.cuttlefish.networks.CxfDBNetwork") );			
 			networkClassMap.put(dbNetwork, Class.forName("ch.ethz.sg.cuttlefish.networks.DBNetwork") );
 			networkClassMap.put(interactiveNetwork, Class.forName("ch.ethz.sg.cuttlefish.networks.InteractiveCxfNetwork") );
 			networkClassMap.put(pajekNetwork, Class.forName("ch.ethz.sg.cuttlefish.networks.PajekNetwork") );
@@ -110,6 +116,7 @@ public class OpenMenu extends AbstractMenu implements Subject {
 		
 		
 		this.add(cxfNetwork);
+		this.add(exploreNetwork);
 		this.add(dbNetwork);
 		this.add(interactiveNetwork);
 		this.add(pajekNetwork);
@@ -124,6 +131,15 @@ public class OpenMenu extends AbstractMenu implements Subject {
 				networkSelected(cxfNetwork);				
 				toolbars.getSimulationToolbar().setVisible(false);
 				toolbars.getDBToolbar().setVisible(false);
+				notifyObservers();
+			}
+		});
+		exploreNetwork.addActionListener(new ActionListener() {			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				networkSelected(exploreNetwork);
+				toolbars.getSimulationToolbar().setVisible(false);
+				toolbars.getDBToolbar().setVisible(true);
 				notifyObservers();
 			}
 		});
@@ -201,6 +217,9 @@ public class OpenMenu extends AbstractMenu implements Subject {
 		}
 		if(network instanceof DBNetwork) {
 			new Thread(new DBToolbarInitializer(toolbars.getDBToolbar(), (DBNetwork)network) ).start();
+		}
+		if(network instanceof CxfDBNetwork) {
+			System.out.println("initialize the toolbar somehow");
 		}
 		network.graphicalInit(new NetworkInitializer() );
 		networkPanel.setNetwork(network);
