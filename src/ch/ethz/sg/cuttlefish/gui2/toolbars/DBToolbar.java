@@ -36,6 +36,7 @@ import javax.swing.JOptionPane;
 
 import ch.ethz.sg.cuttlefish.gui2.NetworkPanel;
 import ch.ethz.sg.cuttlefish.misc.Vertex;
+import ch.ethz.sg.cuttlefish.networks.CxfDBNetwork;
 import ch.ethz.sg.cuttlefish.networks.DBNetwork;
 
 public class DBToolbar extends AbstractToolbar {
@@ -69,6 +70,11 @@ public class DBToolbar extends AbstractToolbar {
 	public void setVisible(boolean b) {
 		if (networkPanel.getNetwork() instanceof DBNetwork) {
 			super.setVisible(b);
+			if(networkPanel.getNetwork() instanceof CxfDBNetwork) {
+				networkNames.setVisible(false);
+				setExploreButtonsEnabled(true);
+				setNetworkButtonsEnabled(true);
+			}
 			enabled = true;
 		} else {
 			super.setVisible(false);
