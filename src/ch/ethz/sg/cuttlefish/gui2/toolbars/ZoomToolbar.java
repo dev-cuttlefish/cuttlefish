@@ -56,6 +56,9 @@ public class ZoomToolbar extends AbstractToolbar {
 		zoomInButton = new JButton(new ImageIcon(getClass().getResource(zoomInIconFile)));
 		zoomOutButton = new JButton(new ImageIcon(getClass().getResource(zoomOutIconFile)));
 		refreshButton = new JButton(new ImageIcon(getClass().getResource(refreshIconFile)));
+		zoomInButton.setToolTipText("Zoom in");
+		zoomOutButton.setToolTipText("Zoom out");
+		refreshButton.setToolTipText("Refresh layout");
 		this.add(zoomInButton);
 		this.add(zoomOutButton);
 		this.add(refreshButton);

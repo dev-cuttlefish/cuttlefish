@@ -57,7 +57,7 @@ public class ViewMenu extends AbstractMenu implements ItemListener, Observer{
 		mouseToolbarCheckbox = new JCheckBoxMenuItem("Mouse toolbar");
 		zoomToolbarCheckbox = new JCheckBoxMenuItem("Zoom toolbar");
 		simulationToolbarCheckbox = new JCheckBoxMenuItem("Simulation toolbar");
-		dbToolbarCheckbox = new JCheckBoxMenuItem("Database toolbar");
+		dbToolbarCheckbox = new JCheckBoxMenuItem("Explore toolbar");
 		
 		mouseToolbarCheckbox.addItemListener(this);
 		zoomToolbarCheckbox.addItemListener(this);

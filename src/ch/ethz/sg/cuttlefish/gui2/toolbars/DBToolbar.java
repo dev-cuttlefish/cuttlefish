@@ -31,7 +31,6 @@ import java.util.Collection;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 import ch.ethz.sg.cuttlefish.gui2.NetworkPanel;
@@ -52,8 +51,8 @@ public class DBToolbar extends AbstractToolbar {
 	private JButton shrink = null;
 	private JButton shrinkBack = null;
 	private JComboBox networkNames = null;
-	private JFrame exploreNodeFrame = null;
-	private JFrame exploreNetworkFrame = null;
+	private DBExploreNode exploreNodeFrame = null;
+	private DBExploreNetwork exploreNetworkFrame = null;
 	private boolean enabled = false;
 
 	private static String expandIcon = "icons/plus.png";
@@ -68,8 +67,9 @@ public class DBToolbar extends AbstractToolbar {
 
 	@Override
 	public void setVisible(boolean b) {
-		if (networkPanel.getNetwork() instanceof DBNetwork) {
+		if (networkPanel.getNetwork() instanceof DBNetwork) {			
 			super.setVisible(b);
+			networkNames.setVisible(true);
 			if(networkPanel.getNetwork() instanceof CxfDBNetwork) {
 				networkNames.setVisible(false);
 				setExploreButtonsEnabled(true);
@@ -106,13 +106,13 @@ public class DBToolbar extends AbstractToolbar {
 		}
 	}
 
-	private JFrame getExploreNodeFrame() {
+	private DBExploreNode getExploreNodeFrame() {
 		if (exploreNodeFrame == null)
 			exploreNodeFrame = new DBExploreNode(networkPanel);
 		return exploreNodeFrame;
 	}
 
-	private JFrame getExploreNetworkFrame() {
+	private DBExploreNetwork getExploreNetworkFrame() {
 		if (exploreNetworkFrame == null)
 			exploreNetworkFrame = new DBExploreNetwork(networkPanel);
 		return exploreNetworkFrame;
@@ -145,6 +145,11 @@ public class DBToolbar extends AbstractToolbar {
 		setNetworkButtonsEnabled(false);
 		networkNames = new JComboBox();
 		networkNames.setEditable(false);
+				
+		expand.setToolTipText("Expand node");
+		expandBack.setToolTipText("Expand back node");
+		shrink.setToolTipText("Shrink node");
+		shrinkBack.setToolTipText("Shrink back node");
 
 		networkNames.addItemListener(new ItemListener() {
 			@Override
@@ -173,6 +178,7 @@ public class DBToolbar extends AbstractToolbar {
 		exploreNetwork.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				getExploreNetworkFrame().update();
 				getExploreNetworkFrame().setVisible(true);
 			}
 		});
@@ -180,6 +186,7 @@ public class DBToolbar extends AbstractToolbar {
 		exploreNode.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				getExploreNodeFrame().update();
 				getExploreNodeFrame().setVisible(true);
 			}
 		});

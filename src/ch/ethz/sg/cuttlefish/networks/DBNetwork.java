@@ -901,7 +901,14 @@ public class DBNetwork extends BrowsableNetwork {
 	 * @return The number of edges
 	 */
 	public int countEdges(Set<Integer> originNodes, Set<Integer> destNodes) {
-		StringBuilder originNodesList = new StringBuilder("(");
+		/*
+		 * if the sets of origin or destination nodes is zero, then the
+		 * set of edges is definitely 0.
+		 */
+		if(originNodes.size() == 0 && destNodes.size() == 0)
+			return 0;
+		
+		StringBuilder originNodesList = new StringBuilder("(");		
 		for (int nodeId : originNodes) {
 			originNodesList.append(Integer.toString(nodeId) + ',');
 		}
