@@ -47,7 +47,6 @@ public class DBExploreNode extends JFrame {
 	 */
 	private static final long serialVersionUID = -8502348690688977278L;
 	private NetworkPanel networkPanel;
-	private DBNetwork dbNetwork;
 	private JFrame exploreNode;
 	private JLabel nodeInfo;
 	private JLabel distanceInfo;
@@ -70,11 +69,14 @@ public class DBExploreNode extends JFrame {
 		exploreNode = this;
 		nodeInputValid = false;
 		distanceInputValid = false;
-		dbNetwork = (DBNetwork)networkPanel.getNetwork();
 		this.setTitle("Explore node");
 		this.setSize(282, 261);
 		this.setResizable(false);
 		initialize();		
+	}
+	
+	private DBNetwork getDBNetwork() {
+		return (DBNetwork)networkPanel.getNetwork();
 	}
 	
 	/**
@@ -93,8 +95,13 @@ public class DBExploreNode extends JFrame {
 	/**
 	 * 
 	 */
-	private void countReachableNodes() {
-		(new NodesCounter(dbNetwork, nodesCountLabel, linksCountLabel, warningLabel, Integer.parseInt(nodeField.getText()), Integer.parseInt(distanceField.getText() ))).execute();
+	public void countReachableNodes() {
+		try { 
+			(new NodesCounter(getDBNetwork(), nodesCountLabel, linksCountLabel, warningLabel, Integer.parseInt(nodeField.getText()), Integer.parseInt(distanceField.getText() ))).execute();
+		} catch (NumberFormatException e) {
+			nodesCountLabel.setText("Selected nodes: 0");
+			linksCountLabel.setText("Selected links: 0");
+		}
 	}
 	
 	/**
@@ -122,13 +129,20 @@ public class DBExploreNode extends JFrame {
 		checkOkEnabled();
 	}
 	
+	public void update() {
+		nodesCountLabel.setText("Selected nodes: 0");
+		linksCountLabel.setText("Selected links: 0");
+		checkNodeInput();
+		checkDistanceInput();
+	}
+	
 	/**
 	 * This method checks if the Node ID selected exists
 	 * in the database. If not, it displays a message
 	 * "Invalid ID".
 	 */
 	private void checkNodeInput() {
-		boolean nodeExists  = dbNetwork.checkNodeId(nodeField.getText());
+		boolean nodeExists  = getDBNetwork().checkNodeId(nodeField.getText());
 		if(nodeExists == false) {
 			nodeInputValid = false;
 			nodeField.setBorder(BorderFactory.createLineBorder(Color.red));
@@ -183,9 +197,9 @@ public class DBExploreNode extends JFrame {
 		ok.addActionListener(new ActionListener() {			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				dbNetwork.setNodeFilter("");
-				dbNetwork.setEdgeFilter("");
-				dbNetwork.emptyNetwork();				
+				getDBNetwork().setNodeFilter("");
+				getDBNetwork().setEdgeFilter("");
+				getDBNetwork().emptyNetwork();				
 				boolean forward = true;				
 				try{
 					((DBNetwork) networkPanel.getNetwork()).emptyNetwork();
@@ -193,7 +207,7 @@ public class DBExploreNode extends JFrame {
 					//Somebody used the treelayout and changed the
 					//network in networkPanel to a forest network, which
 					//is needed for the tree layout
-					networkPanel.setNetwork(dbNetwork);					
+					networkPanel.setNetwork(getDBNetwork());					
 				}
 				int distance = Integer.parseInt(distanceField.getText());				
 				((DBNetwork) networkPanel.getNetwork()).extendNeighborhood(Integer.parseInt(nodeField.getText()), distance, forward);
@@ -240,7 +254,7 @@ public class DBExploreNode extends JFrame {
 	        nodesCountLabel.setText("Selected nodes: ");
 	        linksCountLabel.setText("Selected links: ");
 	        warningLabel.setForeground(Color.RED);
-	        warningLabel.setText("");
+	        warningLabel.setText("");	       	       
 
 
 	        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());

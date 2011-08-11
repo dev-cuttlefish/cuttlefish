@@ -47,7 +47,6 @@ public class DBExploreNetwork extends JFrame {
 	private static Map<String, String> edgeFields;
 	private static String[] operators = {"=", "<", ">", "contains"};	
 	private NetworkPanel networkPanel;
-	private DBNetwork dbNetwork;
 	private JFrame exploreNetwork;
 	private String vertexSQLFilter = "";
 	private String edgeSQLFilter = "";
@@ -79,15 +78,24 @@ public class DBExploreNetwork extends JFrame {
 		this.setLocationRelativeTo(networkPanel);
 		this.setSize(534,390);
 		this.networkPanel = networkPanel;
-		dbNetwork = (DBNetwork)networkPanel.getNetwork();
 		exploreNetwork = this;
 		this.setTitle("Explore network");		
 		initialize();
 		countSelected();
 	}
+	
+	private DBNetwork getDBNetwork() {
+		return (DBNetwork)networkPanel.getNetwork();
+	}
 
-	public void countSelected() {
-		(new SelectedCounter(dbNetwork, vertexInfo, edgeInfo, warningInfo)).execute();
+	private void countSelected() {
+		getDBNetwork().setNodeFilter(vertexSQLFilter);
+		getDBNetwork().setEdgeFilter(edgeSQLFilter);
+		(new SelectedCounter(getDBNetwork(), vertexInfo, edgeInfo, warningInfo)).execute();
+	}
+	
+	public void update() {
+		countSelected();
 	}
 	
 	private void initialize() {		
@@ -137,7 +145,7 @@ public class DBExploreNetwork extends JFrame {
 					vertexSQLFilter += " AND " + newFilter;
 				else
 					vertexSQLFilter += newFilter;
-				dbNetwork.setNodeFilter(vertexSQLFilter);
+				getDBNetwork().setNodeFilter(vertexSQLFilter);
 				countSelected();
 			}
 		});
@@ -161,7 +169,7 @@ public class DBExploreNetwork extends JFrame {
 					edgeSQLFilter += " AND " + newFilter;
 				else
 					edgeSQLFilter += newFilter;
-				dbNetwork.setEdgeFilter(edgeSQLFilter);
+				getDBNetwork().setEdgeFilter(edgeSQLFilter);
 				countSelected();
 			}
 		});
@@ -171,7 +179,7 @@ public class DBExploreNetwork extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				vertexSQLFilter = "";
 				vertexFilterList.setText("");
-				dbNetwork.setNodeFilter("");
+				getDBNetwork().setNodeFilter("");
 				countSelected();
 			}
 		});
@@ -181,7 +189,7 @@ public class DBExploreNetwork extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				edgeSQLFilter = "";
 				edgeFilterList.setText("");
-				dbNetwork.setEdgeFilter("");
+				getDBNetwork().setEdgeFilter("");
 				countSelected();
 			}
 		});
@@ -189,21 +197,21 @@ public class DBExploreNetwork extends JFrame {
 		ok.addActionListener(new ActionListener() {			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				dbNetwork.emptyNetwork();
-				dbNetwork.setNodeFilter("");
-				dbNetwork.setEdgeFilter("");
+				getDBNetwork().emptyNetwork();
+				getDBNetwork().setNodeFilter("");
+				getDBNetwork().setEdgeFilter("");
 				if(vertexSQLFilter.length() > 0)
-					dbNetwork.setNodeFilter(vertexSQLFilter);
+					getDBNetwork().setNodeFilter(vertexSQLFilter);
 				if(edgeSQLFilter.length() > 0)
-					dbNetwork.setEdgeFilter(edgeSQLFilter);
-				String nodeSQLQuery = "SELECT * FROM " + dbNetwork.getNodeTable();
-				dbNetwork.nodeQuery(nodeSQLQuery);
+					getDBNetwork().setEdgeFilter(edgeSQLFilter);
+				String nodeSQLQuery = "SELECT * FROM " + getDBNetwork().getNodeTable();
+				getDBNetwork().nodeQuery(nodeSQLQuery);
 				networkPanel.onNetworkChange();
 				networkPanel.getNetworkLayout().reset();
 				networkPanel.repaintViewer();
 				networkPanel.stopLayout();
-				dbNetwork.setNodeFilter("");
-				dbNetwork.setEdgeFilter("");
+				getDBNetwork().setNodeFilter("");
+				getDBNetwork().setEdgeFilter("");
 				exploreNetwork.setVisible(false);
 			}
 		});

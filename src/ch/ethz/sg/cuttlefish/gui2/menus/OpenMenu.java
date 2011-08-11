@@ -40,7 +40,6 @@ import ch.ethz.sg.cuttlefish.gui2.toolbars.DBToolbar;
 import ch.ethz.sg.cuttlefish.misc.Observer;
 import ch.ethz.sg.cuttlefish.misc.Subject;
 import ch.ethz.sg.cuttlefish.networks.BrowsableNetwork;
-import ch.ethz.sg.cuttlefish.networks.CxfDBNetwork;
 import ch.ethz.sg.cuttlefish.networks.DBNetwork;
 import ch.ethz.sg.cuttlefish.networks.InteractiveCxfNetwork;
 
@@ -217,9 +216,6 @@ public class OpenMenu extends AbstractMenu implements Subject {
 		}
 		if(network instanceof DBNetwork) {
 			new Thread(new DBToolbarInitializer(toolbars.getDBToolbar(), (DBNetwork)network) ).start();
-		}
-		if(network instanceof CxfDBNetwork) {
-			System.out.println("initialize the toolbar somehow");
 		}
 		network.graphicalInit(new NetworkInitializer() );
 		networkPanel.setNetwork(network);
