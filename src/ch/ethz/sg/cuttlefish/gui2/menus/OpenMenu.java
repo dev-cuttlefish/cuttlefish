@@ -90,7 +90,7 @@ public class OpenMenu extends AbstractMenu implements Subject {
 		networkClassMap = new HashMap<JMenuItem, Class<?> >();
 		try {
 			networkClassMap.put(cxfNetwork, Class.forName("ch.ethz.sg.cuttlefish.networks.CxfNetwork") );
-			networkClassMap.put(exploreNetwork, Class.forName("ch.ethz.sg.cuttlefish.networks.CxfDBNetwork") );			
+			networkClassMap.put(exploreNetwork, Class.forName("ch.ethz.sg.cuttlefish.networks.ExploreNetwork") );			
 			networkClassMap.put(dbNetwork, Class.forName("ch.ethz.sg.cuttlefish.networks.DBNetwork") );
 			networkClassMap.put(interactiveNetwork, Class.forName("ch.ethz.sg.cuttlefish.networks.InteractiveCxfNetwork") );
 			networkClassMap.put(pajekNetwork, Class.forName("ch.ethz.sg.cuttlefish.networks.PajekNetwork") );
