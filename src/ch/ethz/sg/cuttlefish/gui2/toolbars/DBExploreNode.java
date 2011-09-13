@@ -53,6 +53,8 @@ public class DBExploreNode extends JFrame {
 	private JLabel nodesCountLabel;
 	private JLabel linksCountLabel;
 	private JLabel warningLabel;
+	private JLabel info;
+	private JLabel info2;
 	private boolean nodeInputValid;
 	private boolean distanceInputValid;
 	private JLabel nodeLabel;
@@ -61,6 +63,8 @@ public class DBExploreNode extends JFrame {
 	private JTextField distanceField;
 	private JButton ok;
 	private JButton cancel;
+	
+
 	
 	
 	public DBExploreNode(NetworkPanel networkPanel) {
@@ -196,7 +200,7 @@ public class DBExploreNode extends JFrame {
 		
 		ok.addActionListener(new ActionListener() {			
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(ActionEvent e) {			
 				getDBNetwork().setNodeFilter("");
 				getDBNetwork().setEdgeFilter("");
 				getDBNetwork().emptyNetwork();				
@@ -237,6 +241,8 @@ public class DBExploreNode extends JFrame {
 	        nodesCountLabel = new javax.swing.JLabel();
 	        linksCountLabel = new javax.swing.JLabel();
 	        warningLabel = new javax.swing.JLabel();
+	        info = new javax.swing.JLabel();
+	        info2 = new javax.swing.JLabel();
 
 	        setDefaultCloseOperation(javax.swing.WindowConstants.HIDE_ON_CLOSE);
 	        nodeLabel.setText("Node Id");
@@ -254,11 +260,13 @@ public class DBExploreNode extends JFrame {
 	        nodesCountLabel.setText("Selected nodes: ");
 	        linksCountLabel.setText("Selected links: ");
 	        warningLabel.setForeground(Color.RED);
-	        warningLabel.setText("");	       	       
-
+	        warningLabel.setText("");	 
+	        info.setText("Extract the network downstream from a source");
+	        info2.setText("node down to a given degree of separation");
 
 	        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
 	        getContentPane().setLayout(layout);
+	        
 	        layout.setHorizontalGroup(
 	            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
 	            .addGroup(layout.createSequentialGroup()
@@ -272,7 +280,7 @@ public class DBExploreNode extends JFrame {
 	                            .addComponent(nodeLabel)
 	                            .addComponent(distanceLabel))
 	                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-	                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+	                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)	                        		
 	                            .addComponent(nodeField)
 	                            .addComponent(distanceField, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE))
 	                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -283,13 +291,23 @@ public class DBExploreNode extends JFrame {
 	                        .addGap(38, 38, 38)
 	                        .addComponent(ok)
 	                        .addGap(18, 18, 18)
-	                        .addComponent(cancel)))
+	                        .addComponent(cancel))
+	                    .addGroup(layout.createSequentialGroup()
+	                    	.addComponent(info))
+                    	.addGroup(layout.createSequentialGroup()
+    	                    .addComponent(info2)))
+	                     
 	                .addContainerGap())
 	        );
 	        layout.setVerticalGroup(
 	            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
 	            .addGroup(layout.createSequentialGroup()
 	                .addContainerGap()
+	                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+	                    .addComponent(info))
+	                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+	                    .addComponent(info2))	                    
+	                .addGap(18,18,18)
 	                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
 	                    .addComponent(nodeLabel)
 	                    .addComponent(nodeField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -349,5 +367,20 @@ public class DBExploreNode extends JFrame {
 				warningInfo.setText("");
 			return null;
 		}
+	}
+	
+	// The interface for the functions below can be used for initialization, also used in the applet
+	public void setNodeField(String s) {
+		nodeField.setText(s);
+	}
+	
+	public void setDistanceField(String s) {
+		distanceField.setText(s);
+	}
+	
+	public void clickOk() {
+		ok.setEnabled(true);
+		ok.doClick();
+		ok.setEnabled(false);
 	}
 }

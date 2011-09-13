@@ -51,7 +51,7 @@ public class DBToolbar extends AbstractToolbar {
 	private JButton shrink = null;
 	private JButton shrinkBack = null;
 	private JComboBox networkNames = null;
-	private DBExploreNode exploreNodeFrame = null;
+	private DBExploreNode exploreNodeFrame = new DBExploreNode(networkPanel);;
 	private DBExploreNetwork exploreNetworkFrame = null;
 	private boolean enabled = false;
 
@@ -150,6 +150,8 @@ public class DBToolbar extends AbstractToolbar {
 		expandBack.setToolTipText("Expand back node");
 		shrink.setToolTipText("Shrink node");
 		shrinkBack.setToolTipText("Shrink back node");
+		exploreNetwork.setToolTipText("Filter a network using node and edge filters");
+		exploreNode.setToolTipText("Explore the neighborhood of a node");
 
 		networkNames.addItemListener(new ItemListener() {
 			@Override
@@ -247,6 +249,10 @@ public class DBToolbar extends AbstractToolbar {
 			}
 		});
 
+	}
+	
+	public DBExploreNode exploreNodeFrame(){
+		return exploreNodeFrame;
 	}
 
 }
