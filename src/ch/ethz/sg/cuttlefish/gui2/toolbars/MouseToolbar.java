@@ -49,6 +49,8 @@ public class MouseToolbar extends AbstractToolbar {
 	public MouseToolbar(NetworkPanel networkPanel) {
 		super(networkPanel);
 		initialize();
+		pickingButton.doClick();
+		editingButton.doClick();
 		transformingButton.doClick();
 	}
 	
@@ -60,6 +62,10 @@ public class MouseToolbar extends AbstractToolbar {
 		this.add(transformingButton);
 		this.add(pickingButton);
 		this.add(editingButton);
+		
+		transformingButton.setToolTipText("Mouse mode used to move the network around the screen");
+		pickingButton.setToolTipText("Mouse mode used to select nodes");
+		editingButton.setToolTipText("Mouse mode used to add new nodes");		
 		
 		transformingButton.addActionListener(new ActionListener() {			
 			@Override

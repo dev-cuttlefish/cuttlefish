@@ -54,7 +54,7 @@
   	  filesetmanifest="merge"
   	  duplicate="preserve">
           <manifest>
-            <attribute name="Main-Class" value="ch.ethz.sg.cuttlefish.gui2.Cuttlefish"/>
+            <attribute name="Main-Class" value="ch.ethz.sg.cuttlefish.gui2.applet.Cuttlefish"/>
           </manifest>
   	  <fileset dir="${classes}"/>
   	  <fileset dir="${src}">

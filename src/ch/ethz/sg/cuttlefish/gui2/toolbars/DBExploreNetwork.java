@@ -71,6 +71,7 @@ public class DBExploreNetwork extends JFrame {
     private javax.swing.JButton ok;
     private javax.swing.JTextField vertexFilter;
     private javax.swing.JLabel vertexLabel;
+    private javax.swing.JLabel info;
     private javax.swing.JComboBox vertexOperator;
     private javax.swing.JComboBox vertexProperties;
 
@@ -79,7 +80,7 @@ public class DBExploreNetwork extends JFrame {
 		this.setSize(534,390);
 		this.networkPanel = networkPanel;
 		exploreNetwork = this;
-		this.setTitle("Explore network");		
+		this.setTitle("Filter network");		
 		initialize();
 		countSelected();
 	}
@@ -249,6 +250,7 @@ public class DBExploreNetwork extends JFrame {
         edgeLabel = new javax.swing.JLabel();
         edgeInfo = new javax.swing.JLabel();
         warningInfo = new javax.swing.JLabel();
+        info = new javax.swing.JLabel();
         clearVertexFilters = new javax.swing.JButton();
         clearEdgeFilters = new javax.swing.JButton();
 
@@ -300,6 +302,8 @@ public class DBExploreNetwork extends JFrame {
 
         vertexFilter.setText("");
         vertexFilter.setName("vertexFilter");
+        
+        info.setText("The resulting network contains only nodes and links matching the filters below");
 
         edgeFilter.setText("");
         edgeFilter.setName("edgeFilter");
@@ -330,7 +334,7 @@ public class DBExploreNetwork extends JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGap(25, 25, 25)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
+                    .addGroup(layout.createSequentialGroup()                    	
                         .addGap(2, 2, 2)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
@@ -358,7 +362,8 @@ public class DBExploreNetwork extends JFrame {
                             .addGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(vertexProperties, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(vertexLabel))
+                                    .addComponent(vertexLabel)
+                                    )
                                 .addGap(18, 18, 18)
                                 .addComponent(vertexOperator, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
@@ -374,11 +379,16 @@ public class DBExploreNetwork extends JFrame {
                 .addGap(18, 18, 18)
                 .addComponent(cancel)
                 .addContainerGap(191, Short.MAX_VALUE))
+             .addGroup(layout.createSequentialGroup()
+              .addGap(18, 18, 18)
+             .addComponent(info))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(28, 28, 28)
+                .addComponent(info)
+                .addGap(18, 18, 18)
                 .addComponent(vertexLabel)
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
