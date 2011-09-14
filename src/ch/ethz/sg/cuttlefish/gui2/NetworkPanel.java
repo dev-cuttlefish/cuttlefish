@@ -95,6 +95,8 @@ public class NetworkPanel  extends JPanel implements Subject, ItemListener,INetw
 	private String layoutType = null;
 	private List<Observer> observers = null;
 	private StatusBar statusBar = null;
+	private int width;
+	private int height;
 	
 	/*Factories*/
 	private VertexFactory vertexFactory = null;
@@ -102,6 +104,15 @@ public class NetworkPanel  extends JPanel implements Subject, ItemListener,INetw
 	
 	public NetworkPanel() {		
 		super();
+		width=1096;
+		height=200;
+		initialize();
+	}
+	
+	public NetworkPanel(int width, int height) {		
+		super();
+		this.width = width;
+		this.height = height;
 		initialize();
 	}
 	
@@ -121,7 +132,7 @@ public class NetworkPanel  extends JPanel implements Subject, ItemListener,INetw
 					}
 				}
 			}
-			visualizationViewer = new VisualizationViewer<Vertex, Edge>(layout);
+			visualizationViewer = new VisualizationViewer<Vertex, Edge>(layout, new Dimension(width, height));
 		}		
 		return visualizationViewer;
 	}
@@ -144,7 +155,7 @@ public class NetworkPanel  extends JPanel implements Subject, ItemListener,INetw
  
 		this.setLayout(new BorderLayout());
 		this.add(getStatusBar(), BorderLayout.SOUTH);
-		this.setSize(1096, 200);
+		this.setSize(width, height);
 		this.add(getVisualizationViewer(), BorderLayout.CENTER);
 		
 		

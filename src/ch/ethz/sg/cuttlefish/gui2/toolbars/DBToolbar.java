@@ -146,10 +146,10 @@ public class DBToolbar extends AbstractToolbar {
 		networkNames = new JComboBox();
 		networkNames.setEditable(false);
 				
-		expand.setToolTipText("Expand node");
-		expandBack.setToolTipText("Expand back node");
-		shrink.setToolTipText("Shrink node");
-		shrinkBack.setToolTipText("Shrink back node");
+		expand.setToolTipText("Expand node (add all nodes connected to the selected node)");
+		expandBack.setToolTipText("Expand back node (add all nodes that are connected to the selected node");
+		shrink.setToolTipText("Shrink node (remove all nodes connected to the selected node)");
+		shrinkBack.setToolTipText("Shrink back node (remove all nodes that are connected to the selected node)");
 		exploreNetwork.setToolTipText("Filter a network using node and edge filters");
 		exploreNode.setToolTipText("Explore the neighborhood of a node");
 
