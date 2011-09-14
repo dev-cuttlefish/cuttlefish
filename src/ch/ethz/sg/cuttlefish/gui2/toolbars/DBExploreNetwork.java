@@ -259,49 +259,61 @@ public class DBExploreNetwork extends JFrame {
 
         vertexProperties.setModel(new javax.swing.DefaultComboBoxModel(vertexFields.keySet().toArray()));
         vertexProperties.setName("vertexProperties");
+        vertexProperties.setToolTipText("Select a node property to create a filter");
 
         ok.setText("OK");
-        ok.setName("ok");
+        ok.setName("ok");        
 
         cancel.setText("Cancel");
         cancel.setName("cancel");
 
         vertexInfo.setText("Selected nodes: ");
         vertexInfo.setName("info");
+        vertexInfo.setToolTipText("This is the number of nodes matching the given filters");
 
         vertexOperator.setModel(new javax.swing.DefaultComboBoxModel(operators));
         vertexOperator.setName("vertexOperator");
+        vertexOperator.setToolTipText("The node filter comparison operator");
 
         edgeOperator.setModel(new javax.swing.DefaultComboBoxModel(operators));
         edgeOperator.setName("edgeOperator");
+        edgeOperator.setToolTipText("The link filter comparison operator");
 
         edgeProperties.setModel(new javax.swing.DefaultComboBoxModel(edgeFields.keySet().toArray()));
         edgeProperties.setName("edgeProperties");
+        edgeProperties.setToolTipText("Select a link property to create a filter");
 
         addVertexFilter.setText("Add");
         addVertexFilter.setName("addVertexFilter");
+        addVertexFilter.setToolTipText("Click 'Add' to accept the entered node filter");
 
         addEdgeFilter.setText("Add");
         addEdgeFilter.setName("addEdgeFilter");
+        addEdgeFilter.setToolTipText("Click 'Add' to accept the entered link filter");
 
         nodeFilters.setName("nodeFilters");
+        nodeFilters.setToolTipText("Enter a value");
         vertexFilterList.setColumns(20);
         vertexFilterList.setEditable(false);
         vertexFilterList.setRows(2);
         vertexFilterList.setText("");
         vertexFilterList.setName("vertexFilterList");
+        vertexFilterList.setToolTipText("This is the list of entered node filters");
         nodeFilters.setViewportView(vertexFilterList);
 
         edgeFilters.setName("edgeFilters");
+        edgeFilter.setToolTipText("Enter a value");
         edgeFilterList.setColumns(20);
         edgeFilterList.setEditable(false);
         edgeFilterList.setRows(2);
         edgeFilterList.setText("");
         edgeFilterList.setName("edgeFilterList");
+        edgeFilterList.setToolTipText("This is the list of entered link filters");
         edgeFilters.setViewportView(edgeFilterList);
 
         vertexFilter.setText("");
         vertexFilter.setName("vertexFilter");
+        vertexFilter.setToolTipText("Enter a value");
         
         info.setText("The resulting network contains only nodes and links matching the filters below");
 
@@ -316,6 +328,7 @@ public class DBExploreNetwork extends JFrame {
 
         edgeInfo.setText("Selected links: ");
         edgeInfo.setName("info1");
+        edgeInfo.setToolTipText("This is the number links that match the given filters");
 
         warningInfo.setForeground(Color.RED);
         warningInfo.setText("");
@@ -323,9 +336,11 @@ public class DBExploreNetwork extends JFrame {
 
         clearVertexFilters.setText("Clear");
         clearVertexFilters.setName("clearVertexFilters");
+        clearVertexFilters.setToolTipText("Click here to remove all node filters");
 
         clearEdgeFilters.setText("Clear");
         clearEdgeFilters.setName("clearEdgeFilters");
+        clearEdgeFilters.setToolTipText("Click here to remove all link filters");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);

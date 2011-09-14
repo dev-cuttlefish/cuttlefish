@@ -245,11 +245,13 @@ public class DBExploreNode extends JFrame {
 	        info2 = new javax.swing.JLabel();
 
 	        setDefaultCloseOperation(javax.swing.WindowConstants.HIDE_ON_CLOSE);
-	        nodeLabel.setText("Node Id");
+	        nodeLabel.setText("Source ID");
 	        distanceLabel.setText("Distance");
 	        nodeField.setText("");
+	        nodeField.setToolTipText("Enter the ID of the source node");
 	        distanceField.setText("");
 	        distanceField.setName("distanceField");
+	        distanceField.setToolTipText("The degree of separation");
 
 	        distanceInfo.setForeground(Color.RED);
 	        distanceInfo.setText("");
