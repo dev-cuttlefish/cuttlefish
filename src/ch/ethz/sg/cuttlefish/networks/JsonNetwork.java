@@ -26,6 +26,7 @@ import java.awt.Color;
 import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 
 import java.util.Map;
 
@@ -54,19 +55,23 @@ public class JsonNetwork extends BrowsableNetwork {
 	 * Json file
 	 * @param jsonFile
 	 */
-	public JsonNetwork(String jsonNodes, String jsonEdges) {
-		load(jsonNodes, jsonEdges);
+	public JsonNetwork(String json) {
+		load(json);
 	}
 	
 	/**
 	 * Read the Json data and load the network
 	 * @param jsonFile
 	 */
-	private void load(String jsonNodesStr, String jsonEdgesStr) {
+	private void load(String json) {
 		Gson gson = new Gson();
 
-		Type nodeType = new TypeToken<Collection<JsonNode>>(){}.getType();
-		Collection<JsonNode> jsonNodes = gson.fromJson(jsonNodesStr, nodeType);
+		Type type = new TypeToken<JsonData>(){}.getType();
+		JsonData jsonData = gson.fromJson(json, type);
+
+		Collection<JsonNode> jsonNodes = jsonData.nodes;
+		Collection<JsonEdge> jsonEdges = jsonData.edges;
+		
 		// we need this map when adding the edges
 		Map<Integer, Vertex> idToNode = new HashMap<Integer, Vertex>();
 		// Add all nodes to the network
@@ -131,9 +136,7 @@ public class JsonNetwork extends BrowsableNetwork {
 			//add to the network
 			addVertex(v);
 		}
-		
-		Type edgeType = new TypeToken<Collection<JsonEdge>>(){}.getType();
-		Collection<JsonEdge> jsonEdges = gson.fromJson(jsonEdgesStr, edgeType);
+				
 		for(JsonEdge jsonEdge : jsonEdges) {
 			Edge e = new Edge();
 			if(jsonEdge.label != null)
@@ -290,6 +293,11 @@ public class JsonNetwork extends BrowsableNetwork {
 				+ "var2: " + var2 + ", "
 				+ "hide: " + hide;
 		}
+	}
+	
+	class JsonData {
+		Collection<JsonNode> nodes;
+		Collection<JsonEdge> edges;
 	}
 
 }

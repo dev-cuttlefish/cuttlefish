@@ -26,18 +26,15 @@ public class Cuttlefish extends Applet {
 	private CuttlefishMenu menu = null;
 	private CuttlefishToolbars toolbars = null;
 
-	private String jsonNodes = "";
-	private String jsonEdges = "";
+	private String json = "";
 	private String sourceNodeID = "";
 	private String distance = "";
 	private int width = 1000;
 	private int height = 800;
 	
     public void init() {    	
-    	jsonNodes = getParameter("nodes");
-    	jsonEdges = getParameter("edges");
-    	System.out.println(jsonNodes);
-    	System.out.println(jsonEdges);
+    	json = getParameter("data");
+    	System.out.println(json);
     	sourceNodeID = getParameter("source_node");
     	distance = getParameter("distance");
     	if(getParameter("width") != null)
@@ -108,7 +105,7 @@ public class Cuttlefish extends Applet {
     private BrowsableNetwork getNetwork() {
     	if(network == null) { 
  			network = new ExploreNetwork();	 
- 			JsonNetwork jsonNetwork = new JsonNetwork( jsonNodes, jsonEdges );
+ 			JsonNetwork jsonNetwork = new JsonNetwork( json );
  			((ExploreNetwork)network).connect(jsonNetwork );
     	}
     	return network;
