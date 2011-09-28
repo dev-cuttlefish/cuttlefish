@@ -131,7 +131,6 @@ public class JsonNetwork extends BrowsableNetwork {
 				v.setExcluded(jsonNode.hide);
 			if(jsonNode.fixed)
 				v.setFixed(jsonNode.fixed);
-			System.out.println(v);
 			//store in the map for later
 			idToNode.put(v.getId(), v);
 			//add to the network
@@ -170,8 +169,7 @@ public class JsonNetwork extends BrowsableNetwork {
 			if(jsonEdge.var2 != null)
 				e.setVar2(jsonEdge.var2);
 			if(jsonEdge.hide)
-				e.setExcluded(jsonEdge.hide);
-			System.out.println(e);	
+				e.setExcluded(jsonEdge.hide);	
 			addEdge(e, idToNode.get(jsonEdge.id_origin), idToNode.get(jsonEdge.id_dest) );
 		}
 
