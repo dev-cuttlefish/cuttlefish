@@ -31,7 +31,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
-
 import javax.swing.JFileChooser;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
@@ -48,6 +47,7 @@ import ch.ethz.sg.cuttlefish.misc.Conversion;
 import ch.ethz.sg.cuttlefish.misc.FileChooser;
 import ch.ethz.sg.cuttlefish.misc.TikzExporter;
 import ch.ethz.sg.cuttlefish.networks.BrowsableNetwork;
+import ch.ethz.sg.cuttlefish.networks.CxfNetwork;
 import ch.ethz.sg.cuttlefish.networks.InteractiveCxfNetwork;
 import edu.uci.ics.jung.algorithms.util.IterativeContext;
 
@@ -61,6 +61,7 @@ public class ExportMenu extends AbstractMenu {
 	private JMenuItem toTikz;
 	private JMenuItem toAdjMatrix;
 	private JMenuItem toEdgeList;
+	private JMenuItem dumpToDB;
 	private JFileChooser snapshotFileChooser;
 	private JFileChooser  tikzFileChooser;
 	private JFileChooser datFileChooser;
@@ -75,12 +76,25 @@ public class ExportMenu extends AbstractMenu {
 		toTikz = new JMenuItem("TikZ");
 		toAdjMatrix = new JMenuItem("Adjacency matrix");
 		toEdgeList = new JMenuItem("Edge list");
+		dumpToDB = new JMenuItem("Dump to database");
 		this.add(toJpeg);
 		this.add(toTikz);
 		this.addSeparator();
 		this.add(toAdjMatrix);
 		this.add(toEdgeList);
-		
+		this.addSeparator();
+		this.add(dumpToDB);
+
+		dumpToDB.addActionListener(new ActionListener() {			
+			@Override
+			public void actionPerformed(ActionEvent ev) {
+				if(! (networkPanel.getNetwork() instanceof CxfNetwork) ) {
+					JOptionPane.showMessageDialog(networkPanel, "Dump a network to a database supports only CXF networks", "Could not dump the network", JOptionPane.ERROR_MESSAGE, null);
+					return;
+				}
+				new DBDump(networkPanel);			
+			}
+		});
 		
 		toJpeg.addActionListener(new ActionListener() {			
 			@Override
