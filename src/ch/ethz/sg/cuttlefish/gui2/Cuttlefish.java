@@ -40,7 +40,7 @@ public class Cuttlefish extends JFrame {
 	public Cuttlefish() {
 		super();
 		initialize();
-	}   
+	}
 	
 
 	/**
