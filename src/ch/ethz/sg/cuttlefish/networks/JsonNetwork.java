@@ -24,21 +24,16 @@ package ch.ethz.sg.cuttlefish.networks;
 
 import java.awt.Color;
 import java.lang.reflect.Type;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
+
 import java.util.Map;
-import java.util.Set;
 
 import javax.swing.JOptionPane;
 
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.sun.java_cup.internal.runtime.virtual_parse_stack;
 
 import ch.ethz.sg.cuttlefish.misc.Edge;
 import ch.ethz.sg.cuttlefish.misc.Vertex;
