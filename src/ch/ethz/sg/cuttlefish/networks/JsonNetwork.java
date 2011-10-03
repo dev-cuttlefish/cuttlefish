@@ -26,8 +26,6 @@ import java.awt.Color;
 import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
-
 import java.util.Map;
 
 import javax.swing.JOptionPane;
@@ -144,7 +142,7 @@ public class JsonNetwork extends BrowsableNetwork {
 			if(jsonEdge.weight > 0)
 				e.setWeight(jsonEdge.weight);
 			if(jsonEdge.width > 0)
-				e.setWidth(jsonEdge.weight);
+				e.setWidth(jsonEdge.width);
 			if(jsonEdge.color != null)	{		
 		    	float R, G, B;
 				try {    		
