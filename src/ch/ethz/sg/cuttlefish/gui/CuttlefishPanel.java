@@ -452,7 +452,7 @@ public void itemStateChanged(ItemEvent arg0) {
  * Getter for the network
  * @return DirectedSparseGraph network in use in CuttleFish
  */
-public SparseGraph<Vertex,Edge> getNetwork() {
+public BrowsableNetwork getNetwork() {
 	return network;
 }
 

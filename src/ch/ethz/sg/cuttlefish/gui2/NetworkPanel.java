@@ -71,7 +71,6 @@ import edu.uci.ics.jung.algorithms.layout.RadialTreeLayout;
 import edu.uci.ics.jung.algorithms.layout.SpringLayout2;
 import edu.uci.ics.jung.algorithms.layout.TreeLayout;
 import edu.uci.ics.jung.graph.Graph;
-import edu.uci.ics.jung.graph.SparseGraph;
 import edu.uci.ics.jung.graph.util.Context;
 import edu.uci.ics.jung.visualization.Layer;
 import edu.uci.ics.jung.visualization.RenderContext;
@@ -284,7 +283,7 @@ public class NetworkPanel  extends JPanel implements Subject, ItemListener,INetw
 	 * Getter for the network
 	 * @return DirectedSparseGraph network in use in CuttleFish
 	 */
-	public SparseGraph<Vertex,Edge> getNetwork() {
+	public BrowsableNetwork getNetwork() {
 		return network;
 	}
 
