@@ -42,8 +42,8 @@ import ch.ethz.sg.cuttlefish.misc.Observer;
 import ch.ethz.sg.cuttlefish.misc.Subject;
 import ch.ethz.sg.cuttlefish.misc.Vertex;
 import ch.ethz.sg.cuttlefish.networks.BrowsableForestNetwork;
+import ch.ethz.sg.cuttlefish.networks.BrowsableNetwork;
 import edu.uci.ics.jung.algorithms.layout.AbstractLayout;
-import edu.uci.ics.jung.graph.SparseGraph;
 
 public class LayoutMenu extends AbstractMenu implements Observer {
 
@@ -229,7 +229,7 @@ public class LayoutMenu extends AbstractMenu implements Observer {
 		});
 	}
 	
-	private Set<Vertex> dfs(SparseGraph<Vertex, Edge> g, Set<Vertex> visited, Vertex v) {
+	private Set<Vertex> dfs(BrowsableNetwork g, Set<Vertex> visited, Vertex v) {
 		for(Vertex w : g.getNeighbors(v) ) {
 			if(!visited.contains(w)) {
 				visited.add(w);

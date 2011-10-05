@@ -7,7 +7,6 @@ import ch.ethz.sg.cuttlefish.misc.Edge;
 import ch.ethz.sg.cuttlefish.misc.MinimumSpanningForest;
 import ch.ethz.sg.cuttlefish.misc.Vertex;
 import edu.uci.ics.jung.graph.Forest;
-import edu.uci.ics.jung.graph.SparseGraph;
 import edu.uci.ics.jung.graph.Tree;
 import edu.uci.ics.jung.graph.util.EdgeType;
 import edu.uci.ics.jung.graph.util.Pair;
@@ -348,7 +347,7 @@ public class BrowsableForestNetwork extends BrowsableNetwork implements ISimulat
 	 * the root vertices into a collection.
 	 * @return A collection with the root nodes of the Forest
 	 */
-	private Collection<Vertex> getRoots(SparseGraph<Vertex, Edge> network) {
+	private Collection<Vertex> getRoots(BrowsableNetwork network) {
 		Collection<Vertex> roots = new ArrayList<Vertex>();
 		for(Vertex v : network.getVertices() ) {
 			boolean isRoot = true;

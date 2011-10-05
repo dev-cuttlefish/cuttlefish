@@ -32,9 +32,9 @@ import ch.ethz.sg.cuttlefish.gui2.NetworkInitializer;
 import ch.ethz.sg.cuttlefish.misc.Edge;
 import ch.ethz.sg.cuttlefish.misc.Vertex;
 
-import edu.uci.ics.jung.graph.SparseGraph;
+import edu.uci.ics.jung.graph.SparseMultigraph;
 
-public class BrowsableNetwork extends SparseGraph<Vertex, Edge> {
+public class BrowsableNetwork extends SparseMultigraph<Vertex, Edge> {
 	
 	private static final long serialVersionUID = 1L;
 	
@@ -80,16 +80,16 @@ public class BrowsableNetwork extends SparseGraph<Vertex, Edge> {
 	}
 	
 	public void clearGraph(){
-		for (Edge edge : super.getEdges())
-			super.removeEdge(edge);
+		//for (Edge edge : getEdges())
+		//	removeEdge(edge);
 
-		Collection<Vertex> vertices = super.getVertices();
+		Collection<Vertex> vertices = getVertices();
 		while (!vertices.isEmpty())
 		{ 
 			try{
 				vertices = getVertices();
 				for (Vertex vertex : vertices)
-					super.removeVertex(vertex);
+					removeVertex(vertex);
 			}
 			catch (ConcurrentModificationException e)
 			{}

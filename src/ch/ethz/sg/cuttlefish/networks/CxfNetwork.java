@@ -28,8 +28,6 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.StringTokenizer;
@@ -55,6 +53,9 @@ public class CxfNetwork extends BrowsableNetwork {
 	private String edgeShape = "bendLine";
 	private boolean hideVertexLabels = false;
 	private boolean hideEdgeLabels = false;
+	// By default CxfNetwork does not allow
+	// parallel edges
+	private boolean multiGraph = false;
 	int lineNum = 0;
 	String line = null;
 	int instructionIndex = 0;
@@ -121,23 +122,27 @@ public class CxfNetwork extends BrowsableNetwork {
 	 * @param
 	 */
 	private void emptyNetwork() {
-		for (Edge e : getEdges())
-			removeEdge(e);
-		Collection<Vertex> vertices = getVertices();
-		//this funny way of deleting the vertices is because some ConcurrentModificationExceptions could appear
-		//after this we are sure that all the vertices have been deleted in a correct way
-		while (!vertices.isEmpty())
-		{
-			try{
-			for (Vertex v : vertices)
-				removeVertex(v);
-			}
-			catch (ConcurrentModificationException e){}
-		}
+		clearGraph();		
 	}
 	
 	public String getEdgeShape() {
 		return edgeShape;
+	}
+	
+	/**
+	 * Check if parallel edges are allowed
+	 * @return
+	 */
+	public boolean isMultiGraph() {
+		return multiGraph;
+	}
+	
+	/**
+	 * set if the graph should be a multigraph
+	 * @param b
+	 */
+	public void setMultiGraph(boolean b) {
+		multiGraph = b;
 	}
 	
 	/**
@@ -327,6 +332,8 @@ public class CxfNetwork extends BrowsableNetwork {
 		    			hideEdgeLabels = true;
 		    		else if (field.equalsIgnoreCase("draw_straight_edges"))
 		    			edgeShape = "line";
+		    		else if (field.equalsIgnoreCase("multi_graph"))
+		    			multiGraph = true;
 		    		else	
 		    		{
 		    			JOptionPane.showMessageDialog(null,"Unkown configuration line " + token.line,"cxf error", JOptionPane.WARNING_MESSAGE);
@@ -643,16 +650,21 @@ public class CxfNetwork extends BrowsableNetwork {
 	 * Overriding addEdge method from SparseGraph to conform
 	 * to the
 	 */
-	@Override
+/*	@Override
 	public boolean addEdge(Edge arg0, java.util.Collection<? extends Vertex> arg1, EdgeType arg2) {
-		if(directed)
+		if(directed) {
 			return super.addEdge(arg0, arg1, EdgeType.DIRECTED);
-		else
+		} else {
 			return super.addEdge(arg0, arg1, EdgeType.UNDIRECTED);
-	};
+		}
+	};*/
 	
 	@Override
 	public boolean addEdge(Edge e, Vertex v1, Vertex v2, EdgeType edge_type) {
+		if(findEdgeSet(v1, v2).size() > 0 && !multiGraph ) {
+			System.err.println("The graph does not allow parallel edges");
+			return false;
+		}
 		if(directed)
 			return super.addEdge(e, v1, v2, EdgeType.DIRECTED);
 		else
@@ -661,22 +673,26 @@ public class CxfNetwork extends BrowsableNetwork {
 	
 	@Override
 	public boolean addEdge(Edge e, Vertex v1, Vertex v2) {
+		if(findEdgeSet(v1, v2).size() > 0 && !isMultiGraph() ) {
+			System.err.println("The graph does not allow parallel edges");
+			return false;
+		}
 		if(directed)
 			return super.addEdge(e, v1, v2, EdgeType.DIRECTED);
 		else
 			return super.addEdge(e, v1, v2, EdgeType.UNDIRECTED);
 	};
 	
-	@Override
-	public boolean addEdge(Edge edge, java.util.Collection<? extends Vertex> vertices) {
-		if(directed)
-			return super.addEdge(edge, vertices, EdgeType.DIRECTED);
-		else
-			return super.addEdge(edge, vertices, EdgeType.UNDIRECTED);
-	};
+/*	@Override
+	public boolean addEdge(Edge edge, java.util.Collection<? extends Vertex> vertices) {		
+	};*/
 	
 	@Override
 	public boolean addEdge(Edge edge, edu.uci.ics.jung.graph.util.Pair<? extends Vertex> endpoints) {
+		if(findEdgeSet(endpoints.getFirst(), endpoints.getSecond()).size() > 0 && !multiGraph ) {
+			System.err.println("The graph does not allow parallel edges");
+			return false;
+		}
 		if(directed)
 			return super.addEdge(edge, endpoints, EdgeType.DIRECTED);
 		else
@@ -685,6 +701,10 @@ public class CxfNetwork extends BrowsableNetwork {
 	
 	@Override
 	public boolean addEdge(Edge edge, edu.uci.ics.jung.graph.util.Pair<? extends Vertex> endpoints, EdgeType edgeType) {
+		if(findEdgeSet(endpoints.getFirst(), endpoints.getSecond()).size() > 0 && !multiGraph ) {
+			System.err.println("The graph does not allow parallel edges");
+			return false;
+		}
 		if(directed)
 			return super.addEdge(edge, endpoints, EdgeType.DIRECTED);
 		else

@@ -33,10 +33,11 @@ import java.util.Collection;
 import java.util.Hashtable;
 import java.util.Set;
 
+import ch.ethz.sg.cuttlefish.networks.BrowsableNetwork;
+
 import edu.uci.ics.jung.algorithms.layout.Layout;
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
 import edu.uci.ics.jung.graph.Graph;
-import edu.uci.ics.jung.graph.SparseGraph;
 
 public class Conversion {
 	public static void graphToDot(Graph<Vertex,Edge> graph, PrintStream ps){
@@ -169,7 +170,7 @@ public class Conversion {
 		}
 	}
 	
-	public static void writeEdgeList(SparseGraph<Vertex,Edge> graph, PrintStream ps) {
+	public static void writeEdgeList(BrowsableNetwork graph, PrintStream ps) {
 		Hashtable<Vertex, Integer> table = new Hashtable<Vertex, Integer>();
 		int count=0;
 		for(Vertex v: graph.getVertices()){
