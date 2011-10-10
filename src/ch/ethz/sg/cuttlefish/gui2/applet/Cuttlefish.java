@@ -89,8 +89,7 @@ public class Cuttlefish extends Applet {
 		toolbars.getZoomToolbar().setVisible(true);
 		toolbars.getDBToolbar().setVisible(true);
 		networkPanel.addObserver(getMenu().getLayoutMenu());
-		
-		
+			       
 		this.add(container);
     }
     

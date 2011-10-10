@@ -44,6 +44,7 @@ import com.sun.image.codec.jpeg.JPEGImageEncoder;
 import ch.ethz.sg.cuttlefish.gui2.CuttlefishToolbars;
 import ch.ethz.sg.cuttlefish.gui2.NetworkPanel;
 import ch.ethz.sg.cuttlefish.misc.Conversion;
+import ch.ethz.sg.cuttlefish.misc.CxfToCmx;
 import ch.ethz.sg.cuttlefish.misc.FileChooser;
 import ch.ethz.sg.cuttlefish.misc.TikzExporter;
 import ch.ethz.sg.cuttlefish.networks.BrowsableNetwork;
@@ -62,9 +63,12 @@ public class ExportMenu extends AbstractMenu {
 	private JMenuItem toAdjMatrix;
 	private JMenuItem toEdgeList;
 	private JMenuItem dumpToDB;
+	private JMenuItem toCMX;
 	private JFileChooser snapshotFileChooser;
 	private JFileChooser  tikzFileChooser;
 	private JFileChooser datFileChooser;
+	private JFileChooser cmxFileChooser;
+
 	
 	public ExportMenu(NetworkPanel networkPanel, CuttlefishToolbars toolbars) {
 		super(networkPanel, toolbars);
@@ -77,6 +81,7 @@ public class ExportMenu extends AbstractMenu {
 		toAdjMatrix = new JMenuItem("Adjacency matrix");
 		toEdgeList = new JMenuItem("Edge list");
 		dumpToDB = new JMenuItem("Dump to database");
+		toCMX = new JMenuItem("Commetrix csv");
 		this.add(toJpeg);
 		this.add(toTikz);
 		this.addSeparator();
@@ -84,6 +89,7 @@ public class ExportMenu extends AbstractMenu {
 		this.add(toEdgeList);
 		this.addSeparator();
 		this.add(dumpToDB);
+		this.add(toCMX);
 
 		dumpToDB.addActionListener(new ActionListener() {			
 			@Override
@@ -185,7 +191,6 @@ public class ExportMenu extends AbstractMenu {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				JFileChooser fc = getTikzFileChooser();
-			     fc.setCurrentDirectory( new File(System.getProperty("user.dir")));
 			     fc.setSelectedFile(new File(((BrowsableNetwork)networkPanel.getNetwork()).getName()+".tex"));
 			     int returnVal = fc.showSaveDialog(networkPanel);
 			     if (returnVal == JFileChooser.APPROVE_OPTION) {
@@ -193,6 +198,25 @@ public class ExportMenu extends AbstractMenu {
 			    	 exportToTikz(file);
 			     }
 			}
+		});
+		
+		toCMX.addActionListener(new ActionListener() {			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if(! (networkPanel.getNetwork() instanceof CxfNetwork) ) {
+					JOptionPane.showMessageDialog(networkPanel, "Exporting to Commetrix csv files supports only CXF networks", "Could not export network", JOptionPane.ERROR_MESSAGE, null);
+					return;
+				}
+				new Thread(new Runnable() {	public void run() {						
+					JFileChooser fc = getCMXFileChooser();
+					fc.setSelectedFile(new File(((BrowsableNetwork)networkPanel.getNetwork()).getName()));
+					int returnVal = fc.showSaveDialog(networkPanel);
+					if (returnVal == JFileChooser.APPROVE_OPTION) {
+						String baseFilename = fc.getSelectedFile().getAbsolutePath();							
+						CxfToCmx.cxfToCmx((CxfNetwork)networkPanel.getNetwork(), new File(baseFilename + ".linkevent.csv"), new File(baseFilename + ".linkparent.csv"), new File(baseFilename + ".linkrecipient.csv"), new File(baseFilename + ".linksender.csv"), new File(baseFilename + ".node.csv"));
+					}					
+				} }).start();
+			};
 		});
 		
 		toAdjMatrix.addActionListener( new ActionListener() {				
@@ -283,7 +307,19 @@ public class ExportMenu extends AbstractMenu {
 		datFileChooser.setDialogTitle("Exporting cuttlefish network");
 		datFileChooser.setFileFilter(new FileNameExtensionFilter(".dat files", "dat"));
 		return datFileChooser;	
-	}	
+	}
+	
+	/**
+	 * This method initializes the file chooser for the CMX export button.
+	 * 
+	 * @return javax.swing.JFileChooser
+	 */
+	private JFileChooser getCMXFileChooser() {
+		cmxFileChooser = new FileChooser();
+		cmxFileChooser.setDialogTitle("Exporting to Commetrix csv files");
+		cmxFileChooser.setFileFilter(new FileNameExtensionFilter(".csv files", "csv"));
+		return cmxFileChooser;	
+	}
 	
 	/**
 	 * Export a file to JPEG format

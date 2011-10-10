@@ -71,7 +71,7 @@ public class DBToolbar extends AbstractToolbar {
 			super.setVisible(b);
 			networkNames.setVisible(true);
 			if(networkPanel.getNetwork() instanceof ExploreNetwork) {
-				networkNames.setVisible(false);
+				networkNames.setVisible(false);				
 				setExploreButtonsEnabled(true);
 				setNetworkButtonsEnabled(true);
 			}
@@ -108,7 +108,7 @@ public class DBToolbar extends AbstractToolbar {
 
 	private DBExploreNode getExploreNodeFrame() {
 		if (exploreNodeFrame == null)
-			exploreNodeFrame = new DBExploreNode(networkPanel);
+			exploreNodeFrame = new DBExploreNode(networkPanel);			
 		return exploreNodeFrame;
 	}
 
@@ -182,6 +182,7 @@ public class DBToolbar extends AbstractToolbar {
 			public void actionPerformed(ActionEvent e) {
 				getExploreNetworkFrame().update();
 				getExploreNetworkFrame().setVisible(true);
+				getExploreNetworkFrame().requestFocus();
 			}
 		});
 
@@ -190,6 +191,7 @@ public class DBToolbar extends AbstractToolbar {
 			public void actionPerformed(ActionEvent e) {
 				getExploreNodeFrame().update();
 				getExploreNodeFrame().setVisible(true);
+				getExploreNodeFrame().requestFocus();
 			}
 		});
 
