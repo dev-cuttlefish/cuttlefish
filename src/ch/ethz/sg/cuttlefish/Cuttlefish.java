@@ -130,6 +130,7 @@ public class Cuttlefish {
 		}
 		// We need to create a visualization viewer, otherwise JUNG
 		// won't fire up the layout algorithm...
+		@SuppressWarnings("unused")
 		VisualizationViewer<Vertex, Edge> vv = new VisualizationViewer<Vertex, Edge>(layout);
 		out("Setting layout: " + opts.getOptionValue("layout"));		
 		if(layout instanceof IterativeContext) {
@@ -143,10 +144,10 @@ public class Cuttlefish {
 					done=true;
 				}				
 				if(layout instanceof ARF2Layout) {
-					done = Math.abs(((ARF2Layout)layout).getChange()) < 10D/network.getVertexCount();
+					done = Math.abs(((ARF2Layout<Vertex,Edge>)layout).getChange()) < 10D/network.getVertexCount();
 				}
 				if(layout instanceof WeightedARF2Layout) {
-					done = Math.abs(((WeightedARF2Layout)layout).getChange()) < 10D/network.getVertexCount();					
+					done = Math.abs(((WeightedARF2Layout<Vertex,Edge>)layout).getChange()) < 10D/network.getVertexCount();					
 				}
 				// since the layout won't tell us when it finishes,
 				// we have no choice but to pull its status
