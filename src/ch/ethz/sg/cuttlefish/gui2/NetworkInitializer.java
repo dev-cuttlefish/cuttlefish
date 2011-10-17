@@ -271,17 +271,21 @@ public class NetworkInitializer {
 			public void actionPerformed(ActionEvent e) {
 				String driverName;
 				String urlName;
+				String schemaName;
 				if(driverComboBox.getSelectedIndex() == 0) {
 					driverName = "com.mysql.jdbc.Driver";
 					urlName = "jdbc:mysql://";
+					schemaName = schemaNameTextField.getText();					
 				} else if (driverComboBox.getSelectedIndex() == 1) {
 					driverName = "org.postgresql.Driver";
 					urlName = "jdbc:postgresql://";
+					schemaName = schemaNameTextField.getText();
 				} else {
 					driverName = "org.sqlite.JDBC";
 					urlName = "jdbc:sqlite::/";
+					schemaName = schemaNameTextField.getText();
 				}
-				 if (dbNetwork.connect(driverName,  urlName, schemaNameTextField.getText(),urlTextField.getText(),
+				 if (dbNetwork.connect(driverName,  urlName, schemaName,urlTextField.getText() + "/" + schemaName,
 						   usernameTextField.getText(), passwordTextField.getText())
 				 	) {
 					 connectWindow.setVisible(false);
