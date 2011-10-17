@@ -104,7 +104,7 @@ public class DBNetwork extends BrowsableNetwork {
 	 * @param userName
 	 * @param password
 	 */
-	public boolean connect(String driverName, String urlName, String dbName,
+	public boolean connect(String driverName, String urlName, String schemaName, String dbName,
 			String userName, String password) {
 		boolean connected = true;
 		if (conn != null)
@@ -160,7 +160,6 @@ public class DBNetwork extends BrowsableNetwork {
 		}
 		if (connected) {
 			getDirection();
-			schemaName = dbName.substring(dbName.indexOf('/') + 1);
 			getNetworkNames(schemaName);
 		}
 		return connected;
@@ -173,7 +172,7 @@ public class DBNetwork extends BrowsableNetwork {
 	 * @return - The schema name
 	 */
 	public String getSchemaName() {
-		return schemaName;
+		return schemaName;//schemaName;
 	}
 
 	/**

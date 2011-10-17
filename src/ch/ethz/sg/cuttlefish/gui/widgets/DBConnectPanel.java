@@ -225,8 +225,8 @@ public class DBConnectPanel extends BrowserWidget {
 			connectButton.setEnabled(true);
 			connectButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
-					((DBNetwork) getNetwork()).connect("com.mysql.jdbc.Driver", "jdbc:mysql://", getUrlField().getText(),
-						   getUserNameField().getText(), getPasswordField().getText());
+					//((DBNetwork) getNetwork()).connect("com.mysql.jdbc.Driver", "jdbc:mysql://", getUrlField().getText(),
+					//	   getUserNameField().getText(), getPasswordField().getText());
 				   nodeTables.removeAllItems();
 				   edgeTables.removeAllItems();
 				   //for(String edgeTable : dbNetwork.getEdgeTables(dbNetwork.getSchemaName())) {
