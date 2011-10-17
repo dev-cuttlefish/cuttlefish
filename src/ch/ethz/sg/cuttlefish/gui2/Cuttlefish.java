@@ -40,6 +40,7 @@ public class Cuttlefish extends JFrame {
 	public Cuttlefish() {
 		super();
 		initialize();
+		this.setVisible(true);
 	}
 	
 
@@ -88,10 +89,5 @@ public class Cuttlefish extends JFrame {
 			networkPanel = new NetworkPanel();
 		}
 		return networkPanel;
-	}
-	
-	public static void main(String[] args) {
-		JFrame cuttlefishWindow = new Cuttlefish();		
-		cuttlefishWindow.setVisible(true);
-	} 
+	}	 
 }

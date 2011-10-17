@@ -265,8 +265,7 @@ public class TikzExporter {
 		EdgeType curEdgeType = null;
 		Color curColor = null;
 		double curWidth = java.lang.Double.MAX_VALUE;
-		for(Edge edge : edgeList) {
-			System.out.println("Edge: " + network.getEdgeType(edge) + ' ' + edge.getColor().toString() + ' ' + edge.getWidth() );
+		for(Edge edge : edgeList) {			
 			EdgeType edgeType = network.getEdgeType(edge);
 			Color color = edge.getColor();
 			double width = edge.getWidth();
