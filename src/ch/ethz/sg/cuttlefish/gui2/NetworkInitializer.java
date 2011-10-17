@@ -134,18 +134,22 @@ public class NetworkInitializer {
 	    JLabel usernameLabel;
 	    JLabel passwordLabel;
 	    JLabel driverLabel;
+	    JLabel schemaNameLabel;
 	    final JTextField urlTextField;
 	    final JTextField usernameTextField;
+	    final JTextField schemaNameTextField;
 	    final JPasswordField passwordTextField;
 	    final JComboBox driverComboBox;
 	    driverComboBox = new JComboBox(new String[]{"MySQL", "PostgreSQL", "SQLite"});
 		urlLabel = new javax.swing.JLabel();
+	    schemaNameLabel = new javax.swing.JLabel();
 	    usernameLabel = new javax.swing.JLabel();
 	    passwordLabel = new javax.swing.JLabel();
 	    driverLabel = new JLabel();
 	    connectButton = new javax.swing.JButton();
 	    cancelButton = new javax.swing.JButton();
 	    urlTextField = new javax.swing.JTextField();
+	    schemaNameTextField = new javax.swing.JTextField();
 	    usernameTextField = new javax.swing.JTextField();
 	    passwordTextField = new javax.swing.JPasswordField();
 	    
@@ -154,16 +158,19 @@ public class NetworkInitializer {
 	    
 		driverLabel.setText("Database Driver");
         urlLabel.setText("Database URL"); 
+        schemaNameLabel.setText("Schema name");
         usernameLabel.setText("Username"); 
-        passwordLabel.setText("Password");         
+        passwordLabel.setText("Password");
+        
 
-        connectButton.setText("Connect");  
+        connectButton.setText("Connect");         
         connectButton.setPreferredSize(new java.awt.Dimension(85, 25));
         cancelButton.setText("Cancel"); 
         cancelButton.setPreferredSize(new java.awt.Dimension(85, 25));
 
         urlTextField.setText("");
-        usernameTextField.setText("");
+        schemaNameTextField.setText("");
+        usernameTextField.setText("");        
 
 
         GroupLayout layout = new GroupLayout(connectPanel);
@@ -177,14 +184,18 @@ public class NetworkInitializer {
 	                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
 	                            .addComponent(driverLabel)
 	                            .addComponent(urlLabel)
+	                            .addComponent(schemaNameLabel)
 	                            .addComponent(usernameLabel)
 	                            .addComponent(passwordLabel))
 	                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
 	                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-	                            .addComponent(passwordTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 153, Short.MAX_VALUE)
-	                            .addComponent(usernameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 153, Short.MAX_VALUE)
+	//                            .addComponent(passwordTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 153, Short.MAX_VALUE)
+//	                            .addComponent(usernameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 153, Short.MAX_VALUE)
 	                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
 	                                .addComponent(urlTextField)
+	                                .addComponent(passwordTextField)
+	                                .addComponent(usernameTextField)
+	                                .addComponent(schemaNameTextField)
 	                                .addComponent(driverComboBox, 0, 153, Short.MAX_VALUE))))
 	                    .addGroup(layout.createSequentialGroup()
 	                        .addGap(56, 56, 56)
@@ -205,6 +216,11 @@ public class NetworkInitializer {
 	                    .addComponent(urlLabel)
 	                    .addComponent(urlTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
 	                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+   	                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+	                    .addComponent(schemaNameLabel)
+	                    .addComponent(schemaNameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+	                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+
 	                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
 	                    .addComponent(usernameLabel)
 	                    .addComponent(usernameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -265,7 +281,7 @@ public class NetworkInitializer {
 					driverName = "org.sqlite.JDBC";
 					urlName = "jdbc:sqlite::/";
 				}
-				 if (dbNetwork.connect(driverName, urlName, urlTextField.getText(),
+				 if (dbNetwork.connect(driverName,  urlName, schemaNameTextField.getText(),urlTextField.getText(),
 						   usernameTextField.getText(), passwordTextField.getText())
 				 	) {
 					 connectWindow.setVisible(false);
@@ -284,7 +300,7 @@ public class NetworkInitializer {
 		});
 	    
 	    connectWindow.add(connectPanel);
-	    connectWindow.setSize(287, 214);
+	    connectWindow.setSize(300, 244);
 	    connectWindow.setResizable(false);
 	    connectWindow.setTitle("Connect to database");
 	    connectWindow.setVisible(true);
