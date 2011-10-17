@@ -89,5 +89,9 @@ public class Cuttlefish extends JFrame {
 			networkPanel = new NetworkPanel();
 		}
 		return networkPanel;
-	}	 
+	}
+	
+	public static void main(String[] args) {
+		new ch.ethz.sg.cuttlefish.gui2.Cuttlefish();
+	}
 }

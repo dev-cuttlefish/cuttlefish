@@ -115,7 +115,15 @@ public class DBNetwork extends BrowsableNetwork {
 			Class.forName(driverName).newInstance();
 			String url = urlName + dbName;
 			conn = DriverManager.getConnection(url, userName, password);
-			if ((conn == null) || (!conn.isValid(100)))
+			boolean isValid = true;
+			/**
+			 * The postgre JDBC driver does not implement
+			 * the isValid method.
+			 */
+			if(driverName != "org.postgresql.Driver" ){ 
+				isValid = (conn.isValid(100));
+			}
+			if ((conn == null) || !isValid)
 				JOptionPane.showMessageDialog(null, null,
 						"Error connecting to database " + dbName,
 						JOptionPane.ERROR_MESSAGE);
