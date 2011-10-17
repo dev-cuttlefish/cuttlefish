@@ -102,6 +102,11 @@ private Random rnd = new Random();
 
 
 /**
+ * how much did the layout change from the previous iteration
+ */
+private double change = Double.MAX_VALUE;
+private double new_change = 0;
+/**
  * 
  */
 private boolean incremental = true;
@@ -151,6 +156,17 @@ public WeightedARF2Layout(Graph<V,E> g, boolean incremental) {
     	update();
     }
 }
+
+public WeightedARF2Layout(Graph<V,E> g, boolean incremental, int maxUpdates) {
+    super(g);
+    this.maxUpdates = maxUpdates;
+    this.incremental  = incremental;
+    initialize();
+    if(!incremental){
+    	update();
+    }
+}
+
 
 public WeightedARF2Layout(Graph<V,E> g, boolean incremental, Layout<Vertex,Edge> init) {
 
@@ -213,8 +229,11 @@ public void align(double x0, double y0){
 	for (Object o : graph.getVertices()) {
         Vertex v = (Vertex) o;
         Point2D c = transform((V)v);
+		new_change += (-x+x0-y+y0);
         c.setLocation(c.getX() - x + x0, c.getY() - y + y0 );
     }
+    change = new_change;
+	new_change = 0;
 }
 
 /**
@@ -570,6 +589,13 @@ public boolean done() {
 	return false;
 }
 
+/**
+ * Return the amount of change in the last iteration of the layout
+ * @return
+ */
+public double getChange() {
+	return change;
+}
 @Override
 public void step() {
 	countUpdates++;
