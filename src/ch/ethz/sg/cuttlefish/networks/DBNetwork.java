@@ -259,9 +259,9 @@ public class DBNetwork extends BrowsableNetwork {
 	}
 
 	public void setNetwork(String networkName) {
-		edgeTable = networkName;
+		edgeTable = schemaName + networkName;
 		if (networkNodetableMap.containsKey(networkName)) {
-			nodeTable = networkNodetableMap.get(networkName);
+			nodeTable = schemaName + networkNodetableMap.get(networkName);
 			derivedNodeTable = false;
 		} else {
 			// If no node table exists, then use a derived table
