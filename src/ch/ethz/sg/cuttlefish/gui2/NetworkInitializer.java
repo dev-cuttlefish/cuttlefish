@@ -305,7 +305,7 @@ public class NetworkInitializer {
 	    
 	    connectWindow.add(connectPanel);
 	    connectWindow.setSize(300, 244);
-	    connectWindow.setResizable(false);
+	    connectWindow.setResizable(true);
 	    connectWindow.setTitle("Connect to database");
 	    connectWindow.setVisible(true);
 	}
