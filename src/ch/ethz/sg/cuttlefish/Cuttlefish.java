@@ -16,6 +16,7 @@ import org.apache.commons.cli.ParseException;
 import ch.ethz.sg.cuttlefish.layout.ARF2Layout;
 import ch.ethz.sg.cuttlefish.layout.KCoreLayout;
 import ch.ethz.sg.cuttlefish.layout.WeightedARF2Layout;
+import ch.ethz.sg.cuttlefish.misc.AppletExporter;
 import ch.ethz.sg.cuttlefish.misc.CxfSaver;
 import ch.ethz.sg.cuttlefish.misc.Edge;
 import ch.ethz.sg.cuttlefish.misc.TikzExporter;
@@ -173,7 +174,11 @@ public class Cuttlefish {
 			out("Exporting to tikz");
 			TikzExporter t = new TikzExporter(getNetwork());
 			t.exportToTikz(new File(opts.getOptionValue("output")), getLayout());
-		}else {
+		} else if (format.compareToIgnoreCase("applet") == 0) {
+			out("Exporting to applet");
+			AppletExporter a = new AppletExporter(getNetwork());
+			a.exportToApplet(new File(opts.getOptionValue("output")), getLayout() );
+		} else {
 			System.out.println("Unsupported output format '" + format + "'\n");
 			printUsage();
 			System.exit(0);

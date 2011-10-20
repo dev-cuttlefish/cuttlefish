@@ -244,7 +244,7 @@ public class NetworkInitializer {
 					driverName = "org.postgresql.Driver";
 					urlName = "jdbc:postgresql://";
 				}
-				 if (dbNetwork.connect(driverName, urlName, urlTextField.getText(),
+				 if (dbNetwork.connect(driverName, "schemaname", urlName, urlTextField.getText(),
 						   usernameTextField.getText(), passwordTextField.getText())
 				 	) {
 					 connectWindow.setVisible(false);
