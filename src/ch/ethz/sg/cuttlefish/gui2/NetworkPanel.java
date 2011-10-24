@@ -509,9 +509,8 @@ public class NetworkPanel  extends JPanel implements Subject, ItemListener,INetw
 	@Override
 	public BufferedImage getSnapshot() {
 		Dimension size = getVisualizationViewer().getSize();
-	     BufferedImage img = new BufferedImage(size.width, size.height,
+	    BufferedImage img = new BufferedImage(size.width, size.height,
 	       BufferedImage.TYPE_INT_RGB);
-		 
 	     Graphics2D g2 = img.createGraphics();
 		 getVisualizationViewer().paint(g2);
 		 return img;
