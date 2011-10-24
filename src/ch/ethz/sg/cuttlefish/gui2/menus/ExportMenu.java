@@ -43,6 +43,7 @@ import com.sun.image.codec.jpeg.JPEGImageEncoder;
 
 import ch.ethz.sg.cuttlefish.gui2.CuttlefishToolbars;
 import ch.ethz.sg.cuttlefish.gui2.NetworkPanel;
+import ch.ethz.sg.cuttlefish.misc.AppletExporter;
 import ch.ethz.sg.cuttlefish.misc.Conversion;
 import ch.ethz.sg.cuttlefish.misc.CxfToCmx;
 import ch.ethz.sg.cuttlefish.misc.FileChooser;
@@ -64,6 +65,7 @@ public class ExportMenu extends AbstractMenu {
 	private JMenuItem toEdgeList;
 	private JMenuItem dumpToDB;
 	private JMenuItem toCMX;
+	private JMenuItem toApplet;
 	private JFileChooser snapshotFileChooser;
 	private JFileChooser  tikzFileChooser;
 	private JFileChooser datFileChooser;
@@ -82,8 +84,10 @@ public class ExportMenu extends AbstractMenu {
 		toEdgeList = new JMenuItem("Edge list");
 		dumpToDB = new JMenuItem("Dump to database");
 		toCMX = new JMenuItem("Commetrix csv");
+		toApplet = new JMenuItem("To Applet");
 		this.add(toJpeg);
 		this.add(toTikz);
+		this.add(toApplet);
 		this.addSeparator();
 		this.add(toAdjMatrix);
 		this.add(toEdgeList);
@@ -99,6 +103,20 @@ public class ExportMenu extends AbstractMenu {
 					return;
 				}
 				new DBDump(networkPanel);			
+			}
+		});
+		
+		toApplet.addActionListener(new ActionListener() {			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				System.out.println("Exporting to applet");
+				exportToJpg(new File("applet.jpeg"));
+				(new AppletExporter(networkPanel.getNetwork())).exportToDynamicApplet(new File("applet.html"));
+				try {
+					PrintStream out = new PrintStream(new File("applet2.html"));
+				} catch (FileNotFoundException e1) {
+					e1.printStackTrace();
+				}
 			}
 		});
 		
