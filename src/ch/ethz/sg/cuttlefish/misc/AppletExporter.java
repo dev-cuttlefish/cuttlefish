@@ -1,20 +1,22 @@
 package ch.ethz.sg.cuttlefish.misc;
 
+import java.awt.geom.Point2D;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
 
 import ch.ethz.sg.cuttlefish.networks.BrowsableNetwork;
-
 import edu.uci.ics.jung.algorithms.layout.Layout;
 
 public class AppletExporter {
 
-	@SuppressWarnings("unused")
 	private BrowsableNetwork network;
+	private Layout< Vertex, Edge> layout;
 	
-	public AppletExporter(BrowsableNetwork network) {
+	
+	public AppletExporter(BrowsableNetwork network, Layout<Vertex,Edge> layout) {
 		this.network = network;
+		this.layout = layout;
 	}
 	
 	public void exportToApplet(File file) {
@@ -35,6 +37,28 @@ public class AppletExporter {
 			e.printStackTrace();
 		}
 
+	}
+	
+	public void exportInitialPage(File file, String imageName, String networkFilename, int imageWidth, int imageHeight) {
+		try {
+			PrintStream p = new PrintStream(file);
+			p.println("<img src='" + imageName + "' width:" + imageWidth + 
+					" height:" + imageHeight + " usemap=#nodes />");
+			p.println("<map name='nodes'>");
+			for(Vertex v : network.getVertices()) {
+				int nodeId = v.getId();
+				int distance = 1;
+				Point2D loc = layout.transform(v);
+				p.println("  <area shape='circle' coords='" + loc.getX() + "," + loc.getY() + "," 
+						+ v.getSize() + "' href='" + networkFilename + "?source_node=" + nodeId + 
+						"&distance=" + distance + "' alt='" + v.getLabel() + "' title='" + v.getLabel() + "' />");
+			}
+			p.println("</map>");
+			p.close();			
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+			
 	}
 	
 	public void exportToDynamicApplet(File file) {
@@ -70,6 +94,7 @@ public class AppletExporter {
 				p.print("     {id: " + v.getId());
 				p.print(", size: " + v.getSize());
 				p.print(", width: " + v.getWidth());
+								
 				if(v.getLabel() != null)
 					p.print(", label: \"" + v.getLabel() + "\"");
 				if(v.getFillColor() != null)
