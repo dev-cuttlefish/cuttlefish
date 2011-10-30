@@ -67,6 +67,7 @@ public class ExportMenu extends AbstractMenu {
 	private JMenuItem toCMX;
 	private JMenuItem toApplet;
 	private JFileChooser snapshotFileChooser;
+	private JFileChooser appletFileChooser;
 	private JFileChooser  tikzFileChooser;
 	private JFileChooser datFileChooser;
 	private JFileChooser cmxFileChooser;
@@ -109,14 +110,32 @@ public class ExportMenu extends AbstractMenu {
 		toApplet.addActionListener(new ActionListener() {			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				System.out.println("Exporting to applet");
-				exportToJpg(new File("applet.jpeg"));
-				(new AppletExporter(networkPanel.getNetwork())).exportToDynamicApplet(new File("applet.html"));
-				try {
-					PrintStream out = new PrintStream(new File("applet2.html"));
-				} catch (FileNotFoundException e1) {
-					e1.printStackTrace();
+				String imageFilename = "applet.jpeg";
+				JFileChooser fc = getSnapshotFileChooser();
+				fc.setSelectedFile(new File("network.jpeg"));
+				int returnVal = fc.showSaveDialog(networkPanel);
+				int imageHeight = networkPanel.getVisualizationViewer().getHeight();
+				int imageWidth = networkPanel.getVisualizationViewer().getWidth();
+				if(returnVal == JFileChooser.APPROVE_OPTION) {
+					exportToJpg(fc.getSelectedFile());
+					imageFilename = fc.getSelectedFile().getName();
+				}				
+				
+				fc = getAppletChooser();
+				fc.setSelectedFile(new File("network.html"));
+				returnVal = fc.showSaveDialog(networkPanel);
+				String networkFilename = "network.html";
+				if (returnVal == JFileChooser.APPROVE_OPTION) {
+					(new AppletExporter(networkPanel.getNetwork(), networkPanel.getNetworkLayout())).exportToDynamicApplet(fc.getSelectedFile());
+					networkFilename = fc.getSelectedFile().getName();
 				}
+				fc = getAppletChooser();
+				fc.setSelectedFile(new File("index.html"));
+				returnVal = fc.showSaveDialog(networkPanel);				
+				if (returnVal == JFileChooser.APPROVE_OPTION) {
+					(new AppletExporter(networkPanel.getNetwork(), networkPanel.getNetworkLayout())).exportInitialPage(fc.getSelectedFile(), imageFilename, networkFilename, imageWidth, imageHeight);
+				}	
+				
 			}
 		});
 		
@@ -300,6 +319,18 @@ public class ExportMenu extends AbstractMenu {
 		snapshotFileChooser.setDialogTitle("Saving cuttlefish network to jpeg...");
 		snapshotFileChooser.setFileFilter(new FileNameExtensionFilter(".jpeg files", "jpeg", "jpg"));		
 		return snapshotFileChooser;
+	}
+	
+	/**
+	 * This method initializes the file chooser for the Applet export button.
+	 * 
+	 * @return javax.swing.JFileChooser
+	 */
+	private JFileChooser getAppletChooser() {
+		appletFileChooser = new FileChooser();
+		appletFileChooser.setDialogTitle("Exporting network to an applet...");
+		appletFileChooser.setFileFilter(new FileNameExtensionFilter(".html files", "html", "html"));		
+		return appletFileChooser;
 	}
 	
 	/**

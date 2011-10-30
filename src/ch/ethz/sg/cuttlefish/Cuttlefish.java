@@ -1,6 +1,5 @@
 package ch.ethz.sg.cuttlefish;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
@@ -29,7 +28,6 @@ import com.sun.image.codec.jpeg.JPEGCodec;
 import com.sun.image.codec.jpeg.JPEGEncodeParam;
 import com.sun.image.codec.jpeg.JPEGImageEncoder;
 
-import ch.ethz.sg.cuttlefish.gui2.NetworkPanel;
 import ch.ethz.sg.cuttlefish.layout.ARF2Layout;
 import ch.ethz.sg.cuttlefish.layout.KCoreLayout;
 import ch.ethz.sg.cuttlefish.layout.WeightedARF2Layout;
@@ -197,7 +195,7 @@ public class Cuttlefish {
 			t.exportToTikz(new File(opts.getOptionValue("output")), getLayout());
 		} else if (format.compareToIgnoreCase("applet") == 0) {
 			out("Exporting to applet");
-			AppletExporter a = new AppletExporter(getNetwork());
+			AppletExporter a = new AppletExporter(getNetwork(), getLayout());
 			a.exportToApplet(new File(opts.getOptionValue("output")));
 		} else if (format.compareToIgnoreCase("jpeg") == 0) {
 			int width = 1000, height = 1000;
