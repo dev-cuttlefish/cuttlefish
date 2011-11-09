@@ -1,0 +1,6 @@
+node: (0) label{B} color{0.99609375,0.19921875,0.0} borderColor{0.59765625,0.59765625,0.0} size{20.0} shape{circle} position{263.1645426002358,69.03311875602103} width{3}
+node: (2) label{A} color{0.0,0.0,0.99609375} borderColor{0.0,0.0,0.0} size{15.0} shape{circle} position{107.0894880009242,296.91481031094577}
+node: (1) label{C} color{0.99609375,0.99609375,0.0} borderColor{0.0,0.59765625,0.59765625} size{10.0} shape{circle} position{32.0,4.0} width{2}
+edge: (0,1) weight{0.0} width{3.0} color{0.19921875,0.99609375,0.0}
+edge: (1,2) weight{0.0} width{1.0} color{0.59765625,0.0,0.59765625}
+edge: (2,0) weight{0.0} width{5.0} color{0.0,0.99609375,0.99609375}

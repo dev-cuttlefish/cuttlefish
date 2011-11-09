@@ -34,6 +34,7 @@ import ch.ethz.sg.cuttlefish.layout.WeightedARF2Layout;
 import ch.ethz.sg.cuttlefish.misc.AppletExporter;
 import ch.ethz.sg.cuttlefish.misc.CxfSaver;
 import ch.ethz.sg.cuttlefish.misc.Edge;
+import ch.ethz.sg.cuttlefish.misc.SVGExporter;
 import ch.ethz.sg.cuttlefish.misc.TikzExporter;
 import ch.ethz.sg.cuttlefish.misc.Vertex;
 import ch.ethz.sg.cuttlefish.networks.BrowsableNetwork;
@@ -197,6 +198,11 @@ public class Cuttlefish {
 			out("Exporting to applet");
 			AppletExporter a = new AppletExporter(getNetwork(), getLayout());
 			a.exportToApplet(new File(opts.getOptionValue("output")));
+		} else if (format.compareToIgnoreCase("svg") == 0) {
+			out("Exporting to interactive svg");
+			SVGExporter e = new SVGExporter(getNetwork(), getLayout());
+			int height=1000, width=1000;
+			e.toSVG(new File(opts.getOptionValue("output")), height, width);
 		} else if (format.compareToIgnoreCase("jpeg") == 0) {
 			int width = 1000, height = 1000;
 			out("Exporting to jpeg");
@@ -277,7 +283,7 @@ public class Cuttlefish {
 		Option outputFormat = OptionBuilder
 				.withValueSeparator()
 				.withDescription(
-						"output format: tikz (default), cxf, applet, ...")
+						"output format: tikz (default), cxf, applet, svg")
 				.withLongOpt("out-format").withArgName("input format").hasArg()
 				.create();
 		Option gui = OptionBuilder
