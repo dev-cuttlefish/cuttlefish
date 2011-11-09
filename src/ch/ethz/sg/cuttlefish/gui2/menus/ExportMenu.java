@@ -47,6 +47,7 @@ import ch.ethz.sg.cuttlefish.misc.AppletExporter;
 import ch.ethz.sg.cuttlefish.misc.Conversion;
 import ch.ethz.sg.cuttlefish.misc.CxfToCmx;
 import ch.ethz.sg.cuttlefish.misc.FileChooser;
+import ch.ethz.sg.cuttlefish.misc.SVGExporter;
 import ch.ethz.sg.cuttlefish.misc.TikzExporter;
 import ch.ethz.sg.cuttlefish.networks.BrowsableNetwork;
 import ch.ethz.sg.cuttlefish.networks.CxfNetwork;
@@ -63,10 +64,12 @@ public class ExportMenu extends AbstractMenu {
 	private JMenuItem toTikz;
 	private JMenuItem toAdjMatrix;
 	private JMenuItem toEdgeList;
+	private JMenuItem toSVG;
 	private JMenuItem dumpToDB;
 	private JMenuItem toCMX;
 	private JMenuItem toApplet;
 	private JFileChooser snapshotFileChooser;
+	private JFileChooser svgFileChooser;
 	private JFileChooser appletFileChooser;
 	private JFileChooser  tikzFileChooser;
 	private JFileChooser datFileChooser;
@@ -86,9 +89,11 @@ public class ExportMenu extends AbstractMenu {
 		dumpToDB = new JMenuItem("Dump to database");
 		toCMX = new JMenuItem("Commetrix csv");
 		toApplet = new JMenuItem("To Applet");
+		toSVG = new JMenuItem("To interactive SVG");
 		this.add(toJpeg);
+		this.add(toSVG);
 		this.add(toTikz);
-		this.add(toApplet);
+		this.add(toApplet);		
 		this.addSeparator();
 		this.add(toAdjMatrix);
 		this.add(toEdgeList);
@@ -104,6 +109,22 @@ public class ExportMenu extends AbstractMenu {
 					return;
 				}
 				new DBDump(networkPanel);			
+			}
+		});
+		
+		toSVG.addActionListener(new ActionListener() {			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String svgFilename = "network.xml";
+				JFileChooser fc = getSVGFileChooser();
+				fc.setSelectedFile(new File(svgFilename));
+				int imageHeight = networkPanel.getVisualizationViewer().getHeight();
+				int imageWidth = networkPanel.getVisualizationViewer().getWidth();
+				int returnVal = fc.showSaveDialog(networkPanel);
+				if(returnVal == JFileChooser.APPROVE_OPTION) {
+					SVGExporter exporter = new SVGExporter(networkPanel.getNetwork(), networkPanel.getNetworkLayout());
+					exporter.toSVG(fc.getSelectedFile(), imageHeight, imageWidth);
+				}				
 			}
 		});
 		
@@ -319,6 +340,18 @@ public class ExportMenu extends AbstractMenu {
 		snapshotFileChooser.setDialogTitle("Saving cuttlefish network to jpeg...");
 		snapshotFileChooser.setFileFilter(new FileNameExtensionFilter(".jpeg files", "jpeg", "jpg"));		
 		return snapshotFileChooser;
+	}
+	
+	/**
+	 * This method initializes the file chooser for the SVG export button.
+	 * 
+	 * @return javax.swing.JFileChooser
+	 */
+	private JFileChooser getSVGFileChooser() {
+		svgFileChooser = new FileChooser();
+		svgFileChooser.setDialogTitle("Saving cuttlefish network to interactive SVG...");
+		svgFileChooser.setFileFilter(new FileNameExtensionFilter(".xml files", "xml"));		
+		return svgFileChooser;
 	}
 	
 	/**
