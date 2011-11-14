@@ -60,7 +60,7 @@ public class ARF2Layout<V, E> extends AbstractLayout<V, E> implements
 	/**
 	 * the parameter a controls the attraction between connected nodes.
 	 */
-	private double a = 3;
+	private double a = 6;
 
 	/**
 	 * ??? is a scaling factor for the attractive term. Connected as well as
@@ -77,11 +77,11 @@ public class ARF2Layout<V, E> extends AbstractLayout<V, E> implements
 	 * deltaT controls the calculation precision: smaller deltaT results in
 	 * higher precission
 	 */
-	private double deltaT = 2;
+	private double deltaT = 1;
 
 	private boolean done = false;
 
-	private int maxUpdates = 50;
+	private int maxUpdates = 100;
 	int countUpdates = 0;
 	/**
 	 * A marker used to tag nodes that shall not be moved
@@ -92,13 +92,13 @@ public class ARF2Layout<V, E> extends AbstractLayout<V, E> implements
 	 * if the movement in the system is less than epsilon*|V|, the algorithm
 	 * terminates
 	 */
-	private double epsilon = .2;
+	private double epsilon = 0.05;
 
 	/**
 	 * If the layout is used in a non interactive way, this variable gives a
 	 * maximum bound to the layout steps
 	 */
-	private int maxRelayouts = 30;
+	private int maxRelayouts = 60;
 
 	/**
 	 * the random number generator used
@@ -113,7 +113,7 @@ public class ARF2Layout<V, E> extends AbstractLayout<V, E> implements
 	/**
 	 * a maximum force for a node
 	 */
-	private double forceCutoff = 7;
+	private double forceCutoff = 30;
 
 	private boolean verbose = false;
 
