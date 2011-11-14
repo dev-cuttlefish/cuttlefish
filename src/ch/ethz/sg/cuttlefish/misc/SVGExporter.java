@@ -62,6 +62,7 @@ public class SVGExporter {
 						sourceId = index.get(network.getEndpoints(e).getFirst());
 						destId = index.get(network.getEndpoints(e).getSecond());
 					}
+					if(sourceId == destId) continue;
 					String edgeName = "edge" + (sourceId < destId? sourceId: destId) + (sourceId > destId? sourceId: destId);
 					p.println("    edges[" + index.get(n) + "][" + count + "] = document.getElementById('" + edgeName + "');");
 					count++;
@@ -156,7 +157,7 @@ public class SVGExporter {
 					destNode = network.getEndpoints(e).getSecond();
 				}
 				// we do not add self loops
-				//if(sourceNode == destNode) continue;
+				if(sourceNode == destNode) continue;
 				int sourceId = index.get(sourceNode);
 				int destId = index.get(destNode);
 				String edgeName = "edge" + (sourceId < destId? sourceId: destId) + (sourceId > destId? sourceId: destId);
