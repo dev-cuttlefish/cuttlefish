@@ -84,26 +84,33 @@
 <body onload='init();'>
 <svg:svg width='800px' height='800px'>
   <svg:polyline points='0,0 800,0 800,800 0,800 0,0' style='stroke:black; fill:none;'/>
-  <svg:line id='edge01' x1='50' y1='50' x2='200' y2='50' style='stroke:rgb(100,100,100);stroke-width:2'/>
+  <svg:marker id="arrow_20" viewBox="0 0 10 10" refX="28" refY="5" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" orient="auto" fill="red">
+     <svg:path d="M 0 0 L 10 5 L 0 10 z"></svg:path>
+  </svg:marker>
+  <svg:marker id='arrow_10' viewBox='0 0 10 10' refX='12' refY='5' markerUnits='userSpaceOnUse' markerWidth='12' markerHeight='12' orient='auto' fill='rgb(255,0,0)'>
+     <svg:path d='M 0 0 L 10 5 L 0 10 z'></svg:path>
+  </svg:marker>
+
+  <svg:line id='edge01' x1='50' y1='50' x2='100' y2='50' style='stroke:rgb(100,100,100);stroke-width:2'/>
   <svg:line id='edge02' x1='50' y1='50' x2='50' y2='200' style='stroke:rgb(100,100,100);stroke-width:3'/>
   <svg:line id='edge03' x1='50' y1='50' x2='200' y2='200' style='stroke:rgb(100,100,100);stroke-width:4'/>
   <svg:line id='edge12' x1='200' y1='50' x2='50' y2='200' style='stroke:rgb(100,100,100);stroke-width:5'/>
   <svg:line id='edge13' x1='200' y1='50' x2='200' y2='200' style='stroke:rgb(100,100,100);stroke-width:6'/>
-  <svg:line id='edge23' x1='50' y1='200' x2='200' y2='200' style='stroke:rgb(100,100,100);stroke-width:7'/>
-  <svg:circle id='0' r='20' cx='50' cy='50' style='fill:rgb(50,100,200); stroke:black; stroke-width:2;'/>
-  <svg:a xlink:href='www.google.com' target='_black' detail='2'>
+  <svg:line id='edge23' x1='50' y1='200' x2='200' y2='200' marker-end='url(#arrow_10)' style='stroke:rgb(100,100,100);stroke-width:7'/>
+  <svg:circle id='0' r='20' cx='50' cy='50' style='fill:none; stroke:black; stroke-width:2;'/>
+  <svg:a xlink:href='#' target='_black' detail='2'>
      <svg:text id='label0' x='72' y='72' font-size='12' fill='black'>COOP</svg:text>
   </svg:a>
-  <svg:circle id='1' r='10' cx='200' cy='50' style='fill:red; stroke:black; stroke-width:2;'/>
-  <svg:a xlink:href='www.google.com' target='_black' detail='2'>
+  <svg:circle id='1' r='10' cx='200' cy='50' style='fill:none; stroke:black; stroke-width:2;'/>
+  <svg:a xlink:href='#' target='_black' detail='2'>
      <svg:text id='label1' x='212' y='62' font-size='12' fill='black'>UBS</svg:text>
   </svg:a>
-  <svg:circle id='2' r='10' cx='50' cy='200' style='fill:red; stroke:black; stroke-width:2;'/>
-  <svg:a xlink:href='www.google.com' target='_black' detail='2'>
+  <svg:circle id='2' r='10' cx='50' cy='200' style='fill:none; stroke:black; stroke-width:2;'/>
+  <svg:a xlink:href='#' target='_black' detail='2'>
      <svg:text id='label2' x='62' y='212' font-size='12' fill='black'>SWISSCOM</svg:text>
   </svg:a>
-  <svg:circle id='3' r='10' cx='200' cy='200' style='fill:red; stroke:black; stroke-width:2;'/>
-  <svg:a xlink:href='www.google.com' target='_black' detail='2'>
+  <svg:circle id='3' r='1' cx='200' cy='200' style='fill:none; stroke:black; stroke-width:2;'/>
+  <svg:a xlink:href='#' target='_black' detail='2'>
      <svg:text id='label3' x='212' y='212' font-size='12' fill='black'>ETH</svg:text>
   </svg:a>
 </svg:svg>
