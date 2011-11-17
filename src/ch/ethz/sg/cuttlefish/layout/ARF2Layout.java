@@ -375,7 +375,7 @@ public class ARF2Layout<V, E> extends AbstractLayout<Vertex, Edge> implements It
 			e = getGraph().findEdge(node2, node);
 		}
 		if (e != null) {
-			return e.isExcluded();
+			return !e.isExcluded();
 		} else {
 			return false;
 		}
