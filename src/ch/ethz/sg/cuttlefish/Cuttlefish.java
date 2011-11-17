@@ -60,8 +60,19 @@ public class Cuttlefish {
 	private static Layout<Vertex, Edge> layout = null;
 	private static CommandLine opts;
 	private static VisualizationViewer<Vertex, Edge> vv;
+	private static boolean done = false;
 
+	
+	
 	public static void main(String[] args) {
+		Runtime.getRuntime().addShutdownHook(new Thread() {
+		    public void run() {
+		       System.out.println("stopping");
+		       done = true;
+		       outputNetwork();
+		    }
+		 });
+
 		initOptions();
 		parseOptions(args);
 
@@ -154,7 +165,7 @@ public class Cuttlefish {
 		out("Setting layout: " + opts.getOptionValue("layout"));
 		if (layout instanceof IterativeContext) {
 			out("Iterative layout, waiting on the layout to converge...");
-			boolean done = false;
+			done = false;
 			while (!done) {
 				done = ((IterativeContext) layout).done();
 				// SpringLayout is bad.. it pretends it never
@@ -163,20 +174,27 @@ public class Cuttlefish {
 					done = true;
 				}
 				if (layout instanceof ARF2Layout) {
-					done = Math.abs(((ARF2Layout<Vertex, Edge>) layout)
-							.getChange()) < 10D / network.getVertexCount();
+					double change = Math.abs(((ARF2Layout<Vertex, Edge>) layout)
+							.getChange());
+					System.out.println("Change: " + change);
+					done = change < 10D / network.getVertexCount();
 				}
 				if (layout instanceof WeightedARF2Layout) {
-					done = Math.abs(((WeightedARF2Layout<Vertex, Edge>) layout)
-							.getChange()) < 10D / network.getVertexCount();
+					double change = Math.abs(((WeightedARF2Layout<Vertex, Edge>) layout)
+							.getChange());
+					System.out.println("Change: " + change);
+					done = change < 10D / network.getVertexCount();
 				}
 				// since the layout won't tell us when it finishes,
 				// we have no choice but to pull its status
 				try {
 					Thread.sleep(100);
 				} catch (InterruptedException e) {
+					
 					e.printStackTrace();
 				}
+
+
 			}
 			out("Iterative layout finished");
 		}
