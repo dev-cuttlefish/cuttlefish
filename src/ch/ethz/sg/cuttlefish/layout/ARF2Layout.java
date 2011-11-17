@@ -43,8 +43,7 @@ import edu.uci.ics.jung.graph.Graph;
  *         An implementation of the ARF Layouter. See
  *         http://www.sg.ethz.ch/research/ for details
  */
-public class ARF2Layout<V, E> extends AbstractLayout<Vertex, Edge> implements
-		IterativeContext {
+public class ARF2Layout<V, E> extends AbstractLayout<Vertex, Edge> implements IterativeContext {
 
 	/**
 	 * number of position updates before the graph is rendered
@@ -63,25 +62,24 @@ public class ARF2Layout<V, E> extends AbstractLayout<Vertex, Edge> implements
 	private double a = 3;
 
 	/**
-	 * ??? is a scaling factor for the attractive term. Connected as well as
-	 * unconnected nodes are affected.
+	 * ??? is a scaling factor for the attractive term. Connected as well as unconnected nodes are affected.
 	 */
 	private double attraction = 0.2;
 
 	/**
 	 * b scales the repulsive force
 	 */
-	private double b = 6;
+	private double b = 8;
 
 	/**
 	 * deltaT controls the calculation precision: smaller deltaT results in
 	 * higher precision
 	 */
-	private double deltaT = 1;
+	private double deltaT = 2;
 
 	private boolean done = false;
 
-	private int maxUpdates = 100;
+	private int maxUpdates = 50;
 	int countUpdates = 0;
 	/**
 	 * A marker used to tag nodes that shall not be moved
@@ -92,13 +90,13 @@ public class ARF2Layout<V, E> extends AbstractLayout<Vertex, Edge> implements
 	 * if the movement in the system is less than epsilon*|V|, the algorithm
 	 * terminates
 	 */
-	private double epsilon = 0.05;
+	private double epsilon = 0.2;
 
 	/**
 	 * If the layout is used in a non interactive way, this variable gives a
 	 * maximum bound to the layout steps
 	 */
-	private int maxRelayouts = 60;
+	private int maxRelayouts = 50;
 
 	/**
 	 * the random number generator used
@@ -106,14 +104,14 @@ public class ARF2Layout<V, E> extends AbstractLayout<Vertex, Edge> implements
 	private Random rnd = new Random();
 
 	/**
- * 
- */
+	 * 
+	 */
 	private boolean incremental = true;
 
 	/**
 	 * a maximum force for a node
 	 */
-	private double forceCutoff = 30;
+	private double forceCutoff = 7;
 
 	private Collection<Vertex> visualizedVertices = new HashSet<Vertex>();
 
@@ -145,14 +143,12 @@ public class ARF2Layout<V, E> extends AbstractLayout<Vertex, Edge> implements
 		}
 	}
 
-	public ARF2Layout(Graph<Vertex, Edge> g, boolean incremental,
-			Layout<Vertex, Edge> init) {
+	public ARF2Layout(Graph<Vertex, Edge> g, boolean incremental, Layout<Vertex, Edge> init) {
 		super(g);
 		this.incremental = incremental;
 		initial_positions = init;
 		initialize();
 		if (!incremental) {
-			System.out.println("incremental");
 			update();
 		}
 	}
@@ -174,9 +170,7 @@ public class ARF2Layout<V, E> extends AbstractLayout<Vertex, Edge> implements
 	 * edu.uci.ics.jung.visualization.AbstractLayout#initialize_local_vertex
 	 * (edu.uci.ics.jung.graph.Vertex)
 	 */
-	protected void initialize_local_vertex(Vertex v) {
-
-	}
+	protected void initialize_local_vertex(Vertex v) {}
 
 	/*
 	 * (non-Javadoc)
@@ -184,9 +178,7 @@ public class ARF2Layout<V, E> extends AbstractLayout<Vertex, Edge> implements
 	 * @see edu.uci.ics.jung.visualization.AbstractLayout#advancePositions()
 	 */
 	public void advancePositions() {
-		System.out.println("advance positions");
 		for (int i = 0; i < updatesPerFrame; i++) {
-			System.out.println("update " + i);
 			try {
 				for (Vertex v : graph.getVertices()) {
 					if (!isFixed(v)) {
@@ -195,19 +187,13 @@ public class ARF2Layout<V, E> extends AbstractLayout<Vertex, Edge> implements
 							Point2D f = getForceforNode(v);
 							double deltaIndividual = 0;
 							try {
-								deltaIndividual = getGraph().degree(v) > 1 ? deltaT
-										/ Math.pow(getGraph().degree(v),
-												0.4)
-										: deltaT;
+								deltaIndividual = getGraph().degree(v) > 1 ? deltaT / Math.pow(getGraph().degree(v), 0.4) : deltaT;
 							} catch (java.lang.IllegalArgumentException ex) {
-								System.out
-										.println("Error: vertex not found in the graph");
+								System.out.println("Error: vertex not found in the graph");
 								this.reset();
 							}
-							f.setLocation(f.getX() * deltaIndividual, f.getY()
-									* deltaIndividual);
-							c.setLocation(c.getX() + f.getX(),
-									c.getY() + f.getY());
+							f.setLocation(f.getX() * deltaIndividual, f.getY() * deltaIndividual);
+							c.setLocation(c.getX() + f.getX(), c.getY() + f.getY());
 						}
 					}
 				}
@@ -219,6 +205,7 @@ public class ARF2Layout<V, E> extends AbstractLayout<Vertex, Edge> implements
 		}
 		align(100, 100);
 	}
+	
 
 	/**
 	 * aligns the graph to make (x0,y0) the left upper corner
@@ -244,6 +231,8 @@ public class ARF2Layout<V, E> extends AbstractLayout<Vertex, Edge> implements
 		change = new_change;
 		new_change = 0;
 	}
+	
+	
 
 	/**
 	 * Determines whether the position of v should not be changed by the
@@ -261,8 +250,7 @@ public class ARF2Layout<V, E> extends AbstractLayout<Vertex, Edge> implements
 	 * @return a random position in within the unit square
 	 */
 	private Point2D getRandomPoint(int scale) {
-		return new Point2D.Double(rnd.nextDouble() * scale, rnd.nextDouble()
-				* scale);
+		return new Point2D.Double(rnd.nextDouble() * scale, rnd.nextDouble() * scale);
 	}
 
 	/**
@@ -290,42 +278,28 @@ public class ARF2Layout<V, E> extends AbstractLayout<Vertex, Edge> implements
 			Vertex otherNode;
 			try {
 				otherNode = (Vertex) it.next();
-
 				if (node != otherNode) {
 					Point2D otherNodeX = transform(otherNode);
-					if (otherNodeX == null
-							|| otherNodeX.distance(origin) == 0.0) {
+					if (otherNodeX == null || otherNodeX.distance(origin) == 0.0) {
 						continue;
 					}
-
 					Point2D temp = (Point2D) otherNodeX.clone();
-					temp.setLocation(temp.getX() - x.getX(),
-							temp.getY() - x.getY());
-
+					temp.setLocation(temp.getX() - x.getX(), temp.getY() - x.getY());
 					double multiplier = isEdgeInGraph(node, otherNode) ? a : 1;
-
 					multiplier *= attraction / Math.sqrt(numNodes);
-
 					Point2D addition = (Point2D) temp.clone();
-					addition.setLocation(addition.getX() * multiplier,
-							addition.getY() * multiplier);
-					mDot.setLocation(mDot.getX() + addition.getX(), mDot.getY()
-							+ addition.getY());
-
+					addition.setLocation(addition.getX() * multiplier, addition.getY() * multiplier);
+					mDot.setLocation(mDot.getX() + addition.getX(), mDot.getY() + addition.getY());
 					multiplier = 1 / temp.distance(origin);
 					addition = (Point2D) temp.clone();
-					addition.setLocation(addition.getX() * multiplier * b,
-							addition.getY() * multiplier * b);
-
-					mDot.setLocation(mDot.getX() - addition.getX(), mDot.getY()
-							- addition.getY());
+					addition.setLocation(addition.getX() * multiplier * b, addition.getY() * multiplier * b);
+					mDot.setLocation(mDot.getX() - addition.getX(), mDot.getY() - addition.getY());					
 				}
 			} catch (ConcurrentModificationException e) {
 				e.printStackTrace();
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-
 		}
 
 		if (incremental && mDot.distance(origin) > forceCutoff) {
@@ -405,10 +379,6 @@ public class ARF2Layout<V, E> extends AbstractLayout<Vertex, Edge> implements
 		} else {
 			return false;
 		}
-
-		// return (node.findEdge(node2) != null || node2.findEdge(node) !=
-		// null);
-
 	}
 
 	/*
@@ -551,7 +521,6 @@ public class ARF2Layout<V, E> extends AbstractLayout<Vertex, Edge> implements
 				visualizedVertices.add(v);
 			}
 		} else {
-			System.out.println("using initial layout");
 			Point2D randomPoint;
 
 			for (Vertex v : (Collection<Vertex>) getGraph().getVertices()) {
