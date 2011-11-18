@@ -48,7 +48,7 @@ public class Cuttlefish extends JFrame {
 	 * This method initializes this
 	 * @return void
 	 */
-	private void initialize() {
+	private void initialize() {		
 		this.setSize(1000, 700);  //The initial size of the user interface is slightly smaller than 1024x768
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setJMenuBar(getMainMenu());

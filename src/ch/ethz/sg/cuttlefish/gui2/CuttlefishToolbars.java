@@ -22,6 +22,7 @@
 
 package ch.ethz.sg.cuttlefish.gui2;
 
+import java.awt.Color;
 import java.awt.FlowLayout;
 
 import javax.swing.JPanel;
@@ -41,6 +42,7 @@ public class CuttlefishToolbars extends JPanel {
 
 	public CuttlefishToolbars(NetworkPanel networkPanel) {
 		super();
+		this.setBackground(Color.WHITE);
 		this.setLayout(new FlowLayout());
 		mouseToolbar = new MouseToolbar(networkPanel);
 		zoomToolbar = new ZoomToolbar(networkPanel);
