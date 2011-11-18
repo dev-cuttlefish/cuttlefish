@@ -24,6 +24,7 @@ package ch.ethz.sg.cuttlefish.gui2;
 
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Paint;
@@ -132,6 +133,7 @@ public class NetworkPanel  extends JPanel implements Subject, ItemListener,INetw
 				}
 			}
 			visualizationViewer = new VisualizationViewer<Vertex, Edge>(layout, new Dimension(width, height));
+			visualizationViewer.setBackground(Color.WHITE);
 		}		
 		return visualizationViewer;
 	}
