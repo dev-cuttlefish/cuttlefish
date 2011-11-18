@@ -69,15 +69,16 @@ public class ARF2Layout<V, E> extends AbstractLayout<Vertex, Edge> implements It
 	/**
 	 * b scales the repulsive force
 	 */
-	private double b = 8;
+	private double b = 2;
 
 	/**
 	 * deltaT controls the calculation precision: smaller deltaT results in
 	 * higher precision
 	 */
-	private double deltaT = 2;
+	private double deltaT = 0.1;
 
 	private boolean done = false;
+	private boolean locked = false;
 
 	private int maxUpdates = 50;
 	int countUpdates = 0;
@@ -336,7 +337,7 @@ public class ARF2Layout<V, E> extends AbstractLayout<Vertex, Edge> implements It
 			c = getRandomPoint(((int) Math.sqrt(graph.getVertices().size()) * 50) + 1);
 			locations.put(vertex, c);
 			visualizedVertices.add(vertex);
-			done = false;
+			//done = false;
 			countUpdates = 0;
 		} else
 			c = transform(vertex);
@@ -405,14 +406,16 @@ public class ARF2Layout<V, E> extends AbstractLayout<Vertex, Edge> implements It
 	 * @see edu.uci.ics.jung.visualization.LayoutMutable#update()
 	 */
 	public void update() {
-
-		for (Vertex v : (Collection<Vertex>) getGraph().getVertices())
-			assignPositionToVertex(v);
-
-		updateVertices();
-
-		if (!incremental) {
-			layout();
+		if (! locked)
+		{
+			for (Vertex v : (Collection<Vertex>) getGraph().getVertices())
+				assignPositionToVertex(v);
+			
+				updateVertices();
+			
+			if (!incremental) {
+					layout();
+			}	
 		}
 	}
 
@@ -542,9 +545,14 @@ public class ARF2Layout<V, E> extends AbstractLayout<Vertex, Edge> implements It
 		update();
 	}
 
+	public void lock(boolean lockvalue)
+	{
+		locked = lockvalue;
+		return;
+	}
 	@Override
 	public boolean done() {
-		return false;
+		return locked;
 	}
 	
 	/**
