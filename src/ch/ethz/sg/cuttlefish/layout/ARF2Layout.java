@@ -69,13 +69,13 @@ public class ARF2Layout<V, E> extends AbstractLayout<Vertex, Edge> implements It
 	/**
 	 * b scales the repulsive force
 	 */
-	private double b = 2;
+	private double b = 8;
 
 	/**
 	 * deltaT controls the calculation precision: smaller deltaT results in
 	 * higher precision
 	 */
-	private double deltaT = 0.1;
+	private double deltaT = 2;
 
 	private boolean done = false;
 	private boolean locked = false;
@@ -188,9 +188,9 @@ public class ARF2Layout<V, E> extends AbstractLayout<Vertex, Edge> implements It
 							Point2D f = getForceforNode(v);
 							double deltaIndividual = 0;
 							try {
-								deltaIndividual = getGraph().degree(v) > 1 ? deltaT / Math.pow(getGraph().degree(v), 0.4) : deltaT;
+								deltaIndividual = getGraph().degree(v) > 1 ? (deltaT/Math.log10(getGraph().getVertexCount())) / Math.pow(getGraph().degree(v), 0.4) : (deltaT/Math.log10(getGraph().getVertexCount()));
 							} catch (java.lang.IllegalArgumentException ex) {
-								System.out.println("Error: vertex not found in the graph");
+								//System.out.println("Error: vertex not found in the graph");
 								this.reset();
 							}
 							f.setLocation(f.getX() * deltaIndividual, f.getY() * deltaIndividual);
@@ -565,9 +565,7 @@ public class ARF2Layout<V, E> extends AbstractLayout<Vertex, Edge> implements It
 
 	@Override
 	public void step() {
-		// System.out.println("step");
 		countUpdates++;
-		// System.out.println("count: " + countUpdates + " max: " + maxUpdates);
 		done = (countUpdates > maxUpdates);
 
 		if (!done) {

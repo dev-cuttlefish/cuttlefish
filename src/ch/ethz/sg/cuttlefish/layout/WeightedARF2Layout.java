@@ -139,6 +139,7 @@ public class WeightedARF2Layout<V, E> extends AbstractLayout<Vertex, Edge> imple
 		this.sleepTime = time;
 	}
 	
+	
 	/**
 	 * Generates a new Layout for graph g. if incremental is false the layout will not be interactive.
 	 * @param g
@@ -195,7 +196,7 @@ public class WeightedARF2Layout<V, E> extends AbstractLayout<Vertex, Edge> imple
 			                Point2D f = getForceforNode(v);
 							double deltaIndividual = 0;
 			                try {
-			                	deltaIndividual = getGraph().degree(v) > 1 ? deltaT / Math.pow(getGraph().degree(v), 0.4) : deltaT;
+			                	deltaIndividual = getGraph().degree(v) > 1 ? (deltaT/Math.log10(getGraph().getVertexCount())) / Math.pow(getGraph().degree(v), 0.4) : (deltaT/Math.log10(getGraph().getVertexCount()));
 			                } catch (java.lang.IllegalArgumentException ex) {
 								System.out.println("Error: vertex not found in the graph");
 								this.reset();
@@ -289,10 +290,9 @@ public class WeightedARF2Layout<V, E> extends AbstractLayout<Vertex, Edge> imple
 	            Point2D temp = (Point2D) otherNodeX.clone();
 	            temp.setLocation(temp.getX() - x.getX(), temp.getY() - x.getY());
 	  
-	            Edge e = (Edge)getGraph().findEdge(node,otherNode);
-	
-	            double multiplier = isEdgeInGraph(node, otherNode) ? (a * ((e.getWeight() == 0) ?  1 : e.getWeight())) : 1;
-	            multiplier *= attraction / Math.sqrt(numNodes);	
+	            Edge e = getGraph().findEdge(node,otherNode);
+	            double multiplier = (isEdgeInGraph(node, otherNode) && e != null)? (a * ((e.getWeight() == 0) ?  1 : e.getWeight())) : 1;
+	            multiplier *= attraction / Math.sqrt(numNodes);	            
 	            Point2D addition = (Point2D) temp.clone();
 	            addition.setLocation(addition.getX() * multiplier, addition.getY() * multiplier);
 	            mDot.setLocation(mDot.getX() + addition.getX(), mDot.getY() + addition.getY());	            

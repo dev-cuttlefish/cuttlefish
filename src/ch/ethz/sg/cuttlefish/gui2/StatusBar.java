@@ -22,6 +22,7 @@
 
 package ch.ethz.sg.cuttlefish.gui2;
 
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -45,6 +46,7 @@ public class StatusBar extends JPanel {
 	private JProgressBar progressBar = null;
 	public StatusBar() {
 		super();
+		this.setBackground(Color.WHITE);
 		terminateTask = new JButton("Stop");
 		label = new JLabel();
 		label1 = new JLabel("Status ");
