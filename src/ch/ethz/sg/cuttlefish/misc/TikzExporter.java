@@ -51,6 +51,7 @@ public class TikzExporter {
 	private Layout <Vertex, Edge> layout = null;
 	private PrintStream p = null;
 	private final double FACTOR = 0.025;
+	private double nodeSizeFactor = 1;
 	private final double WIDTHFACTOR = 0.5;
 	private double maxY= 0;
 	private boolean hideVertexLabels = false;
@@ -125,6 +126,23 @@ public class TikzExporter {
 				maxY = y;
 		}
 		
+		double k = Double.MAX_VALUE;
+		// calculate min (2*dist / (size1+size2) as max node scale that avoids node overlapping
+		for (Vertex v1 : network.getVertices())
+		{
+			for (Vertex v2 : network.getVertices())
+			{
+				if (v2.getId() > v1.getId())
+				{
+					double dist = layout.transform(v1).distance(layout.transform(v2));
+					double knew = 2 * dist /(v1.getSize()+v2.getSize());
+					if (knew < k)
+						k = knew;
+				}
+			}
+		}
+		nodeSizeFactor = 0.75*k;
+		
 		try {
 			p = new PrintStream(outFile);
 		
@@ -195,7 +213,7 @@ public class TikzExporter {
 			p.print(" draw=" + colors.get(vertex.getColor()) + ",");
 		if (vertex.getFillColor() != null)
 			p.print(" fill=" + colors.get(vertex.getFillColor()) + ",");
-		p.print(" minimum size = " + Utils.ensureDecimal((vertex.getSize())) + "pt,");
+		p.print(" minimum size = " + Utils.ensureDecimal((vertex.getSize())*nodeSizeFactor) + "pt,");
 		
 		if ((vertex.getLabel() != null) && (true))
 		{			
