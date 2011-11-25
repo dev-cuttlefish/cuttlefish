@@ -30,6 +30,7 @@ import com.sun.image.codec.jpeg.JPEGEncodeParam;
 import com.sun.image.codec.jpeg.JPEGImageEncoder;
 
 import ch.ethz.sg.cuttlefish.layout.ARF2Layout;
+import ch.ethz.sg.cuttlefish.layout.FixedLayout;
 import ch.ethz.sg.cuttlefish.layout.KCoreLayout;
 import ch.ethz.sg.cuttlefish.layout.WeightedARF2Layout;
 import ch.ethz.sg.cuttlefish.misc.AppletExporter;
@@ -69,7 +70,20 @@ public class Cuttlefish {
 	public static void main(String[] args) {
 
 		initOptions();
-		parseOptions(args);
+		CommandLineParser parser = new GnuParser();
+
+		try {
+			// parse the command line arguments
+			opts = parser.parse(options, args);
+		} catch (ParseException e) {
+			// something went wrong..
+			e.printStackTrace();
+		}
+		
+		if (opts.hasOption("help") || !opts.hasOption("input")) {
+			printUsage();
+			System.exit(0);
+		}
 		
 		Runtime.getRuntime().addShutdownHook(new Thread() {
 		    public void run() {
@@ -78,7 +92,9 @@ public class Cuttlefish {
 		       outputNetwork();
 		    }
 		 });
-
+		
+		parseOptions(args);
+		
 
 	}
 
@@ -87,24 +103,16 @@ public class Cuttlefish {
 	}
 
 	private static void parseOptions(String[] args) {
-		CommandLineParser parser = new GnuParser();
-		try {
-			// parse the command line arguments
-			opts = parser.parse(options, args);
-			if (opts.hasOption("help")) {
-				printUsage();
-				System.exit(0);
-			}
-			if (opts.hasOption("gui")) {
-				startGui(args);
-			} else {
-				startCmd();
-				System.exit(0);
-			}
-		} catch (ParseException exp) {
-			// oops, something went wrong
-			out("Parsing of arguments failed: " + exp.getMessage() + "\n");
+		
+		if (opts.hasOption("help")) {
 			printUsage();
+			System.exit(0);
+		}
+		if (opts.hasOption("gui")) {
+			startGui(args);
+		} else {
+			startCmd();
+			System.exit(0);
 		}
 	}
 
@@ -159,6 +167,8 @@ public class Cuttlefish {
 
 		} else if (l.compareToIgnoreCase("k-core") == 0) {
 
+		} else if (l.compareToIgnoreCase("fixed") == 0) {
+			layout = new FixedLayout<Vertex, Edge>(getNetwork(), new CircleLayout<Vertex, Edge>(getNetwork()));
 		} else {
 			System.out.println("Unspoported layout: " + l);
 			System.exit(0);
@@ -193,8 +203,7 @@ public class Cuttlefish {
 				// we have no choice but to pull its status
 				try {
 					Thread.sleep(100);
-				} catch (InterruptedException e) {
-					
+				} catch (InterruptedException e) {					
 					e.printStackTrace();
 				}
 
