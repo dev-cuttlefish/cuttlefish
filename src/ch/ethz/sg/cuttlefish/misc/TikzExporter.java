@@ -213,6 +213,7 @@ public class TikzExporter {
 			p.print(" draw=" + colors.get(vertex.getColor()) + ",");
 		if (vertex.getFillColor() != null)
 			p.print(" fill=" + colors.get(vertex.getFillColor()) + ",");
+		p.print(" inner sep=0pt,");
 		p.print(" minimum size = " + Utils.ensureDecimal((vertex.getSize())*nodeSizeFactor) + "pt,");
 		
 		if ((vertex.getLabel() != null) && (true))
