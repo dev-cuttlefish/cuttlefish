@@ -31,7 +31,7 @@ public class CxfToCmx {
 		return true;
 	}
 	
-	public static boolean writeToLinkEventFiles(CxfNetwork network, File linkEventFile, File linkEventParentFile, File linkEventRecipientFile, File linkEventSenderFile) {
+	private static boolean writeToLinkEventFiles(CxfNetwork network, File linkEventFile, File linkEventParentFile, File linkEventRecipientFile, File linkEventSenderFile) {
 		try {
 			FileWriter linkEventWriter = new FileWriter(linkEventFile);
 			FileWriter linkEventParentWriter = new FileWriter(linkEventParentFile);
