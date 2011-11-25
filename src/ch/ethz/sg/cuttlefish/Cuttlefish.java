@@ -9,6 +9,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.lang.management.CompilationMXBean;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
@@ -33,6 +34,7 @@ import ch.ethz.sg.cuttlefish.layout.KCoreLayout;
 import ch.ethz.sg.cuttlefish.layout.WeightedARF2Layout;
 import ch.ethz.sg.cuttlefish.misc.AppletExporter;
 import ch.ethz.sg.cuttlefish.misc.CxfSaver;
+import ch.ethz.sg.cuttlefish.misc.CxfToCmx;
 import ch.ethz.sg.cuttlefish.misc.Edge;
 import ch.ethz.sg.cuttlefish.misc.SVGExporter;
 import ch.ethz.sg.cuttlefish.misc.TikzExporter;
@@ -65,6 +67,10 @@ public class Cuttlefish {
 	
 	
 	public static void main(String[] args) {
+
+		initOptions();
+		parseOptions(args);
+		
 		Runtime.getRuntime().addShutdownHook(new Thread() {
 		    public void run() {
 		       System.out.println("stopping");
@@ -73,8 +79,6 @@ public class Cuttlefish {
 		    }
 		 });
 
-		initOptions();
-		parseOptions(args);
 
 	}
 
@@ -221,6 +225,17 @@ public class Cuttlefish {
 			SVGExporter e = new SVGExporter(getNetwork(), getLayout());
 			int height=1000, width=1000;
 			e.toSVG(new File(opts.getOptionValue("output")), height, width);
+		} else if (format.compareToIgnoreCase("cmx") == 0) {
+			out("Exporting to CMX");
+			if(getNetwork() instanceof CxfNetwork) {
+				String file = opts.getOptionValue("output");
+				CxfToCmx.cxfToCmx((CxfNetwork)getNetwork(), new File(file+"_linkevent.csv"), new File(file+"_linkeventparent.csv"), new File(file+"_linkeventrecipient.csv"), new File(file+"_linkeventsender.csv"), new File(file+"_node.csv"));	
+			}
+			else {
+				out("You can convert only CXF networks!");
+			}
+			
+			
 		} else if (format.compareToIgnoreCase("jpeg") == 0) {
 			int width = 1000, height = 1000;
 			out("Exporting to jpeg");
@@ -301,7 +316,7 @@ public class Cuttlefish {
 		Option outputFormat = OptionBuilder
 				.withValueSeparator()
 				.withDescription(
-						"output format: tikz (default), cxf, applet, svg")
+						"output format: tikz (default), cxf, applet, svg, cmx")
 				.withLongOpt("out-format").withArgName("input format").hasArg()
 				.create();
 		Option gui = OptionBuilder
