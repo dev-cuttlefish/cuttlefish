@@ -199,7 +199,6 @@ public class ARF2Layout<V, E> extends AbstractLayout<Vertex, Edge> implements It
 					}
 				}
 			} catch (ConcurrentModificationException e) {
-				e.printStackTrace();
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -296,8 +295,7 @@ public class ARF2Layout<V, E> extends AbstractLayout<Vertex, Edge> implements It
 					addition.setLocation(addition.getX() * multiplier * b, addition.getY() * multiplier * b);
 					mDot.setLocation(mDot.getX() - addition.getX(), mDot.getY() - addition.getY());					
 				}
-			} catch (ConcurrentModificationException e) {
-				e.printStackTrace();
+			} catch (ConcurrentModificationException e) {		
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
