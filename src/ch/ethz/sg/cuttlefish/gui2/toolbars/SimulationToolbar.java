@@ -99,6 +99,7 @@ public class SimulationToolbar extends AbstractToolbar implements Observer  {
 		settingsButton = new JButton("Settings");
 		frameLabel = new JLabel();
 		frameLabel.setVisible(false);
+		resetButton.setEnabled(false);
 		stepButton.addActionListener(new ActionListener() {			
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -124,8 +125,14 @@ public class SimulationToolbar extends AbstractToolbar implements Observer  {
 		runButton.addActionListener(new ActionListener() {			
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				resetButton.setEnabled(true);
 				if (thread == null || !thread.isAlive()) {
-					resetButton.setEnabled(true);
+					//make sure the network is at initial state
+					if(!stepButton.isEnabled()) {
+						((ISimulation)networkPanel.getNetwork()).reset();					
+						networkPanel.onNetworkChange();
+					}
+					
 					runButton.setIcon(getPauseIcon());
 					stepButton.setEnabled(false);
                    	thread = new Thread() {
@@ -150,8 +157,7 @@ public class SimulationToolbar extends AbstractToolbar implements Observer  {
                    	thread.start();                   	
 				} else {
 					isRunning = false;
-					thread = null;
-					resetButton.setEnabled(true);
+					thread = null;					
 					runButton.setIcon(getRunIcon());
 					stepButton.setEnabled(true);
 				}

@@ -26,6 +26,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 import javax.swing.JOptionPane;
 
@@ -265,11 +267,112 @@ public class InteractiveCxfNetwork extends CxfNetwork implements ISimulation, Su
 	@Override
 	public void reset() {
 		instructionIndex = 0;
-		reload();
+		resetNetwork(graphFile);
 		currentLabel = "";
 		for(Observer o : observers)
 			o.update(this);
 		done = false;
+	}
+	
+	private void resetNetwork(File graphFile) {		
+		try {
+			br = new BufferedReader(new FileReader(graphFile));
+			Token token;
+			ArrayList<Token> edgeTokens = new ArrayList<Token>();
+			while ((token = getNextToken()) != null)
+			{
+				if (token.type.toLowerCase().contains("node"))
+				{
+					Vertex v = createVertex(token);
+			
+					if (hash.get(v.getId()) != null)
+					{
+						// the node is already in the network, reset the attributes to the
+						// ones specified in the cxf file
+						Vertex w = hash.get(v.getId());
+						w.setColor(v.getColor());
+						w.setExcluded(v.isExcluded());
+						w.setFillColor(v.getFillColor());
+						w.setFixed(v.isFixed());
+						w.setLabel(v.getLabel());
+						w.setShadowed(v.isShadowed());
+						w.setShape(v.getShape());
+						w.setSize(v.getSize());
+						w.setVar1(v.getVar1());
+						w.setVar2(v.getVar2());
+						w.setWidth(v.getWidth());
+					}
+					else{
+						// the node was removed, reinsert it in the network
+						addVertex(v);
+						//we store the ids and vertices in a hash table
+						hash.put(v.getId(), v);
+					}
+				}
+				else if (token.type.toLowerCase().contains("edge")) {
+					edgeTokens.add(token);
+				} else if (!token.type.toLowerCase().equalsIgnoreCase("configuration"))
+				{
+					if(!confirmFileFormatWarning("Unknown command in line " + token.line, "cxf error") )
+						return;					
+				}
+			}
+			
+			//remember what edges are currently in the graph
+			List<Edge> existingEdges = new LinkedList<Edge>();
+			for(Edge e : getEdges()){
+				existingEdges.add(e);
+			}
+			
+			for (Token t : edgeTokens)
+			{
+				// Check if the edge is already there
+				Vertex source = hash.get(t.id_source);
+				Vertex dest = hash.get(t.id_dest);				
+				if ((source == null) || (dest == null))
+				{
+					if(!confirmFileFormatWarning("Malformed edge (nonexistent endpoint): (" + t.id_source + "," + t.id_dest + ") in line "+t.line, "cxf error") )
+						return;
+				}
+				else
+				{
+					// check if the edge is already in the graph
+					Edge edge = findEdge(source, dest);					
+					Edge newEdge = createEdge(t);
+					if(edge != null) {						
+						//the edge is there, just reinitialize its attributes
+						edge.setColor(newEdge.getColor());
+						edge.setExcluded(newEdge.isExcluded());
+						edge.setLabel(newEdge.getLabel());
+						edge.setShape(newEdge.getShape());
+						edge.setVar1(newEdge.getVar1());
+						edge.setVar2(newEdge.getVar2());
+						edge.setWeight(newEdge.getWeight());
+						edge.setWidth(newEdge.getWidth());
+						//this edge is processed
+						existingEdges.remove(edge);
+					} else {						
+						EdgeType et = EdgeType.DIRECTED;
+						if (!directed)
+							et = EdgeType.UNDIRECTED;
+						addEdge(newEdge, source, dest, et);	
+					}					
+				}
+			}
+			//now we remove all edges that are in the graph
+			// but should not be there
+			for(Edge e : existingEdges) {
+				removeEdge(e);
+			}
+			line = null;
+		
+		} catch (FileNotFoundException fnfEx) {
+			JOptionPane.showMessageDialog(null,fnfEx.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
+			System.err.println("Network file not found");
+			fnfEx.printStackTrace();
+		}
+		
+		
 	}
 
 	@Override

@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+
 import java.util.StringTokenizer;
 
 import javax.swing.JOptionPane;
@@ -157,7 +158,7 @@ public class CxfNetwork extends BrowsableNetwork {
 		this.edgeShape = edgeType;
 	}
 	
-	private boolean confirmFileFormatWarning(String warning, String dialogTitle) {
+	protected boolean confirmFileFormatWarning(String warning, String dialogTitle) {
 		System.out.println(warning);
 		int answer = JOptionPane.showConfirmDialog(null, warning, dialogTitle, 2, JOptionPane.WARNING_MESSAGE);
 		if(answer == JOptionPane.CANCEL_OPTION) {
@@ -241,8 +242,11 @@ public class CxfNetwork extends BrowsableNetwork {
 			System.err.println("Network file not found");
 			fnfEx.printStackTrace();
 		}
+		
 		this.networkFileName = graphFile.getName();
 	}
+	
+	
 	
 	/**
 	 * Method that reloads the data from the cxf graph file
