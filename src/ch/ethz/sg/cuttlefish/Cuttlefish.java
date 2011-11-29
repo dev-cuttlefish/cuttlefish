@@ -39,6 +39,7 @@ import ch.ethz.sg.cuttlefish.misc.Edge;
 import ch.ethz.sg.cuttlefish.misc.SVGExporter;
 import ch.ethz.sg.cuttlefish.misc.TikzExporter;
 import ch.ethz.sg.cuttlefish.misc.Vertex;
+import ch.ethz.sg.cuttlefish.networks.BrowsableForestNetwork;
 import ch.ethz.sg.cuttlefish.networks.BrowsableNetwork;
 import ch.ethz.sg.cuttlefish.networks.CxfNetwork;
 import ch.ethz.sg.cuttlefish.networks.GraphMLNetwork;
@@ -48,7 +49,9 @@ import edu.uci.ics.jung.algorithms.layout.FRLayout;
 import edu.uci.ics.jung.algorithms.layout.ISOMLayout;
 import edu.uci.ics.jung.algorithms.layout.KKLayout;
 import edu.uci.ics.jung.algorithms.layout.Layout;
+import edu.uci.ics.jung.algorithms.layout.RadialTreeLayout;
 import edu.uci.ics.jung.algorithms.layout.SpringLayout;
+import edu.uci.ics.jung.algorithms.layout.TreeLayout;
 import edu.uci.ics.jung.algorithms.util.IterativeContext;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 
@@ -84,6 +87,7 @@ public class Cuttlefish {
 			System.exit(0);
 		}
 		
+		// this helps us to press Ctrl+C in order to stop iterative layouts
 		Runtime.getRuntime().addShutdownHook(new Thread() {
 		    public void run() {
 		       System.out.println("stopping");
@@ -161,9 +165,11 @@ public class Cuttlefish {
 		} else if (l.compareToIgnoreCase("circle") == 0) {
 			layout = new CircleLayout<Vertex, Edge>(getNetwork());
 		} else if (l.compareToIgnoreCase("tree") == 0) {
-			// layout = new TreeLayout<Vertex, Edge>(getNetwork());
+			BrowsableForestNetwork tree = new BrowsableForestNetwork((BrowsableNetwork)getNetwork());
+			layout = new TreeLayout<Vertex, Edge>(tree);
 		} else if (l.compareToIgnoreCase("radial-tree") == 0) {
-
+			BrowsableForestNetwork tree = new BrowsableForestNetwork((BrowsableNetwork)getNetwork());
+			layout = new RadialTreeLayout<Vertex, Edge>(tree);
 		} else if (l.compareToIgnoreCase("k-core") == 0) {
 
 		} else if (l.compareToIgnoreCase("fixed") == 0) {
