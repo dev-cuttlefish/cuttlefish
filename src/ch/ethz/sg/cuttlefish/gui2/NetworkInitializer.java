@@ -31,6 +31,13 @@ public class NetworkInitializer {
 	
 	public NetworkInitializer() {}
 	
+	//Store db connect settings
+	private static String dbUsername = "";
+	private static String dbPassword = "";
+	private static String dbSchemaName = "";
+	private static String dbUrl = "";
+	private int driverIndex = 0;
+	
 	public void initBrowsableNetwork(BrowsableNetwork network) {}
 	
 	
@@ -141,6 +148,7 @@ public class NetworkInitializer {
 	    final JPasswordField passwordTextField;
 	    final JComboBox driverComboBox;
 	    driverComboBox = new JComboBox(new String[]{"MySQL", "PostgreSQL", "SQLite"});
+	    driverComboBox.setSelectedIndex(driverIndex);
 		urlLabel = new javax.swing.JLabel();
 	    schemaNameLabel = new javax.swing.JLabel();
 	    usernameLabel = new javax.swing.JLabel();
@@ -148,11 +156,16 @@ public class NetworkInitializer {
 	    driverLabel = new JLabel();
 	    connectButton = new javax.swing.JButton();
 	    cancelButton = new javax.swing.JButton();
-	    urlTextField = new javax.swing.JTextField();
-	    schemaNameTextField = new javax.swing.JTextField();
-	    usernameTextField = new javax.swing.JTextField();
-	    passwordTextField = new javax.swing.JPasswordField();
-	    
+	    urlTextField = new javax.swing.JTextField(dbUrl);
+	    urlTextField.setText(dbUrl);
+	    schemaNameTextField = new javax.swing.JTextField(dbSchemaName);
+	    usernameTextField = new javax.swing.JTextField(dbUsername);
+	    passwordTextField = new javax.swing.JPasswordField(dbPassword);
+	    if (urlTextField.getText().length() > 0 && usernameTextField.getText().length() > 0) {
+			connectButton.setEnabled(true);
+		} else {
+			connectButton.setEnabled(false);
+		}
 	    final JFrame connectWindow = new JFrame();
 		JPanel connectPanel = new JPanel();
 	    
@@ -167,12 +180,7 @@ public class NetworkInitializer {
         connectButton.setPreferredSize(new java.awt.Dimension(85, 25));
         cancelButton.setText("Cancel"); 
         cancelButton.setPreferredSize(new java.awt.Dimension(85, 25));
-
-        urlTextField.setText("");
-        schemaNameTextField.setText("");
-        usernameTextField.setText("");        
-
-
+      
         GroupLayout layout = new GroupLayout(connectPanel);
 	    connectPanel.setLayout(layout);
 	    layout.setHorizontalGroup(
@@ -263,7 +271,6 @@ public class NetworkInitializer {
 			@Override
 			public void keyTyped(KeyEvent e) {}
 		});		
-		connectButton.setEnabled(false);
 		cancelButton.setEnabled(true);
 		connectButton.addActionListener(new ActionListener() {			
 			@SuppressWarnings("deprecation")
@@ -272,11 +279,16 @@ public class NetworkInitializer {
 				String driverName;
 				String urlName;
 				String schemaName;
-				if(driverComboBox.getSelectedIndex() == 0) {
+				dbUsername = usernameTextField.getText();
+				dbPassword = passwordTextField.getText();
+				driverIndex = driverComboBox.getSelectedIndex();
+				dbUrl = urlTextField.getText();
+				dbSchemaName = schemaNameTextField.getText();
+				if(driverIndex == 0) {
 					driverName = "com.mysql.jdbc.Driver";
 					urlName = "jdbc:mysql://";
 					schemaName = "";					
-				} else if (driverComboBox.getSelectedIndex() == 1) {
+				} else if (driverIndex == 1) {
 					driverName = "org.postgresql.Driver";
 					urlName = "jdbc:postgresql://";
 					schemaName = schemaNameTextField.getText() + '.';
@@ -285,8 +297,8 @@ public class NetworkInitializer {
 					urlName = "jdbc:sqlite::/";
 					schemaName = "";
 				}
-				 if (dbNetwork.connect(driverName,  urlName, schemaName,urlTextField.getText() + "/" + schemaNameTextField.getText(),
-						   usernameTextField.getText(), passwordTextField.getText())
+				 if (dbNetwork.connect(driverName,  urlName, schemaName, dbUrl + "/" + dbSchemaName,
+						   dbUsername, dbPassword)
 				 	) {
 					 connectWindow.setVisible(false);
 					 synchronized (dbNetwork) {
