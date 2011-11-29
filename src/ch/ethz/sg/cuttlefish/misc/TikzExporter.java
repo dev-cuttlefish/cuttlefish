@@ -218,7 +218,10 @@ public class TikzExporter {
 		
 		if ((vertex.getLabel() != null) && (true))
 		{			
-			p.print(" label={[label distance=-5]"+ calculateAngle(vertex)+":" + escapeChars(vertex.getLabel()) + "},");
+			p.print(" label={[label distance=0]"+					
+					//calculateAngle(vertex)
+					"315"
+					+":" + escapeChars(vertex.getLabel()) + "},");
 		}
 		//TODO: now all vertices are shaded, add a variable in cxf to determine that
 		p.print(" shading=ball,");
