@@ -50,7 +50,6 @@ import edu.uci.ics.jung.algorithms.layout.ISOMLayout;
 import edu.uci.ics.jung.algorithms.layout.KKLayout;
 import edu.uci.ics.jung.algorithms.layout.Layout;
 import edu.uci.ics.jung.algorithms.layout.RadialTreeLayout;
-import edu.uci.ics.jung.algorithms.layout.SpringLayout;
 import edu.uci.ics.jung.algorithms.layout.TreeLayout;
 import edu.uci.ics.jung.algorithms.util.IterativeContext;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
@@ -70,34 +69,36 @@ public class Cuttlefish {
 	
 	
 	public static void main(String[] args) {
-
-		initOptions();
-		CommandLineParser parser = new GnuParser();
-
-		try {
-			// parse the command line arguments
-			opts = parser.parse(options, args);
-		} catch (ParseException e) {
-			// something went wrong..
-			e.printStackTrace();
+		if(args.length != 0) {			
+			initOptions();
+			CommandLineParser parser = new GnuParser();
+	
+			try {
+				// parse the command line arguments
+				opts = parser.parse(options, args);
+			} catch (ParseException e) {
+				// something went wrong..
+				e.printStackTrace();
+			}
+			
+			if (opts.hasOption("help") || !opts.hasOption("input")) {
+				printUsage();
+				System.exit(0);
+			}
+			
+			// this helps us to press Ctrl+C in order to stop iterative layouts
+			Runtime.getRuntime().addShutdownHook(new Thread() {
+			    public void run() {
+			       System.out.println("stopping");
+			       done = true;
+			       outputNetwork();
+			    }
+			 });
+			
+			parseOptions(args);
+		} else {
+			startGui();
 		}
-		
-		if (opts.hasOption("help") || !opts.hasOption("input")) {
-			printUsage();
-			System.exit(0);
-		}
-		
-		// this helps us to press Ctrl+C in order to stop iterative layouts
-		Runtime.getRuntime().addShutdownHook(new Thread() {
-		    public void run() {
-		       System.out.println("stopping");
-		       done = true;
-		       outputNetwork();
-		    }
-		 });
-		
-		parseOptions(args);
-		
 
 	}
 
@@ -112,14 +113,14 @@ public class Cuttlefish {
 			System.exit(0);
 		}
 		if (opts.hasOption("gui")) {
-			startGui(args);
+			startGui();
 		} else {
 			startCmd();
 			System.exit(0);
 		}
 	}
 
-	private static void startGui(String[] args) {
+	private static void startGui() {
 		new ch.ethz.sg.cuttlefish.gui2.Cuttlefish();
 	}
 
@@ -152,8 +153,8 @@ public class Cuttlefish {
 		} else if (l.compareToIgnoreCase("weighted-arf") == 0) {
 			layout = new WeightedARF2Layout<Vertex, Edge>(getNetwork(), true,
 					Integer.MAX_VALUE);
-		} else if (l.compareToIgnoreCase("spring") == 0) {
-			layout = new SpringLayout<Vertex, Edge>(getNetwork());
+		//} else if (l.compareToIgnoreCase("spring") == 0) {
+		//	layout = new SpringLayout<Vertex, Edge>(getNetwork());
 		} else if (l.compareToIgnoreCase("kamada-kawai") == 0) {
 			layout = new KKLayout<Vertex, Edge>(getNetwork());
 		} else if (l.compareToIgnoreCase("fruchterman-reingold") == 0) {
@@ -187,11 +188,7 @@ public class Cuttlefish {
 			done = false;
 			while (!done) {
 				done = ((IterativeContext) layout).done();
-				// SpringLayout is bad.. it pretends it never
-				// finishes..
-				if (layout instanceof SpringLayout) {
-					done = true;
-				}
+				
 				if (layout instanceof ARF2Layout) {
 					double change = Math.abs(((ARF2Layout<Vertex, Edge>) layout)
 							.getChange());
@@ -339,7 +336,7 @@ public class Cuttlefish {
 		Option layout = OptionBuilder
 				.withValueSeparator()
 				.withDescription(
-						"network layout: arf (default), weighted-arf, k-core, spring, kamada-kawai, fruchterman-reingold, iso-m, circle, tree, radial-tree")
+						"network layout: arf (default), weighted-arf, k-core, kamada-kawai, fruchterman-reingold, iso-m, circle, tree, radial-tree")
 				.withLongOpt("layout").hasArg().withArgName("layout")
 				.create("l");
 		options.addOption(help);
