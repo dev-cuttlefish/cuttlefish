@@ -55,7 +55,7 @@ public class OpenMenu extends AbstractMenu implements Subject {
 	private JMenuItem exploreNetwork;
 	private JMenuItem pajekNetwork;
 	private JMenuItem graphmlNetwork;
-	private JMenuItem cffNetwork;
+	//private JMenuItem cffNetwork;
 	private JMenuItem testSimulation;		
 	private JMenuItem baSimulation;
 	private List<Observer> observers;
@@ -76,7 +76,7 @@ public class OpenMenu extends AbstractMenu implements Subject {
 		dbNetwork = new JMenuItem("Database network");
 		pajekNetwork = new JMenuItem("Pajek network");
 		graphmlNetwork = new JMenuItem("GraphML network");
-		cffNetwork = new JMenuItem("CFF network");
+		//cffNetwork = new JMenuItem("CFF network");
 		testSimulation = new JMenuItem("Test simulation");		
 		baSimulation = new JMenuItem("BA simulation");
 		
@@ -95,7 +95,7 @@ public class OpenMenu extends AbstractMenu implements Subject {
 			networkClassMap.put(interactiveNetwork, Class.forName("ch.ethz.sg.cuttlefish.networks.InteractiveCxfNetwork") );
 			networkClassMap.put(pajekNetwork, Class.forName("ch.ethz.sg.cuttlefish.networks.PajekNetwork") );
 			networkClassMap.put(graphmlNetwork, Class.forName("ch.ethz.sg.cuttlefish.networks.GraphMLNetwork") );
-			networkClassMap.put(cffNetwork, Class.forName("ch.ethz.sg.cuttlefish.networks.StaticCxfNetwork") );
+			//networkClassMap.put(cffNetwork, Class.forName("ch.ethz.sg.cuttlefish.networks.StaticCxfNetwork") );
 			networkClassMap.put(testSimulation, Class.forName("ch.ethz.sg.cuttlefish.networks.TestSimulation") );
 			networkClassMap.put(baSimulation, Class.forName("ch.ethz.sg.cuttlefish.networks.BASimulation") );
 		} catch (ClassNotFoundException e1) {
@@ -109,7 +109,7 @@ public class OpenMenu extends AbstractMenu implements Subject {
 		interactiveNetwork.setMnemonic('I');
 		pajekNetwork.setMnemonic('P');
 		graphmlNetwork.setMnemonic('G');
-		cffNetwork.setMnemonic('f');
+		//cffNetwork.setMnemonic('f');
 		testSimulation.setMnemonic('T');
 		baSimulation.setMnemonic('B');
 		
@@ -120,7 +120,7 @@ public class OpenMenu extends AbstractMenu implements Subject {
 		this.add(interactiveNetwork);
 		this.add(pajekNetwork);
 		this.add(graphmlNetwork);
-		this.add(cffNetwork);
+		//this.add(cffNetwork);
 		this.add(baSimulation);
 		this.add(testSimulation);
 		this.setVisible(true);
@@ -174,14 +174,14 @@ public class OpenMenu extends AbstractMenu implements Subject {
 				notifyObservers();
 			}
 		});
-		cffNetwork.addActionListener(new ActionListener() {
+		/*cffNetwork.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) { 
 				networkSelected(cffNetwork); 
 				toolbars.getSimulationToolbar().setVisible(false); 
 				toolbars.getDBToolbar().setVisible(false);
 				notifyObservers();
 			}
-		});
+		});*/
 		baSimulation.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) { 
 				networkSelected(baSimulation); 

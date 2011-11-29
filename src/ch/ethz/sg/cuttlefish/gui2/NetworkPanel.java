@@ -95,6 +95,7 @@ public class NetworkPanel  extends JPanel implements Subject, ItemListener,INetw
 	private String layoutType = null;
 	private List<Observer> observers = null;
 	private StatusBar statusBar = null;
+	private SetLayoutWorker setLayoutWorker = null;
 	private int width;
 	private int height;
 	
@@ -381,7 +382,12 @@ public class NetworkPanel  extends JPanel implements Subject, ItemListener,INetw
 
 	@Override
 	public void setLayout(String selectedLayout) {
-		(new SetLayoutWorker(selectedLayout, this)).execute();
+		if(setLayoutWorker != null) {
+			setLayoutWorker.cancel(true);
+			setLayoutWorker = null;
+		}
+		setLayoutWorker = new SetLayoutWorker(selectedLayout, this);
+		setLayoutWorker.execute();
 	}
 
 	public void setLayoutByName(String selectedLayout) {

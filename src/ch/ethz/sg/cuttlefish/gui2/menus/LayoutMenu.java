@@ -58,7 +58,7 @@ public class LayoutMenu extends AbstractMenu implements Observer {
 	private JRadioButtonMenuItem kcore;
 	private JRadioButtonMenuItem fixed;
 	private JRadioButtonMenuItem weightedArf;
-	private JRadioButtonMenuItem spring;
+	// private JRadioButtonMenuItem spring;
 	private JRadioButtonMenuItem kamada;
 	private JRadioButtonMenuItem fruchterman;
 	private JRadioButtonMenuItem isom;
@@ -81,7 +81,7 @@ public class LayoutMenu extends AbstractMenu implements Observer {
 		kcore = new JRadioButtonMenuItem("KCore");
 		fixed = new JRadioButtonMenuItem("Fixed");
 		weightedArf = new JRadioButtonMenuItem("Weighted ARF");
-		spring = new JRadioButtonMenuItem("Spring");
+		//spring = new JRadioButtonMenuItem("Spring");
 		kamada = new JRadioButtonMenuItem("Kamada Kawai");
 		fruchterman = new JRadioButtonMenuItem("Fruchterman Reingold");
 		isom = new JRadioButtonMenuItem("ISO M");
@@ -90,7 +90,7 @@ public class LayoutMenu extends AbstractMenu implements Observer {
 		radialTree = new JRadioButtonMenuItem("Radial Tree");
 		arf.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_1, ActionEvent.ALT_MASK));
 		kcore.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_2, ActionEvent.ALT_MASK));
-		spring.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_3, ActionEvent.ALT_MASK));
+		//spring.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_3, ActionEvent.ALT_MASK));
 		kamada.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_4, ActionEvent.ALT_MASK));
 		fruchterman.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_5, ActionEvent.ALT_MASK));
 		isom.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_6, ActionEvent.ALT_MASK));
@@ -101,7 +101,7 @@ public class LayoutMenu extends AbstractMenu implements Observer {
 		layoutButtons.add(kcore);
 		layoutButtons.add(fixed);
 		layoutButtons.add(weightedArf);
-		layoutButtons.add(spring);
+		//layoutButtons.add(spring);
 		layoutButtons.add(kamada);
 		layoutButtons.add(fruchterman);
 		layoutButtons.add(isom);
@@ -114,7 +114,7 @@ public class LayoutMenu extends AbstractMenu implements Observer {
 		layoutMap.put(kcore, "KCore");
 		layoutMap.put(fixed, "Fixed");
 		layoutMap.put(weightedArf, "WeightedARFLayout");
-		layoutMap.put(spring, "SpringLayout");
+		//layoutMap.put(spring, "SpringLayout");
 		layoutMap.put(kamada, "Kamada-Kawai");
 		layoutMap.put(fruchterman, "Fruchterman-Reingold");
 		layoutMap.put(isom, "ISOMLayout");
@@ -150,7 +150,7 @@ public class LayoutMenu extends AbstractMenu implements Observer {
 		this.add(kcore);
 		this.add(fixed);
 		this.add(weightedArf);
-		this.add(spring);
+		//this.add(spring);
 		this.add(kamada);
 		this.add(fruchterman);
 		this.add(isom);
@@ -194,9 +194,10 @@ public class LayoutMenu extends AbstractMenu implements Observer {
 		weightedArf.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) { layoutSelected(weightedArf); }
 		});
-		spring.addActionListener(new ActionListener() {
+		/*spring.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) { layoutSelected(spring); }
 		});
+		*/
 		kamada.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) { layoutSelected(kamada); }
 		});
