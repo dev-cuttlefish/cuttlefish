@@ -35,23 +35,25 @@ public class TestSimulation extends BrowsableNetwork implements ISimulation {
 	public void reset() {
 		setIncremental(true);
 		lastInsert = null;
-		for (Edge edge : super.getEdges()) {
+		Collection<Edge> edges = getEdges();
+		while(!edges.isEmpty()) {
 			try {
-				super.removeEdge(edge);
+				removeEdge(edges.iterator().next());
 			}
 			catch (ConcurrentModificationException e)
 			{}
+			edges = getEdges();
 		}
 
-		Collection<Vertex> vertices = super.getVertices();
+		Collection<Vertex> vertices = getVertices();
 		while (!vertices.isEmpty())
 		{ 
 			try{
-				for (Vertex vertex : vertices)
-					super.removeVertex(vertex);
+				removeVertex(vertices.iterator().next());
 			}
 			catch (ConcurrentModificationException e)
 			{}
+			vertices = getVertices();
 		}
 	}
 

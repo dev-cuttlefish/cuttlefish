@@ -27,6 +27,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -231,6 +233,7 @@ public class LayoutMenu extends AbstractMenu implements Observer {
 	}
 	
 	private Set<Vertex> dfs(BrowsableNetwork g, Set<Vertex> visited, Vertex v) {
+		visited.add(v);
 		for(Vertex w : g.getNeighbors(v) ) {
 			if(!visited.contains(w)) {
 				visited.add(w);
@@ -252,12 +255,42 @@ public class LayoutMenu extends AbstractMenu implements Observer {
 	}
 	
 	private boolean checkKCoreLayout() {
-		if(dfs(networkPanel.getNetwork(), new HashSet<Vertex>(), networkPanel.getNetwork().getVertices().iterator().next()).size() < networkPanel.getNetwork().getVertexCount() ) {
-			JOptionPane.showMessageDialog(networkPanel, "This layout currently supports only connected graphs", "Warning message", JOptionPane.WARNING_MESSAGE, null);
-			return false;
-		} 
+		List< Set<Vertex> > cores = new LinkedList<Set<Vertex>>();
+		Set<Vertex> visited = new HashSet<Vertex>();
+		for(Vertex v : networkPanel.getNetwork().getVertices() ) {
+			if(visited.contains(v)) continue; 
+			Set<Vertex> core = new HashSet<Vertex>();
+			core = dfs(networkPanel.getNetwork(), core, v);
+			visited.addAll(core);
+			cores.add(core);						
+		}
+		if(cores.size() > 1) {
+			int answer = JOptionPane.showConfirmDialog(networkPanel, "The graph contains several components, the layout will apply to the largest connected component. This step cannot be undone. Continue?", "Warning message", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null);
+			if(answer == JOptionPane.NO_OPTION) {
+				return false;
+			} else {
+				// leave only the largest connected component
+				Set<Vertex> biggestCore = null;
+				for(Set<Vertex> currentCore : cores) {
+					if(biggestCore == null) {
+						biggestCore = currentCore;
+					} else {
+						Set<Vertex> removeCore = null;
+						if(biggestCore.size() < currentCore.size()) {
+							removeCore = biggestCore;
+							biggestCore = currentCore;
+						} else {
+							removeCore = currentCore;
+						}
+						for(Vertex v : removeCore) {
+							networkPanel.getNetwork().removeVertex(v);
+						}
+					}
+				}				
+			}
+		}
 		int answer = JOptionPane.showConfirmDialog(networkPanel, "This layout assigns colors to nodes. This operation cannot be undone. Proceed?", "Confirm layout", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null);
-		if(answer == 0)
+		if(answer == JOptionPane.YES_OPTION)
 			return true;		
 		return false;
 	}
