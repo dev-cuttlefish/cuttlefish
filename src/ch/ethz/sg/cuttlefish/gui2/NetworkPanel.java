@@ -300,8 +300,18 @@ public class NetworkPanel  extends JPanel implements Subject, ItemListener,INetw
 		 * change the layout to the default ARF layout.
 		 *
 		 */
-		if (layout == null)
-			setLayout("ARFLayout");	
+		if (layout == null) {
+			setLayout("ARFLayout");
+			//for the first setting of the layout we busy wait until
+			// the thread layout setter thread sets the layout
+			while(layout == null) {
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		}
 		else if( layout instanceof TreeLayout) {
 			network = new BrowsableForestNetwork(network);
 			layout.setGraph(network);			
@@ -348,11 +358,9 @@ public class NetworkPanel  extends JPanel implements Subject, ItemListener,INetw
 		if (layout instanceof FixedLayout) {
 			((FixedLayout<Vertex, Edge>)layout).update();
 		}
-		if (layout instanceof TreeLayout) {
-			stopLayout();
-			resumeLayout();
-		}
-		if (layout instanceof RadialTreeLayout) {
+		//non-iterative layouts need to be explicitly reset
+		if (layout instanceof TreeLayout || layout instanceof RadialTreeLayout 
+				|| layout instanceof CircleLayout || layout instanceof KCoreLayout ) {
 			stopLayout();
 			resumeLayout();
 		}
@@ -383,7 +391,10 @@ public class NetworkPanel  extends JPanel implements Subject, ItemListener,INetw
 	@Override
 	public void setLayout(String selectedLayout) {
 		if(setLayoutWorker != null) {
-			setLayoutWorker.cancel(true);
+			//make sure we stopped the previous layout worker
+			while(!setLayoutWorker.isDone()) {
+				setLayoutWorker.cancel(true);
+			}
 			setLayoutWorker = null;
 		}
 		setLayoutWorker = new SetLayoutWorker(selectedLayout, this);
@@ -397,6 +408,7 @@ public class NetworkPanel  extends JPanel implements Subject, ItemListener,INetw
 		if (selectedLayout.equalsIgnoreCase("ARFLayout"))
 		{	
 			newLayout = new ARF2Layout<Vertex,Edge>(getNetwork(), ((BrowsableNetwork)getNetwork()).isIncremental(),layout);
+			((ARF2Layout<Vertex, Edge>)newLayout).setMaxUpdates(Integer.MAX_VALUE);
 			if (((ARF2Layout<Vertex,Edge>)newLayout).getMaxUpdates() < getNetwork().getVertexCount())
 				((ARF2Layout<Vertex,Edge>)newLayout).setMaxUpdates(getNetwork().getVertexCount());		
 		}
@@ -410,7 +422,6 @@ public class NetworkPanel  extends JPanel implements Subject, ItemListener,INetw
 		{	
 			newLayout = new SpringLayout2<Vertex, Edge>(getNetwork());
 			((SpringLayout2<Vertex,Edge>) newLayout).setForceMultiplier(10);
-
 		}
 		if (selectedLayout.equalsIgnoreCase("Kamada-Kawai"))
 		{

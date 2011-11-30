@@ -49,7 +49,6 @@ public class ARF2Layout<V, E> extends AbstractLayout<Vertex, Edge> implements It
 	 * number of position updates before the graph is rendered
 	 */
 	private int updatesPerFrame = 1;
-	
 	/**
 	 * how much did the layout change from the previous iteration
 	 */
@@ -75,7 +74,7 @@ public class ARF2Layout<V, E> extends AbstractLayout<Vertex, Edge> implements It
 	 * deltaT controls the calculation precision: smaller deltaT results in
 	 * higher precision
 	 */
-	private double deltaT = 2;
+	private double deltaT = 0.5;
 
 	private boolean done = false;
 	private boolean locked = false;
@@ -97,7 +96,7 @@ public class ARF2Layout<V, E> extends AbstractLayout<Vertex, Edge> implements It
 	 * If the layout is used in a non interactive way, this variable gives a
 	 * maximum bound to the layout steps
 	 */
-	private int maxRelayouts = 50;
+	private int maxRelayouts = 10;
 
 	/**
 	 * the random number generator used
@@ -188,7 +187,9 @@ public class ARF2Layout<V, E> extends AbstractLayout<Vertex, Edge> implements It
 							Point2D f = getForceforNode(v);
 							double deltaIndividual = 0;
 							try {
-								deltaIndividual = getGraph().degree(v) > 1 ? (deltaT/Math.log10(getGraph().getVertexCount())) / Math.pow(getGraph().degree(v), 0.4) : (deltaT/Math.log10(getGraph().getVertexCount()));
+								double log = Math.log10(getGraph().getVertexCount()) == 0 ? 1 : Math.log10(getGraph().getVertexCount()); 
+								
+								deltaIndividual = getGraph().degree(v) > 1 ? (deltaT/log) / Math.pow(getGraph().degree(v), 0.4) : (deltaT/log);
 							} catch (java.lang.IllegalArgumentException ex) {
 								//System.out.println("Error: vertex not found in the graph");
 								this.reset();
@@ -344,7 +345,7 @@ public class ARF2Layout<V, E> extends AbstractLayout<Vertex, Edge> implements It
 
 	public void updateVertices() {
 		Set<Vertex> nvertices = new HashSet<Vertex>();
-		for (Vertex vertex2 : (Collection<Vertex>) getGraph().getVertices()) {
+		for (Vertex vertex2 : getGraph().getVertices()) {
 			if (!visualizedVertices.contains(vertex2)) {
 				nvertices.add(vertex2);
 			}
@@ -432,7 +433,7 @@ public class ARF2Layout<V, E> extends AbstractLayout<Vertex, Edge> implements It
 		int count = 0;
 		while (error > threshold && count < maxRelayouts) {
 			advancePositions();
-			count++;
+			count++;		
 		}
 
 	}

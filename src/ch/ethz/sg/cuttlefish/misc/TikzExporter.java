@@ -221,14 +221,15 @@ public class TikzExporter {
 			p.print(" label={[label distance=0]"+					
 					//calculateAngle(vertex)
 					"315"
-					+":" + escapeChars(vertex.getLabel()) + "},");
+					+":" + escapeChars(vertex.getLabel()) + "}");
 		}
 		//TODO: now all vertices are shaded, add a variable in cxf to determine that
-		p.print(" shading=ball,");
+		/*p.print(", shading=ball,");
 		if (vertex.getFillColor() != null) //The color reappears in the shading
 			p.print(" ball color="+ colors.get(vertex.getFillColor() ) );
 		else
-			p.print(" ball color=black");			
+			p.print(" ball color=black");
+		*/			
 		p.print("] (" + vertex.getId() + ") {};\n");
 	}
 	
