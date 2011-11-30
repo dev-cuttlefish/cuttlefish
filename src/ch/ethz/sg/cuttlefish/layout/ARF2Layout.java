@@ -194,8 +194,9 @@ public class ARF2Layout<V, E> extends AbstractLayout<Vertex, Edge> implements It
 								//System.out.println("Error: vertex not found in the graph");
 								this.reset();
 							}
-							f.setLocation(f.getX() * deltaIndividual, f.getY() * deltaIndividual);
+							f.setLocation(f.getX() * deltaIndividual, f.getY() * deltaIndividual);							
 							c.setLocation(c.getX() + f.getX(), c.getY() + f.getY());
+							new_change += Math.abs(f.getX()) + Math.abs(f.getY());
 						}
 					}
 				}
@@ -204,6 +205,8 @@ public class ARF2Layout<V, E> extends AbstractLayout<Vertex, Edge> implements It
 				e.printStackTrace();
 			}
 		}
+		change = new_change;
+		new_change = 0;
 		align(100, 100);
 	}
 	
@@ -226,11 +229,8 @@ public class ARF2Layout<V, E> extends AbstractLayout<Vertex, Edge> implements It
 
 		for (Vertex v : graph.getVertices()) {
 			Point2D c = transform(v);
-			new_change += (-x+x0-y+y0);
 			c.setLocation(c.getX() - x + x0, c.getY() - y + y0);
 		}
-		change = new_change;
-		new_change = 0;
 	}
 	
 	

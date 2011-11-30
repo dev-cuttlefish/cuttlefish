@@ -185,22 +185,33 @@ public class Cuttlefish {
 		out("Setting layout: " + opts.getOptionValue("layout"));
 		if (layout instanceof IterativeContext) {
 			out("Iterative layout, waiting on the layout to converge...");
+			out("Showing layout progress bar from 1000 pts to 0 pts");
+			out("the layout converges when the changes stabilize around 0 pts");
 			done = false;
+			double maxChange = Double.MAX_VALUE;
+			double minChange = 1;
+			double lastChange = 0;
 			while (!done) {
-				done = ((IterativeContext) layout).done();
-				
+				done = ((IterativeContext) layout).done();				
 				if (layout instanceof ARF2Layout) {
-					double change = Math.abs(((ARF2Layout<Vertex, Edge>) layout)
-							.getChange());
-					System.out.println("Change: " + change);
-					done = change < 10D / network.getVertexCount();
+					lastChange = Math.abs(((ARF2Layout<Vertex, Edge>) layout).getChange());					
 				}
 				if (layout instanceof WeightedARF2Layout) {
-					double change = Math.abs(((WeightedARF2Layout<Vertex, Edge>) layout)
-							.getChange());
-					System.out.println("Change: " + change);
-					done = change < 10D / network.getVertexCount();
+					lastChange = Math.abs(((WeightedARF2Layout<Vertex, Edge>) layout).getChange());
+				}				
+				lastChange = lastChange*100/getNetwork().getVertexCount();
+				if(maxChange == Double.MAX_VALUE) maxChange = lastChange/10;
+				double progress = lastChange/(maxChange/50);
+				String progressStr = "Layout progress: 150pts [";
+				for(int i = 0; i < 50; ++i) {
+					if(i <= progress)
+						progressStr += '=';
+					else
+						progressStr += ' ';
 				}
+				progressStr += "] 0pts";
+				System.out.print("[" + sdf.format(cal.getTime()) + "] " + progressStr + "\r");
+				done = lastChange < minChange;				
 				// since the layout won't tell us when it finishes,
 				// we have no choice but to pull its status
 				try {
