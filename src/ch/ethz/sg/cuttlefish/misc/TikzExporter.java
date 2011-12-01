@@ -27,10 +27,14 @@ import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.swing.JOptionPane;
@@ -57,15 +61,20 @@ public class TikzExporter {
 	private boolean hideVertexLabels = false;
 	private boolean hideEdgeLabels = false;
 	private Map<Color, String> colors;
+	private DecimalFormat formatter; 
 	
 	/**
 	 * General constructor for the class, pure object oriented approach.
 	 * It is necessary to create the object with the network before printing.
 	 * @param network
 	 */
-	public TikzExporter(BrowsableNetwork network){
+	public TikzExporter(BrowsableNetwork network){			
 		this.network = network;
 		colors = new HashMap<Color, String>();
+		DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.getDefault());
+		symbols.setDecimalSeparator('.');
+		formatter = new DecimalFormat("###.###", symbols);
+		formatter.setGroupingUsed(false);
 	}
 	
 	/**
@@ -197,9 +206,10 @@ public class TikzExporter {
 	 */
 	private void exportVertex(Vertex vertex)
 	{
-		Point2D coordinates = layout.transform(vertex);
-		p.print("\\node at (" + Utils.ensureDecimal(coordinates.getX()*FACTOR)
-				+ "," + Utils.ensureDecimal((maxY - coordinates.getY())*FACTOR) + ") [");
+		Point2D coordinates = layout.transform(vertex);		
+		
+		p.print("\\node at (" + formatter.format(coordinates.getX()*FACTOR)
+				+ "," + formatter.format((maxY - coordinates.getY())*FACTOR) + ") [");
 		if (vertex.getShape() != null)
 		{
 			if (vertex.getShape() instanceof Rectangle2D)
@@ -207,14 +217,14 @@ public class TikzExporter {
 			else
 				p.print("circle,");
 		}
-		p.print(" line width=" + Utils.ensureDecimal(vertex.getWidth()) + ",");
+		p.print(" line width=" + formatter.format(vertex.getWidth()) + ",");
 		
 		if ((vertex.getColor() != null) && (vertex.getWidth() > 0))
 			p.print(" draw=" + colors.get(vertex.getColor()) + ",");
 		if (vertex.getFillColor() != null)
 			p.print(" fill=" + colors.get(vertex.getFillColor()) + ",");
 		p.print(" inner sep=0pt,");
-		p.print(" minimum size = " + Utils.ensureDecimal((vertex.getSize())*nodeSizeFactor) + "pt,");
+		p.print(" minimum size = " + formatter.format((vertex.getSize())*nodeSizeFactor) + "pt,");
 		
 		if ((vertex.getLabel() != null) && (true))
 		{			
@@ -302,7 +312,7 @@ public class TikzExporter {
 				if(curEdgeType == EdgeType.DIRECTED) p.print("->, ");
 				else p.print("-, ");
 				p.print("shorten >=1pt, >=stealth, bend right=10, ");
-				p.print("line width=" + Utils.ensureDecimal(curWidth*WIDTHFACTOR) );
+				p.print("line width=" + formatter.format(curWidth*WIDTHFACTOR) );
 				if(curColor != null)
 					p.println(", color=" + colors.get(curColor) + "}}");
 				else
@@ -340,7 +350,7 @@ public class TikzExporter {
 			p.print("\\Loop[dist=1cm,dir=WE,");
 		else
 			p.print("\\Loop[dist=1cm,dir=EA,");
-			p.print("style={->,shorten >=1pt,>=stealth,line width="+ Utils.ensureDecimal(edge.getWidth()*WIDTHFACTOR));
+			p.print("style={->,shorten >=1pt,>=stealth,line width="+ formatter.format(edge.getWidth()*WIDTHFACTOR));
 		    p.print("}, color="+colors.get(edge.getColor()));
 		    if ((edge.getLabel() != null) && (! hideEdgeLabels))
 		    	p.print(", label="+ edge.getLabel());
