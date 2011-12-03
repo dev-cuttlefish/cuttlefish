@@ -317,10 +317,6 @@ public class Vertex {
 	public void setPosition(double x, double y){
 		this.position = new Point2D.Double(x,y);
 	}
-	
-	public String toString() {
-		return Integer.toString(id);
-	}
 
 	
 }
