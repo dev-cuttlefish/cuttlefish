@@ -48,6 +48,7 @@ import ch.ethz.sg.cuttlefish.misc.Conversion;
 import ch.ethz.sg.cuttlefish.misc.CxfToCmx;
 import ch.ethz.sg.cuttlefish.misc.FileChooser;
 import ch.ethz.sg.cuttlefish.misc.SVGExporter;
+import ch.ethz.sg.cuttlefish.misc.TikzDialog;
 import ch.ethz.sg.cuttlefish.misc.TikzExporter;
 import ch.ethz.sg.cuttlefish.networks.BrowsableNetwork;
 import ch.ethz.sg.cuttlefish.networks.CxfNetwork;
@@ -62,6 +63,7 @@ public class ExportMenu extends AbstractMenu {
 	private static final long serialVersionUID = 3697550568255024207L;
 	private JMenuItem toJpeg;
 	private JMenuItem toTikz;
+	private TikzDialog tikzDialog;
 	private JMenuItem toAdjMatrix;
 	private JMenuItem toEdgeList;
 	private JMenuItem toSVG;
@@ -71,7 +73,7 @@ public class ExportMenu extends AbstractMenu {
 	private JFileChooser snapshotFileChooser;
 	private JFileChooser svgFileChooser;
 	private JFileChooser appletFileChooser;
-	private JFileChooser  tikzFileChooser;
+	//private JFileChooser  tikzFileChooser;
 	private JFileChooser datFileChooser;
 	private JFileChooser cmxFileChooser;
 
@@ -248,13 +250,7 @@ public class ExportMenu extends AbstractMenu {
 		toTikz.addActionListener(new ActionListener() {			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				JFileChooser fc = getTikzFileChooser();
-			     fc.setSelectedFile(new File(((BrowsableNetwork)networkPanel.getNetwork()).getName()+".tex"));
-			     int returnVal = fc.showSaveDialog(networkPanel);
-			     if (returnVal == JFileChooser.APPROVE_OPTION) {
-			    	 File file = fc.getSelectedFile();
-			    	 exportToTikz(file);
-			     }
+			    exportToTikz();			    
 			}
 		});
 		
@@ -325,9 +321,10 @@ public class ExportMenu extends AbstractMenu {
 	 * Export network to TikZ format
 	 * @param file the file where the tikz output is stored
 	 */
-	public void exportToTikz(File file) {
+	public void exportToTikz() {
 		TikzExporter tikzexp = new TikzExporter(((BrowsableNetwork)networkPanel.getNetwork()));
-		tikzexp.exportToTikz(file, networkPanel.getNetworkLayout());
+		getTikzDialog(tikzexp).setVisible(true);
+		//ctikzexp.exportToTikz(networkPanel.getNetworkLayout());
 	}
 	
 	/**
@@ -371,12 +368,12 @@ public class ExportMenu extends AbstractMenu {
 	 *  
 	 * @return javax.swing.JFileChooser
 	 */
-	private JFileChooser getTikzFileChooser() {
+	/*private JFileChooser getTikzFileChooser() {
 		tikzFileChooser = new FileChooser();
 		tikzFileChooser.setDialogTitle("Exporting network to TikZ...");
 		tikzFileChooser.setFileFilter(new FileNameExtensionFilter(".tex files", "tex"));
 		return tikzFileChooser;
-	}
+	}*/
 	
 	/**
 	 * This method initializes the file chooser for the edge list and
@@ -437,6 +434,16 @@ public class ExportMenu extends AbstractMenu {
 			System.err.println("Error while creating JPEG Encoder");
 			nullEx.printStackTrace();
 		}
+	}
+	
+	public TikzDialog getTikzDialog(TikzExporter tikzExporter) {
+		if(tikzDialog == null) {
+			tikzDialog = new TikzDialog(tikzExporter, networkPanel);
+		} else {
+			tikzDialog.setTikzExporter(tikzExporter);
+			tikzDialog.calculateHeightAndWidth();
+		}
+		return tikzDialog;
 	}
 
 }

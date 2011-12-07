@@ -42,7 +42,6 @@ import com.sun.image.codec.jpeg.*;
 
 import ch.ethz.sg.cuttlefish.misc.CxfSaver;
 import ch.ethz.sg.cuttlefish.misc.PSTricksExporter;
-import ch.ethz.sg.cuttlefish.misc.TikzExporter;
 import ch.ethz.sg.cuttlefish.misc.Conversion;
 import ch.ethz.sg.cuttlefish.networks.BrowsableNetwork;
 import ch.ethz.sg.cuttlefish.networks.TemporalNetwork;
@@ -374,8 +373,8 @@ public class ExportPanel extends BrowserWidget  {
 	 * @param file the file where the tikz output is stored
 	 */
 	public void exportToTikz(File file) {
-		TikzExporter tikzexp = new TikzExporter(getNetwork());
-		tikzexp.exportToTikz(file, getBrowser().getNetworkLayout());
+		//TikzExporter tikzexp = new TikzExporter(getNetwork());
+		//tikzexp.exportToTikz(file, getBrowser().getNetworkLayout());
 	}
 	
 	@Override
