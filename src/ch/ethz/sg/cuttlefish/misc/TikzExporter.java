@@ -38,6 +38,7 @@ import java.util.Map;
 
 import javax.swing.JOptionPane;
 
+
 import ch.ethz.sg.cuttlefish.networks.BrowsableNetwork;
 import edu.uci.ics.jung.algorithms.layout.Layout;
 import edu.uci.ics.jung.graph.util.EdgeType;
@@ -61,6 +62,12 @@ public class TikzExporter {
 	private boolean hideEdgeLabels = false;
 	private Map<Color, String> colors;
 	private DecimalFormat formatter; 
+	private boolean fixedSize = false;
+	private double width = 0, height = 0;
+	// alpha and beta scale the x and y coordinates of a node, s scales the node size, edge width, etc.
+	private double s = 1, alpha = 1, beta = 1, xmin = java.lang.Double.MAX_VALUE, xmax = java.lang.Double.MIN_VALUE, ymin = java.lang.Double.MAX_VALUE, ymax = java.lang.Double.MIN_VALUE;
+	private String nodeStyle = "circle";	
+	
 	
 	/**
 	 * General constructor for the class, pure object oriented approach.
@@ -72,7 +79,7 @@ public class TikzExporter {
 		colors = new HashMap<Color, String>();
 		DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.getDefault());
 		symbols.setDecimalSeparator('.');
-		formatter = new DecimalFormat("###.###", symbols);
+		formatter = new DecimalFormat("###.#######", symbols);
 		formatter.setGroupingUsed(false);
 	}
 	
@@ -120,11 +127,15 @@ public class TikzExporter {
 	 * @param file open File where to print
 	 * @param netLayout layout to define the position of the vertices
 	 */
-	public void exportToTikz(File file, Layout<Vertex, Edge> netLayout){
-		if(Utils.checkForDuplicatedVertexIds(network))
-			Utils.reassignVertexIds(network);
-		outFile = file;
+	public void exportToTikz(Layout<Vertex, Edge> netLayout){
 		layout = netLayout;
+		
+		if(fixedSize) {
+			computeScaleCoordinates();
+		}
+		
+		if(Utils.checkForDuplicatedVertexIds(network))
+			Utils.reassignVertexIds(network);		
 		
 		//We find the maximum value of Y to revert the y coordinate when writing the nodes in tex
 		for (Vertex vertex : network.getVertices())
@@ -134,7 +145,7 @@ public class TikzExporter {
 				maxY = y;
 		}
 		
-		double k = Double.MAX_VALUE;
+		double k = java.lang.Double.MAX_VALUE;
 		// calculate min (2*dist / (size1+size2) as max node scale that avoids node overlapping
 		for (Vertex v1 : network.getVertices())
 		{
@@ -205,8 +216,16 @@ public class TikzExporter {
 	 */
 	private void exportVertex(Vertex vertex)
 	{
-		Point2D coordinates = layout.transform(vertex);		
-		
+		Point2D coordinates = null;
+		// if the size is fixed we have to scale the coordinates
+		if(fixedSize) {
+			Point2D origCoordinates = layout.transform(vertex);		
+			coordinates = new Point2D.Double(alpha*(origCoordinates.getX()-xmin), beta*(origCoordinates.getY()-ymin));
+			s = Math.max(alpha, beta);
+		} else {
+			coordinates = layout.transform(vertex);
+			s = 1;
+		}
 		p.print("\\node at (" + formatter.format(coordinates.getX()*FACTOR)
 				+ "," + formatter.format((maxY - coordinates.getY())*FACTOR) + ") [");
 		if (vertex.getShape() != null)
@@ -216,14 +235,14 @@ public class TikzExporter {
 			else
 				p.print("circle,");
 		}
-		p.print(" line width=" + formatter.format(vertex.getWidth()) + ",");
+		p.print(" line width=" + formatter.format(vertex.getWidth()*s) + ",");
 		
 		if ((vertex.getColor() != null) && (vertex.getWidth() > 0))
 			p.print(" draw=" + colors.get(vertex.getColor()) + ",");
 		if (vertex.getFillColor() != null)
 			p.print(" fill=" + colors.get(vertex.getFillColor()) + ",");
 		p.print(" inner sep=0pt,");
-		p.print(" minimum size = " + formatter.format((vertex.getSize())*nodeSizeFactor) + "pt,");
+		p.print(" minimum size = " + formatter.format((vertex.getSize())*nodeSizeFactor*s) + "pt,");
 		
 		if ((vertex.getLabel() != null) && (true))
 		{			
@@ -232,13 +251,14 @@ public class TikzExporter {
 					"315"
 					+":" + escapeChars(vertex.getLabel()) + "}");
 		}
-		//TODO: now all vertices are shaded, add a variable in cxf to determine that
-		/*p.print(", shading=ball,");
-		if (vertex.getFillColor() != null) //The color reappears in the shading
-			p.print(" ball color="+ colors.get(vertex.getFillColor() ) );
-		else
-			p.print(" ball color=black");
-		*/			
+		if(nodeStyle.compareToIgnoreCase("ball") == 0) {
+			p.print(", shading=ball,");
+			if (vertex.getFillColor() != null) //The color reappears in the shading
+				p.print(" ball color="+ colors.get(vertex.getFillColor() ) );
+			else
+				p.print(" ball color=black");
+		}
+					
 		p.print("] (" + vertex.getId() + ") {};\n");
 	}
 	
@@ -270,11 +290,17 @@ public class TikzExporter {
 		}
 	}
 	
+	
 	/**
 	 * Private method that exports all edges and writes them to the
 	 * Tikz file.
 	 */
 	private void exportEdges() {
+		if(fixedSize) {
+			s = Math.max(alpha, beta);
+		} else {
+			s = 1;
+		}
 		ArrayList<Edge> edgeList = new ArrayList<Edge>(network.getEdges());
 		if(edgeList.size() == 0) return;
 		Collections.sort(edgeList, new Comparator<Edge>() {
@@ -311,7 +337,7 @@ public class TikzExporter {
 				if(curEdgeType == EdgeType.DIRECTED) p.print("->, ");
 				else p.print("-, ");
 				p.print("shorten >=1pt, >=stealth, bend right=10, ");
-				p.print("line width=" + formatter.format(curWidth*WIDTHFACTOR) );
+				p.print("line width=" + formatter.format(curWidth*WIDTHFACTOR*s) );
 				if(curColor != null)
 					p.println(", color=" + colors.get(curColor) + "}}");
 				else
@@ -388,4 +414,46 @@ public class TikzExporter {
 	public boolean hiddenEdgeLabels() {
 		return hideEdgeLabels;
 	}
+	
+	public void setFixedSize(boolean b) {
+		fixedSize = b;
+	}
+	public boolean isFixedSize() {
+		return fixedSize;
+	}
+	public void setSize(int width, int height) {
+		this.width = width;
+		this.height = height;
+		
+	}
+	
+	private void computeScaleCoordinates() {
+		//first find the min and max values used as coordinates
+		for(Vertex v : network.getVertices() ) {
+			if(layout.transform(v).getX() < xmin)
+				xmin = layout.transform(v).getX();
+			if(layout.transform(v).getX() > xmax)
+				xmax = layout.transform(v).getX();
+			if(layout.transform(v).getY() < ymin)
+				ymin = layout.transform(v).getY();
+			if(layout.transform(v).getY() > ymax)
+				ymax = layout.transform(v).getY();
+		}		
+		//compute the scaling factors alpha and beta
+		alpha = width/(xmax-xmin);
+		beta = height/(ymax-ymin);
+		System.out.println("Computed scaling factors: " + alpha + ' ' + beta);
+		
+	}
+
+	public void setNodeStyle(String style) {
+		nodeStyle = style;			
+	}
+	public String getNodeStyle() {
+		return nodeStyle;
+	}
+	public void setOutputFile(File file) {
+		outFile = file;
+	}	
+	
 }

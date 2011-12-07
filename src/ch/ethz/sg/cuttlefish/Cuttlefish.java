@@ -237,7 +237,8 @@ public class Cuttlefish {
 		} else if (format.compareToIgnoreCase("tikz") == 0) {
 			out("Exporting to tikz");
 			TikzExporter t = new TikzExporter(getNetwork());
-			t.exportToTikz(new File(opts.getOptionValue("output")), getLayout());
+			t.setOutputFile(new File(opts.getOptionValue("output")));
+			t.exportToTikz(getLayout());
 		} else if (format.compareToIgnoreCase("applet") == 0) {
 			out("Exporting to applet");
 			AppletExporter a = new AppletExporter(getNetwork(), getLayout());
