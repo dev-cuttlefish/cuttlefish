@@ -4,11 +4,16 @@ import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.PrintStream;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
@@ -22,6 +27,8 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+
+import sun.misc.IOUtils;
 
 import com.sun.image.codec.jpeg.ImageFormatException;
 import com.sun.image.codec.jpeg.JPEGCodec;
@@ -43,6 +50,7 @@ import ch.ethz.sg.cuttlefish.networks.BrowsableForestNetwork;
 import ch.ethz.sg.cuttlefish.networks.BrowsableNetwork;
 import ch.ethz.sg.cuttlefish.networks.CxfNetwork;
 import ch.ethz.sg.cuttlefish.networks.GraphMLNetwork;
+import ch.ethz.sg.cuttlefish.networks.JsonNetwork;
 import ch.ethz.sg.cuttlefish.networks.PajekNetwork;
 import edu.uci.ics.jung.algorithms.layout.CircleLayout;
 import edu.uci.ics.jung.algorithms.layout.FRLayout;
@@ -291,6 +299,15 @@ public class Cuttlefish {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}			
+		} else if(format.compareToIgnoreCase("json") == 0) {
+			String file = opts.getOptionValue("output");
+			AppletExporter exporter = new AppletExporter(getNetwork(), getLayout());
+			try {
+				exporter.exportJsonData(new PrintStream(new File(file)));
+			} catch (FileNotFoundException e) {
+				out("File not found");
+				e.printStackTrace();
+			}
 		} else {
 			System.out.println("Unsupported output format '" + format + "'\n");
 			printUsage();
@@ -313,7 +330,27 @@ public class Cuttlefish {
 			PajekNetwork n = new PajekNetwork();
 			n.load(new File(file));
 			network = n;
+		} else if (format.compareToIgnoreCase("json") == 0 ) {
+			try {
+				BufferedReader reader = new BufferedReader(new FileReader(file));
+				String line = null;
+				StringBuilder stringBuilder = new StringBuilder();
+				String ls = System.getProperty("line.separator");
+				while( ( line = reader.readLine() ) != null ) {
+			        stringBuilder.append( line );
+			        stringBuilder.append( ls );
+			    }
+				JsonNetwork n = new JsonNetwork(stringBuilder.toString());
+				network = n;
+			} catch (FileNotFoundException e) {
+				out("File not found " + file);
+				e.printStackTrace();
+			} catch (IOException e) {
+				out("Error while reading file");
+				e.printStackTrace();
+			}			
 		} else {
+			
 			System.out.println("Unsupported input format '" + format + "'\n");
 			printUsage();
 			System.exit(0);
@@ -330,7 +367,7 @@ public class Cuttlefish {
 				.withValueSeparator().withLongOpt("input")
 				.withArgName("input file").hasArg().create("i");
 		Option inputFormat = OptionBuilder.withValueSeparator()
-				.withDescription("input format: cxf (default), graphml, pajek")
+				.withDescription("input format: cxf (default), json, graphml, pajek")
 				.withLongOpt("in-format").withArgName("input format").hasArg()
 				.create();
 		Option output = OptionBuilder.withValueSeparator()
@@ -339,7 +376,7 @@ public class Cuttlefish {
 		Option outputFormat = OptionBuilder
 				.withValueSeparator()
 				.withDescription(
-						"output format: tikz (default), cxf, applet, svg, cmx")
+						"output format: tikz (default), cxf, applet, svg, json, cmx")
 				.withLongOpt("out-format").withArgName("input format").hasArg()
 				.create();
 		Option gui = OptionBuilder
