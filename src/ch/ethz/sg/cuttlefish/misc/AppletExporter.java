@@ -83,45 +83,10 @@ public class AppletExporter {
 			p.println("   width=\"1000\" height=\"700\">");
 			
 			//"{nodes: [{id: 0, size: 23, width:  0, label: \"MS\", color: \"{0.900000,0.780300,0.270000}\"}], edges: []}";
-			p.println("  <param name='data' value='{ nodes: [");
-			boolean first = true;
-			for(Vertex v : network.getVertices() ) {
-				if(!first) {
-					p.println(",");
-				} else {
-					first = false;
-				}	
-				p.print("     {id: " + v.getId());
-				p.print(", size: " + v.getSize());
-				p.print(", width: " + v.getWidth());
-								
-				if(v.getLabel() != null)
-					p.print(", label: \"" + v.getLabel() + "\"");
-				if(v.getFillColor() != null)
-					p.print(", color: \"{" + ((double)v.getFillColor().getRed()/256.d) +","+((double)v.getFillColor().getGreen()/256.d)+","+((double)v.getFillColor().getBlue()/256.d)+"}\"}");
-				else
-					p.print("}");
-				
-			}			
-			p.println("     ], edges: [");
-			first = true;
-			for(Edge e : network.getEdges() ) {
-				if(!first) {
-					p.println(",");
-				} else {
-					first = false;
-				}	
-				p.print("     {id_origin: " + network.getSource(e).getId());
-				p.print(", id_dest: " + network.getDest(e).getId());
-				p.print(", label: " + e.getLabel());
-				p.print(", weight: " + e.getWeight());
-				p.print(", width: " + e.getWidth());
-				if(e.getColor() != null)
-					p.print(", color: \"{" + ((double)e.getColor().getRed()/256.d) +","+((double)e.getColor().getGreen()/256.d)+","+((double)e.getColor().getBlue()/256.d)+"}\"}");
-				else
-					p.print("} />");				
-			}
-			p.println("     ]}' />");
+			p.println("  <param name='data' value='");
+			
+			exportJsonData(p);
+			p.print("' />");
 			p.println("   <script language=\"javascript\">");
 			p.println("      var source_node= getParam(\"source_node\");");
 			p.println("      var distance = getParam(\"distance\");");
@@ -137,6 +102,48 @@ public class AppletExporter {
 			e.printStackTrace();
 		}
 
+	}
+
+	public void exportJsonData(PrintStream p) {
+		p.println("{ nodes: [");
+		boolean first = true;
+		for(Vertex v : network.getVertices() ) {
+			if(!first) {
+				p.println(",");
+			} else {
+				first = false;
+			}	
+			p.print("     {id: " + v.getId());
+			p.print(", size: " + v.getSize());
+			p.print(", width: " + v.getWidth());
+							
+			if(v.getLabel() != null)
+				p.print(", label: \"" + v.getLabel() + "\"");
+			if(v.getFillColor() != null)
+				p.print(", color: \"{" + ((double)v.getFillColor().getRed()/256.d) +","+((double)v.getFillColor().getGreen()/256.d)+","+((double)v.getFillColor().getBlue()/256.d)+"}\"}");
+			else
+				p.print("}");
+			
+		}			
+		p.println("     ], edges: [");
+		first = true;
+		for(Edge e : network.getEdges() ) {
+			if(!first) {
+				p.println(",");
+			} else {
+				first = false;
+			}	
+			p.print("     {id_origin: " + (network.getSource(e) != null ? network.getSource(e).getId() : network.getEndpoints(e).getFirst().getId() ) );
+			p.print(", id_dest: " + (network.getDest(e) != null ? network.getDest(e).getId() : network.getEndpoints(e).getSecond().getId() ));
+			p.print(", label: " + e.getLabel());
+			p.print(", weight: " + e.getWeight());
+			p.print(", width: " + e.getWidth());
+			if(e.getColor() != null)
+				p.print(", color: \"{" + ((double)e.getColor().getRed()/256.d) +","+((double)e.getColor().getGreen()/256.d)+","+((double)e.getColor().getBlue()/256.d)+"}\"}");
+			else
+				p.print("} />");				
+		}
+		p.println("     ]}");
 	}
 
 }
