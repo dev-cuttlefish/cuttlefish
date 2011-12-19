@@ -10,8 +10,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.text.SimpleDateFormat;
@@ -27,8 +25,6 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-
-import sun.misc.IOUtils;
 
 import com.sun.image.codec.jpeg.ImageFormatException;
 import com.sun.image.codec.jpeg.JPEGCodec;
@@ -97,7 +93,8 @@ public class Cuttlefish {
 			// this helps us to press Ctrl+C in order to stop iterative layouts
 			Runtime.getRuntime().addShutdownHook(new Thread() {
 			    public void run() {
-			       System.out.println("stopping");
+			       out("\n");
+			       out("Ctrl+C event: Stopping");
 			       done = true;
 			       outputNetwork();
 			    }
@@ -193,33 +190,20 @@ public class Cuttlefish {
 		out("Setting layout: " + opts.getOptionValue("layout"));
 		if (layout instanceof IterativeContext) {
 			out("Iterative layout, waiting on the layout to converge...");
-			out("Showing layout progress bar from 1000 pts to 0 pts");
-			out("the layout converges when the changes stabilize around 0 pts");
+			out("The layout will automatically stop when the change is less than 10");
+			out("you can always manually stop the layout by pressing Ctrl+C");
 			done = false;
-			double maxChange = Double.MAX_VALUE;
-			double minChange = 1;
-			double lastChange = 0;
+			double change = 0;
 			while (!done) {
 				done = ((IterativeContext) layout).done();				
 				if (layout instanceof ARF2Layout) {
-					lastChange = Math.abs(((ARF2Layout<Vertex, Edge>) layout).getChange());					
+					change = Math.abs(((ARF2Layout<Vertex, Edge>) layout).getChange());					
 				}
 				if (layout instanceof WeightedARF2Layout) {
-					lastChange = Math.abs(((WeightedARF2Layout<Vertex, Edge>) layout).getChange());
+					change = Math.abs(((WeightedARF2Layout<Vertex, Edge>) layout).getChange());
 				}				
-				lastChange = lastChange*100/getNetwork().getVertexCount();
-				if(maxChange == Double.MAX_VALUE) maxChange = lastChange/10;
-				double progress = lastChange/(maxChange/50);
-				String progressStr = "Layout progress: 150pts [";
-				for(int i = 0; i < 50; ++i) {
-					if(i <= progress)
-						progressStr += '=';
-					else
-						progressStr += ' ';
-				}
-				progressStr += "] 0pts";
-				System.out.print("[" + sdf.format(cal.getTime()) + "] " + progressStr + "\r");
-				done = lastChange < minChange;				
+				System.out.print("[" + sdf.format(cal.getTime()) + "] Layout change: " + change + "\r");
+				done = change < 10;				
 				// since the layout won't tell us when it finishes,
 				// we have no choice but to pull its status
 				try {

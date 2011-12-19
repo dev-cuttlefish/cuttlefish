@@ -101,7 +101,7 @@ public class WeightedARF2Layout<V, E> extends AbstractLayout<Vertex, Edge> imple
 	 * If the layout is used in a non interactive way, this variable gives a
 	 * maximum bound to the layout steps
 	 */
-	private int maxRelayouts = 50;
+	private int maxRelayouts = 10;
 
 	/**
 	 * the random number generator used

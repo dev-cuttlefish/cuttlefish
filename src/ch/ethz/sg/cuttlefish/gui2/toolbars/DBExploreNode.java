@@ -38,6 +38,8 @@ import javax.swing.JTextField;
 import javax.swing.SwingWorker;
 
 import ch.ethz.sg.cuttlefish.gui2.NetworkPanel;
+import ch.ethz.sg.cuttlefish.misc.Edge;
+import ch.ethz.sg.cuttlefish.misc.Vertex;
 import ch.ethz.sg.cuttlefish.networks.DBNetwork;
 
 public class DBExploreNode extends JFrame {
@@ -213,8 +215,9 @@ public class DBExploreNode extends JFrame {
 					//is needed for the tree layout
 					networkPanel.setNetwork(getDBNetwork());					
 				}
+				
 				int distance = Integer.parseInt(distanceField.getText());				
-				((DBNetwork) networkPanel.getNetwork()).extendNeighborhood(Integer.parseInt(nodeField.getText()), distance, forward);
+				((DBNetwork) networkPanel.getNetwork()).extendNeighborhood(Integer.parseInt(nodeField.getText()), distance, forward, new HashSet<Vertex>(), new HashSet<Edge>());
 				networkPanel.onNetworkChange();
 				networkPanel.getNetworkLayout().reset();
 				networkPanel.repaintViewer();
@@ -224,6 +227,15 @@ public class DBExploreNode extends JFrame {
 		});
 				
 	}	
+		
+	public void refresh() {
+		getDBNetwork().setNodeFilter("");
+		getDBNetwork().setEdgeFilter("");				
+		boolean forward = true;				
+		int distance = Integer.parseInt(distanceField.getText());				
+		((DBNetwork) networkPanel.getNetwork()).extendNeighborhood(Integer.parseInt(nodeField.getText()), distance, forward, new HashSet<Vertex>(), new HashSet<Edge>());
+		networkPanel.onNetworkChange();
+	}
 	
 	/**
 	 * NetBeans generated code for aligning the components
@@ -385,4 +397,5 @@ public class DBExploreNode extends JFrame {
 		ok.doClick();
 		ok.setEnabled(false);
 	}
+
 }

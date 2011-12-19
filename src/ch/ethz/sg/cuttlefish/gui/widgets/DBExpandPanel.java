@@ -104,7 +104,7 @@ public class DBExpandPanel extends BrowserWidget {
 			expandButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
 					for (Vertex vertex : getBrowser().getPickedVertices())
-						((DBNetwork) getNetwork()).extendNeighborhood(vertex.getId(), 1, true);
+						//((DBNetwork) getNetwork()).extendNeighborhood(vertex.getId(), 1, true);
 					getBrowser().onNetworkChange();
 	                getBrowser().repaintViewer();
 	           }
@@ -125,7 +125,7 @@ public class DBExpandPanel extends BrowserWidget {
 			backExpandButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
 					for (Vertex vertex : getBrowser().getPickedVertices())
-						((DBNetwork) getNetwork()).extendNeighborhood(vertex.getId(), 1, false);
+						//((DBNetwork) getNetwork()).extendNeighborhood(vertex.getId(), 1, false);
 					getBrowser().onNetworkChange();
 	                getBrowser().repaintViewer();
 	           }

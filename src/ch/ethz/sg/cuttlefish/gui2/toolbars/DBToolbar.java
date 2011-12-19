@@ -27,13 +27,16 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.Collection;
+import java.util.HashSet;
 
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 
 import ch.ethz.sg.cuttlefish.gui2.NetworkPanel;
+import ch.ethz.sg.cuttlefish.misc.Edge;
 import ch.ethz.sg.cuttlefish.misc.Vertex;
 import ch.ethz.sg.cuttlefish.networks.ExploreNetwork;
 import ch.ethz.sg.cuttlefish.networks.DBNetwork;
@@ -50,15 +53,24 @@ public class DBToolbar extends AbstractToolbar {
 	private JButton expandBack = null;
 	private JButton shrink = null;
 	private JButton shrinkBack = null;
+	private JButton run = null;
+	private JButton step = null;
+	private JButton settingsButton;
+	private boolean running = false;
+	private long sleepTime = 200; // in milliseconds
 	private JComboBox networkNames = null;
 	private DBExploreNode exploreNodeFrame = new DBExploreNode(networkPanel);;
 	private DBExploreNetwork exploreNetworkFrame = null;
 	private boolean enabled = false;
-
+	private Icon runIcon = null;
+	private Icon pauseIcon = null;
 	private static String expandIcon = "icons/plus.png";
 	private static String expandBackIcon = "icons/plus_back.png";
 	private static String shrinkIcon = "icons/minus.png";
 	private static String shrinkBackIcon = "icons/minus_back.png";
+	private static String runIconFile = "icons/run.png";
+	private static String pauseIconFile = "icons/pause.png";
+	private static String stepIcon = "icons/step.png";
 
 	public DBToolbar(NetworkPanel networkPanel) {
 		super(networkPanel);
@@ -96,6 +108,8 @@ public class DBToolbar extends AbstractToolbar {
 	private void setNetworkButtonsEnabled(boolean b) {
 		exploreNetwork.setEnabled(b);
 		exploreNode.setEnabled(b);
+		step.setEnabled(b);
+		run.setEnabled(b);
 	}
 
 	private void checkPickedVertices() {
@@ -141,10 +155,14 @@ public class DBToolbar extends AbstractToolbar {
 		shrink = new JButton(new ImageIcon(getClass().getResource(shrinkIcon)));
 		shrinkBack = new JButton(new ImageIcon(getClass().getResource(
 				shrinkBackIcon)));
+		run = new JButton(getRunIcon());
+		step = new JButton(new ImageIcon(getClass().getResource(stepIcon)));
 		setExploreButtonsEnabled(true);
 		setNetworkButtonsEnabled(false);
 		networkNames = new JComboBox();
 		networkNames.setEditable(false);
+		settingsButton = new JButton("Settings");
+		settingsButton.setToolTipText("Change the update time interval");
 				
 		expand.setToolTipText("Expand node (add all nodes connected to the selected node)");
 		expandBack.setToolTipText("Expand back node (add all nodes that are connected to the selected node");
@@ -152,6 +170,22 @@ public class DBToolbar extends AbstractToolbar {
 		shrinkBack.setToolTipText("Shrink back node (remove all nodes that are connected to the selected node)");
 		exploreNetwork.setToolTipText("Filter a network using node and edge filters");
 		exploreNode.setToolTipText("Explore the neighborhood of a node");
+		run.setToolTipText("Update the network upon data changes");
+		step.setToolTipText("Check the data for changes");
+		
+		run.addActionListener(new ActionListener() {			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				runButtonEvent();	
+			}
+		});
+		
+		step.addActionListener(new ActionListener() {			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				stepButtonEvent();	
+			}
+		});
 
 		networkNames.addItemListener(new ItemListener() {
 			@Override
@@ -182,7 +216,7 @@ public class DBToolbar extends AbstractToolbar {
 			public void actionPerformed(ActionEvent e) {
 				getExploreNetworkFrame().update();
 				getExploreNetworkFrame().setVisible(true);
-				getExploreNetworkFrame().requestFocus();
+				getExploreNetworkFrame().toFront();
 			}
 		});
 
@@ -191,7 +225,7 @@ public class DBToolbar extends AbstractToolbar {
 			public void actionPerformed(ActionEvent e) {
 				getExploreNodeFrame().update();
 				getExploreNodeFrame().setVisible(true);
-				getExploreNodeFrame().requestFocus();
+				getExploreNodeFrame().toFront();
 			}
 		});
 
@@ -202,14 +236,24 @@ public class DBToolbar extends AbstractToolbar {
 		this.add(shrinkBack);
 		this.add(exploreNetwork);
 		this.add(exploreNode);
-
+		this.add(run);
+		this.add(step);	
+		this.add(settingsButton);
+		
+		settingsButton.addActionListener(new ActionListener() {			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				settingsButtonEvent();	
+			}
+		});
+		
 		expand.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(java.awt.event.ActionEvent e) {
 				checkPickedVertices();
 				for (Vertex vertex : networkPanel.getPickedVertices())
 					((DBNetwork) networkPanel.getNetwork()).extendNeighborhood(
-							vertex.getId(), 1, true);
+							vertex.getId(), 1, true, new HashSet<Vertex>(), new HashSet<Edge>());
 				networkPanel.onNetworkChange();
 				networkPanel.repaintViewer();
 			}
@@ -221,7 +265,7 @@ public class DBToolbar extends AbstractToolbar {
 				checkPickedVertices();
 				for (Vertex vertex : networkPanel.getPickedVertices())
 					((DBNetwork) networkPanel.getNetwork()).extendNeighborhood(
-							vertex.getId(), 1, false);
+							vertex.getId(), 1, false, new HashSet<Vertex>(), new HashSet<Edge>());
 				networkPanel.onNetworkChange();
 				networkPanel.repaintViewer();
 			}
@@ -253,8 +297,66 @@ public class DBToolbar extends AbstractToolbar {
 
 	}
 	
+	private void runButtonEvent() {
+		if(!running) {
+			// go to running mode
+			running = true;
+			step.setEnabled(false);
+			run.setIcon(getPauseIcon());
+			new Thread(new Runnable() {				
+				@Override			
+				public void run() {
+					while(running) {
+						try {
+							Thread.sleep(sleepTime);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+						stepButtonEvent();
+					}
+				}
+			}).start();
+		} else {
+			// pause
+			running = false;
+			run.setIcon(getRunIcon());
+			step.setEnabled(true);
+		}
+	}
+
+	private void stepButtonEvent() {
+		if(((DBNetwork) networkPanel.getNetwork()).getLastAction().compareToIgnoreCase("exploreNode") == 0) {
+			getExploreNodeFrame().refresh();
+		} else if(((DBNetwork) networkPanel.getNetwork()).getLastAction().compareToIgnoreCase("exploreNetwork") == 0) {
+			getExploreNetworkFrame().refresh();
+		}
+	}
+	
 	public DBExploreNode exploreNodeFrame(){
 		return exploreNodeFrame;
 	}
-
+	
+	private Icon getRunIcon() {
+		if(runIcon == null)
+			runIcon = new ImageIcon(getClass().getResource(runIconFile));
+		return runIcon;
+	}
+	
+	private Icon getPauseIcon() {
+		if(pauseIcon == null)
+			pauseIcon = new ImageIcon(getClass().getResource(pauseIconFile));
+		return pauseIcon;
+	}
+	
+	private void settingsButtonEvent() {
+		String sleepTimeStr = (String)JOptionPane.showInputDialog(networkPanel, "Enter time between updates in milliseconds", "Time between updates", JOptionPane.QUESTION_MESSAGE, null, null, sleepTime);
+		if(sleepTimeStr != null) {
+			try {
+				sleepTime = Long.parseLong(sleepTimeStr);
+			} catch (NumberFormatException ex) {
+				JOptionPane.showMessageDialog(networkPanel, "The value that you enter is not an integer", "Incorrect input", JOptionPane.WARNING_MESSAGE, null);
+			}
+		}
+	}
+	
 }
