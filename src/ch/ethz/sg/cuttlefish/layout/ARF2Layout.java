@@ -369,16 +369,20 @@ public class ARF2Layout<V, E> extends AbstractLayout<Vertex, Edge> implements It
 	 * @return true if node and node2 are connected
 	 */
 	private boolean isEdgeInGraph(Vertex node, Vertex node2) {
-
-		Edge e = getGraph().findEdge(node, node2);
-		if (e == null) {
-			e = getGraph().findEdge(node2, node);
-		}
-		if (e != null) {
-			return !e.isExcluded();
-		} else {
+		try {
+			Edge e = getGraph().findEdge(node, node2);
+			if (e == null) {
+				e = getGraph().findEdge(node2, node);
+			}
+			if (e != null) {
+				return !e.isExcluded();
+			} else {
+				return false;
+			}
+		} catch(Exception e) {
+			// if something goes wrong simply return that the edge is not in the graph
 			return false;
-		}
+		}		
 	}
 
 	/*
@@ -405,12 +409,13 @@ public class ARF2Layout<V, E> extends AbstractLayout<Vertex, Edge> implements It
 	 * @see edu.uci.ics.jung.visualization.LayoutMutable#update()
 	 */
 	public void update() {
-		if (! locked)
-		{
-			for (Vertex v : (Collection<Vertex>) getGraph().getVertices())
-				assignPositionToVertex(v);
-			
-				updateVertices();
+		if (! locked) {
+			try {
+				for (Vertex v : (Collection<Vertex>) getGraph().getVertices())
+					assignPositionToVertex(v);
+				
+					updateVertices();
+			} catch (ConcurrentModificationException e){}
 			
 			if (!incremental) {
 					layout();
@@ -568,8 +573,10 @@ public class ARF2Layout<V, E> extends AbstractLayout<Vertex, Edge> implements It
 		done = (countUpdates > maxUpdates);
 
 		if (!done) {
-			update();
-			advancePositions();
+			try {
+				update();
+				advancePositions();
+			} catch(ConcurrentModificationException e) {}
 		}
 	}
 

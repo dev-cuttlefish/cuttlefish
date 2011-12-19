@@ -61,6 +61,7 @@ public class DBNetwork extends BrowsableNetwork {
 	private Collection<String> networkNames;
 	private Map<String, String> networkNodetableMap;
 	private Map<String, Set<String>> tableAvailableColumnsMap;
+	private String lastAction = "";
 
 	private String edgeTable = "";
 	private String nodeTable = "";
@@ -431,121 +432,90 @@ public class DBNetwork extends BrowsableNetwork {
 	 * @param queryString
 	 */
 	public void nodeQuery(String queryStringOriginal) {
+		lastAction = "exploreNetwork";
+		syncHashTable();
+		Set<Vertex> visitedVertices = new HashSet<Vertex>();
 		try {
 			String queryString = applyFilter(queryStringOriginal, nodeFilter);
 			Statement st = conn.createStatement();
 			ResultSet rs = st.executeQuery(queryString);
 			while (rs.next()) {
-				Vertex v;
 				int id = rs.getInt("id");
-				if (hash.get(id) == null) {
-					v = new Vertex(id);
-					if (!derivedNodeTable) {
-						if (tableAvailableColumnsMap.get(nodeTable).contains(
-								"label")) {
-							String label = rs.getString("label");
-							if (label != null)
-								v.setLabel(label);
-						}
-						if (tableAvailableColumnsMap.get(nodeTable).contains(
-								"color")) {
-							String colorString = rs.getString("color");
-							if (colorString != null) {
-								int pos = 0;
-								float R, G, B;
-								R = Float.parseFloat(colorString.substring(pos,
-										colorString.indexOf(',', pos)));
-								pos = colorString.indexOf(',', pos) + 1;
-								G = Float.parseFloat(colorString.substring(pos,
-										colorString.indexOf(',', pos)));
-								pos = colorString.indexOf(',', pos) + 1;
-								B = Float
-										.parseFloat(colorString.substring(pos));
-								v.setFillColor(new Color(R, G, B));
-							}
-						}
-						if (tableAvailableColumnsMap.get(nodeTable).contains(
-								"borderColor")) {
-							String borderColorString = rs
-									.getString("borderColor");
-							if (borderColorString != null) {
-								int pos = 0;
-								float R, G, B;
-								R = Float.parseFloat(borderColorString
-										.substring(pos, borderColorString
-												.indexOf(',', pos)));
-								pos = borderColorString.indexOf(',', pos) + 1;
-								G = Float.parseFloat(borderColorString
-										.substring(pos, borderColorString
-												.indexOf(',', pos)));
-								pos = borderColorString.indexOf(',', pos) + 1;
-								B = Float.parseFloat(borderColorString
-										.substring(pos));
-								v.setColor(new Color(R, G, B));
-							}
-						}
-						if (tableAvailableColumnsMap.get(nodeTable).contains(
-								"size")) {
-							float size = rs.getFloat("size");
-							if (size != 0)
-								v.setSize(size);
-						}
-
-						if (tableAvailableColumnsMap.get(nodeTable).contains(
-								"shape")) {
-							String shape = rs.getString("shape");
-							if (shape != null)
-								v.setShape(shape);
-						}
-
-						if (tableAvailableColumnsMap.get(nodeTable).contains(
-								"width")) {
-							int width = rs.getInt("width");
-							if (width != 0)
-								v.setWidth(width);
-						}
-
-						if (tableAvailableColumnsMap.get(nodeTable).contains(
-								"var1")) {
-							String var1 = rs.getString("var1");
-							if (var1 != null)
-								v.setVar1(var1);
-						}
-
-						if (tableAvailableColumnsMap.get(nodeTable).contains(
-								"var2")) {
-							String var2 = rs.getString("var2");
-							if (var2 != null)
-								v.setVar2(var2);
-						}
-
-						if (tableAvailableColumnsMap.get(nodeTable).contains(
-								"x")
-								&& tableAvailableColumnsMap.get(nodeTable)
-										.contains("y")) {
-							Double x = rs.getDouble("x");
-							Double y = rs.getDouble("y");
-							if ((x != null) && (y != null))
-								v.setPosition(x, y);
-						}
-
-						if (tableAvailableColumnsMap.get(nodeTable).contains(
-								"fixed")) {
-							v.setFixed(rs.getBoolean("fixed"));
-						}
-
-						if (tableAvailableColumnsMap.get(nodeTable).contains(
-								"hide")) {
-							boolean hide = false;
-							if (rs.getString("hide") != null)
-								hide = rs.getBoolean("hide");
-							v.setExcluded(hide);
+				Vertex v = new Vertex(id);				
+				if (!derivedNodeTable) {
+					if (tableAvailableColumnsMap.get(nodeTable).contains( "label")) {
+						String label = rs.getString("label");
+						if (label != null) { v.setLabel(label); }
+					}
+					if (tableAvailableColumnsMap.get(nodeTable).contains("color")) {
+						String colorString = rs.getString("color");
+						if (colorString != null) {
+							int pos = 0;
+							float R, G, B;
+							R = Float.parseFloat(colorString.substring(pos,colorString.indexOf(',', pos)));
+							pos = colorString.indexOf(',', pos) + 1;
+							G = Float.parseFloat(colorString.substring(pos,colorString.indexOf(',', pos)));
+							pos = colorString.indexOf(',', pos) + 1;
+							B = Float.parseFloat(colorString.substring(pos));
+							v.setFillColor(new Color(R, G, B));
 						}
 					}
-					addVertex(v);
-					hash.put(id, v);
+					if (tableAvailableColumnsMap.get(nodeTable).contains("borderColor")) {
+						String borderColorString = rs.getString("borderColor");
+						if (borderColorString != null) {
+							int pos = 0;
+							float R, G, B;
+							R = Float.parseFloat(borderColorString.substring(pos, borderColorString.indexOf(',', pos)));
+							pos = borderColorString.indexOf(',', pos) + 1;
+							G = Float.parseFloat(borderColorString.substring(pos, borderColorString.indexOf(',', pos)));
+							pos = borderColorString.indexOf(',', pos) + 1;
+							B = Float.parseFloat(borderColorString.substring(pos));
+							v.setColor(new Color(R, G, B));
+						}
+					}
+					if (tableAvailableColumnsMap.get(nodeTable).contains("size")) {
+						float size = rs.getFloat("size");
+						if (size != 0) { v.setSize(size); }
+					}
+					if (tableAvailableColumnsMap.get(nodeTable).contains("shape")) {
+						String shape = rs.getString("shape");
+						if (shape != null) { v.setShape(shape); }
+					}
+					if (tableAvailableColumnsMap.get(nodeTable).contains("width")) {
+						int width = rs.getInt("width");
+						if (width != 0) { v.setWidth(width); }
+					}
+					if (tableAvailableColumnsMap.get(nodeTable).contains("var1")) {
+						String var1 = rs.getString("var1");
+						if (var1 != null) { v.setVar1(var1); }
+					}
+					if (tableAvailableColumnsMap.get(nodeTable).contains("var2")) {
+						String var2 = rs.getString("var2");
+						if (var2 != null) { v.setVar2(var2); }
+					}
+					if (tableAvailableColumnsMap.get(nodeTable).contains("x") && tableAvailableColumnsMap.get(nodeTable).contains("y")) {
+						Double x = rs.getDouble("x");
+						Double y = rs.getDouble("y");
+						if ((x != null) && (y != null)) { v.setPosition(x, y); }
+					}
+					if (tableAvailableColumnsMap.get(nodeTable).contains("fixed")) {
+						v.setFixed(rs.getBoolean("fixed"));
+					}
+					if (tableAvailableColumnsMap.get(nodeTable).contains("hide")) {
+						boolean hide = false;
+						if (rs.getString("hide") != null) {hide = rs.getBoolean("hide"); }
+						v.setExcluded(hide);
+					}
 				}
-
+				if(hash.containsKey(v.getId())) {
+					//the node is there, simply update the attributes if they are changed
+					updateVertexAttributes(v);
+					v = hash.get(v.getId());
+				} else {
+					addVertex(v);
+					hash.put(id, v);	
+				}
+				visitedVertices.add(v);
 			}
 		} catch (SQLException sqlEx) {
 			JOptionPane.showMessageDialog(null, sqlEx.getMessage(), "Error",
@@ -553,9 +523,26 @@ public class DBNetwork extends BrowsableNetwork {
 			System.err.println("SQL error");
 			sqlEx.printStackTrace();
 		}
+		// remove vertices that are not visited, i.e. not present in the
+		// database anymore
+		// add them to a set to avoid concurrent modification exception
+		Set<Vertex> verticesToRemove = new HashSet<Vertex>();
+		for(Vertex v : getVertices()) {
+			if(!visitedVertices.contains(v)) {
+				verticesToRemove.add(v);
+			}
+		}
+		for(Vertex v : verticesToRemove) {
+			removeVertex(v);
+			hash.remove(v.getId());
+		}
 		extendEdges();
 	}
 
+	public String getLastAction() {
+		return lastAction;
+	}
+	
 	/**
 	 * Method that adds to the network the neighboring nodes up to certain
 	 * distance from a center.
@@ -567,280 +554,310 @@ public class DBNetwork extends BrowsableNetwork {
 	 * @param forward
 	 *            whether the traversal is forward or backward
 	 */
-	public void extendNeighborhood(int id, int distance, boolean forward) {
-		Vertex v = hash.get(id);
-		if (v == null) {
-			try {
-				v = new Vertex(id);
-				if (!derivedNodeTable) {
-					String queryString = "select * from " + nodeTable
-							+ " where id = " + id + ";";
-					queryString = applyFilter(queryString, nodeFilter);
-					Statement st = conn.createStatement();
-					ResultSet rs = st.executeQuery(queryString);
-					while (rs.next()) {
-						if (tableAvailableColumnsMap.get(nodeTable).contains(
-								"label")) {
-							v.setLabel(rs.getString("label"));
-						}
-						if (tableAvailableColumnsMap.get(nodeTable).contains(
-								"color")) {
-							String colorString = rs.getString("color");
-							if (colorString != null) {
-								int pos = 0;
-								float R, G, B;
-								R = Float.parseFloat(colorString.substring(pos,
-										colorString.indexOf(',', pos)));
-								pos = colorString.indexOf(',', pos) + 1;
-								G = Float.parseFloat(colorString.substring(pos,
-										colorString.indexOf(',', pos)));
-								pos = colorString.indexOf(',', pos) + 1;
-								B = Float
-										.parseFloat(colorString.substring(pos));
-								v.setFillColor(new Color(R, G, B));
-							}
-						}
-						if (tableAvailableColumnsMap.get(nodeTable).contains(
-								"borderColor")) {
-							String borderColorString = rs
-									.getString("borderColor");
-							if (borderColorString != null) {
-								int pos = 0;
-								float R, G, B;
-								R = Float.parseFloat(borderColorString
-										.substring(pos, borderColorString
-												.indexOf(',', pos)));
-								pos = borderColorString.indexOf(',', pos) + 1;
-								G = Float.parseFloat(borderColorString
-										.substring(pos, borderColorString
-												.indexOf(',', pos)));
-								pos = borderColorString.indexOf(',', pos) + 1;
-								B = Float.parseFloat(borderColorString
-										.substring(pos));
-								v.setColor(new Color(R, G, B));
-							}
-						}
-						if (tableAvailableColumnsMap.get(nodeTable).contains(
-								"size")) {
-							float size = rs.getFloat("size");
-							if (size != 0)
-								v.setSize(size);
-						}
-						if (tableAvailableColumnsMap.get(nodeTable).contains(
-								"shape")) {
-							String shape = rs.getString("shape");
-							if (shape != null)
-								v.setShape(shape);
-						}
-						if (tableAvailableColumnsMap.get(nodeTable).contains(
-								"width")) {
-							int width = rs.getInt("width");
-							if (width != 0)
-								v.setWidth(width);
-						}
-						if (tableAvailableColumnsMap.get(nodeTable).contains(
-								"var1")) {
-							String var1 = rs.getString("var1");
-							if (var1 != null)
-								v.setVar1(var1);
-						}
-						if (tableAvailableColumnsMap.get(nodeTable).contains(
-								"var2")) {
-							String var2 = rs.getString("var2");
-							if (var2 != null)
-								v.setVar2(var2);
-						}
-						if (tableAvailableColumnsMap.get(nodeTable).contains(
-								"hide")) {
-							boolean hide = false;
-							if (rs.getString("hide") != null)
-								hide = rs.getBoolean("hide");
-							v.setExcluded(hide);
-						}
-						if (tableAvailableColumnsMap.get(nodeTable).contains(
-								"x")
-								&& tableAvailableColumnsMap.get(nodeTable)
-										.contains("x")) {
-							Double x = rs.getDouble("x");
-							Double y = rs.getDouble("y");
-
-							if ((x != null) && (y != null))
-								v.setPosition(x, y);
-						}
-						if (tableAvailableColumnsMap.get(nodeTable).contains(
-								"fixed")) {
-							boolean fixed = rs.getBoolean("fixed");
-							v.setFixed(fixed);
+	public void extendNeighborhood(int id, int distance, boolean forward, Set<Vertex> visitedVertices, Set<Edge> visitedEdges) {
+		lastAction = "exploreNode";
+		// sync the hash table storing the nodes
+		boolean firstNode = false;
+		if(visitedVertices.size() == 0) {
+			firstNode = true;
+		}
+		syncHashTable();
+		
+		Vertex v = new Vertex(id);;		
+		// first read the vertex
+		try {
+			if (!derivedNodeTable) {
+				String queryString = "select * from " + nodeTable + " where id = " + id + ";";
+				queryString = applyFilter(queryString, nodeFilter);
+				Statement st = conn.createStatement();
+				ResultSet rs = st.executeQuery(queryString);
+				while (rs.next()) {
+					if (tableAvailableColumnsMap.get(nodeTable).contains("label")) {
+						v.setLabel(rs.getString("label"));
+					}
+					if (tableAvailableColumnsMap.get(nodeTable).contains("color")) {
+						String colorString = rs.getString("color");
+						if (colorString != null) {
+							int pos = 0;
+							float R, G, B;
+							R = Float.parseFloat(colorString.substring(pos, colorString.indexOf(',', pos)));
+							pos = colorString.indexOf(',', pos) + 1;
+							G = Float.parseFloat(colorString.substring(pos, colorString.indexOf(',', pos)));
+							pos = colorString.indexOf(',', pos) + 1;
+							B = Float.parseFloat(colorString.substring(pos));
+							v.setFillColor(new Color(R, G, B));
 						}
 					}
+					if (tableAvailableColumnsMap.get(nodeTable).contains("borderColor")) {
+						String borderColorString = rs.getString("borderColor");
+						if (borderColorString != null) {
+							int pos = 0;
+							float R, G, B;
+							R = Float.parseFloat(borderColorString.substring(pos, borderColorString.indexOf(',', pos)));
+							pos = borderColorString.indexOf(',', pos) + 1;
+							G = Float.parseFloat(borderColorString.substring(pos, borderColorString.indexOf(',', pos)));
+							pos = borderColorString.indexOf(',', pos) + 1;
+							B = Float.parseFloat(borderColorString.substring(pos));
+							v.setColor(new Color(R, G, B));
+						}
+					}
+					if (tableAvailableColumnsMap.get(nodeTable).contains("size")) {
+						float size = rs.getFloat("size");
+						if (size != 0) { v.setSize(size); }
+					}
+					if (tableAvailableColumnsMap.get(nodeTable).contains("shape")) {
+						String shape = rs.getString("shape");
+						if (shape != null) { v.setShape(shape); }
+					}
+					if (tableAvailableColumnsMap.get(nodeTable).contains("width")) {
+						int width = rs.getInt("width");
+						if (width != 0) { v.setWidth(width); }
+					}
+					if (tableAvailableColumnsMap.get(nodeTable).contains("var1")) {
+						String var1 = rs.getString("var1");
+						if (var1 != null) { v.setVar1(var1); }
+					}
+					if (tableAvailableColumnsMap.get(nodeTable).contains("var2")) {
+						String var2 = rs.getString("var2");
+						if (var2 != null) { v.setVar2(var2); }
+					}
+					if (tableAvailableColumnsMap.get(nodeTable).contains("hide")) {
+						boolean hide = false;
+						if (rs.getString("hide") != null) { hide = rs.getBoolean("hide"); }
+						v.setExcluded(hide);
+					}
+					if (tableAvailableColumnsMap.get(nodeTable).contains("x") && tableAvailableColumnsMap.get(nodeTable).contains("x")) {
+						Double x = rs.getDouble("x");
+						Double y = rs.getDouble("y");
+						if ((x != null) && (y != null)) { v.setPosition(x, y); }
+					}
+					if (tableAvailableColumnsMap.get(nodeTable).contains("fixed")) {
+						boolean fixed = rs.getBoolean("fixed");
+						v.setFixed(fixed);
+					}
 				}
-				addVertex(v);
-				hash.put(id, v);
-			} catch (SQLException sqlEx) {
-				JOptionPane.showMessageDialog(null, sqlEx.getMessage(),
-						"Error", JOptionPane.ERROR_MESSAGE);
-				System.err.println("Node not found");
-				sqlEx.printStackTrace();
-			}
+			}			
+		} catch (SQLException sqlEx) {
+			JOptionPane.showMessageDialog(null, sqlEx.getMessage(),
+					"Error", JOptionPane.ERROR_MESSAGE);
+			System.err.println("Node not found");
+			sqlEx.printStackTrace();
 		}
-		if ((forward == true) && (distance > 0) && (v != null)) {
+		//check if we need to add the node or simply update its attributes
+		if(hash.containsKey(v.getId())) {
+			// the node is there, just update the attributes
+			updateVertexAttributes(v);
+			v = hash.get(v.getId());
+		} else {
+			// we need to add the node
+			hash.put(v.getId(), v);
+			addVertex(v);
+		}
+		visitedVertices.add(v);
+		
+		if (forward == true && distance > 0) {
 			try {
-				String queryString = "select * from " + edgeTable
-						+ " where id_origin =" + v.getId() + ";";
+				String queryString = "select * from " + edgeTable + " where id_origin =" + v.getId() + ";";
 				queryString = applyFilter(queryString, edgeFilter);
 				Statement st = conn.createStatement();
 				ResultSet rs = st.executeQuery(queryString);
 				while (rs.next()) {
 					int id_dest = rs.getInt("id_dest");
-					extendNeighborhood(id_dest, distance - 1, true);
-
+					// we should check if the node was already explored, otherwise
+					// a loop would circle around unnecessarily
+					if(hash.get(id_dest) == null || !visitedVertices.contains(hash.get(id_dest))) {
+						extendNeighborhood(id_dest, distance - 1, true, visitedVertices, visitedEdges);
+					}
 					Edge e = new Edge();
-
-					if (tableAvailableColumnsMap.get(edgeTable).contains(
-							"label")) {
+					if (tableAvailableColumnsMap.get(edgeTable).contains("label")) {
 						e.setLabel(rs.getString("label"));
 					}
-					if (tableAvailableColumnsMap.get(edgeTable).contains(
-							"color")) {
+					if (tableAvailableColumnsMap.get(edgeTable).contains("color")) {
 						String colorString = rs.getString("color");
 						if (colorString != null) {
 							int pos = 0;
 							float R, G, B;
-							R = Float.parseFloat(colorString.substring(pos,
-									colorString.indexOf(',', pos)));
+							R = Float.parseFloat(colorString.substring(pos,colorString.indexOf(',', pos)));
 							pos = colorString.indexOf(',', pos) + 1;
-							G = Float.parseFloat(colorString.substring(pos,
-									colorString.indexOf(',', pos)));
+							G = Float.parseFloat(colorString.substring(pos,colorString.indexOf(',', pos)));
 							pos = colorString.indexOf(',', pos) + 1;
 							B = Float.parseFloat(colorString.substring(pos));
 							e.setColor(new Color(R, G, B));
 						}
 					}
-					if (tableAvailableColumnsMap.get(edgeTable).contains(
-							"width")) {
+					if (tableAvailableColumnsMap.get(edgeTable).contains("width")) {
 						int width = rs.getInt("width");
-						if (width != 0)
-							e.setWidth(width);
+						if (width != 0) { e.setWidth(width); }
 					}
-					if (tableAvailableColumnsMap.get(edgeTable).contains(
-							"weight")) {
+					if (tableAvailableColumnsMap.get(edgeTable).contains("weight")) {
 						float weight = rs.getFloat("weight");
-						if (weight != 0)
-							e.setWeight(weight);
+						if (weight != 0) { e.setWeight(weight); }
 					}
-					if (tableAvailableColumnsMap.get(edgeTable)
-							.contains("var1")) {
+					if (tableAvailableColumnsMap.get(edgeTable).contains("var1")) {
 						String var1 = rs.getString("var1");
-						if (var1 != null)
-							e.setVar1(var1);
+						if (var1 != null) { e.setVar1(var1); }
 					}
-					if (tableAvailableColumnsMap.get(edgeTable)
-							.contains("var2")) {
+					if (tableAvailableColumnsMap.get(edgeTable).contains("var2")) {
 						String var2 = rs.getString("var2");
-						if (var2 != null)
-							e.setVar2(var2);
+						if (var2 != null) { e.setVar2(var2); }
 					}
-					if (tableAvailableColumnsMap.get(edgeTable)
-							.contains("hide")) {
+					if (tableAvailableColumnsMap.get(edgeTable).contains("hide")) {
 						boolean hide = false;
-						if (rs.getString("hide") != null)
-							hide = rs.getBoolean("hide");
-
+						if (rs.getString("hide") != null) { hide = rs.getBoolean("hide"); }
 						e.setExcluded(hide);
 					}
-
-					if (directed)
-						addEdge(e, v, hash.get(id_dest), EdgeType.DIRECTED);
-					else
-						addEdge(e, v, hash.get(id_dest), EdgeType.UNDIRECTED);
-
+					Edge edge = findEdge(id, id_dest);
+					if(edge != null) {
+						updateEdgeAttributes(e, edge);
+						e = edge;
+					} else {
+						if (directed) {						
+							addEdge(e, v, hash.get(id_dest), EdgeType.DIRECTED);							
+						} else {						
+							addEdge(e, v, hash.get(id_dest), EdgeType.UNDIRECTED);
+						}	
+					}
+					visitedEdges.add(e);
 				}
 			} catch (SQLException sqlEx) {
-				JOptionPane.showMessageDialog(null, sqlEx.getMessage(),
-						"Error", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(null, sqlEx.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 				System.err.println("SQL error");
 				sqlEx.printStackTrace();
 			}
 		}
 		if ((forward == false) && (distance > 0) && (v != null)) {
 			try {
-				String queryString = "select * from " + edgeTable
-						+ " where id_dest =" + v.getId() + ";";
+				String queryString = "select * from " + edgeTable + " where id_dest =" + v.getId() + ";";
 				queryString = applyFilter(queryString, edgeFilter);
 				Statement st = conn.createStatement();
 				ResultSet rs = st.executeQuery(queryString);
 				while (rs.next()) {
 					int id_origin = rs.getInt("id_origin");
-					extendNeighborhood(id_origin, distance - 1, false);
-
+					//extendNeighborhood(id_origin, distance - 1, false);
 					Edge e = new Edge();
-
-					if (tableAvailableColumnsMap.get(edgeTable).contains(
-							"label")) {
+					if (tableAvailableColumnsMap.get(edgeTable).contains("label")) {
 						e.setLabel(rs.getString("label"));
 					}
-					if (tableAvailableColumnsMap.get(edgeTable).contains(
-							"color")) {
+					if (tableAvailableColumnsMap.get(edgeTable).contains("color")) {
 						String colorString = rs.getString("color");
 						if (colorString != null) {
 							int pos = 0;
 							float R, G, B;
-							R = Float.parseFloat(colorString.substring(pos,
-									colorString.indexOf(',', pos)));
+							R = Float.parseFloat(colorString.substring(pos, colorString.indexOf(',', pos)));
 							pos = colorString.indexOf(',', pos) + 1;
-							G = Float.parseFloat(colorString.substring(pos,
-									colorString.indexOf(',', pos)));
+							G = Float.parseFloat(colorString.substring(pos, colorString.indexOf(',', pos)));
 							pos = colorString.indexOf(',', pos) + 1;
 							B = Float.parseFloat(colorString.substring(pos));
 							e.setColor(new Color(R, G, B));
 						}
 					}
-					if (tableAvailableColumnsMap.get(edgeTable).contains(
-							"width")) {
+					if (tableAvailableColumnsMap.get(edgeTable).contains("width")) {
 						int width = rs.getInt("width");
-						if (width != 0)
-							e.setWidth(width);
+						if (width != 0) { e.setWidth(width); }
 					}
-					if (tableAvailableColumnsMap.get(edgeTable).contains(
-							"weight")) {
+					if (tableAvailableColumnsMap.get(edgeTable).contains("weight")) {
 						float weight = rs.getFloat("weight");
-						if (weight != 0)
-							e.setWeight(weight);
+						if (weight != 0) { e.setWeight(weight); }
 					}
-					if (tableAvailableColumnsMap.get(edgeTable)
-							.contains("var1")) {
+					if (tableAvailableColumnsMap.get(edgeTable).contains("var1")) {
 						String var1 = rs.getString("var1");
-						if (var1 != null)
-							e.setVar1(var1);
+						if (var1 != null) { e.setVar1(var1); }
 					}
-					if (tableAvailableColumnsMap.get(edgeTable)
-							.contains("var2")) {
+					if (tableAvailableColumnsMap.get(edgeTable).contains("var2")) {
 						String var2 = rs.getString("var2");
-						if (var2 != null)
-							e.setVar2(var2);
+						if (var2 != null) { e.setVar2(var2); }
 					}
-					if (tableAvailableColumnsMap.get(edgeTable)
-							.contains("hide")) {
+					if (tableAvailableColumnsMap.get(edgeTable).contains("hide")) {
 						boolean hide = false;
-						if (rs.getString("hide") != null)
+						if (rs.getString("hide") != null) {
 							hide = rs.getBoolean("hide");
-
+						}
 						e.setExcluded(hide);
 					}
 
-					if (directed)
+					if (directed) {
 						addEdge(e, hash.get(id_origin), v, EdgeType.DIRECTED);
-					else
+					} else {
 						addEdge(e, hash.get(id_origin), v, EdgeType.UNDIRECTED);
-
+					}					
 				}
 			} catch (SQLException sqlEx) {
-				JOptionPane.showMessageDialog(null, sqlEx.getMessage(),
-						"Error", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(null, sqlEx.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 				System.err.println("SQL error");
 				sqlEx.printStackTrace();
 			}
 		}
+		// here the first node cleans up.. i.e. removes nodes and edges if
+		// they were never visited
+		if(firstNode) {
+			Set<Edge> edgesToRemove = new HashSet<Edge>();
+			Set<Vertex> verticesToRemove = new HashSet<Vertex>();
+			for(Edge e : getEdges()) {
+				if(!visitedEdges.contains(e)) { edgesToRemove.add(e); }
+			}
+			for(Edge e : edgesToRemove) { removeEdge(e); }
+			for(Vertex w : getVertices()) {
+				if(!visitedVertices.contains(w)) { verticesToRemove.add(w); }
+			}
+			for(Vertex w : verticesToRemove) { removeVertex(w); }
+		}
+	}
+
+	private void syncHashTable() {
+		if(hash.size() != getVertexCount() ) {			
+			Set<Integer> toRemove = new HashSet<Integer>(hash.keySet());
+			for(Vertex v : getVertices()) {
+				toRemove.remove(v.getId());
+			}
+			for(Integer i : toRemove) {
+				hash.remove(i);
+			}
+		}
+	}
+
+	private void updateVertexAttributes(Vertex v) {
+		Vertex n = hash.get(v.getId());
+		if(n.isExcluded() != v.isExcluded()) { n.setExcluded(v.isExcluded()); }
+		if(n.isFixed() != v.isFixed()) { n.setFixed(v.isFixed()); }
+		if(n.getColor() != v.getColor()) { n.setColor(v.getColor()); }
+		if(n.getFillColor() != v.getFillColor()) { n.setFillColor(v.getFillColor()); }
+		if(n.getLabel() != v.getLabel()) { n.setLabel(v.getLabel()); }
+		if(n.getPosition() != v.getPosition()) { n.setPosition(v.getPosition()); }
+		if(n.getShape() != v.getShape()) { n.setShape(v.getShape()); }
+		if(n.getSize() != v.getSize()) { n.setSize(v.getSize()); }
+		if(n.getWidth() != v.getWidth()) { n.setWidth(v.getWidth()); }
+		if(n.getVar1() != v.getVar1()) { n.setVar1(v.getVar1()); }
+		if(n.getVar2() != v.getVar2()) { n.setVar2(v.getVar2()); }
+	}
+
+	private void updateEdgeAttributes(Edge fromEdge, Edge toEdge) {
+		if( toEdge.getLabel() != fromEdge.getLabel()) { toEdge.setLabel(fromEdge.getLabel()); }
+		if( toEdge.getColor() != fromEdge.getColor()) { toEdge.setColor(fromEdge.getColor()); }
+		if( toEdge.getShape() != fromEdge.getShape()) { toEdge.setShape(fromEdge.getShape()); }
+		if( toEdge.getVar1() != fromEdge.getVar1()) { toEdge.setVar1(fromEdge.getVar1()); }
+		if( toEdge.getVar2() != fromEdge.getVar2()) { toEdge.setVar2(fromEdge.getVar2()); }
+		if( toEdge.getWeight() != fromEdge.getWeight()) { toEdge.setWeight(fromEdge.getWeight()); }
+		if( toEdge.getWidth() != fromEdge.getWidth()) { toEdge.setWidth(fromEdge.getWidth()); }
+	}
+	
+	private Edge findEdge(int id_orig, int id_dest) {
+		Edge edge = null;
+		if (directed) {			
+			for(Edge cur_edge : getOutEdges(hash.get(id_orig))) {
+				if(getDest(cur_edge) != null && getDest(cur_edge) == hash.get(id_dest)) {
+					edge = cur_edge;
+					break;
+				}
+			}
+		} else {
+			for(Edge cur_edge : getIncidentEdges(hash.get(id_orig)) ) {
+				if(getEndpoints(cur_edge).getSecond() == hash.get(id_dest)) {
+					edge = cur_edge;
+					break;
+				}
+			}
+		}
+		return edge;
 	}
 
 	/**
@@ -945,10 +962,10 @@ public class DBNetwork extends BrowsableNetwork {
 	 * the nodes already added to the displayed network
 	 */
 	public void extendEdges() {
+		Set<Edge> visitedEdges = new HashSet<Edge>();
 		for (Vertex v : getVertices()) {
 			try {
-				String queryString = "select * from " + edgeTable
-						+ " where id_origin =" + v.getId() + ";";
+				String queryString = "select * from " + edgeTable + " where id_origin =" + v.getId() + ";";
 				queryString = applyFilter(queryString, edgeFilter);
 				Statement st = conn.createStatement();
 				ResultSet rs = st.executeQuery(queryString);
@@ -958,65 +975,55 @@ public class DBNetwork extends BrowsableNetwork {
 					if (v_dest != null) {
 						Edge e = new Edge();
 
-						if (tableAvailableColumnsMap.get(edgeTable).contains(
-								"label")) {
+						if (tableAvailableColumnsMap.get(edgeTable).contains("label")) {
 							e.setLabel(rs.getString("label"));
 						}
-						if (tableAvailableColumnsMap.get(edgeTable).contains(
-								"color")) {
+						if (tableAvailableColumnsMap.get(edgeTable).contains("color")) {
 							String colorString = rs.getString("color");
 							if (colorString != null) {
 								int pos = 0;
 								float R, G, B;
-								R = Float.parseFloat(colorString.substring(pos,
-										colorString.indexOf(',', pos)));
+								R = Float.parseFloat(colorString.substring(pos, colorString.indexOf(',', pos)));
 								pos = colorString.indexOf(',', pos) + 1;
-								G = Float.parseFloat(colorString.substring(pos,
-										colorString.indexOf(',', pos)));
+								G = Float.parseFloat(colorString.substring(pos, colorString.indexOf(',', pos)));
 								pos = colorString.indexOf(',', pos) + 1;
-								B = Float
-										.parseFloat(colorString.substring(pos));
+								B = Float.parseFloat(colorString.substring(pos));
 								e.setColor(new Color(R, G, B));
 							}
 						}
-						if (tableAvailableColumnsMap.get(edgeTable).contains(
-								"width")) {
+						if (tableAvailableColumnsMap.get(edgeTable).contains("width")) {
 							int width = rs.getInt("width");
-							if (width != 0)
-								e.setWidth(width);
+							if (width != 0) { e.setWidth(width); }
 						}
-						if (tableAvailableColumnsMap.get(edgeTable).contains(
-								"weight")) {
+						if (tableAvailableColumnsMap.get(edgeTable).contains("weight")) {
 							float weight = rs.getFloat("weight");
-							if (weight != 0)
-								e.setWeight(weight);
+							if (weight != 0) { e.setWeight(weight); }
 						}
-						if (tableAvailableColumnsMap.get(edgeTable).contains(
-								"var1")) {
+						if (tableAvailableColumnsMap.get(edgeTable).contains("var1")) {
 							String var1 = rs.getString("var1");
-							if (var1 != null)
-								e.setVar1(var1);
+							if (var1 != null) { e.setVar1(var1); }
 						}
-						if (tableAvailableColumnsMap.get(edgeTable).contains(
-								"var2")) {
+						if (tableAvailableColumnsMap.get(edgeTable).contains("var2")) {
 							String var2 = rs.getString("var2");
-							if (var2 != null)
-								e.setVar2(var2);
+							if (var2 != null) { e.setVar2(var2); }
 						}
-						if (tableAvailableColumnsMap.get(edgeTable).contains(
-								"hide")) {
+						if (tableAvailableColumnsMap.get(edgeTable).contains("hide")) {
 							boolean hide = false;
-							if (rs.getString("hide") != null)
-								hide = rs.getBoolean("hide");
-
+							if (rs.getString("hide") != null) { hide = rs.getBoolean("hide"); }
 							e.setExcluded(hide);
 						}
-
-						if (directed)
-							addEdge(e, v, v_dest, EdgeType.DIRECTED);
-						else
-							addEdge(e, v, v_dest, EdgeType.UNDIRECTED);
-
+						Edge edge = findEdge(v.getId(), v_dest.getId());
+						if(edge != null) {
+							updateEdgeAttributes(e, edge);
+						} else {
+							if (directed) {
+								addEdge(e, v, v_dest, EdgeType.DIRECTED);
+							} else {
+								addEdge(e, v, v_dest, EdgeType.UNDIRECTED);
+							}
+							edge = e;
+						}
+						visitedEdges.add(edge);
 					}
 				}
 			} catch (SQLException sqlEx) {
@@ -1027,6 +1034,12 @@ public class DBNetwork extends BrowsableNetwork {
 			}
 
 		}
+		//clean up edges that were not visited
+		Set<Edge> edgesToRemove = new HashSet<Edge>();
+		for(Edge e : getEdges()) {
+			if(!visitedEdges.contains(e)) { edgesToRemove.add(e); }
+		}
+		for(Edge e : edgesToRemove) { removeEdge(e); }
 	}
 
 	/**

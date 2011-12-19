@@ -79,6 +79,7 @@ public class DBExploreNetwork extends JFrame {
 		this.setLocationRelativeTo(networkPanel);
 		this.setSize(534,390);
 		this.networkPanel = networkPanel;
+		this.setResizable(true);
 		exploreNetwork = this;
 		this.setTitle("Filter network");		
 		initialize();
@@ -470,5 +471,19 @@ public class DBExploreNetwork extends JFrame {
 			return null;
 		}
     }
+
+	public void refresh() {
+		getDBNetwork().setNodeFilter("");
+		getDBNetwork().setEdgeFilter("");
+		if(vertexSQLFilter.length() > 0)
+			getDBNetwork().setNodeFilter(vertexSQLFilter);
+		if(edgeSQLFilter.length() > 0)
+			getDBNetwork().setEdgeFilter(edgeSQLFilter);
+		String nodeSQLQuery = "SELECT * FROM " + getDBNetwork().getNodeTable();
+		getDBNetwork().nodeQuery(nodeSQLQuery);
+		networkPanel.onNetworkChange();		
+		getDBNetwork().setNodeFilter("");
+		getDBNetwork().setEdgeFilter("");		
+	}
 
 }

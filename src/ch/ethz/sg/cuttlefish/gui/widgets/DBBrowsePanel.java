@@ -133,7 +133,7 @@ public class DBBrowsePanel extends BrowserWidget {
 							forward = false;
 							distance = (-1) * distance;		//extendNeighborhood gets abs value of distance
 						}
-					   ((DBNetwork) getNetwork()).extendNeighborhood(Integer.parseInt(idField.getText()), distance, forward);
+					  // ((DBNetwork) getNetwork()).extendNeighborhood(Integer.parseInt(idField.getText()), distance, forward);
 						getBrowser().onNetworkChange();
 		                getBrowser().getNetworkLayout().reset();
 		                getBrowser().repaintViewer();
