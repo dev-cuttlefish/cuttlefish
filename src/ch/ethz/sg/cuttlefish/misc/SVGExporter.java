@@ -17,6 +17,7 @@ public class SVGExporter {
 	private BrowsableNetwork network;
 	private Layout< Vertex, Edge> layout;
 	private boolean isDirected = false;
+	private Map<Vertex, Integer> index = new HashMap<Vertex, Integer>();
 	
 	
 	public SVGExporter(BrowsableNetwork network, Layout<Vertex,Edge> layout) {
@@ -30,91 +31,13 @@ public class SVGExporter {
 	
 	public void toSVG(File file, int height, int width) {
 		try {
+			String jsFilename = file.getAbsolutePath() + ".js";
+			exportJScript(new File(jsFilename));
 			PrintStream p = new PrintStream(file);
 			p.println("<?xml version='1.0'?>");
 			p.println("<html xmlns='http://www.w3.org/1999/xhtml' xmlns:svg='http://www.w3.org/2000/svg' xmlns:xul='http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul' xmlns:xlink='http://www.w3.org/1999/xlink'>");
 			p.println("<head>");
-			p.println("<script>");
-			p.println("<![CDATA[var dx,dy;\n  var nodes;\n  var labels;\n  var edges;\n  var selectedNode;");
-			p.println("  function init() {");
-			p.println("    labels = new Array();");
-			Map<Vertex, Integer> index = new HashMap<Vertex, Integer>();
-			int i = 0;
-			for(Vertex n : network.getVertices()) {
-				index.put(n, i++);
-			}
-			for(Vertex n : network.getVertices()) {
-				p.println("    labels[" + index.get(n) + "] = document.getElementById('label" + index.get(n) + "');");
-			}
-			p.println("    edges = new Array();");
-			for(Vertex n : network.getVertices() ) {
-				p.println("    edges["+ index.get(n) +"] = new Array();");
-			}
-			for(Vertex n : network.getVertices() ) {
-				int count = 0;
-				for(Edge e : network.getIncidentEdges(n)) {
-					int sourceId, destId;
-					// is the network directed?
-					if(isDirected) {
-						sourceId = index.get(network.getSource(e));
-						destId = index.get(network.getDest(e));
-					} else {
-						sourceId = index.get(network.getEndpoints(e).getFirst());
-						destId = index.get(network.getEndpoints(e).getSecond());
-					}
-					if(sourceId == destId) continue;
-					String edgeName = "edge" + (sourceId < destId? sourceId: destId) + (sourceId > destId? sourceId: destId);
-					p.println("    edges[" + index.get(n) + "][" + count + "] = document.getElementById('" + edgeName + "');");
-					count++;
-					
-				}
-			}
-			p.println("    nodes = new Array();");
-			for(Vertex n : network.getVertices() ) {
-				p.println("    nodes["+ index.get(n) +"] = document.getElementById('" + index.get(n) + "');");
-			}
-			for(Vertex n : network.getVertices() ) {
-				p.println("    nodes[" + index.get(n) + "].addEventListener('mousedown', mousedown_listener, false);");
-			}
-			p.println("  }");
-			p.println("  function mousedown_listener(evt)");
-			p.println("  {");
-			p.println("    selectedNode = evt.target;");
-			p.println("    dx = selectedNode.cx.baseVal.value - evt.clientX;");
-			p.println("    dy = selectedNode.cy.baseVal.value - evt.clientY;");
-			p.println("    document.addEventListener('mousemove', mousemove_listener, true);");
-			p.println("    document.addEventListener('mouseup', mouseup_listener, true);");
-			p.println("  }");
-
-			p.println("  function mouseup_listener(evt)");
-			p.println("  {");
-			p.println("    document.removeEventListener('mousemove', mousemove_listener, true);");
-			p.println("    document.removeEventListener('mouseup', mouseup_listener, true);");
-			p.println("  }");
-
-			p.println("  function mousemove_listener(evt)");
-			p.println("  {");
-			p.println("    var id = selectedNode.ownerSVGElement.suspendRedraw(1000);");
-
-			p.println("    for(i in edges[selectedNode.id]) {");
-			p.println("      var edge = edges[selectedNode.id][i];");
-			p.println("      if(edge.x1.baseVal.value == selectedNode.cx.baseVal.value");
-			p.println("          && edge.y1.baseVal.value == selectedNode.cy.baseVal.value ) {");
-			p.println("        edge.x1.baseVal.value = evt.clientX + dx;");
-			p.println("        edge.y1.baseVal.value = evt.clientY + dy;");
-			p.println("      } else {");
-			p.println("        edge.x2.baseVal.value = evt.clientX + dx;");
-			p.println("        edge.y2.baseVal.value = evt.clientY + dy;");
-			p.println("      }");
-			p.println("    }");
-			p.println("    selectedNode.cx.baseVal.value = evt.clientX + dx;");
-			p.println("    selectedNode.cy.baseVal.value = evt.clientY + dy;");   
-			p.println("    labels[selectedNode.id].setAttribute('x', selectedNode.cx.baseVal.value + selectedNode.r.baseVal.value + 2);");
-			p.println("    labels[selectedNode.id].setAttribute('y', selectedNode.cy.baseVal.value + selectedNode.r.baseVal.value + 2);");
-
-			p.println("    selectedNode.ownerSVGElement.unsuspendRedraw(id);");
-			p.println("  }");
-			p.println("  ]]>");
+			p.println("<script type=\"text/javascript\" src=\"" + jsFilename + "\">");
 			p.println("</script>");
 			p.println("</head>");
 			p.println("<body onload='init();'>");
@@ -194,6 +117,94 @@ public class SVGExporter {
 			e.printStackTrace();
 		}
 		return;
+	}
+
+	public void exportJScript(File f) {
+		PrintStream p = null;
+		try {
+			p = new PrintStream(f);
+		} catch (FileNotFoundException e1) {
+			System.out.println("Error when writing the java script file");
+			e1.printStackTrace();
+		}
+		p.println("var dx,dy;\n  var nodes;\n  var labels;\n  var edges;\n  var selectedNode;");
+		p.println("  function init() {");
+		p.println("    labels = new Array();");		
+		int i = 0;
+		for(Vertex n : network.getVertices()) {
+			index.put(n, i++);
+		}
+		for(Vertex n : network.getVertices()) {
+			p.println("    labels[" + index.get(n) + "] = document.getElementById('label" + index.get(n) + "');");
+		}
+		p.println("    edges = new Array();");
+		for(Vertex n : network.getVertices() ) {
+			p.println("    edges["+ index.get(n) +"] = new Array();");
+		}
+		for(Vertex n : network.getVertices() ) {
+			int count = 0;
+			for(Edge e : network.getIncidentEdges(n)) {
+				int sourceId, destId;
+				// is the network directed?
+				if(isDirected) {
+					sourceId = index.get(network.getSource(e));
+					destId = index.get(network.getDest(e));
+				} else {
+					sourceId = index.get(network.getEndpoints(e).getFirst());
+					destId = index.get(network.getEndpoints(e).getSecond());
+				}
+				if(sourceId == destId) continue;
+				String edgeName = "edge" + (sourceId < destId? sourceId: destId) + (sourceId > destId? sourceId: destId);
+				p.println("    edges[" + index.get(n) + "][" + count + "] = document.getElementById('" + edgeName + "');");
+				count++;
+				
+			}
+		}
+		p.println("    nodes = new Array();");
+		for(Vertex n : network.getVertices() ) {
+			p.println("    nodes["+ index.get(n) +"] = document.getElementById('" + index.get(n) + "');");
+		}
+		for(Vertex n : network.getVertices() ) {
+			p.println("    nodes[" + index.get(n) + "].addEventListener('mousedown', mousedown_listener, false);");
+		}
+		p.println("  }");
+		p.println("  function mousedown_listener(evt)");
+		p.println("  {");
+		p.println("    selectedNode = evt.target;");
+		p.println("    dx = selectedNode.cx.baseVal.value - evt.clientX;");
+		p.println("    dy = selectedNode.cy.baseVal.value - evt.clientY;");
+		p.println("    document.addEventListener('mousemove', mousemove_listener, true);");
+		p.println("    document.addEventListener('mouseup', mouseup_listener, true);");
+		p.println("  }");
+
+		p.println("  function mouseup_listener(evt)");
+		p.println("  {");
+		p.println("    document.removeEventListener('mousemove', mousemove_listener, true);");
+		p.println("    document.removeEventListener('mouseup', mouseup_listener, true);");
+		p.println("  }");
+
+		p.println("  function mousemove_listener(evt)");
+		p.println("  {");
+		p.println("    var id = selectedNode.ownerSVGElement.suspendRedraw(1000);");
+
+		p.println("    for(i in edges[selectedNode.id]) {");
+		p.println("      var edge = edges[selectedNode.id][i];");
+		p.println("      if(edge.x1.baseVal.value == selectedNode.cx.baseVal.value");
+		p.println("          && edge.y1.baseVal.value == selectedNode.cy.baseVal.value ) {");
+		p.println("        edge.x1.baseVal.value = evt.clientX + dx;");
+		p.println("        edge.y1.baseVal.value = evt.clientY + dy;");
+		p.println("      } else {");
+		p.println("        edge.x2.baseVal.value = evt.clientX + dx;");
+		p.println("        edge.y2.baseVal.value = evt.clientY + dy;");
+		p.println("      }");
+		p.println("    }");
+		p.println("    selectedNode.cx.baseVal.value = evt.clientX + dx;");
+		p.println("    selectedNode.cy.baseVal.value = evt.clientY + dy;");   
+		p.println("    labels[selectedNode.id].setAttribute('x', selectedNode.cx.baseVal.value + selectedNode.r.baseVal.value + 2);");
+		p.println("    labels[selectedNode.id].setAttribute('y', selectedNode.cy.baseVal.value + selectedNode.r.baseVal.value + 2);");
+
+		p.println("    selectedNode.ownerSVGElement.unsuspendRedraw(id);");
+		p.println("  }");
 	}
 	
 	/**
