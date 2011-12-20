@@ -725,7 +725,7 @@ public class DBNetwork extends BrowsableNetwork {
 				sqlEx.printStackTrace();
 			}
 		}
-		if ((forward == false) && (distance > 0) && (v != null)) {
+		if ((forward == false) && (distance > 0)) {
 			try {
 				String queryString = "select * from " + edgeTable + " where id_dest =" + v.getId() + ";";
 				queryString = applyFilter(queryString, edgeFilter);
@@ -733,7 +733,9 @@ public class DBNetwork extends BrowsableNetwork {
 				ResultSet rs = st.executeQuery(queryString);
 				while (rs.next()) {
 					int id_origin = rs.getInt("id_origin");
-					//extendNeighborhood(id_origin, distance - 1, false);
+					if(hash.get(id_origin) == null || !visitedVertices.contains(hash.get(id_origin))) {
+						extendNeighborhood(id_origin, distance - 1, false, visitedVertices, visitedEdges);
+					}					
 					Edge e = new Edge();
 					if (tableAvailableColumnsMap.get(edgeTable).contains("label")) {
 						e.setLabel(rs.getString("label"));
@@ -774,12 +776,18 @@ public class DBNetwork extends BrowsableNetwork {
 						}
 						e.setExcluded(hide);
 					}
-
-					if (directed) {
-						addEdge(e, hash.get(id_origin), v, EdgeType.DIRECTED);
+					Edge edge = findEdge(id_origin, id);
+					if(edge != null) {
+						updateEdgeAttributes(e, edge);
+						e = edge;
 					} else {
-						addEdge(e, hash.get(id_origin), v, EdgeType.UNDIRECTED);
-					}					
+						if (directed) {						
+							addEdge(e, hash.get(id_origin), v, EdgeType.DIRECTED);							
+						} else {						
+							addEdge(e, hash.get(id_origin), v, EdgeType.UNDIRECTED);
+						}	
+					}
+					visitedEdges.add(e);				
 				}
 			} catch (SQLException sqlEx) {
 				JOptionPane.showMessageDialog(null, sqlEx.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);

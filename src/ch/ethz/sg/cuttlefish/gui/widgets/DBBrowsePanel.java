@@ -126,11 +126,9 @@ public class DBBrowsePanel extends BrowserWidget {
 			exploreButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
 					if ( ((DBNetwork)getNetwork() ).isConnected() ) {
-						boolean forward = true;
 						int distance = Integer.parseInt(distanceField.getText());
 						if (distance < 0) // negative distance input means backwards exploration
 						{
-							forward = false;
 							distance = (-1) * distance;		//extendNeighborhood gets abs value of distance
 						}
 					  // ((DBNetwork) getNetwork()).extendNeighborhood(Integer.parseInt(idField.getText()), distance, forward);
