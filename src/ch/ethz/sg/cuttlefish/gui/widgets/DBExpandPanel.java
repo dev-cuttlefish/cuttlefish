@@ -102,6 +102,7 @@ public class DBExpandPanel extends BrowserWidget {
 			expandButton.setText("Expand");
 			expandButton.setEnabled(true);
 			expandButton.addActionListener(new java.awt.event.ActionListener() {
+				@SuppressWarnings("unused")
 				public void actionPerformed(java.awt.event.ActionEvent e) {
 					for (Vertex vertex : getBrowser().getPickedVertices())
 						//((DBNetwork) getNetwork()).extendNeighborhood(vertex.getId(), 1, true);
@@ -123,6 +124,7 @@ public class DBExpandPanel extends BrowserWidget {
 			backExpandButton.setText("Expand Backwards");
 			backExpandButton.setEnabled(true);
 			backExpandButton.addActionListener(new java.awt.event.ActionListener() {
+				@SuppressWarnings("unused")
 				public void actionPerformed(java.awt.event.ActionEvent e) {
 					for (Vertex vertex : getBrowser().getPickedVertices())
 						//((DBNetwork) getNetwork()).extendNeighborhood(vertex.getId(), 1, false);

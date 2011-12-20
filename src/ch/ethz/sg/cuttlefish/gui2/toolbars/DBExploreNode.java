@@ -32,6 +32,7 @@ import java.util.Set;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
@@ -55,6 +56,7 @@ public class DBExploreNode extends JFrame {
 	private JLabel nodesCountLabel;
 	private JLabel linksCountLabel;
 	private JLabel warningLabel;
+	private JLabel ignoreDirectionLabel;
 	private JLabel info;
 	private JLabel info2;
 	private boolean nodeInputValid;
@@ -65,6 +67,7 @@ public class DBExploreNode extends JFrame {
 	private JTextField distanceField;
 	private JButton ok;
 	private JButton cancel;
+	private JCheckBox ignoreDirection;
 	
 
 	
@@ -206,7 +209,6 @@ public class DBExploreNode extends JFrame {
 				getDBNetwork().setNodeFilter("");
 				getDBNetwork().setEdgeFilter("");
 				getDBNetwork().emptyNetwork();				
-				boolean forward = true;				
 				try{
 					((DBNetwork) networkPanel.getNetwork()).emptyNetwork();
 				} catch(java.lang.ClassCastException ex) {
@@ -217,7 +219,12 @@ public class DBExploreNode extends JFrame {
 				}
 				
 				int distance = Integer.parseInt(distanceField.getText());				
-				((DBNetwork) networkPanel.getNetwork()).extendNeighborhood(Integer.parseInt(nodeField.getText()), distance, forward, new HashSet<Vertex>(), new HashSet<Edge>());
+				Set<Vertex> visitedVertices = new HashSet<Vertex>();
+				Set<Edge> visitedEdges = new HashSet<Edge>();
+				((DBNetwork) networkPanel.getNetwork()).extendNeighborhood(Integer.parseInt(nodeField.getText()), distance, true, visitedVertices, visitedEdges);
+				if(ignoreDirection.isSelected()) {
+					((DBNetwork) networkPanel.getNetwork()).extendNeighborhood(Integer.parseInt(nodeField.getText()), distance, false, visitedVertices, visitedEdges);
+				}
 				networkPanel.onNetworkChange();
 				networkPanel.getNetworkLayout().reset();
 				networkPanel.repaintViewer();
@@ -231,9 +238,13 @@ public class DBExploreNode extends JFrame {
 	public void refresh() {
 		getDBNetwork().setNodeFilter("");
 		getDBNetwork().setEdgeFilter("");				
-		boolean forward = true;				
 		int distance = Integer.parseInt(distanceField.getText());				
-		((DBNetwork) networkPanel.getNetwork()).extendNeighborhood(Integer.parseInt(nodeField.getText()), distance, forward, new HashSet<Vertex>(), new HashSet<Edge>());
+		Set<Vertex> visitedVertices = new HashSet<Vertex>();
+		Set<Edge> visitedEdges = new HashSet<Edge>();
+		((DBNetwork) networkPanel.getNetwork()).extendNeighborhood(Integer.parseInt(nodeField.getText()), distance, true, visitedVertices, visitedEdges);
+		if(ignoreDirection.isSelected()) {
+			((DBNetwork) networkPanel.getNetwork()).extendNeighborhood(Integer.parseInt(nodeField.getText()), distance, false, visitedVertices, visitedEdges);
+		}
 		networkPanel.onNetworkChange();
 	}
 	
@@ -255,7 +266,8 @@ public class DBExploreNode extends JFrame {
 	        warningLabel = new javax.swing.JLabel();
 	        info = new javax.swing.JLabel();
 	        info2 = new javax.swing.JLabel();
-
+	        ignoreDirectionLabel= new javax.swing.JLabel();
+	        ignoreDirection = new JCheckBox();
 	        setDefaultCloseOperation(javax.swing.WindowConstants.HIDE_ON_CLOSE);
 	        nodeLabel.setText("Source ID");
 	        distanceLabel.setText("Distance");
@@ -264,7 +276,7 @@ public class DBExploreNode extends JFrame {
 	        distanceField.setText("1");
 	        distanceField.setName("distanceField");
 	        distanceField.setToolTipText("The degree of separation");
-
+	        ignoreDirectionLabel.setText("Ignore direction");
 	        distanceInfo.setForeground(Color.RED);
 	        distanceInfo.setText("");
 	        nodeInfo.setForeground(Color.RED);
@@ -292,11 +304,13 @@ public class DBExploreNode extends JFrame {
 	                    .addGroup(layout.createSequentialGroup()
 	                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
 	                            .addComponent(nodeLabel)
-	                            .addComponent(distanceLabel))
+	                            .addComponent(distanceLabel)
+	                            .addComponent(ignoreDirectionLabel))
 	                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
 	                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)	                        		
 	                            .addComponent(nodeField)
-	                            .addComponent(distanceField, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE))
+	                            .addComponent(distanceField, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE)
+	                            .addComponent(ignoreDirection))
 	                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 	                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
 	                            .addComponent(nodeInfo)
@@ -326,11 +340,15 @@ public class DBExploreNode extends JFrame {
 	                    .addComponent(nodeLabel)
 	                    .addComponent(nodeField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
 	                    .addComponent(nodeInfo))
-	                .addGap(18, 18, 18)
+	                .addGap(18, 18, 18)	                
 	                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
 	                    .addComponent(distanceLabel)
 	                    .addComponent(distanceField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
 	                    .addComponent(distanceInfo))
+	                .addGap(18, 18, 18)
+	                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+	                    .addComponent(ignoreDirection)
+	                    .addComponent(ignoreDirectionLabel))
 	                .addGap(18, 18, 18)
 	                .addComponent(nodesCountLabel)
 	                .addGap(9, 9, 9)
