@@ -318,5 +318,9 @@ public class Vertex {
 		this.position = new Point2D.Double(x,y);
 	}
 
+	public String toString() {
+		return Integer.toString(id);
+	}
+
 	
 }
