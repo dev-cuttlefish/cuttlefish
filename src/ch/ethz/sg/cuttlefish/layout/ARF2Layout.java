@@ -179,30 +179,23 @@ public class ARF2Layout<V, E> extends AbstractLayout<Vertex, Edge> implements It
 	 */
 	public void advancePositions() {
 		for (int i = 0; i < updatesPerFrame; i++) {
-			try {
-				for (Vertex v : graph.getVertices()) {
-					if (!isFixed(v)) {
-						Point2D c = transform( v);
-						if (c != null) {
-							Point2D f = getForceforNode(v);
-							double deltaIndividual = 0;
-							try {
-								double log = Math.log10(getGraph().getVertexCount()) == 0 ? 1 : Math.log10(getGraph().getVertexCount()); 
-								
-								deltaIndividual = getGraph().degree(v) > 1 ? (deltaT/log) / Math.pow(getGraph().degree(v), 0.4) : (deltaT/log);
-							} catch (java.lang.IllegalArgumentException ex) {
-								//System.out.println("Error: vertex not found in the graph");
-								this.reset();
-							}
-							f.setLocation(f.getX() * deltaIndividual, f.getY() * deltaIndividual);							
-							c.setLocation(c.getX() + f.getX(), c.getY() + f.getY());
-							new_change += Math.abs(f.getX()) + Math.abs(f.getY());
+			for (Vertex v : graph.getVertices()) {
+				if (!isFixed(v)) {
+					Point2D c = transform( v);
+					if (c != null) {
+						Point2D f = getForceforNode(v);
+						double deltaIndividual = 0;
+						try {
+							double log = Math.log10(getGraph().getVertexCount()) == 0 ? 1 : Math.log10(getGraph().getVertexCount()); 							
+							deltaIndividual = getGraph().degree(v) > 1 ? (deltaT/log) / Math.pow(getGraph().degree(v), 0.4) : (deltaT/log);
+						} catch (java.lang.IllegalArgumentException ex) {
+							this.reset();
 						}
+						f.setLocation(f.getX() * deltaIndividual, f.getY() * deltaIndividual);							
+						c.setLocation(c.getX() + f.getX(), c.getY() + f.getY());
+						new_change += Math.abs(f.getX()) + Math.abs(f.getY());
 					}
 				}
-			} catch (ConcurrentModificationException e) {
-			} catch (Exception e) {
-				e.printStackTrace();
 			}
 		}
 		change = new_change;
@@ -411,15 +404,14 @@ public class ARF2Layout<V, E> extends AbstractLayout<Vertex, Edge> implements It
 	public void update() {
 		if (! locked) {
 			try {
-				for (Vertex v : (Collection<Vertex>) getGraph().getVertices())
+				for (Vertex v : (Collection<Vertex>) getGraph().getVertices()) {
 					assignPositionToVertex(v);
-				
-					updateVertices();
-			} catch (ConcurrentModificationException e){}
-			
-			if (!incremental) {
+				}
+				updateVertices();			
+				if (!incremental) {
 					layout();
-			}	
+				}	
+			} catch (ConcurrentModificationException e){}
 		}
 	}
 
@@ -573,10 +565,8 @@ public class ARF2Layout<V, E> extends AbstractLayout<Vertex, Edge> implements It
 		done = (countUpdates > maxUpdates);
 
 		if (!done) {
-			try {
-				update();
-				advancePositions();
-			} catch(ConcurrentModificationException e) {}
+			update();
+			advancePositions();
 		}
 	}
 
