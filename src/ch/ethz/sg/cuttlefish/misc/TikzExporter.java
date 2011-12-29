@@ -54,9 +54,9 @@ public class TikzExporter {
 	private File outFile = null;
 	private Layout <Vertex, Edge> layout = null;
 	private PrintStream p = null;
-	private final double FACTOR = 0.025;
+	private double FACTOR = 0.025;
 	private double nodeSizeFactor = 1;
-	private final double WIDTHFACTOR = 0.5;
+	private double WIDTHFACTOR = 0.5;
 	private double maxY= 0;
 	private boolean hideVertexLabels = false;
 	private boolean hideEdgeLabels = false;
