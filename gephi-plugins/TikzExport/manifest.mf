@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+OpenIDE-Module: ch.ethz.sg.cuttlefish.TikzExport
+OpenIDE-Module-Localizing-Bundle: ch/ethz/sg/cuttlefish/TikzExport/Bundle.properties
+OpenIDE-Module-Specification-Version: 0.1
+
