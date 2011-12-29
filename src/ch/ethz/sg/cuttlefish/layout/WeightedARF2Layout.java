@@ -199,13 +199,13 @@ public class WeightedARF2Layout<V, E> extends AbstractLayout<Vertex, Edge> imple
 				curMaxWeight = e.getWeight();
 			}
 		}
-		if(curMinWeight != Double.MAX_VALUE && curMaxWeight > 0) {
+		if(curMinWeight != Double.MAX_VALUE && curMaxWeight != 0 && curMaxWeight > curMinWeight) {
 			alpha = (maxWeight - minWeight)/(curMaxWeight - curMinWeight);
 			beta = (curMaxWeight*minWeight - curMinWeight*maxWeight)/(curMaxWeight-curMinWeight);
 		} else {
 			alpha = 1;
 			beta = 0;
-		}		
+		}	
 	}
 
 	/**
@@ -232,29 +232,27 @@ public class WeightedARF2Layout<V, E> extends AbstractLayout<Vertex, Edge> imple
 	 */
 	public void advancePositions() {
 		for (int i = 0; i < updatesPerFrame; i++) {
-			try {
-				for (Vertex v : graph.getVertices()) {
-					if (!isFixed(v)) {
-						Point2D c = transform( v);
-						if (c != null) {
-							Point2D f = getForceforNode(v);
-							double deltaIndividual = 0;
-							try {
-								deltaIndividual = getGraph().degree(v) > 1 ? (deltaT/Math.log10(getGraph().getVertexCount())) / Math.pow(getGraph().degree(v), 0.4) : (deltaT/Math.log10(getGraph().getVertexCount()));
-							} catch (java.lang.IllegalArgumentException ex) {
-								//System.out.println("Error: vertex not found in the graph");
-								this.reset();
-							}
-							f.setLocation(f.getX() * deltaIndividual, f.getY() * deltaIndividual);
-							c.setLocation(c.getX() + f.getX(), c.getY() + f.getY());
+			for (Vertex v : graph.getVertices()) {
+				if (!isFixed(v)) {
+					Point2D c = transform( v);
+					if (c != null) {
+						Point2D f = getForceforNode(v);
+						double deltaIndividual = 0;
+						try {
+							double log = Math.log10(getGraph().getVertexCount()) == 0 ? 1 : Math.log10(getGraph().getVertexCount()); 							
+							deltaIndividual = getGraph().degree(v) > 1 ? (deltaT/log) / Math.pow(getGraph().degree(v), 0.4) : (deltaT/log);
+						} catch (java.lang.IllegalArgumentException ex) {
+							this.reset();
 						}
+						f.setLocation(f.getX() * deltaIndividual, f.getY() * deltaIndividual);
+						c.setLocation(c.getX() + f.getX(), c.getY() + f.getY());
+						new_change += Math.abs(f.getX()) + Math.abs(f.getY());
 					}
 				}
-			} catch (ConcurrentModificationException e) {
-			} catch (Exception e) {
-				e.printStackTrace();
 			}
 		}
+		change = new_change;
+		new_change = 0;
 		align(100, 100);
 	}
 	
@@ -277,11 +275,8 @@ public class WeightedARF2Layout<V, E> extends AbstractLayout<Vertex, Edge> imple
 
 		for (Vertex v : graph.getVertices()) {
 			Point2D c = transform(v);
-			new_change += (-x+x0-y+y0);
 			c.setLocation(c.getX() - x + x0, c.getY() - y + y0);
 		}
-		change = new_change;
-		new_change = 0;
 	}
 	
 	
@@ -341,7 +336,11 @@ public class WeightedARF2Layout<V, E> extends AbstractLayout<Vertex, Edge> imple
 					double multiplier;
 					if (isEdgeInGraph(node, otherNode) && e != null) {
 						if(e.getWeight() != 0) {
-							multiplier = a * (e.getWeight()*alpha + beta );
+							if(e.getWeight()*alpha + beta > maxWeight || e.getWeight()*alpha + beta < minWeight) {
+								// some of the weights have changed, we need to recompute the scaling parameters!
+								computeWeightScalingParameters();
+							}
+							multiplier = a * (e.getWeight()*alpha + beta );														
 						} else {
 							multiplier = a;
 						}
@@ -467,16 +466,16 @@ public class WeightedARF2Layout<V, E> extends AbstractLayout<Vertex, Edge> imple
 	 * @see edu.uci.ics.jung.visualization.LayoutMutable#update()
 	 */
 	public void update() {
-		if (! locked)
-		{
-			for (Vertex v : (Collection<Vertex>) getGraph().getVertices())
-				assignPositionToVertex(v);
-			
-				updateVertices();
-			
-			if (!incremental) {
-					layout();
-			}	
+		if (! locked) {
+			try {
+				for (Vertex v : (Collection<Vertex>) getGraph().getVertices()) {
+					assignPositionToVertex(v);
+				}			
+				updateVertices();			
+				if (!incremental) {				
+					layout();				
+				}	
+			} catch (ConcurrentModificationException e){}
 		}
 	}
 
@@ -497,7 +496,6 @@ public class WeightedARF2Layout<V, E> extends AbstractLayout<Vertex, Edge> imple
 			advancePositions();
 			count++;
 		}
-
 	}
 
 	public double getDeltaT() {

@@ -415,6 +415,7 @@ public class NetworkPanel  extends JPanel implements Subject, ItemListener,INetw
 		if (selectedLayout.equalsIgnoreCase("WeightedARFLayout"))
 		{
 			newLayout = new WeightedARF2Layout<Vertex,Edge>(getNetwork(), ((BrowsableNetwork)getNetwork()).isIncremental(),layout);
+			((WeightedARF2Layout<Vertex, Edge>)newLayout).setMaxUpdates(Integer.MAX_VALUE);
 			if (((WeightedARF2Layout<Vertex,Edge>)newLayout).getMaxUpdates() < getNetwork().getVertexCount())
 				((WeightedARF2Layout<Vertex,Edge>)newLayout).setMaxUpdates(getNetwork().getVertexCount());			
 		}
