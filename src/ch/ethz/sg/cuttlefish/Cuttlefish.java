@@ -39,6 +39,7 @@ import ch.ethz.sg.cuttlefish.misc.AppletExporter;
 import ch.ethz.sg.cuttlefish.misc.CxfSaver;
 import ch.ethz.sg.cuttlefish.misc.CxfToCmx;
 import ch.ethz.sg.cuttlefish.misc.Edge;
+import ch.ethz.sg.cuttlefish.misc.GraphmlExport;
 import ch.ethz.sg.cuttlefish.misc.SVGExporter;
 import ch.ethz.sg.cuttlefish.misc.TikzExporter;
 import ch.ethz.sg.cuttlefish.misc.Vertex;
@@ -93,8 +94,6 @@ public class Cuttlefish {
 			// this helps us to press Ctrl+C in order to stop iterative layouts
 			Runtime.getRuntime().addShutdownHook(new Thread() {
 			    public void run() {
-			       out("\n");
-			       out("Ctrl+C event: Stopping");
 			       done = true;
 			       outputNetwork();
 			    }
@@ -249,8 +248,7 @@ public class Cuttlefish {
 			else {
 				out("You can convert only CXF networks!");
 			}
-			
-			
+						
 		} else if (format.compareToIgnoreCase("jpeg") == 0) {
 			int width = 1000, height = 1000;
 			out("Exporting to jpeg");
@@ -292,7 +290,12 @@ public class Cuttlefish {
 				out("File not found");
 				e.printStackTrace();
 			}
-		} else {
+		} else if(format.compareToIgnoreCase("graphml") == 0){
+			String filename = opts.getOptionValue("output");
+			GraphmlExport exporter = new GraphmlExport(getNetwork(), getLayout());
+			exporter.export(new File(filename));
+		}else 
+		{
 			System.out.println("Unsupported output format '" + format + "'\n");
 			printUsage();
 			System.exit(0);
@@ -360,7 +363,7 @@ public class Cuttlefish {
 		Option outputFormat = OptionBuilder
 				.withValueSeparator()
 				.withDescription(
-						"output format: tikz (default), cxf, applet, svg, json, cmx")
+						"output format: tikz (default), cxf, applet, svg, json, cmx, graphml")
 				.withLongOpt("out-format").withArgName("input format").hasArg()
 				.create();
 		Option gui = OptionBuilder
