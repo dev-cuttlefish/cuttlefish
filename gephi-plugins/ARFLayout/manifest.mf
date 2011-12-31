@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+OpenIDE-Module: ch.ethz.sg.cuttlefish.ARFLayout
+OpenIDE-Module-Localizing-Bundle: ch/ethz/sg/cuttlefish/ARFLayout/Bundle.properties
+OpenIDE-Module-Specification-Version: 1.0
+
