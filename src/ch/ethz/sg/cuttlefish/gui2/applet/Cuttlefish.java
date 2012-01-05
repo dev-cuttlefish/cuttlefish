@@ -34,7 +34,6 @@ public class Cuttlefish extends Applet {
 	
     public void init() {    	
     	json = getParameter("data");
-    	System.out.println(json);
     	sourceNodeID = getParameter("source_node");
     	distance = getParameter("distance");
     	if(getParameter("width") != null)
