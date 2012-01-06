@@ -224,6 +224,7 @@ public class MouseMenus {
             this.add(new VertexIdDisplay());
             this.add(new VertexLabelDisplay());
             this.add(new VertexSizeDisplay());
+            this.add(new VertexVar1Display());
             this.addSeparator();
             this.add(new VertexSetLabel());
             this.add(new VertexSetSize());
@@ -461,8 +462,7 @@ public class MouseMenus {
 				this.setText("Label: no label");			
         }
     }
-    
-    
+        
     
     public static class VertexSizeDisplay extends JMenuItem implements VertexListener<Vertex> {    	
     	private static final long serialVersionUID = 1L;
@@ -482,7 +482,7 @@ public class MouseMenus {
     	private static final long serialVersionUID = 1L;
     	public void setVertexView(Vertex v, NetworkPanel networkPanel) {
         	if (v.getVar1() != null)
-        		this.setText("var1 = " + v.getVar1());
+        		this.setText("var1: " + v.getVar1());
         	else
         		this.setText("");
         }
@@ -492,7 +492,7 @@ public class MouseMenus {
     	private static final long serialVersionUID = 1L;
     	public void setVertexView(Vertex v, NetworkPanel networkPanel) {
         	if (v.getVar2() != null)
-        		this.setText("var2 = " + v.getVar2());
+        		this.setText("var2: " + v.getVar2());
         	else
         		this.setText("");
         }
