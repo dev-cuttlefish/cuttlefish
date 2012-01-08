@@ -28,12 +28,21 @@ public class BrowsableForestNetwork extends BrowsableNetwork implements ISimulat
 	
 	private static final long serialVersionUID = 1L;
 	
-	public BrowsableForestNetwork(BrowsableNetwork originalNetwork) {		
+	public BrowsableForestNetwork(BrowsableNetwork originalNetwork) {
+		if(originalNetwork instanceof BrowsableForestNetwork) {
+			// if the original network is a forest, we are interested in the original network
+			this.originalNetwork = ((BrowsableForestNetwork)originalNetwork).getOriginalNetwork();
+		} else {
+			this.originalNetwork = originalNetwork;
+		}
 		Forest<Vertex, Edge> forest = new DelegateForest<Vertex, Edge>();		
-		new MinimumSpanningForest<Vertex, Edge>(originalNetwork, forest, getRoots(originalNetwork));
+		new MinimumSpanningForest<Vertex, Edge>(originalNetwork, forest, getRoots(this.originalNetwork));
 		this.forest = forest;
-		this.originalNetwork = originalNetwork;
 	}	
+	
+	public BrowsableNetwork getOriginalNetwork() {
+		return originalNetwork;
+	}
 	
 	@Override
 	public int getEdgeCount() {
@@ -160,7 +169,7 @@ public class BrowsableForestNetwork extends BrowsableNetwork implements ISimulat
 	public int getIncidentCount(Edge edge) {
 		// TODO Auto-generated method stub
 		return forest.getIncidentCount(edge);
-	}
+	}	
 	
 	@Override
 	public Collection<Edge> getIncidentEdges(Vertex vertex) {

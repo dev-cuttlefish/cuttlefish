@@ -38,6 +38,7 @@ import javax.swing.JOptionPane;
 import ch.ethz.sg.cuttlefish.gui2.NetworkPanel;
 import ch.ethz.sg.cuttlefish.misc.Edge;
 import ch.ethz.sg.cuttlefish.misc.Vertex;
+import ch.ethz.sg.cuttlefish.networks.BrowsableForestNetwork;
 import ch.ethz.sg.cuttlefish.networks.ExploreNetwork;
 import ch.ethz.sg.cuttlefish.networks.DBNetwork;
 
@@ -323,11 +324,22 @@ public class DBToolbar extends AbstractToolbar {
 			step.setEnabled(true);
 		}
 	}
+	
+	private DBNetwork getDBNetwork() {
+		if(networkPanel.getNetwork() instanceof DBNetwork) {
+			return (DBNetwork)networkPanel.getNetwork();
+		} else {
+			// this is a special case when the network is delegated to a forest... required for the
+			// tree layouts			
+			BrowsableForestNetwork forest = (BrowsableForestNetwork)networkPanel.getNetwork();
+			return (DBNetwork)forest.getOriginalNetwork();
+		}
+	}
 
-	private void stepButtonEvent() {
-		if(((DBNetwork) networkPanel.getNetwork()).getLastAction().compareToIgnoreCase("exploreNode") == 0) {
+	private void stepButtonEvent() {		
+		if(getDBNetwork().getLastAction().compareToIgnoreCase("exploreNode") == 0) {
 			getExploreNodeFrame().refresh();
-		} else if(((DBNetwork) networkPanel.getNetwork()).getLastAction().compareToIgnoreCase("exploreNetwork") == 0) {
+		} else if(getDBNetwork().getLastAction().compareToIgnoreCase("exploreNetwork") == 0) {
 			getExploreNetworkFrame().refresh();
 		}
 	}

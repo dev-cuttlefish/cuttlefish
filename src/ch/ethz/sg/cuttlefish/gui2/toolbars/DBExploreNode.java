@@ -41,6 +41,7 @@ import javax.swing.SwingWorker;
 import ch.ethz.sg.cuttlefish.gui2.NetworkPanel;
 import ch.ethz.sg.cuttlefish.misc.Edge;
 import ch.ethz.sg.cuttlefish.misc.Vertex;
+import ch.ethz.sg.cuttlefish.networks.BrowsableForestNetwork;
 import ch.ethz.sg.cuttlefish.networks.DBNetwork;
 
 public class DBExploreNode extends JFrame {
@@ -85,7 +86,15 @@ public class DBExploreNode extends JFrame {
 	}
 	
 	private DBNetwork getDBNetwork() {
-		return (DBNetwork)networkPanel.getNetwork();
+		DBNetwork dbNetwork = null;
+		if(networkPanel.getNetwork() instanceof DBNetwork) {
+			dbNetwork = (DBNetwork)networkPanel.getNetwork();
+		} else {
+			// this is a special case when the network is delegated to a forest... required for the
+			// tree layouts					
+			dbNetwork = (DBNetwork)((BrowsableForestNetwork)networkPanel.getNetwork()).getOriginalNetwork();
+		}
+		return dbNetwork;
 	}
 	
 	/**
@@ -236,16 +245,21 @@ public class DBExploreNode extends JFrame {
 	}	
 		
 	public void refresh() {
+		int numNodes = getDBNetwork().getVertexCount();
+		int numEdges = getDBNetwork().getEdgeCount();
 		getDBNetwork().setNodeFilter("");
 		getDBNetwork().setEdgeFilter("");				
 		int distance = Integer.parseInt(distanceField.getText());				
 		Set<Vertex> visitedVertices = new HashSet<Vertex>();
-		Set<Edge> visitedEdges = new HashSet<Edge>();
-		((DBNetwork) networkPanel.getNetwork()).extendNeighborhood(Integer.parseInt(nodeField.getText()), distance, true, visitedVertices, visitedEdges);
+		Set<Edge> visitedEdges = new HashSet<Edge>();		
+		getDBNetwork().extendNeighborhood(Integer.parseInt(nodeField.getText()), distance, true, visitedVertices, visitedEdges);
 		if(ignoreDirection.isSelected()) {
-			((DBNetwork) networkPanel.getNetwork()).extendNeighborhood(Integer.parseInt(nodeField.getText()), distance, false, visitedVertices, visitedEdges);
+			getDBNetwork().extendNeighborhood(Integer.parseInt(nodeField.getText()), distance, false, visitedVertices, visitedEdges);
 		}
-		networkPanel.onNetworkChange();
+		if(getDBNetwork().getVertexCount() != numNodes || 
+				getDBNetwork().getEdgeCount() != numEdges) {
+			networkPanel.onNetworkChange();
+		}
 	}
 	
 	/**
