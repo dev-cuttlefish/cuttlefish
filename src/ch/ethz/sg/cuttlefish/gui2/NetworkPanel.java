@@ -362,6 +362,7 @@ public class NetworkPanel  extends JPanel implements Subject, ItemListener,INetw
 		if (layout instanceof TreeLayout || layout instanceof RadialTreeLayout 
 				|| layout instanceof CircleLayout || layout instanceof KCoreLayout ) {
 			stopLayout();
+			setNetwork(((BrowsableForestNetwork)getNetwork()).getOriginalNetwork());
 			resumeLayout();
 		}
 
@@ -400,7 +401,7 @@ public class NetworkPanel  extends JPanel implements Subject, ItemListener,INetw
 		setLayoutWorker = new SetLayoutWorker(selectedLayout, this);
 		setLayoutWorker.execute();
 	}
-
+	
 	public void setLayoutByName(String selectedLayout) {
 		layoutType = selectedLayout;
 		Layout<Vertex,Edge> newLayout = null;

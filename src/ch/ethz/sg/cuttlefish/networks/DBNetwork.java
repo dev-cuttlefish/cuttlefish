@@ -534,6 +534,7 @@ public class DBNetwork extends BrowsableNetwork {
 		}
 		for(Vertex v : verticesToRemove) {
 			removeVertex(v);
+			System.out.println("Removing " + v.getId());
 			hash.remove(v.getId());
 		}
 		extendEdges();

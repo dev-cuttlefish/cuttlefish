@@ -35,6 +35,7 @@ import javax.swing.SwingWorker;
 import javax.swing.WindowConstants;
 
 import ch.ethz.sg.cuttlefish.gui2.NetworkPanel;
+import ch.ethz.sg.cuttlefish.networks.BrowsableForestNetwork;
 import ch.ethz.sg.cuttlefish.networks.DBNetwork;
 
 public class DBExploreNetwork extends JFrame {
@@ -87,7 +88,15 @@ public class DBExploreNetwork extends JFrame {
 	}
 	
 	private DBNetwork getDBNetwork() {
-		return (DBNetwork)networkPanel.getNetwork();
+		DBNetwork dbNetwork = null;
+		if(networkPanel.getNetwork() instanceof DBNetwork) {
+			dbNetwork = (DBNetwork)networkPanel.getNetwork();
+		} else {
+			// this is a special case when the network is delegated to a forest... required for the
+			// tree layouts					
+			dbNetwork = (DBNetwork)((BrowsableForestNetwork)networkPanel.getNetwork()).getOriginalNetwork();
+		}
+		return dbNetwork;
 	}
 
 	private void countSelected() {
@@ -473,6 +482,8 @@ public class DBExploreNetwork extends JFrame {
     }
 
 	public void refresh() {
+		int numNodes = getDBNetwork().getVertexCount();
+		int numEdges = getDBNetwork().getEdgeCount();
 		getDBNetwork().setNodeFilter("");
 		getDBNetwork().setEdgeFilter("");
 		if(vertexSQLFilter.length() > 0)
@@ -481,7 +492,10 @@ public class DBExploreNetwork extends JFrame {
 			getDBNetwork().setEdgeFilter(edgeSQLFilter);
 		String nodeSQLQuery = "SELECT * FROM " + getDBNetwork().getNodeTable();
 		getDBNetwork().nodeQuery(nodeSQLQuery);
-		networkPanel.onNetworkChange();		
+		if(getDBNetwork().getVertexCount() != numNodes || 
+				getDBNetwork().getEdgeCount() != numEdges) {
+			networkPanel.onNetworkChange();
+		}
 		getDBNetwork().setNodeFilter("");
 		getDBNetwork().setEdgeFilter("");		
 	}
