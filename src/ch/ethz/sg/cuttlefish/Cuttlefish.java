@@ -150,7 +150,7 @@ public class Cuttlefish {
 	}
 
 	private static void getSelectedLayout() {
-		String l = opts.getOptionValue("layout", "arf");
+		String l = opts.getOptionValue("layout", "fixed");
 		if (l.compareToIgnoreCase("arf") == 0) {
 			layout = new ARF2Layout<Vertex, Edge>(getNetwork(), true,
 					Integer.MAX_VALUE);
@@ -186,7 +186,7 @@ public class Cuttlefish {
 		// We need to create a visualization viewer, otherwise JUNG
 		// won't fire up the layout algorithm...
 		vv = new VisualizationViewer<Vertex, Edge>(layout);
-		out("Setting layout: " + opts.getOptionValue("layout"));
+		out("Setting layout: " + l);
 		if (layout instanceof IterativeContext) {
 			out("Iterative layout, waiting on the layout to converge...");
 			out("The layout will automatically stop when the change is less than 10");
@@ -372,7 +372,7 @@ public class Cuttlefish {
 		Option layout = OptionBuilder
 				.withValueSeparator()
 				.withDescription(
-						"network layout: arf (default), weighted-arf, k-core, kamada-kawai, fruchterman-reingold, iso-m, circle, tree, radial-tree")
+						"network layout: arf, fixed (default), weighted-arf, k-core, kamada-kawai, fruchterman-reingold, iso-m, circle, tree, radial-tree")
 				.withLongOpt("layout").hasArg().withArgName("layout")
 				.create("l");
 		options.addOption(help);

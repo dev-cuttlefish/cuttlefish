@@ -100,8 +100,8 @@ public class GraphmlExport {
         GraphMLMetadata<Edge> edgeGColor = new GraphMLMetadata<Edge>("green", "0", edgeGreenColorTransformer);	 
         GraphMLMetadata<Edge> edgeBColor = new GraphMLMetadata<Edge>("blue", "0", edgeBlueColorTransformer);	 
         GraphMLMetadata<Edge> edgeLabel = new GraphMLMetadata<Edge>("label", "", edgeLabelTransformer);	 
-        GraphMLMetadata<Edge> edgeWeight = new GraphMLMetadata<Edge>("weight", "0", edgeWeightTransformer);	 
-        GraphMLMetadata<Edge> edgeWidth = new GraphMLMetadata<Edge>("width", "0", edgeWidthTransformer);	 
+        GraphMLMetadata<Edge> edgeWeight = new GraphMLMetadata<Edge>("weight", "1", edgeWeightTransformer);	 
+        GraphMLMetadata<Edge> edgeWidth = new GraphMLMetadata<Edge>("width", "1", edgeWidthTransformer);	 
         edgeAttributes.put("r", edgeRColor);	 
         edgeAttributes.put("g", edgeGColor);	 
         edgeAttributes.put("b", edgeBColor);	 
