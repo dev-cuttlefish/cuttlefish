@@ -63,7 +63,7 @@ public class ARF2Layout<V, E> extends AbstractLayout<Vertex, Edge> implements It
 	/**
 	 * ??? is a scaling factor for the attractive term. Connected as well as unconnected nodes are affected.
 	 */
-	private double attraction = 0.2;
+	private double attraction = 0.6;
 
 	/**
 	 * b scales the repulsive force

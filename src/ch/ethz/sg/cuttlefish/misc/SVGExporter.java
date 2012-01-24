@@ -34,15 +34,24 @@ public class SVGExporter {
 			String jsFilename = file.getAbsolutePath() + ".js";
 			exportJScript(new File(jsFilename));
 			PrintStream p = new PrintStream(file);
-			p.println("<?xml version='1.0'?>");
+			/*p.println("<?xml version='1.0'?>");
 			p.println("<html xmlns='http://www.w3.org/1999/xhtml' xmlns:svg='http://www.w3.org/2000/svg' xmlns:xul='http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul' xmlns:xlink='http://www.w3.org/1999/xlink'>");
 			p.println("<head>");
 			p.println("<script type=\"text/javascript\" src=\"" + jsFilename + "\">");
 			p.println("</script>");
 			p.println("</head>");
 			p.println("<body onload='init();'>");
-			p.println("<svg:svg width='"+ width +"px' height='" + height + "px'>");
-			p.println("  <svg:polyline points='0,0 " + width + ",0 " + width + "," + height + " 0," + height + "' style='stroke:black; fill:none;'/>");
+			p.println("<svg:svg width='"+ width +"px' height='" + height + "px'>");*/
+		
+			 p.println("<svg xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\" width='994px' height='751px' onload=\"init()\" ");
+			 p.println(" xmlns:xlink=\"http://www.w3.org/1999/xlink\">");
+			 p.println(" <script xlink:href=\"/javascript/svg_tooltip.js\" />");
+			 p.println(" <style>");
+			 p.println("    .caption{font-size: 14px;font-family: Georgia, serif;}");
+			 p.println("    .tooltip{font-size: 12px;}");
+			 p.println("    .tooltip_bg{fill: white; stroke: black; stroke-width: 1; opacity: 0.85;}");
+			 p.println(" </style>");
+			 p.println("  <svg:polyline points='0,0 " + width + ",0 " + width + "," + height + " 0," + height + "' style='stroke:black; fill:none;'/>");
 			// declare markers if the network is directed
 			Map< Integer, Set<Color> > markers;
 			Map< Color, Integer > colorId = null;
@@ -110,9 +119,10 @@ public class SVGExporter {
 				p.println("     <svg:text id='label" + index.get(n) + "' x='" + x + "' y='" + y + "' font-size='12' fill='black'>" + label + "</svg:text>");
 				p.println("</svg:a>");
 			}
-			p.println("</svg:svg>");
-			p.println("</body>");
-			p.println("</html>");
+			p.println("<rect class=\"tooltip_bg\" id=\"tooltip_bg\" x=\"0\" y=\"0\" rx=\"4\" ry=\"4\" width=\"55\" height=\"17\" visibility=\"hidden\"/>");
+			p.println("<text class=\"tooltip\" id=\"tooltip\" x=\"0\" y=\"0\" visibility=\"hidden\">Tooltip</text>");
+
+			p.println("</svg>");
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
@@ -128,16 +138,30 @@ public class SVGExporter {
 			e1.printStackTrace();
 		}
 		p.println("var dx,dy;\n  var nodes;\n  var labels;\n  var edges;\n  var selectedNode;");
+		p.println("var svgElement;");
 		p.println("  function init() {");
-		p.println("    labels = new Array();");		
+		p.println("    labels = new Array();");
+		p.println("    edges = new Array();");
+		p.println("    nodes = new Array();");
+		p.println("var svgsource = document.getElementById('svgsource');");
+		p.println("svgElement = getSubDocument(svgsource);");
 		int i = 0;
 		for(Vertex n : network.getVertices()) {
 			index.put(n, i++);
 		}
-		for(Vertex n : network.getVertices()) {
+		/*for(Vertex n : network.getVertices()) {
 			p.println("    labels[" + index.get(n) + "] = document.getElementById('label" + index.get(n) + "');");
-		}
-		p.println("    edges = new Array();");
+		}*/
+		p.println("    for (i=0;i<=20;i++){ ");
+		p.println("             labels[i] = svgElement.getElementById('label' + i.toString())");
+		p.println("     edges[i] = new Array();");
+		p.println("     nodes[i] = svgElement.getElementById(i);        ");
+		p.println("     nodes[i].addEventListener('mousedown', mousedown_listener, false);");
+		p.println("     //nodes[i].setAttribute(\"onmousemove\", \"ShowTooltip(evt, 'The amazing blue box\" + i.toString() + \"')\");");
+		p.println("     nodes[i].setAttribute(\"onmousemove\", \"ShowTooltip(evt, '\" + descriptions[i] + \"')\");");
+		p.println("     nodes[i].setAttribute(\"onmouseout\", \"HideTooltip(evt)\");");
+		p.println("    }");
+		
 		for(Vertex n : network.getVertices() ) {
 			p.println("    edges["+ index.get(n) +"] = new Array();");
 		}
@@ -159,28 +183,34 @@ public class SVGExporter {
 				count++;
 				
 			}
-		}
-		p.println("    nodes = new Array();");
-		for(Vertex n : network.getVertices() ) {
+		}	
+		
+		
+		
+		/*for(Vertex n : network.getVertices() ) {
 			p.println("    nodes["+ index.get(n) +"] = document.getElementById('" + index.get(n) + "');");
 		}
 		for(Vertex n : network.getVertices() ) {
 			p.println("    nodes[" + index.get(n) + "].addEventListener('mousedown', mousedown_listener, false);");
-		}
+		}	*/	
+		
 		p.println("  }");
+		
+		
+		
 		p.println("  function mousedown_listener(evt)");
 		p.println("  {");
 		p.println("    selectedNode = evt.target;");
 		p.println("    dx = selectedNode.cx.baseVal.value - evt.clientX;");
 		p.println("    dy = selectedNode.cy.baseVal.value - evt.clientY;");
-		p.println("    document.addEventListener('mousemove', mousemove_listener, true);");
-		p.println("    document.addEventListener('mouseup', mouseup_listener, true);");
+		p.println("    svgElement.addEventListener('mousemove', mousemove_listener, true);");
+		p.println("    svgElement.addEventListener('mouseup', mouseup_listener, true);");
 		p.println("  }");
 
 		p.println("  function mouseup_listener(evt)");
 		p.println("  {");
-		p.println("    document.removeEventListener('mousemove', mousemove_listener, true);");
-		p.println("    document.removeEventListener('mouseup', mouseup_listener, true);");
+		p.println("    svgElement.removeEventListener('mousemove', mousemove_listener, true);");
+		p.println("    svgElement.removeEventListener('mouseup', mouseup_listener, true);");
 		p.println("  }");
 
 		p.println("  function mousemove_listener(evt)");
