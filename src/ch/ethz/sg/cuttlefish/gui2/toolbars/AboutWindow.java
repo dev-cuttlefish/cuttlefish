@@ -27,7 +27,7 @@ public class AboutWindow extends JFrame {
 			this.setTitle("About");
 			setLocationRelativeTo(networkPanel);
 			this.setTitle("About");
-			this.setSize(430, 323);
+			this.setSize(450, 323);
 			this.setResizable(false);
 		}
 		
@@ -49,7 +49,7 @@ public class AboutWindow extends JFrame {
 	        bla = new javax.swing.JLabel();
 	        authors = new javax.swing.JLabel();
 
-	        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+	        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
 	        logo.setIcon(new javax.swing.ImageIcon(getClass().getResource(logoIcon)));
 	        logo.setName("logo");
