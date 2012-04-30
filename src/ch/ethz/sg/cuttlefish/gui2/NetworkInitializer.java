@@ -38,7 +38,9 @@ public class NetworkInitializer {
 	private static String dbUrl = "";
 	private int driverIndex = 0;
 	
-	public void initBrowsableNetwork(BrowsableNetwork network) {}
+	public void initBrowsableNetwork(BrowsableNetwork network) {
+		network.setNetworkLoaded(true);
+	}
 	
 	
 	
@@ -53,6 +55,7 @@ public class NetworkInitializer {
         	 System.out.println("Current directory: " + fc.getCurrentDirectory());
              File file = fc.getSelectedFile();             
              cxfNetwork.load(file);
+             cxfNetwork.setNetworkLoaded(true);
          } else {
              System.out.println("Input cancelled by user");
          }
@@ -66,6 +69,7 @@ public class NetworkInitializer {
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             File file = fc.getSelectedFile();
             pajekNetwork.load(file);
+            pajekNetwork.setNetworkLoaded(true);
         } else {
             System.out.println("Input cancelled by user");
         }
@@ -80,7 +84,8 @@ public class NetworkInitializer {
 
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             File file = fc.getSelectedFile();
-            interactiveCxfNetwork.loadInstructions(file);            
+            interactiveCxfNetwork.loadInstructions(file);
+            interactiveCxfNetwork.setNetworkLoaded(true);
         } else {
             System.out.println("Input cancelled by user");
         }
@@ -95,6 +100,7 @@ public class NetworkInitializer {
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             File file = fc.getSelectedFile();
             graphmlNetwork.load(file);
+            graphmlNetwork.setNetworkLoaded(true);
         } else {
             System.out.println("Input cancelled by user");
         }
@@ -109,6 +115,7 @@ public class NetworkInitializer {
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             File file = fc.getSelectedFile();
             userNetwork.load(file);
+            userNetwork.setNetworkLoaded(true);
         } else {
             System.out.println("Input cancelled by user");
         }
@@ -127,6 +134,7 @@ public class NetworkInitializer {
 					.println("Current directory: " + fc.getCurrentDirectory());
 			File file = fc.getSelectedFile();
 			_cxfDBNetwork.connect(new CxfNetwork(file) );
+			_cxfDBNetwork.setNetworkLoaded(true);
 		} else {
 			System.out.println("Input cancelled by user");
 		}
