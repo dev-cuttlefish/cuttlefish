@@ -214,10 +214,19 @@ public class OpenMenu extends AbstractMenu implements Subject {
 		if(network instanceof InteractiveCxfNetwork) {
 			((InteractiveCxfNetwork)network).addObserver(toolbars.getSimulationToolbar());
 		}
+		
+		network.graphicalInit(new NetworkInitializer() );
+		if(!network.isNetworkLoaded()) {
+			/* User input was cancelled; do not reset existing network */
+			return;
+		}
+		
 		if(network instanceof DBNetwork) {
+			/* Toolbar should be initialized only after connection has been
+			 * attempted */
 			new Thread(new DBToolbarInitializer(toolbars.getDBToolbar(), (DBNetwork)network) ).start();
 		}
-		network.graphicalInit(new NetworkInitializer() );
+		
 		networkPanel.setNetwork(network);
         networkPanel.onNetworkChange();
         networkPanel.getNetworkLayout().reset();
