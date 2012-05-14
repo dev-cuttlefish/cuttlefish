@@ -54,9 +54,9 @@ public class TikzExporter {
 	private File outFile = null;
 	private Layout <Vertex, Edge> layout = null;
 	private PrintStream p = null;
-	private double FACTOR = 0.025;
+	private double coordinateFactor = 0.025;
 	private double nodeSizeFactor = 1;
-	private double WIDTHFACTOR = 0.5;
+	private double edgeSizeFactor = 0.5;
 	private double maxY= 0;
 	private boolean hideVertexLabels = false;
 	private boolean hideEdgeLabels = false;
@@ -226,8 +226,8 @@ public class TikzExporter {
 			coordinates = layout.transform(vertex);
 			s = 1;
 		}
-		p.print("\\node at (" + formatter.format(coordinates.getX()*FACTOR)
-				+ "," + formatter.format((maxY - coordinates.getY())*FACTOR) + ") [");
+		p.print("\\node at (" + formatter.format(coordinates.getX()*coordinateFactor)
+				+ "," + formatter.format((maxY - coordinates.getY())*coordinateFactor) + ") [");
 		if (vertex.getShape() != null)
 		{
 			if (vertex.getShape() instanceof Rectangle2D)
@@ -337,7 +337,7 @@ public class TikzExporter {
 				if(curEdgeType == EdgeType.DIRECTED) p.print("->, ");
 				else p.print("-, ");
 				p.print("shorten >=1pt, >=stealth, bend right=10, ");
-				p.print("line width=" + formatter.format(curWidth*WIDTHFACTOR*s) );
+				p.print("line width=" + formatter.format(curWidth*edgeSizeFactor*s) );
 				if(curColor != null)
 					p.println(", color=" + colors.get(curColor) + "}}");
 				else
@@ -375,7 +375,7 @@ public class TikzExporter {
 			p.print("\\Loop[dist=1cm,dir=WE,");
 		else
 			p.print("\\Loop[dist=1cm,dir=EA,");
-			p.print("style={->,shorten >=1pt,>=stealth,line width="+ formatter.format(edge.getWidth()*WIDTHFACTOR));
+			p.print("style={->,shorten >=1pt,>=stealth,line width="+ formatter.format(edge.getWidth()*edgeSizeFactor));
 		    p.print("}, color="+colors.get(edge.getColor()));
 		    if ((edge.getLabel() != null) && (! hideEdgeLabels))
 		    	p.print(", label="+ edge.getLabel());
@@ -454,6 +454,26 @@ public class TikzExporter {
 	}
 	public void setOutputFile(File file) {
 		outFile = file;
-	}	
+	}
+	
+	public double getCoordinatesFactor() {
+		return this.coordinateFactor;
+	}
+	
+	public double getNodeSizeFactor() {
+		return this.nodeSizeFactor;
+	}
+	
+	public double getEdgeSizeFactor() {
+		return this.edgeSizeFactor;
+	}
+	
+	public void setScalingFactors(double node, double edge, double coord) {
+		if(node > 0 && edge > 0 && coord > 0) {
+			this.nodeSizeFactor = node;
+			this.edgeSizeFactor = edge;
+			this.coordinateFactor = coord;
+		}
+	}
 	
 }
