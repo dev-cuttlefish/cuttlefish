@@ -119,11 +119,11 @@ public class DumpToDBWorker extends SwingWorker<Object, Object> {
 			return true;
 		}
 		
-		private void dropTable(String tableName) throws Exception {
+		private void dropTable(String tableName) throws SQLException {
 			/* If table exists and user has chosen to replace existing tables,
 			 * drop table first and then create it.
 			 */
-			conn.createStatement().execute("DROP TABLE "+tableName+";");
+			conn.createStatement().execute("DROP TABLE "+tableName+" CASCADE;");
 		}
 		
 		private void setNodeAttr(Vertex n, String attr, PreparedStatement st, int index) throws SQLException {
