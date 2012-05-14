@@ -71,14 +71,22 @@ public class NetworkMenu extends AbstractMenu implements Observer {
 		saveNetwork = new JMenuItem("Save");
 		saveAsNetwork = new JMenuItem("Save as...");
 		exitNetwork = new JMenuItem("Exit");
+		
 		newNetwork.setAccelerator(KeyStroke.getKeyStroke(
 		        KeyEvent.VK_N, ActionEvent.CTRL_MASK));
 		newNetwork.setMnemonic('N');
-		saveNetwork.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK));
+		
+		saveNetwork.setAccelerator(KeyStroke.getKeyStroke(
+				KeyEvent.VK_S, ActionEvent.CTRL_MASK));
 		saveNetwork.setMnemonic('S');
 		saveAsNetwork.setMnemonic('a');
+		
 		exitNetwork.setMnemonic('x');
+		exitNetwork.setAccelerator(KeyStroke.getKeyStroke(
+		        KeyEvent.VK_Q, ActionEvent.CTRL_MASK));
+		
 		exportMenu.setMnemonic('E');
+		
 		add(newNetwork);
 		add(openMenu);
 		addSeparator();		

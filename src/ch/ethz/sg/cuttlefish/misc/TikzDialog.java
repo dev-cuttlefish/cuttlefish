@@ -17,6 +17,12 @@ import javax.swing.JFrame;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import ch.ethz.sg.cuttlefish.gui2.NetworkPanel;
+import javax.swing.GroupLayout.Alignment;
+import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.GroupLayout;
+import javax.swing.JRadioButton;
+import javax.swing.JLabel;
+import javax.swing.JTextField;
 
 public class TikzDialog extends JFrame {
 	/**
@@ -34,19 +40,24 @@ public class TikzDialog extends JFrame {
 	private javax.swing.JLabel outputLabel;
 	private javax.swing.JRadioButton sizeDefaultRButton;
 	private javax.swing.JRadioButton sizeFixedRButton;
+	private javax.swing.JRadioButton sizeScaledRButton;
 	private javax.swing.JLabel sizeLabel;
 	private javax.swing.JRadioButton style3DRButton;
 	private javax.swing.JRadioButton styleCircleRButton;
 	private javax.swing.JLabel styleLabel;
 	private javax.swing.JLabel widthLabel;
 	private javax.swing.JTextField widthTextField;
+	private JTextField coordTextField;
+	private JTextField nodeTextField;
+	private JTextField edgeTextField;
 	
 	public TikzDialog(TikzExporter tikzExporter, NetworkPanel networkPanel) {
+		setResizable(false);
 		this.networkPanel = networkPanel;
 		this.tikzExporter = tikzExporter;
 		initComponents();
 		this.setTitle("Tikz export");
-		this.setSize(410, 300);		
+		this.setSize(431, 377);		
 	}
 
 	private void initComponents() {
@@ -60,6 +71,7 @@ public class TikzDialog extends JFrame {
         sizeLabel = new javax.swing.JLabel();
         sizeDefaultRButton = new javax.swing.JRadioButton();
         sizeFixedRButton = new javax.swing.JRadioButton();
+        sizeScaledRButton = new JRadioButton("Scaled");
         widthLabel = new javax.swing.JLabel();
         heightLabel = new javax.swing.JLabel();
         widthTextField = new javax.swing.JTextField();
@@ -132,6 +144,13 @@ public class TikzDialog extends JFrame {
 				sizeFixedRButtonActionPerformed(e);
 			}			
 		});
+        
+        sizeScaledRButton.addActionListener(new ActionListener() {			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				sizeScaledRButtonActionPerformed(e);
+			}			
+		});
 
         widthLabel.setText("width");
 
@@ -181,6 +200,7 @@ public class TikzDialog extends JFrame {
         ButtonGroup sizeButtons = new ButtonGroup();
         sizeButtons.add(sizeDefaultRButton);
         sizeButtons.add(sizeFixedRButton);
+        sizeButtons.add(sizeScaledRButton);
         sizeDefaultRButton.setSelected(true);
         
         ButtonGroup styleButtons = new ButtonGroup();
@@ -188,87 +208,150 @@ public class TikzDialog extends JFrame {
         styleButtons.add(styleCircleRButton);
         styleCircleRButton.setSelected(true);
         
+        
+        JLabel nodeFactorLabel = new JLabel("Node factor");
+        
+        JLabel edgeFactorLabel = new JLabel("Edge Factor");
+        
+        JLabel coordinatesFactorLabel = new JLabel("Coordinates Factor");
+        
+        coordTextField = new JTextField();
+        coordTextField.setEnabled(false);
+        coordTextField.setColumns(10);
+        coordTextField.setText(tikzExporter.getCoordinatesFactor()+"");
+        /*coordTextField.addFocusListener(new FocusListener() {			
+			@Override
+			public void focusLost(FocusEvent e) {
+				double fNode, fEdge, fCoord; 
+				fNode = Double.parseDouble(nodeTextField.getText());
+				fEdge = Double.parseDouble(edgeTextField.getText());
+				fCoord = Double.parseDouble(coordTextField.getText());
+				//tikzExporter.setSize(width, height);
+			}			
+			@Override
+			public void focusGained(FocusEvent e) {}
+		});*/
+        
+        nodeTextField = new JTextField();
+        nodeTextField.setEnabled(false);
+        nodeTextField.setColumns(10);
+        nodeTextField.setText(tikzExporter.getNodeSizeFactor()+"");
+        
+        edgeTextField = new JTextField();
+        edgeTextField.setEnabled(false);
+        edgeTextField.setColumns(10);
+        edgeTextField.setText(tikzExporter.getEdgeSizeFactor()+"");
+        
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this.getContentPane());
-        this.setLayout(layout);
         layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(5, 5, 5)
-                                .addComponent(outputLabel)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(fileTextField))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(styleLabel)
-                                    .addComponent(sizeLabel))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(sizeDefaultRButton)
-                                    .addComponent(style3DRButton))
-                                .addGap(18, 18, 18)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(styleCircleRButton)
-                                    .addComponent(sizeFixedRButton)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addGap(21, 21, 21)
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                            .addGroup(layout.createSequentialGroup()
-                                                .addComponent(widthLabel)
-                                                .addGap(22, 22, 22))
-                                            .addGroup(layout.createSequentialGroup()
-                                                .addComponent(heightLabel)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)))
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                            .addComponent(heightTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 39, Short.MAX_VALUE)
-                                            .addComponent(widthTextField))))))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(browseButton))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(113, 113, 113)
-                        .addComponent(exportButton)
-                        .addGap(18, 18, 18)
-                        .addComponent(CancelButton)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        	layout.createParallelGroup(Alignment.LEADING)
+        		.addGroup(layout.createSequentialGroup()
+        			.addGroup(layout.createParallelGroup(Alignment.LEADING)
+        				.addGroup(layout.createSequentialGroup()
+        					.addContainerGap()
+        					.addGroup(layout.createParallelGroup(Alignment.LEADING, false)
+        						.addGroup(layout.createSequentialGroup()
+        							.addGap(5)
+        							.addComponent(outputLabel)
+        							.addPreferredGap(ComponentPlacement.RELATED)
+        							.addComponent(fileTextField)
+        							.addPreferredGap(ComponentPlacement.RELATED)
+        							.addComponent(browseButton))
+        						.addGroup(layout.createSequentialGroup()
+        							.addGroup(layout.createParallelGroup(Alignment.TRAILING)
+        								.addComponent(styleLabel)
+        								.addComponent(sizeLabel))
+        							.addPreferredGap(ComponentPlacement.UNRELATED)
+        							.addGroup(layout.createParallelGroup(Alignment.LEADING)
+        								.addComponent(sizeDefaultRButton)
+        								.addGroup(layout.createParallelGroup(Alignment.TRAILING)
+        									.addGroup(layout.createSequentialGroup()
+        										.addGroup(layout.createParallelGroup(Alignment.LEADING)
+        											.addComponent(style3DRButton)
+        											.addComponent(sizeFixedRButton))
+        										.addGap(7)
+        										.addGroup(layout.createParallelGroup(Alignment.LEADING)
+        											.addComponent(widthLabel)
+        											.addComponent(heightLabel))
+        										.addPreferredGap(ComponentPlacement.RELATED, 93, Short.MAX_VALUE)
+        										.addGroup(layout.createParallelGroup(Alignment.TRAILING)
+        											.addComponent(styleCircleRButton)
+        											.addGroup(layout.createParallelGroup(Alignment.LEADING, false)
+        												.addComponent(heightTextField, Alignment.TRAILING, 0, 0, Short.MAX_VALUE)
+        												.addComponent(widthTextField, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 55, Short.MAX_VALUE))))
+        									.addGroup(Alignment.LEADING, layout.createSequentialGroup()
+        										.addGroup(layout.createParallelGroup(Alignment.TRAILING)
+        											.addGroup(layout.createSequentialGroup()
+        												.addComponent(sizeScaledRButton)
+        												.addPreferredGap(ComponentPlacement.RELATED)
+        												.addComponent(nodeFactorLabel)
+        												.addGap(65))
+        											.addGroup(layout.createSequentialGroup()
+        												.addGroup(layout.createParallelGroup(Alignment.LEADING)
+        													.addComponent(edgeFactorLabel)
+        													.addComponent(coordinatesFactorLabel))
+        												.addPreferredGap(ComponentPlacement.RELATED)))
+        										.addGroup(layout.createParallelGroup(Alignment.LEADING, false)
+        											.addComponent(nodeTextField, 0, 0, Short.MAX_VALUE)
+        											.addComponent(edgeTextField, 0, 0, Short.MAX_VALUE)
+        											.addComponent(coordTextField, GroupLayout.DEFAULT_SIZE, 55, Short.MAX_VALUE)))))
+        							.addPreferredGap(ComponentPlacement.RELATED, 20, Short.MAX_VALUE))))
+        				.addGroup(layout.createSequentialGroup()
+        					.addGap(133)
+        					.addComponent(exportButton)
+        					.addPreferredGap(ComponentPlacement.RELATED)
+        					.addComponent(CancelButton)))
+        			.addContainerGap(16, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(22, 22, 22)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(outputLabel)
-                    .addComponent(fileTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(browseButton))
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(styleLabel)
-                    .addComponent(styleCircleRButton)
-                    .addComponent(style3DRButton))
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(sizeDefaultRButton)
-                    .addComponent(sizeFixedRButton)
-                    .addComponent(sizeLabel))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(widthLabel)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(widthTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(heightTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(heightLabel))))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 55, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(exportButton)
-                    .addComponent(CancelButton))
-                .addGap(33, 33, 33))
+        	layout.createParallelGroup(Alignment.LEADING)
+        		.addGroup(layout.createSequentialGroup()
+        			.addGap(22)
+        			.addGroup(layout.createParallelGroup(Alignment.BASELINE)
+        				.addComponent(outputLabel)
+        				.addComponent(fileTextField, GroupLayout.PREFERRED_SIZE, 24, GroupLayout.PREFERRED_SIZE)
+        				.addComponent(browseButton))
+        			.addGap(18)
+        			.addGroup(layout.createParallelGroup(Alignment.BASELINE)
+        				.addComponent(styleLabel)
+        				.addComponent(styleCircleRButton)
+        				.addComponent(style3DRButton))
+        			.addGap(18)
+        			.addGroup(layout.createParallelGroup(Alignment.BASELINE)
+        				.addComponent(sizeDefaultRButton)
+        				.addComponent(sizeLabel))
+        			.addPreferredGap(ComponentPlacement.UNRELATED)
+        			.addGroup(layout.createParallelGroup(Alignment.LEADING)
+        				.addGroup(layout.createParallelGroup(Alignment.BASELINE)
+        					.addComponent(sizeFixedRButton)
+        					.addComponent(widthLabel)
+        					.addComponent(widthTextField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+        				.addGroup(layout.createSequentialGroup()
+        					.addGap(25)
+        					.addGroup(layout.createParallelGroup(Alignment.BASELINE)
+        						.addComponent(heightLabel)
+        						.addComponent(heightTextField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))))
+        			.addPreferredGap(ComponentPlacement.UNRELATED)
+        			.addGroup(layout.createParallelGroup(Alignment.BASELINE)
+        				.addComponent(sizeScaledRButton)
+        				.addComponent(nodeFactorLabel)
+        				.addComponent(nodeTextField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+        			.addPreferredGap(ComponentPlacement.RELATED)
+        			.addGroup(layout.createParallelGroup(Alignment.BASELINE)
+        				.addComponent(edgeTextField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+        				.addComponent(edgeFactorLabel))
+        			.addPreferredGap(ComponentPlacement.RELATED)
+        			.addGroup(layout.createParallelGroup(Alignment.BASELINE)
+        				.addComponent(coordTextField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+        				.addComponent(coordinatesFactorLabel))
+        			.addPreferredGap(ComponentPlacement.RELATED, 27, Short.MAX_VALUE)
+        			.addGroup(layout.createParallelGroup(Alignment.BASELINE)
+        				.addComponent(exportButton)
+        				.addComponent(CancelButton))
+        			.addGap(33))
         );
+        getContentPane().setLayout(layout);
     }
 
 	public void calculateHeightAndWidth() {
@@ -283,8 +366,9 @@ public class TikzDialog extends JFrame {
         	if( networkPanel.getNetworkLayout().transform(v).getY() > ymax)
         		ymax = networkPanel.getNetworkLayout().transform(v).getY();
         }
-        widthTextField.setText(Integer.toString((int)(xmax-xmin)));
-        heightTextField.setText(Integer.toString((int)(ymax-ymin)));
+        
+        widthTextField.setText(java.lang.Math.round(xmax-xmin)+"");
+        heightTextField.setText(java.lang.Math.round(ymax-ymin)+"");
 	}
 
 	private void browseButtonActionPerformed(java.awt.event.ActionEvent evt) {
@@ -316,19 +400,32 @@ public class TikzDialog extends JFrame {
 		widthTextField.setEnabled(false);
 		heightTextField.setEnabled(false);
 		tikzExporter.setFixedSize(false);
+		
+		nodeTextField.setEnabled(false);
+		edgeTextField.setEnabled(false);
+		coordTextField.setEnabled(false);
 	}
 
 	private void exportButtonActionPerformed(java.awt.event.ActionEvent evt) {
 		tikzExporter.setFixedSize(sizeFixedRButton.isSelected());
+		
 		int width, height;
 		width = Integer.parseInt(widthTextField.getText());
 		height = Integer.parseInt(heightTextField.getText());
 		tikzExporter.setSize(width, height);
+		
+		double node, edge, coord;
+		node = Double.parseDouble(nodeTextField.getText());
+		edge = Double.parseDouble(edgeTextField.getText());
+		coord = Double.parseDouble(coordTextField.getText());
+		tikzExporter.setScalingFactors(node, edge, coord);
+		
 		if(style3DRButton.isSelected()) {
 			tikzExporter.setNodeStyle("ball");
 		} else {
 			tikzExporter.setNodeStyle("circle");
 		}
+		
 		tikzExporter.setOutputFile(new File(fileTextField.getText()));
 		tikzExporter.exportToTikz(networkPanel.getNetworkLayout());
 		this.setVisible(false);
@@ -345,10 +442,31 @@ public class TikzDialog extends JFrame {
 		widthTextField.setEnabled(true);
 		heightTextField.setEnabled(true);
 		tikzExporter.setFixedSize(true);
+		
+		nodeTextField.setEnabled(false);
+		edgeTextField.setEnabled(false);
+		coordTextField.setEnabled(false);
+		
 		int width, height;
 		width = Integer.parseInt(widthTextField.getText());
 		height = Integer.parseInt(heightTextField.getText());
 		tikzExporter.setSize(width, height);
+	}
+	
+	private void sizeScaledRButtonActionPerformed(ActionEvent e) {
+		nodeTextField.setEnabled(true);
+		edgeTextField.setEnabled(true);
+		coordTextField.setEnabled(true);
+		
+		widthTextField.setEnabled(false);
+		heightTextField.setEnabled(false);
+		tikzExporter.setFixedSize(false);
+		
+		double fNode, fEdge, fCoord; 
+		fNode = Double.parseDouble(nodeTextField.getText());
+		fEdge = Double.parseDouble(edgeTextField.getText());
+		fCoord = Double.parseDouble(coordTextField.getText());
+		//tikzExporter.setSize();
 	}
 	
 	public void setTikzExporter(TikzExporter tikzExporter) {

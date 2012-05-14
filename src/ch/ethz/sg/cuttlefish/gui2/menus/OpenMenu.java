@@ -121,6 +121,7 @@ public class OpenMenu extends AbstractMenu implements Subject {
 		this.add(pajekNetwork);
 		this.add(graphmlNetwork);
 		//this.add(cffNetwork);
+		this.addSeparator();
 		this.add(baSimulation);
 		this.add(testSimulation);
 		this.setVisible(true);
