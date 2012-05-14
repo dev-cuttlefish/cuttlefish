@@ -14,6 +14,9 @@ import javax.swing.JOptionPane;
 import ch.ethz.sg.cuttlefish.gui2.NetworkPanel;
 import ch.ethz.sg.cuttlefish.gui2.tasks.DumpToDBWorker;
 import ch.ethz.sg.cuttlefish.networks.CxfNetwork;
+import javax.swing.GroupLayout.Alignment;
+import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.GroupLayout;
 
 
 public class DBDump extends JFrame {
@@ -39,10 +42,12 @@ public class DBDump extends JFrame {
 	private javax.swing.JLabel urlLabel;
 	private javax.swing.JTextField usernameField;
 	private javax.swing.JLabel usernameLabel;
+	private javax.swing.JCheckBox replaceTables;
 	private JFrame frame;
 	
 	private javax.swing.JButton attrCancel;
     private javax.swing.JButton attrDump;
+    private javax.swing.JButton attrToggle;
     private javax.swing.JLabel attrInfo;
     private javax.swing.JLabel linkAttrLabel;
     private javax.swing.JCheckBox linkColor;
@@ -96,7 +101,7 @@ public class DBDump extends JFrame {
 		selectAttrs.setResizable(false);
 		selectAttrs.setVisible(false);
 		
-		frame.setSize(386, 347);
+		frame.setSize(430, 370);
 		frame.setResizable(false);		
 		frame.setVisible(true);
 	}
@@ -119,6 +124,7 @@ public class DBDump extends JFrame {
 	    cancel = new javax.swing.JToggleButton();
 	    dbTypeLabel = new javax.swing.JLabel();
 	    dbType = new javax.swing.JComboBox();
+	    replaceTables = new javax.swing.JCheckBox("Replace tables if they exist");
 
 	    info1.setText("Enter the database connection information and the table");
 	    info2.setText("names where the network will be dumped");
@@ -168,7 +174,7 @@ public class DBDump extends JFrame {
 	    dbType.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "MySQL", "PostgreSQL", "SQLite" }));
 		
 	    javax.swing.GroupLayout layout = new javax.swing.GroupLayout(frame.getContentPane());
-	    frame.setLayout(layout);	    
+	    frame.getContentPane().setLayout(layout);	    
 	    
 	    layout.setHorizontalGroup(
 	        layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -192,6 +198,7 @@ public class DBDump extends JFrame {
 	                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
 	                                .addComponent(linksField, javax.swing.GroupLayout.DEFAULT_SIZE, 227, Short.MAX_VALUE)
 	                                .addComponent(nodeField, javax.swing.GroupLayout.DEFAULT_SIZE, 227, Short.MAX_VALUE)
+	                                .addComponent(replaceTables, javax.swing.GroupLayout.DEFAULT_SIZE, 227, Short.MAX_VALUE)
 	                                .addComponent(passwordField, javax.swing.GroupLayout.DEFAULT_SIZE, 227, Short.MAX_VALUE)))
 	                        .addGroup(layout.createSequentialGroup()
 	                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -239,7 +246,10 @@ public class DBDump extends JFrame {
 	            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
 	                .addComponent(lLabel)
 	                .addComponent(linksField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-	            .addGap(18, 18, 18)
+	            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+	            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+	                .addComponent(replaceTables, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
 	            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
 	                .addComponent(ok)
 	                .addComponent(cancel))
@@ -274,10 +284,11 @@ public class DBDump extends JFrame {
         linkVar1 = new javax.swing.JCheckBox();
         linkVar2 = new javax.swing.JCheckBox();
         linkHide = new javax.swing.JCheckBox();
+        attrToggle = new javax.swing.JButton();
         attrDump = new javax.swing.JButton();
         attrCancel = new javax.swing.JButton();
 
-        attrInfo.setText("Select the attributes that you want to dump to the database");
+        attrInfo.setText("Select the attributes to dump to the database");
         nodeAttrLabel.setText("Node attributes");
         linkAttrLabel.setText("Link attributes");
         nodeId.setText("id");
@@ -325,7 +336,7 @@ public class DBDump extends JFrame {
             	if(nodeSize.isSelected())
             		nodeAttrs.add("size");
             	if(nodeShape.isSelected())
-            		nodeAttrs.add("shape");            		
+            		nodeAttrs.add("shape");
             	if(nodeWidth.isSelected())
             		nodeAttrs.add("width");
             	if(nodeHide.isSelected())
@@ -360,7 +371,7 @@ public class DBDump extends JFrame {
             	if(linkHide.isSelected())
             		linkAttrs.add("hide");            	
             
-				(new DumpToDBWorker(networkPanel, (CxfNetwork)networkPanel.getNetwork(), networkPanel.getNetworkLayout(), nodeField.getText(), linksField.getText(), conn, nodeAttrs, linkAttrs) ).execute();							
+				(new DumpToDBWorker(networkPanel, (CxfNetwork)networkPanel.getNetwork(), networkPanel.getNetworkLayout(), nodeField.getText(), linksField.getText(), conn, nodeAttrs, linkAttrs, replaceTables.isSelected()) ).execute();							
             	selectAttrs.setVisible(false);
             }
         });
@@ -368,116 +379,142 @@ public class DBDump extends JFrame {
         attrCancel.setText("Cancel");
         attrCancel.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
+            	System.out.println(replaceTables.isSelected());
             	selectAttrs.setVisible(false);
+            }
+        });
+        
+        attrToggle.setText("Toggle All");
+        attrToggle.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+            	nodeLabel.setSelected(!nodeLabel.isSelected());
+            	nodeColor.setSelected(!nodeColor.isSelected());
+            	nodeBorderColor.setSelected(!nodeBorderColor.isSelected());
+            	nodeSize.setSelected(!nodeSize.isSelected());
+            	nodeShape.setSelected(!nodeShape.isSelected());
+            	nodeWidth.setSelected(!nodeWidth.isSelected());
+            	nodeHide.setSelected(!nodeHide.isSelected());
+            	nodeVar1.setSelected(!nodeVar1.isSelected());
+            	nodeVar2.setSelected(!nodeVar2.isSelected());
+            	nodeX.setSelected(!nodeX.isSelected());
+            	nodeY.setSelected(!nodeY.isSelected());
+            	nodeFixed.setSelected(!nodeFixed.isSelected());
+
+            	linkWeight.setSelected(!linkWeight.isSelected());
+            	linkLabel.setSelected(!linkLabel.isSelected());
+            	linkWidth.setSelected(!linkWidth.isSelected());
+            	linkColor.setSelected(!linkColor.isSelected());
+            	linkVar1.setSelected(!linkVar1.isSelected());
+            	linkVar2.setSelected(!linkVar2.isSelected());
+            	linkHide.setSelected(!linkHide.isSelected());
             }
         });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(selectAttrs.getContentPane());
-        selectAttrs.setLayout(layout);
         layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(nodeFixed)
-                            .addComponent(nodeY)
-                            .addComponent(nodeX)
-                            .addComponent(nodeVar2)
-                            .addComponent(attrInfo)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(nodeAttrLabel)
-                                    .addComponent(nodeVar1)
-                                    .addComponent(nodeHide)
-                                    .addComponent(nodeWidth)
-                                    .addComponent(nodeShape)
-                                    .addComponent(nodeSize)
-                                    .addComponent(nodeBorderColor)
-                                    .addComponent(nodeColor)
-                                    .addComponent(nodeLabel)
-                                    .addComponent(nodeId))
-                                .addGap(88, 88, 88)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(linkHide)
-                                    .addComponent(linkVar2)
-                                    .addComponent(linkVar1)
-                                    .addComponent(linkColor)
-                                    .addComponent(linkWidth)
-                                    .addComponent(linkLabel)
-                                    .addComponent(linkWeight)
-                                    .addComponent(linkDest)
-                                    .addComponent(linkOrig)
-                                    .addComponent(linkAttrLabel)))))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(118, 118, 118)
-                        .addComponent(attrDump)
-                        .addGap(18, 18, 18)
-                        .addComponent(attrCancel)))
-                .addContainerGap(14, Short.MAX_VALUE))
+        	layout.createParallelGroup(Alignment.LEADING)
+        		.addGroup(layout.createSequentialGroup()
+        			.addContainerGap()
+        			.addGroup(layout.createParallelGroup(Alignment.LEADING)
+        				.addComponent(nodeFixed)
+        				.addComponent(nodeY)
+        				.addComponent(nodeX)
+        				.addComponent(nodeVar2)
+        				.addComponent(attrInfo)
+        				.addGroup(layout.createSequentialGroup()
+        					.addGroup(layout.createParallelGroup(Alignment.LEADING)
+        						.addComponent(nodeAttrLabel)
+        						.addComponent(nodeVar1)
+        						.addComponent(nodeHide)
+        						.addComponent(nodeWidth)
+        						.addComponent(nodeShape)
+        						.addComponent(nodeSize)
+        						.addComponent(nodeBorderColor)
+        						.addComponent(nodeColor)
+        						.addComponent(nodeLabel)
+        						.addComponent(nodeId)
+        						.addGroup(layout.createSequentialGroup()
+        							.addGap(44)
+        							.addComponent(attrToggle)))
+        					.addGap(18)
+        					.addComponent(attrDump)
+        					.addPreferredGap(ComponentPlacement.RELATED)
+        					.addGroup(layout.createParallelGroup(Alignment.LEADING)
+        						.addComponent(linkDest)
+        						.addComponent(attrCancel)
+        						.addComponent(linkHide)
+        						.addComponent(linkVar2)
+        						.addComponent(linkVar1)
+        						.addComponent(linkColor)
+        						.addComponent(linkWidth)
+        						.addComponent(linkLabel)
+        						.addComponent(linkWeight)
+        						.addComponent(linkOrig)
+        						.addComponent(linkAttrLabel))))
+        			.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(attrInfo)
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(nodeAttrLabel)
-                    .addComponent(linkAttrLabel))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(nodeId)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(nodeLabel)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(nodeColor)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(nodeBorderColor)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(nodeSize)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(nodeShape)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(nodeWidth)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(nodeHide)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(nodeVar1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(nodeVar2)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(nodeX)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(nodeY)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(nodeFixed))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(linkOrig)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(linkDest)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(linkWeight)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(linkLabel)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(linkWidth)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(linkColor)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(linkVar1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(linkVar2)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(linkHide)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 20, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(attrDump)
-                    .addComponent(attrCancel))
-                .addGap(26, 26, 26))
+        	layout.createParallelGroup(Alignment.LEADING)
+        		.addGroup(layout.createSequentialGroup()
+        			.addContainerGap()
+        			.addComponent(attrInfo)
+        			.addGap(18)
+        			.addGroup(layout.createParallelGroup(Alignment.BASELINE)
+        				.addComponent(nodeAttrLabel)
+        				.addComponent(linkAttrLabel))
+        			.addPreferredGap(ComponentPlacement.UNRELATED)
+        			.addGroup(layout.createParallelGroup(Alignment.LEADING)
+        				.addGroup(layout.createSequentialGroup()
+        					.addComponent(nodeId)
+        					.addPreferredGap(ComponentPlacement.RELATED)
+        					.addComponent(nodeLabel)
+        					.addPreferredGap(ComponentPlacement.RELATED)
+        					.addComponent(nodeColor)
+        					.addPreferredGap(ComponentPlacement.RELATED)
+        					.addComponent(nodeBorderColor)
+        					.addPreferredGap(ComponentPlacement.RELATED)
+        					.addComponent(nodeSize)
+        					.addPreferredGap(ComponentPlacement.RELATED)
+        					.addComponent(nodeShape)
+        					.addPreferredGap(ComponentPlacement.RELATED)
+        					.addComponent(nodeWidth)
+        					.addPreferredGap(ComponentPlacement.RELATED)
+        					.addComponent(nodeHide)
+        					.addPreferredGap(ComponentPlacement.RELATED)
+        					.addComponent(nodeVar1)
+        					.addPreferredGap(ComponentPlacement.RELATED)
+        					.addComponent(nodeVar2)
+        					.addPreferredGap(ComponentPlacement.RELATED)
+        					.addComponent(nodeX)
+        					.addPreferredGap(ComponentPlacement.RELATED)
+        					.addComponent(nodeY)
+        					.addPreferredGap(ComponentPlacement.RELATED)
+        					.addComponent(nodeFixed))
+        				.addGroup(layout.createSequentialGroup()
+        					.addComponent(linkOrig)
+        					.addPreferredGap(ComponentPlacement.RELATED)
+        					.addComponent(linkDest)
+        					.addPreferredGap(ComponentPlacement.RELATED)
+        					.addComponent(linkWeight)
+        					.addPreferredGap(ComponentPlacement.RELATED)
+        					.addComponent(linkLabel)
+        					.addPreferredGap(ComponentPlacement.RELATED)
+        					.addComponent(linkWidth)
+        					.addPreferredGap(ComponentPlacement.RELATED)
+        					.addComponent(linkColor)
+        					.addPreferredGap(ComponentPlacement.RELATED)
+        					.addComponent(linkVar1)
+        					.addPreferredGap(ComponentPlacement.RELATED)
+        					.addComponent(linkVar2)
+        					.addPreferredGap(ComponentPlacement.RELATED)
+        					.addComponent(linkHide)))
+        			.addPreferredGap(ComponentPlacement.RELATED)
+        			.addGroup(layout.createParallelGroup(Alignment.BASELINE)
+        				.addComponent(attrToggle)
+        				.addComponent(attrDump)
+        				.addComponent(attrCancel))
+        			.addContainerGap())
         );
+        selectAttrs.getContentPane().setLayout(layout);
     }
-
 }

@@ -31,27 +31,29 @@ public class DumpToDBWorker extends SwingWorker<Object, Object> {
 		private Map<String,String> nodeAttrType;
 		private List<String> nodeAttrs;
 		private boolean dumpFinished = false;
+		private boolean replaceTables;
 
-		public DumpToDBWorker(NetworkPanel networkPanel, CxfNetwork network, Layout<Vertex, Edge> layout, String nodesTableName, String linksTableName, Connection conn, List<String> nodeAttrs, List<String> linkAttrs) {
+		public DumpToDBWorker(NetworkPanel networkPanel, CxfNetwork network, Layout<Vertex, Edge> layout, String nodesTableName, String linksTableName, Connection conn, List<String> nodeAttrs, List<String> linkAttrs, boolean replaceTables) {
 			this.conn = conn;
 			this.networkPanel = networkPanel;
 			this.network = network;
 			this.nodesTableName = nodesTableName;
 			this.linksTableName = linksTableName;
 			this.layout = layout;
+			this.replaceTables = replaceTables;
 			
 			linkAttrType = new HashMap<String, String>();
 			this.linkAttrs= linkAttrs;
 			nodeAttrType = new HashMap<String, String>();
 			this.nodeAttrs = nodeAttrs;
 
-			nodeAttrType.put("id", "INT(11) PRIMARY KEY NOT NULL");
+			nodeAttrType.put("id", "INT PRIMARY KEY NOT NULL");
 			nodeAttrType.put("label", "VARCHAR(255)");
 			nodeAttrType.put("color", "VARCHAR(255)");
 			nodeAttrType.put("borderColor", "VARCHAR(255)");
-			nodeAttrType.put("size", "INT(3)");
+			nodeAttrType.put("size", "INT");
 			nodeAttrType.put("shape", "VARCHAR(10)");
-			nodeAttrType.put("width", "INT(3)");
+			nodeAttrType.put("width", "INT");
 			nodeAttrType.put("hide", "BOOLEAN");
 			nodeAttrType.put("var1", "VARCHAR(255)");
 			nodeAttrType.put("var2", "VARCHAR(255)");
@@ -59,11 +61,11 @@ public class DumpToDBWorker extends SwingWorker<Object, Object> {
 			nodeAttrType.put("y", "FLOAT");
 			nodeAttrType.put("fixed", "BOOLEAN");
 			
-			linkAttrType.put("id_origin", "INT(11)");
-			linkAttrType.put("id_dest", "INT(11)");
-			linkAttrType.put("weight", "INT(3)");
+			linkAttrType.put("id_origin", "INT");
+			linkAttrType.put("id_dest", "INT");
+			linkAttrType.put("weight", "INT");
 			linkAttrType.put("label", "VARCHAR(255)");
-			linkAttrType.put("width", "INT(3)");
+			linkAttrType.put("width", "INT");
 			linkAttrType.put("color", "VARCHAR(255)");
 			linkAttrType.put("var1", "VARCHAR(255)");
 			linkAttrType.put("var2", "VARCHAR(255)");
@@ -77,8 +79,12 @@ public class DumpToDBWorker extends SwingWorker<Object, Object> {
 			rs = dbmeta.getTables(null, null, nodesTableName, null);
 			while(rs.next() ) {
 				if( nodesTableName.equalsIgnoreCase( rs.getString("TABLE_NAME") ) ) {
-					JOptionPane.showMessageDialog(networkPanel, "Table " + nodesTableName + " already exists in the database.", "Table exists", JOptionPane.ERROR_MESSAGE, null);
-					return false;
+					if(replaceTables) {
+						dropTable(nodesTableName);
+					} else {
+						JOptionPane.showMessageDialog(networkPanel, "Table " + nodesTableName + " already exists in the database.", "Table exists", JOptionPane.ERROR_MESSAGE, null);
+						return false;
+					}
 				}
 			}
 			String query = "CREATE TABLE " + nodesTableName + '(';
@@ -94,8 +100,12 @@ public class DumpToDBWorker extends SwingWorker<Object, Object> {
 			rs = dbmeta.getTables(null, null, linksTableName, null);
 			while(rs.next() ) {
 				if( linksTableName.equalsIgnoreCase( rs.getString("TABLE_NAME") ) ) {
-					JOptionPane.showMessageDialog(networkPanel, "Table " + linksTableName + " already exists in the database.", "Table exists", JOptionPane.ERROR_MESSAGE, null);
-					return false;
+					if(replaceTables) {
+						dropTable(linksTableName);
+					} else {
+						JOptionPane.showMessageDialog(networkPanel, "Table " + linksTableName + " already exists in the database.", "Table exists", JOptionPane.ERROR_MESSAGE, null);
+						return false;
+					}
 				}
 			}						
 			query = "CREATE TABLE " + linksTableName + '(';
@@ -107,6 +117,13 @@ public class DumpToDBWorker extends SwingWorker<Object, Object> {
 			query += ",PRIMARY KEY(id_origin, id_dest),FOREIGN KEY(id_origin) REFERENCES " + nodesTableName + "(id),FOREIGN KEY(id_dest) REFERENCES " + nodesTableName + "(id));";
 			st.execute(query);
 			return true;
+		}
+		
+		private void dropTable(String tableName) throws Exception {
+			/* If table exists and user has chosen to replace existing tables,
+			 * drop table first and then create it.
+			 */
+			conn.createStatement().execute("DROP TABLE "+tableName+";");
 		}
 		
 		private void setNodeAttr(Vertex n, String attr, PreparedStatement st, int index) throws SQLException {
