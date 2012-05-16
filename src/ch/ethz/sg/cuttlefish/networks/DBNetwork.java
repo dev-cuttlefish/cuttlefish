@@ -81,6 +81,7 @@ public class DBNetwork extends BrowsableNetwork {
 		networkNames = new ArrayList<String>();
 		networkNodetableMap = new HashMap<String, String>();
 		availableNodeTables = new HashSet<String>();
+		networkLoaded = true;
 	}
 
 	@Override
@@ -105,17 +106,15 @@ public class DBNetwork extends BrowsableNetwork {
 	 * @param userName
 	 * @param password
 	 */
-	public boolean connect(String driverName, String urlName, String schemaName, String dbName,
-			String userName, String password) {
+	public boolean connect(String driverName, String urlName, String schemaName, String dbName, String userName, String password) {
 		boolean connected = true;
 		if (conn != null)
 			disConnect();
-		// "com.mysql.jdbc.Driver"
-		// "jdbc:mysql://"
 		try {
 			Class.forName(driverName).newInstance();
-			String url = urlName + dbName;
+			String url = urlName + dbName + "/" + schemaName;
 			conn = DriverManager.getConnection(url, userName, password);
+			this.schemaName = schemaName;
 			boolean isValid = true;
 			/**
 			 * The postgre JDBC driver does not implement
@@ -173,7 +172,7 @@ public class DBNetwork extends BrowsableNetwork {
 	 * @return - The schema name
 	 */
 	public String getSchemaName() {
-		return schemaName;//schemaName;
+		return schemaName;
 	}
 
 	/**
@@ -260,9 +259,9 @@ public class DBNetwork extends BrowsableNetwork {
 	}
 
 	public void setNetwork(String networkName) {
-		edgeTable = schemaName + networkName;
+		edgeTable = networkName;
 		if (networkNodetableMap.containsKey(networkName)) {
-			nodeTable = schemaName + networkNodetableMap.get(networkName);
+			nodeTable = networkNodetableMap.get(networkName);
 			derivedNodeTable = false;
 		} else {
 			// If no node table exists, then use a derived table
@@ -292,12 +291,19 @@ public class DBNetwork extends BrowsableNetwork {
 	}
 
 	/**
-	 * Returns the name of the nodes table name
+	 * Returns the name of the nodes table
 	 * 
 	 * @return
 	 */
 	public String getNodeTable() {
 		return nodeTable;
+	}
+	
+	/**
+	 * Returns the name of the nodes table, prepended with the schema name
+	 */
+	public String getFullNodeTableName() {
+		return schemaName+"."+nodeTable;
 	}
 
 	/**
@@ -307,6 +313,15 @@ public class DBNetwork extends BrowsableNetwork {
 	 */
 	public String getEdgeTable() {
 		return edgeTable;
+	}
+	
+	/**
+	 * Returns the name of the edge table name, prepended with the schema name
+	 * 
+	 * @return
+	 */
+	public String getFullEdgeTableName() {
+		return schemaName+"."+edgeTable;
 	}
 
 	/**
@@ -326,7 +341,6 @@ public class DBNetwork extends BrowsableNetwork {
 				initialized = true;
 				directed = true; // if no view is defined, is directed by
 									// default
-
 			}
 			initialized = true;
 		}
@@ -402,7 +416,7 @@ public class DBNetwork extends BrowsableNetwork {
 	 * Checks if the provided node id exists in the database
 	 */
 	public boolean checkNodeId(String nodeId) {
-		String queryString = "SELECT * FROM " + nodeTable + " WHERE id = '"
+		String queryString = "SELECT * FROM " + schemaName+"."+nodeTable + " WHERE id = '"
 				+ nodeId + "'";
 		Statement st;
 		try {
@@ -568,7 +582,7 @@ public class DBNetwork extends BrowsableNetwork {
 		// first read the vertex
 		try {
 			if (!derivedNodeTable) {
-				String queryString = "select * from " + nodeTable + " where id = " + id + ";";
+				String queryString = "select * from " + schemaName+"."+nodeTable + " where id = " + id + ";";
 				queryString = applyFilter(queryString, nodeFilter);
 				Statement st = conn.createStatement();
 				ResultSet rs = st.executeQuery(queryString);
@@ -658,7 +672,7 @@ public class DBNetwork extends BrowsableNetwork {
 		
 		if (forward == true && distance > 0) {
 			try {
-				String queryString = "select * from " + edgeTable + " where id_origin =" + v.getId() + ";";
+				String queryString = "select * from " + schemaName+"."+edgeTable + " where id_origin =" + v.getId() + ";";
 				queryString = applyFilter(queryString, edgeFilter);
 				Statement st = conn.createStatement();
 				ResultSet rs = st.executeQuery(queryString);
@@ -728,7 +742,7 @@ public class DBNetwork extends BrowsableNetwork {
 		}
 		if ((forward == false) && (distance > 0)) {
 			try {
-				String queryString = "select * from " + edgeTable + " where id_dest =" + v.getId() + ";";
+				String queryString = "select * from " + schemaName+"."+edgeTable + " where id_dest =" + v.getId() + ";";
 				queryString = applyFilter(queryString, edgeFilter);
 				Statement st = conn.createStatement();
 				ResultSet rs = st.executeQuery(queryString);
@@ -876,7 +890,7 @@ public class DBNetwork extends BrowsableNetwork {
 	 * @return
 	 */
 	public Set<Integer> getSelectedNodes() {
-		String sqlQuery = "SELECT id FROM " + nodeTable;
+		String sqlQuery = "SELECT id FROM " + schemaName+"."+nodeTable;
 		sqlQuery = applyFilter(sqlQuery, nodeFilter);
 		Statement st;
 		Set<Integer> selectedNodes = new HashSet<Integer>();
@@ -908,7 +922,7 @@ public class DBNetwork extends BrowsableNetwork {
 			nodesList.append(Integer.toString(nodeId) + ',');
 		}
 		nodesList.setCharAt(nodesList.length() - 1, ')');
-		String sqlQuery = "SELECT id_dest FROM " + edgeTable
+		String sqlQuery = "SELECT id_dest FROM " + schemaName+"."+edgeTable
 				+ " WHERE id_origin IN " + nodesList;
 		Statement st;
 		try {
@@ -951,7 +965,7 @@ public class DBNetwork extends BrowsableNetwork {
 			destNodesList.append(Integer.toString(nodeId) + ',');
 		}
 		destNodesList.setCharAt(destNodesList.length() - 1, ')');
-		String sqlQuery = "SELECT count(*) as edgeCount FROM " + edgeTable
+		String sqlQuery = "SELECT count(*) as edgeCount FROM " + schemaName+"."+edgeTable
 				+ " WHERE id_origin IN " + originNodesList + " AND id_dest IN "
 				+ destNodesList;
 		Statement st;
@@ -974,7 +988,7 @@ public class DBNetwork extends BrowsableNetwork {
 		Set<Edge> visitedEdges = new HashSet<Edge>();
 		for (Vertex v : getVertices()) {
 			try {
-				String queryString = "select * from " + edgeTable + " where id_origin =" + v.getId() + ";";
+				String queryString = "select * from " + schemaName+"."+edgeTable + " where id_origin =" + v.getId() + ";";
 				queryString = applyFilter(queryString, edgeFilter);
 				Statement st = conn.createStatement();
 				ResultSet rs = st.executeQuery(queryString);
