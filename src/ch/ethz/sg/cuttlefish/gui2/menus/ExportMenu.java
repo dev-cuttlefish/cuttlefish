@@ -461,7 +461,6 @@ public class ExportMenu extends AbstractMenu {
 			tikzDialog = new TikzDialog(tikzExporter, networkPanel);
 		} else {
 			tikzDialog.setTikzExporter(tikzExporter);
-			tikzDialog.calculateHeightAndWidth();
 		}
 		return tikzDialog;
 	}
