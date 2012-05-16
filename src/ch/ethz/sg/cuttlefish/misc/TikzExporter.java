@@ -54,9 +54,14 @@ public class TikzExporter {
 	private File outFile = null;
 	private Layout <Vertex, Edge> layout = null;
 	private PrintStream p = null;
-	private double coordinateFactor = 0.025;
-	private double nodeSizeFactor = 1;
-	private double edgeSizeFactor = 0.5;
+	
+	private final double defaultCoordinateFactor = 0.025;
+	private final double defaultNodeSizeFactor = 1;
+	private final double defaultEdgeSizeFactor = 0.5;
+	private double coordinateFactor = defaultCoordinateFactor;
+	private double nodeSizeFactor = defaultNodeSizeFactor;
+	private double edgeSizeFactor = defaultEdgeSizeFactor;
+	
 	private double maxY= 0;
 	private boolean hideVertexLabels = false;
 	private boolean hideEdgeLabels = false;
@@ -474,6 +479,12 @@ public class TikzExporter {
 			this.edgeSizeFactor = edge;
 			this.coordinateFactor = coord;
 		}
+	}
+	
+	public void setDefaultFactors() {
+		this.nodeSizeFactor = defaultNodeSizeFactor;
+		this.edgeSizeFactor = defaultEdgeSizeFactor;
+		this.coordinateFactor = defaultCoordinateFactor;
 	}
 	
 }

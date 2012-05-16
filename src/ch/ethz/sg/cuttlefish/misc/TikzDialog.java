@@ -153,11 +153,6 @@ public class TikzDialog extends JFrame {
 		});
 
         widthLabel.setText("width");
-
-        heightLabel.setText("height");
-        calculateHeightAndWidth();
-        widthTextField.setEnabled(false);        
-        heightTextField.setEnabled(false);
         widthTextField.addFocusListener(new FocusListener() {			
 			@Override
 			public void focusLost(FocusEvent e) {
@@ -169,7 +164,8 @@ public class TikzDialog extends JFrame {
 			@Override
 			public void focusGained(FocusEvent e) {}
 		});
-        
+
+        heightLabel.setText("height");
         heightTextField.addFocusListener(new FocusListener() {			
 			@Override
 			public void focusLost(FocusEvent e) {
@@ -201,48 +197,34 @@ public class TikzDialog extends JFrame {
         sizeButtons.add(sizeDefaultRButton);
         sizeButtons.add(sizeFixedRButton);
         sizeButtons.add(sizeScaledRButton);
-        sizeDefaultRButton.setSelected(true);
         
         ButtonGroup styleButtons = new ButtonGroup();
         styleButtons.add(style3DRButton);
         styleButtons.add(styleCircleRButton);
         styleCircleRButton.setSelected(true);
         
-        
         JLabel nodeFactorLabel = new JLabel("Node factor");
+        nodeTextField = new JTextField();
+        nodeTextField.setColumns(10);
         
         JLabel edgeFactorLabel = new JLabel("Edge Factor");
+        edgeTextField = new JTextField();
+        edgeTextField.setColumns(10);
         
         JLabel coordinatesFactorLabel = new JLabel("Coordinates Factor");
-        
         coordTextField = new JTextField();
-        coordTextField.setEnabled(false);
         coordTextField.setColumns(10);
-        coordTextField.setText(tikzExporter.getCoordinatesFactor()+"");
-        /*coordTextField.addFocusListener(new FocusListener() {			
-			@Override
-			public void focusLost(FocusEvent e) {
-				double fNode, fEdge, fCoord; 
-				fNode = Double.parseDouble(nodeTextField.getText());
-				fEdge = Double.parseDouble(edgeTextField.getText());
-				fCoord = Double.parseDouble(coordTextField.getText());
-				//tikzExporter.setSize(width, height);
-			}			
-			@Override
-			public void focusGained(FocusEvent e) {}
-		});*/
         
-        nodeTextField = new JTextField();
+        calculateHeightAndWidth();
+        getScalingFactors();
+        
+		sizeDefaultRButton.setSelected(true);
+        widthTextField.setEnabled(false);        
+        heightTextField.setEnabled(false);
+        coordTextField.setEnabled(false);
         nodeTextField.setEnabled(false);
-        nodeTextField.setColumns(10);
-        nodeTextField.setText(tikzExporter.getNodeSizeFactor()+"");
-        
-        edgeTextField = new JTextField();
         edgeTextField.setEnabled(false);
-        edgeTextField.setColumns(10);
-        edgeTextField.setText(tikzExporter.getEdgeSizeFactor()+"");
         
-
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this.getContentPane());
         layout.setHorizontalGroup(
         	layout.createParallelGroup(Alignment.LEADING)
@@ -354,7 +336,13 @@ public class TikzDialog extends JFrame {
         getContentPane().setLayout(layout);
     }
 
-	public void calculateHeightAndWidth() {
+	private void getScalingFactors() {
+		coordTextField.setText(tikzExporter.getCoordinatesFactor()+"");
+        nodeTextField.setText(tikzExporter.getNodeSizeFactor()+"");
+        edgeTextField.setText(tikzExporter.getEdgeSizeFactor()+"");
+	}
+
+	private void calculateHeightAndWidth() {
 		double xmin = Double.MAX_VALUE, xmax = Double.MIN_VALUE, ymin = Double.MAX_VALUE, ymax = Double.MIN_VALUE;
         for(Vertex v : networkPanel.getNetwork().getVertices() ) {
         	if ( networkPanel.getNetworkLayout().transform(v).getX() < xmin)
@@ -409,16 +397,26 @@ public class TikzDialog extends JFrame {
 	private void exportButtonActionPerformed(java.awt.event.ActionEvent evt) {
 		tikzExporter.setFixedSize(sizeFixedRButton.isSelected());
 		
-		int width, height;
-		width = Integer.parseInt(widthTextField.getText());
-		height = Integer.parseInt(heightTextField.getText());
-		tikzExporter.setSize(width, height);
-		
-		double node, edge, coord;
-		node = Double.parseDouble(nodeTextField.getText());
-		edge = Double.parseDouble(edgeTextField.getText());
-		coord = Double.parseDouble(coordTextField.getText());
-		tikzExporter.setScalingFactors(node, edge, coord);
+		if(sizeFixedRButton.isSelected()) {
+			int width, height;
+			width = Integer.parseInt(widthTextField.getText());
+			height = Integer.parseInt(heightTextField.getText());
+			tikzExporter.setSize(width, height);
+			
+		} else if(sizeScaledRButton.isSelected()) {
+			double node, edge, coord;
+			node = Double.parseDouble(nodeTextField.getText());
+			edge = Double.parseDouble(edgeTextField.getText());
+			coord = Double.parseDouble(coordTextField.getText());
+			tikzExporter.setScalingFactors(node, edge, coord);
+			
+		} else if(sizeDefaultRButton.isSelected()) {
+			// Select default scaling factors
+			tikzExporter.setDefaultFactors();
+			getScalingFactors();
+			calculateHeightAndWidth();
+			
+		}
 		
 		if(style3DRButton.isSelected()) {
 			tikzExporter.setNodeStyle("ball");
@@ -446,11 +444,6 @@ public class TikzDialog extends JFrame {
 		nodeTextField.setEnabled(false);
 		edgeTextField.setEnabled(false);
 		coordTextField.setEnabled(false);
-		
-		int width, height;
-		width = Integer.parseInt(widthTextField.getText());
-		height = Integer.parseInt(heightTextField.getText());
-		tikzExporter.setSize(width, height);
 	}
 	
 	private void sizeScaledRButtonActionPerformed(ActionEvent e) {
@@ -461,12 +454,6 @@ public class TikzDialog extends JFrame {
 		widthTextField.setEnabled(false);
 		heightTextField.setEnabled(false);
 		tikzExporter.setFixedSize(false);
-		
-		double fNode, fEdge, fCoord; 
-		fNode = Double.parseDouble(nodeTextField.getText());
-		fEdge = Double.parseDouble(edgeTextField.getText());
-		fCoord = Double.parseDouble(coordTextField.getText());
-		//tikzExporter.setSize();
 	}
 	
 	public void setTikzExporter(TikzExporter tikzExporter) {
