@@ -26,6 +26,8 @@ import ch.ethz.sg.cuttlefish.networks.GraphMLNetwork;
 import ch.ethz.sg.cuttlefish.networks.InteractiveCxfNetwork;
 import ch.ethz.sg.cuttlefish.networks.PajekNetwork;
 import ch.ethz.sg.cuttlefish.networks.UserNetwork;
+import javax.swing.GroupLayout.Alignment;
+import javax.swing.LayoutStyle.ComponentPlacement;
 
 public class NetworkInitializer {
 	
@@ -165,7 +167,6 @@ public class NetworkInitializer {
 	    connectButton = new javax.swing.JButton();
 	    cancelButton = new javax.swing.JButton();
 	    urlTextField = new javax.swing.JTextField(dbUrl);
-	    urlTextField.setText(dbUrl);
 	    schemaNameTextField = new javax.swing.JTextField(dbSchemaName);
 	    usernameTextField = new javax.swing.JTextField(dbUsername);
 	    passwordTextField = new javax.swing.JPasswordField(dbPassword);
@@ -182,7 +183,7 @@ public class NetworkInitializer {
         schemaNameLabel.setText("Schema name");
         usernameLabel.setText("Username"); 
         passwordLabel.setText("Password");
-        
+        urlTextField.setColumns(21);
 
         connectButton.setText("Connect");         
         connectButton.setPreferredSize(new java.awt.Dimension(85, 25));
@@ -190,66 +191,62 @@ public class NetworkInitializer {
         cancelButton.setPreferredSize(new java.awt.Dimension(85, 25));
       
         GroupLayout layout = new GroupLayout(connectPanel);
+        layout.setHorizontalGroup(
+        	layout.createParallelGroup(Alignment.LEADING)
+        		.addGroup(layout.createSequentialGroup()
+        			.addGroup(layout.createParallelGroup(Alignment.LEADING)
+        				.addGroup(layout.createSequentialGroup()
+        					.addContainerGap()
+        					.addGroup(layout.createParallelGroup(Alignment.LEADING)
+        						.addComponent(driverLabel)
+        						.addComponent(urlLabel)
+        						.addComponent(schemaNameLabel)
+        						.addComponent(usernameLabel)
+        						.addComponent(passwordLabel))
+        					.addPreferredGap(ComponentPlacement.RELATED)
+        					.addGroup(layout.createParallelGroup(Alignment.LEADING, false)
+        						.addComponent(urlTextField)
+        						.addComponent(passwordTextField)
+        						.addComponent(usernameTextField)
+        						.addComponent(schemaNameTextField)
+        						.addComponent(driverComboBox, 0, 153, Short.MAX_VALUE)))
+        				.addGroup(Alignment.TRAILING, layout.createSequentialGroup()
+        					.addContainerGap()
+        					.addComponent(connectButton, GroupLayout.PREFERRED_SIZE, 94, GroupLayout.PREFERRED_SIZE)
+        					.addPreferredGap(ComponentPlacement.UNRELATED)
+        					.addComponent(cancelButton, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
+        			.addContainerGap())
+        );
+        layout.setVerticalGroup(
+        	layout.createParallelGroup(Alignment.LEADING)
+        		.addGroup(layout.createSequentialGroup()
+        			.addContainerGap()
+        			.addGroup(layout.createParallelGroup(Alignment.BASELINE)
+        				.addComponent(driverLabel)
+        				.addComponent(driverComboBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+        			.addPreferredGap(ComponentPlacement.UNRELATED)
+        			.addGroup(layout.createParallelGroup(Alignment.BASELINE)
+        				.addComponent(urlLabel)
+        				.addComponent(urlTextField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+        			.addPreferredGap(ComponentPlacement.UNRELATED)
+        			.addGroup(layout.createParallelGroup(Alignment.BASELINE)
+        				.addComponent(schemaNameLabel)
+        				.addComponent(schemaNameTextField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+        			.addPreferredGap(ComponentPlacement.UNRELATED)
+        			.addGroup(layout.createParallelGroup(Alignment.BASELINE)
+        				.addComponent(usernameLabel)
+        				.addComponent(usernameTextField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+        			.addPreferredGap(ComponentPlacement.UNRELATED)
+        			.addGroup(layout.createParallelGroup(Alignment.BASELINE)
+        				.addComponent(passwordLabel)
+        				.addComponent(passwordTextField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+        			.addGap(18)
+        			.addGroup(layout.createParallelGroup(Alignment.BASELINE)
+        				.addComponent(cancelButton, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+        				.addComponent(connectButton, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+        			.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
 	    connectPanel.setLayout(layout);
-	    layout.setHorizontalGroup(
-	            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-	            .addGroup(layout.createSequentialGroup()
-	                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-	                    .addGroup(layout.createSequentialGroup()
-	                        .addContainerGap()
-	                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-	                            .addComponent(driverLabel)
-	                            .addComponent(urlLabel)
-	                            .addComponent(schemaNameLabel)
-	                            .addComponent(usernameLabel)
-	                            .addComponent(passwordLabel))
-	                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-	                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-	//                            .addComponent(passwordTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 153, Short.MAX_VALUE)
-//	                            .addComponent(usernameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 153, Short.MAX_VALUE)
-	                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-	                                .addComponent(urlTextField)
-	                                .addComponent(passwordTextField)
-	                                .addComponent(usernameTextField)
-	                                .addComponent(schemaNameTextField)
-	                                .addComponent(driverComboBox, 0, 153, Short.MAX_VALUE))))
-	                    .addGroup(layout.createSequentialGroup()
-	                        .addGap(56, 56, 56)
-	                        .addComponent(connectButton)
-	                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-	                        .addComponent(cancelButton)))
-	                .addContainerGap())
-	        );
-	        layout.setVerticalGroup(
-	            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-	            .addGroup(layout.createSequentialGroup()
-	                .addContainerGap()
-	                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-	                    .addComponent(driverLabel)
-	                    .addComponent(driverComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-	                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-	                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-	                    .addComponent(urlLabel)
-	                    .addComponent(urlTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-	                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-   	                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-	                    .addComponent(schemaNameLabel)
-	                    .addComponent(schemaNameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-	                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-
-	                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-	                    .addComponent(usernameLabel)
-	                    .addComponent(usernameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-	                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-	                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-	                    .addComponent(passwordLabel)
-	                    .addComponent(passwordTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-	                .addGap(18, 18, 18)
-	                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-	                    .addComponent(connectButton)
-	                    .addComponent(cancelButton))
-	                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-	        );
 	    
 	    usernameTextField.addKeyListener(new KeyListener() {			
 			@Override
@@ -286,27 +283,24 @@ public class NetworkInitializer {
 			public void actionPerformed(ActionEvent e) {
 				String driverName;
 				String urlName;
-				String schemaName;
 				dbUsername = usernameTextField.getText();
 				dbPassword = passwordTextField.getText();
 				driverIndex = driverComboBox.getSelectedIndex();
 				dbUrl = urlTextField.getText();
-				dbSchemaName = schemaNameTextField.getText();
 				if(driverIndex == 0) {
 					driverName = "com.mysql.jdbc.Driver";
 					urlName = "jdbc:mysql://";
-					schemaName = "";					
+					dbSchemaName = "";					
 				} else if (driverIndex == 1) {
 					driverName = "org.postgresql.Driver";
 					urlName = "jdbc:postgresql://";
-					schemaName = schemaNameTextField.getText() + '.';
+					dbSchemaName = schemaNameTextField.getText();
 				} else {
 					driverName = "org.sqlite.JDBC";
 					urlName = "jdbc:sqlite::/";
-					schemaName = "";
+					dbSchemaName = "";
 				}
-				 if (dbNetwork.connect(driverName,  urlName, schemaName, dbUrl + "/" + dbSchemaName,
-						   dbUsername, dbPassword)
+				 if (dbNetwork.connect(driverName, urlName, dbSchemaName, dbUrl, dbUsername, dbPassword)
 				 	) {
 					 connectWindow.setVisible(false);
 					 synchronized (dbNetwork) {
@@ -319,12 +313,13 @@ public class NetworkInitializer {
 		cancelButton.addActionListener(new ActionListener() {			
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				dbNetwork.setNetworkLoaded(false);
 				connectWindow.setVisible(false);
 			}
 		});
 	    
-	    connectWindow.add(connectPanel);
-	    connectWindow.setSize(300, 244);
+	    connectWindow.getContentPane().add(connectPanel);
+	    connectWindow.setSize(386, 244);
 	    connectWindow.setResizable(true);
 	    connectWindow.setTitle("Connect to database");
 	    connectWindow.setVisible(true);

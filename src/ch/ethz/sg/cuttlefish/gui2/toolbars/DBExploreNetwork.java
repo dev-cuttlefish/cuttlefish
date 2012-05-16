@@ -130,8 +130,8 @@ public class DBExploreNetwork extends JFrame {
 		operatorSQLMap.put(">", ">");
 		operatorSQLMap.put("contains", "like");
 		operatorQuotes = new HashMap<String, String>();
-		operatorQuotes.put("=", "\"");
-		operatorQuotes.put("contains", "\"");
+		operatorQuotes.put("=", "'");
+		operatorQuotes.put("contains", "'");
 		operatorQuotes.put("<", "");
 		operatorQuotes.put(">", "");
 		
@@ -215,7 +215,7 @@ public class DBExploreNetwork extends JFrame {
 					getDBNetwork().setNodeFilter(vertexSQLFilter);
 				if(edgeSQLFilter.length() > 0)
 					getDBNetwork().setEdgeFilter(edgeSQLFilter);
-				String nodeSQLQuery = "SELECT * FROM " + getDBNetwork().getNodeTable();
+				String nodeSQLQuery = "SELECT * FROM " + getDBNetwork().getFullNodeTableName();
 				getDBNetwork().nodeQuery(nodeSQLQuery);
 				networkPanel.onNetworkChange();
 				networkPanel.getNetworkLayout().reset();
@@ -490,7 +490,7 @@ public class DBExploreNetwork extends JFrame {
 			getDBNetwork().setNodeFilter(vertexSQLFilter);
 		if(edgeSQLFilter.length() > 0)
 			getDBNetwork().setEdgeFilter(edgeSQLFilter);
-		String nodeSQLQuery = "SELECT * FROM " + getDBNetwork().getNodeTable();
+		String nodeSQLQuery = "SELECT * FROM " + getDBNetwork().getFullNodeTableName();
 		getDBNetwork().nodeQuery(nodeSQLQuery);
 		if(getDBNetwork().getVertexCount() != numNodes || 
 				getDBNetwork().getEdgeCount() != numEdges) {
