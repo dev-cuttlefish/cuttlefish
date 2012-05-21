@@ -903,8 +903,62 @@ public class DBNetwork extends BrowsableNetwork {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-
 		return selectedNodes;
+	}
+	
+	/**
+	 * Counts the number of nodes that match the edge origin filter
+	 */
+	public Set<Integer> getOriginNodes() {
+		return getEdgeFilteredNodes("origin");
+	}
+	
+	/**
+	 * Counts the number of nodes that match the edge destination filter
+	 */
+	public Set<Integer> getDestNodes() {
+		return getEdgeFilteredNodes("dest");
+	}
+	
+	/**
+	 * Returns the set of nodes that match an origin or destination filter, or null if no such filter is specified
+	 * @param type Specifies "origin" or "dest" node filter
+	 * @return The set of matched nodes, null if there is no specified filter that matches 'type' 
+	 */
+	private Set<Integer> getEdgeFilteredNodes(String type) {
+		Set<Integer> nodeSet = new HashSet<Integer>();
+		String sqlQuery = "SELECT id FROM " + schemaName+"."+nodeTable;
+		Statement st;
+		ResultSet rs;
+		String idField = "id_"+type; // Either "id_origin" or "id_dest"
+		
+		if(edgeFilter.contains(idField)) {
+			String filter = edgeFilter;
+			
+			if(filter.contains(" AND ")) {
+				for(String s: filter.split(" AND ")) {
+					if (s.contains(idField)) {
+						filter = s;
+						break;
+					}
+				}
+			}
+			sqlQuery = applyFilter(sqlQuery, filter.replaceAll(idField, "id"));
+			
+			try {
+				st = conn.createStatement();
+				rs = st.executeQuery(sqlQuery);
+				while (rs.next()) {
+					nodeSet.add(rs.getInt("id"));
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			
+			return nodeSet;
+		}
+		
+		return null;
 	}
 
 	/**

@@ -469,13 +469,27 @@ public class DBExploreNetwork extends JFrame {
 		protected Object doInBackground() throws Exception {
 			nodesInfo.setText("Selected nodes: updating");
 			Set<Integer> selectedNodes = dbNetwork.getSelectedNodes();
+			Set<Integer> origNodes, destNodes;
+
 			nodesInfo.setText("Selected nodes: " + selectedNodes.size());
 			if(selectedNodes.size() > 500)
 				warningInfo.setText("Warning: Selecting more than 500 nodes may take a long time to visualize");
 			else
 				warningInfo.setText("");
 			edgesInfo.setText("Selected links: updating");
-			int numEdges = dbNetwork.countEdges(selectedNodes, selectedNodes);
+			
+			origNodes = dbNetwork.getOriginNodes();
+			destNodes = dbNetwork.getDestNodes();
+			
+			/* If origin or destination edge filters are set, compute the sets
+			 * of nodes that match those filters
+			 */
+			if(origNodes == null)
+				origNodes = selectedNodes;
+			if(destNodes == null)
+				destNodes = selectedNodes;
+			
+			int numEdges = dbNetwork.countEdges(origNodes, destNodes);
 			edgesInfo.setText("Selected links: " + numEdges);
 			return null;
 		}
