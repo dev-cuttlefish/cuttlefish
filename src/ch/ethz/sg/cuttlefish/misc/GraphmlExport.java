@@ -13,7 +13,14 @@ import edu.uci.ics.jung.algorithms.layout.Layout;
 import edu.uci.ics.jung.io.GraphMLMetadata;
 import edu.uci.ics.jung.io.GraphMLWriter;
 
+@Deprecated
 public class GraphmlExport {
+	
+	/*
+	 * The GraphmlExport class was used to export to the GraphML file format. This
+	 * class is now deprecated and replaced by ch.ethz.sg.cuttlefish.misc.GraphMLExporter
+	 * that corresponds to the latest GraphML specification.
+	 */
 	
 	private BrowsableNetwork network;
 	private Layout<Vertex, Edge> layout;

@@ -38,7 +38,7 @@ public class BrowsableNetwork extends SparseMultigraph<Vertex, Edge> {
 	
 	private static final long serialVersionUID = 1L;
 	
-	private String name=this.getClass().getName();
+	private String name = this.getClass().getName();
 	private Hashtable<String, String> arguments = new Hashtable<String, String>();
 	private boolean incremental = false;
 	protected boolean networkLoaded = false;

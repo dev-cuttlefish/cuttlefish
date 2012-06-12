@@ -188,5 +188,15 @@ public class Edge implements Comparable<Edge>{
 			return -1;
 		return 0;
 	}
+	
+	public boolean equals(Object o) {
+		if(!(o instanceof Edge))
+			return false;
+		
+		if(compareTo((Edge) o) != 0)
+			return false;
+		
+		return true;
+	}
 
 }

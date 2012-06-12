@@ -22,28 +22,36 @@
 package ch.ethz.sg.cuttlefish.networks;
 
 import java.io.File;
-import java.io.IOException;
-
-import javax.swing.JOptionPane;
-import javax.xml.parsers.ParserConfigurationException;
-
-import org.xml.sax.SAXException;
 
 import ch.ethz.sg.cuttlefish.gui2.NetworkInitializer;
-import ch.ethz.sg.cuttlefish.misc.Edge;
-import ch.ethz.sg.cuttlefish.misc.EdgeFactory;
-import ch.ethz.sg.cuttlefish.misc.Vertex;
-import ch.ethz.sg.cuttlefish.misc.VertexFactory;
-import edu.uci.ics.jung.io.GraphMLReader;
+import ch.ethz.sg.cuttlefish.misc.GraphMLImporter;
 
 public class GraphMLNetwork extends BrowsableNetwork {
 
 	private static final long serialVersionUID = 1L;
+	private boolean directed = false;
 	
 	public void graphicalInit(NetworkInitializer initializer) {
 		initializer.initGraphMLNetwork(this);
 	}
 	
+	public void setDirected(boolean directed) {
+		this.directed = directed;
+	}
+	
+	public boolean isDirected() {
+		return directed;
+	}
+	
+	public void load(File netFile) {
+		GraphMLImporter importer = new GraphMLImporter(netFile);
+		importer.importGraph(this);
+	}
+	
+	/*
+	 * This method uses an outdated importing mechanism: GraphMLReader
+	 * It is replaced with the GraphMLImporter, used above.
+	 * 
 	public void load(File netFile){
 		VertexFactory vertexFactory = new VertexFactory();
 		EdgeFactory edgeFactory = new EdgeFactory();
@@ -65,5 +73,5 @@ public class GraphMLNetwork extends BrowsableNetwork {
 				System.err.println("Input error in GraphML");
 				ioEx.printStackTrace();
 			}
-	}
+	}*/
 }

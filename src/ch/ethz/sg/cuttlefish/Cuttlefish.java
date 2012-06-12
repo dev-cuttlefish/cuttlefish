@@ -26,11 +26,6 @@ import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
-import com.sun.image.codec.jpeg.ImageFormatException;
-import com.sun.image.codec.jpeg.JPEGCodec;
-import com.sun.image.codec.jpeg.JPEGEncodeParam;
-import com.sun.image.codec.jpeg.JPEGImageEncoder;
-
 import ch.ethz.sg.cuttlefish.layout.ARF2Layout;
 import ch.ethz.sg.cuttlefish.layout.FixedLayout;
 import ch.ethz.sg.cuttlefish.layout.KCoreLayout;
@@ -39,7 +34,7 @@ import ch.ethz.sg.cuttlefish.misc.AppletExporter;
 import ch.ethz.sg.cuttlefish.misc.CxfSaver;
 import ch.ethz.sg.cuttlefish.misc.CxfToCmx;
 import ch.ethz.sg.cuttlefish.misc.Edge;
-import ch.ethz.sg.cuttlefish.misc.GraphmlExport;
+import ch.ethz.sg.cuttlefish.misc.GraphMLExporter;
 import ch.ethz.sg.cuttlefish.misc.SVGExporter;
 import ch.ethz.sg.cuttlefish.misc.TikzExporter;
 import ch.ethz.sg.cuttlefish.misc.Vertex;
@@ -49,6 +44,12 @@ import ch.ethz.sg.cuttlefish.networks.CxfNetwork;
 import ch.ethz.sg.cuttlefish.networks.GraphMLNetwork;
 import ch.ethz.sg.cuttlefish.networks.JsonNetwork;
 import ch.ethz.sg.cuttlefish.networks.PajekNetwork;
+
+import com.sun.image.codec.jpeg.ImageFormatException;
+import com.sun.image.codec.jpeg.JPEGCodec;
+import com.sun.image.codec.jpeg.JPEGEncodeParam;
+import com.sun.image.codec.jpeg.JPEGImageEncoder;
+
 import edu.uci.ics.jung.algorithms.layout.CircleLayout;
 import edu.uci.ics.jung.algorithms.layout.FRLayout;
 import edu.uci.ics.jung.algorithms.layout.ISOMLayout;
@@ -292,10 +293,11 @@ public class Cuttlefish {
 			}
 		} else if(format.compareToIgnoreCase("graphml") == 0){
 			String filename = opts.getOptionValue("output");
-			GraphmlExport exporter = new GraphmlExport(getNetwork(), getLayout());
+			
+			// Updated version of GraphML I/O
+			GraphMLExporter exporter = new GraphMLExporter(getNetwork(), getLayout());
 			exporter.export(new File(filename));
-		}else 
-		{
+		} else {
 			System.out.println("Unsupported output format '" + format + "'\n");
 			printUsage();
 			System.exit(0);

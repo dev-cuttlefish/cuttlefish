@@ -37,24 +37,25 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import com.sun.image.codec.jpeg.ImageFormatException;
-import com.sun.image.codec.jpeg.JPEGCodec;
-import com.sun.image.codec.jpeg.JPEGEncodeParam;
-import com.sun.image.codec.jpeg.JPEGImageEncoder;
-
 import ch.ethz.sg.cuttlefish.gui2.CuttlefishToolbars;
 import ch.ethz.sg.cuttlefish.gui2.NetworkPanel;
 import ch.ethz.sg.cuttlefish.misc.AppletExporter;
 import ch.ethz.sg.cuttlefish.misc.Conversion;
 import ch.ethz.sg.cuttlefish.misc.CxfToCmx;
 import ch.ethz.sg.cuttlefish.misc.FileChooser;
-import ch.ethz.sg.cuttlefish.misc.GraphmlExport;
+import ch.ethz.sg.cuttlefish.misc.GraphMLExporter;
 import ch.ethz.sg.cuttlefish.misc.SVGExporter;
 import ch.ethz.sg.cuttlefish.misc.TikzDialog;
 import ch.ethz.sg.cuttlefish.misc.TikzExporter;
 import ch.ethz.sg.cuttlefish.networks.BrowsableNetwork;
 import ch.ethz.sg.cuttlefish.networks.CxfNetwork;
 import ch.ethz.sg.cuttlefish.networks.InteractiveCxfNetwork;
+
+import com.sun.image.codec.jpeg.ImageFormatException;
+import com.sun.image.codec.jpeg.JPEGCodec;
+import com.sun.image.codec.jpeg.JPEGEncodeParam;
+import com.sun.image.codec.jpeg.JPEGImageEncoder;
+
 import edu.uci.ics.jung.algorithms.util.IterativeContext;
 
 public class ExportMenu extends AbstractMenu {
@@ -128,7 +129,9 @@ public class ExportMenu extends AbstractMenu {
                 graphmlFileChooser.setSelectedFile(new File("network.graphml"));	 
                 graphmlFileChooser.setFileFilter(new FileNameExtensionFilter(".graphml files", "graphml"));	 
                 if(graphmlFileChooser.showSaveDialog(networkPanel) == JFileChooser.APPROVE_OPTION) {	 
-                	GraphmlExport exporter = new GraphmlExport(networkPanel.getNetwork(), networkPanel.getNetworkLayout());
+
+                	// Updated version of GraphML I/O
+                	GraphMLExporter exporter = new GraphMLExporter(networkPanel.getNetwork(), networkPanel.getNetworkLayout());
                 	exporter.export(graphmlFileChooser.getSelectedFile());
                 }
 			}

@@ -32,7 +32,7 @@ import java.awt.geom.RectangularShape;
  * Class that stores the information associated with a vertex
  * @author david
  */
-public class Vertex {
+public class Vertex implements Comparable<Vertex> {
 	
 	
 	private int idTemp;
@@ -322,5 +322,23 @@ public class Vertex {
 		return Integer.toString(id);
 	}
 
+	@Override
+	public int compareTo(Vertex v) {
+		// Comparison based on ID
+		
+		if(this.id < v.getId())
+			return -1;
+		else if(this.id > v.getId())
+			return 1;
+		
+		return 0;
+	}
 	
+	public boolean equals(Object o) {
+		if( !(o instanceof Vertex) || compareTo((Vertex) o) != 0 )
+			return false;
+		
+		return true;
+	}
+
 }
