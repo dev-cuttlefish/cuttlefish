@@ -103,9 +103,12 @@ public class RandomNetworkGenerator {
 			int s = randomInRange(0, numNodes - 1);
 			int t = randomInRange(0, numNodes - 1);
 
-			if (!network.containsEdge(e)) {
-				network.addEdge(e, nodes[s], nodes[t]);
+			while(network.findEdge(nodes[s], nodes[t]) != null) {
+				s = randomInRange(0, numNodes - 1);
+				t = randomInRange(0, numNodes - 1);
 			}
+			
+			network.addEdge(e, nodes[s], nodes[t]);
 		}
 
 		return network;

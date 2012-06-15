@@ -23,6 +23,7 @@
 package ch.ethz.sg.cuttlefish.testing;
 
 import java.io.File;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -32,11 +33,13 @@ import junit.framework.Assert;
 import org.junit.Test;
 
 import ch.ethz.sg.cuttlefish.layout.ARF2Layout;
+import ch.ethz.sg.cuttlefish.misc.CxfSaver;
 import ch.ethz.sg.cuttlefish.misc.Edge;
 import ch.ethz.sg.cuttlefish.misc.GraphMLExporter;
 import ch.ethz.sg.cuttlefish.misc.GraphMLImporter;
 import ch.ethz.sg.cuttlefish.misc.Vertex;
 import ch.ethz.sg.cuttlefish.networks.BrowsableNetwork;
+import ch.ethz.sg.cuttlefish.networks.CxfNetwork;
 import ch.ethz.sg.cuttlefish.networks.GraphMLNetwork;
 import edu.uci.ics.jung.algorithms.layout.Layout;
 import edu.uci.ics.jung.graph.Graph;
@@ -58,8 +61,8 @@ public class TestExportNetwork {
 	public void testGraphMLExport() {
 		log("Testing GraphML Export/Import");
 
-		RandomNetworkGenerator rgg = new RandomNetworkGenerator();
-		BrowsableNetwork network = rgg.generateNetwork();
+		RandomNetworkGenerator rng = new RandomNetworkGenerator();
+		BrowsableNetwork network = rng.generateNetwork();
 		Layout<Vertex, Edge> layout = new ARF2Layout<Vertex, Edge>(network,
 				true, Integer.MAX_VALUE);
 
@@ -73,6 +76,9 @@ public class TestExportNetwork {
 		GraphMLExporter exporter = new GraphMLExporter(network, layout);
 		exporter.export(testFile);
 
+		double fsize = testFile.length() / 1024.0 / 1024.0;
+		log("File size: " + new DecimalFormat("#.##").format(fsize) + " MB");
+
 		// Import the network
 		log("Importing network back");
 		GraphMLNetwork importedNetwork = new GraphMLNetwork();
@@ -80,6 +86,48 @@ public class TestExportNetwork {
 				importedNetwork, true, Integer.MAX_VALUE);
 		GraphMLImporter importer = new GraphMLImporter(testFile);
 		importer.importGraph(importedNetwork);
+
+		// Step 1: Validate Topology
+		log("Validating topology... ");
+		validateTopology(layout.getGraph(), importedLayout.getGraph());
+
+		// Step 2: Validate Edge weights
+		log("Validating edge weights");
+		validateEdgeWeights(layout.getGraph(), importedLayout.getGraph());
+
+		testFile.delete();
+		log("All tests have been completed successfully!\n");
+	}
+
+	@Test
+	public void testCXFLargeNetworks() {
+		log("Testing CXF Export/Import for Large Networks");
+		int size = 100000;
+
+		RandomNetworkGenerator rng = new RandomNetworkGenerator();
+		BrowsableNetwork network = rng.generateNetwork(size, size);
+		Layout<Vertex, Edge> layout = new ARF2Layout<Vertex, Edge>(network,
+				true, Integer.MAX_VALUE);
+
+		File testFile = new File("large_network_" + size + ".cxf");
+
+		log("Test graph has " + network.getVertexCount() + " nodes, "
+				+ network.getEdgeCount() + " edges");
+
+		// Export the network to GraphML
+		log("Exporting network to CXF");
+		CxfSaver saver = new CxfSaver(network, layout);
+		saver.save(testFile);
+
+		double fsize = testFile.length() / 1024.0 / 1024.0;
+		log("File size: " + new DecimalFormat("#.##").format(fsize) + " MB");
+
+		// Import the network
+		log("Importing network back");
+
+		CxfNetwork importedNetwork = new CxfNetwork(testFile);
+		Layout<Vertex, Edge> importedLayout = new ARF2Layout<Vertex, Edge>(
+				importedNetwork, true, Integer.MAX_VALUE);
 
 		// Step 1: Validate Topology
 		log("Validating topology");
@@ -90,7 +138,8 @@ public class TestExportNetwork {
 		validateEdgeWeights(layout.getGraph(), importedLayout.getGraph());
 
 		testFile.delete();
-		log("All tests have been completed successfully!");
+		log("All tests have been completed successfully!\n");
+
 	}
 
 	/**
@@ -161,7 +210,13 @@ public class TestExportNetwork {
 	}
 
 	private void log(String message) {
-		System.out.println(this.getClass().getSimpleName() + ": " + message);
+		StringBuilder string = new StringBuilder();
+
+		string.append(this.getClass().getSimpleName());
+		string.append(": ");
+		string.append(message);
+
+		System.out.println(string.toString());
 	}
 
 }
