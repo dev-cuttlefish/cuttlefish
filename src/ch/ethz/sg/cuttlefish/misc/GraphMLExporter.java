@@ -194,6 +194,10 @@ public class GraphMLExporter {
 			dataEl.setAttribute("key", "label");
 			dataEl.setTextContent(v.getLabel());
 
+			if(v.getPosition() == null) {
+				v.setPosition(0, 0);
+			}
+			
 			dataEl = doc.createElement("data");
 			nodeEl.appendChild(dataEl);
 			dataEl.setAttribute("key", "x");
