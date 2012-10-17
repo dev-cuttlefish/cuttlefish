@@ -50,9 +50,11 @@ import ch.ethz.sg.cuttlefish.gui.mouse.PopupMousePlugin;
 import ch.ethz.sg.cuttlefish.gui2.INetworkBrowser;
 import ch.ethz.sg.cuttlefish.gui2.tasks.SetLayoutWorker;
 import ch.ethz.sg.cuttlefish.layout.ARF2Layout;
+import ch.ethz.sg.cuttlefish.layout.CircleLayoutNonOverlapping;
 import ch.ethz.sg.cuttlefish.layout.FixedLayout;
 import ch.ethz.sg.cuttlefish.layout.KCoreLayout;
 import ch.ethz.sg.cuttlefish.layout.WeightedARF2Layout;
+import ch.ethz.sg.cuttlefish.layout.WeightedKCoreLayout;
 import ch.ethz.sg.cuttlefish.misc.Edge;
 import ch.ethz.sg.cuttlefish.misc.EdgeFactory;
 import ch.ethz.sg.cuttlefish.misc.Observer;
@@ -98,6 +100,11 @@ public class NetworkPanel  extends JPanel implements Subject, ItemListener,INetw
 	private SetLayoutWorker setLayoutWorker = null;
 	private int width;
 	private int height;
+	
+	/* Used so that the user will be able to pass layout parameters when
+	 * necessary. For example, in Weighted KCore, the user must specify
+	 * two parameters, alpha & beta from input. */
+	private Object[] layoutParameters = new Object[2];
 	
 	/*Factories*/
 	private VertexFactory vertexFactory = null;
@@ -360,7 +367,8 @@ public class NetworkPanel  extends JPanel implements Subject, ItemListener,INetw
 		}
 		//non-iterative layouts need to be explicitly reset
 		if (layout instanceof TreeLayout || layout instanceof RadialTreeLayout 
-				|| layout instanceof CircleLayout || layout instanceof KCoreLayout ) {
+				|| layout instanceof CircleLayout || layout instanceof KCoreLayout
+				|| layout instanceof WeightedKCoreLayout) {
 			stopLayout();
 			setNetwork(((BrowsableForestNetwork)getNetwork()).getOriginalNetwork());
 			resumeLayout();
@@ -387,6 +395,12 @@ public class NetworkPanel  extends JPanel implements Subject, ItemListener,INetw
 				layout.lock(v, false);	
 			else
 				layout.setLocation(v, v.getPosition());
+	}
+
+	public void setLayoutParameters(Object[] parameters) {
+		for(int i = 0; i < parameters.length; ++i) {
+			layoutParameters[i] = parameters[i];
+		}
 	}
 
 	@Override
@@ -438,12 +452,19 @@ public class NetworkPanel  extends JPanel implements Subject, ItemListener,INetw
 		if (selectedLayout.equalsIgnoreCase("ISOMLayout")) {
 			newLayout = new ISOMLayout<Vertex, Edge>(getNetwork());
 		}
-		if (selectedLayout.equalsIgnoreCase("CircleLayout") )
-			newLayout = new CircleLayout<Vertex, Edge>(getNetwork());
+		if (selectedLayout.equalsIgnoreCase("CircleLayout") ) {
+//			newLayout = new CircleLayout<Vertex, Edge>(getNetwork());
+			newLayout = new CircleLayoutNonOverlapping<Vertex, Edge>(getNetwork());
+		}
 		if (selectedLayout.equalsIgnoreCase("Fixed"))
 			newLayout = new FixedLayout<Vertex, Edge>(getNetwork(),layout);
 		if (selectedLayout.equalsIgnoreCase("KCore"))
 			newLayout = new KCoreLayout<Vertex, Edge>(getNetwork(),layout);
+		if (selectedLayout.equalsIgnoreCase("WeightedKCore")) {
+			double alpha = (Double) layoutParameters[0];
+			double beta = (Double) layoutParameters[1];
+			newLayout = new WeightedKCoreLayout<Vertex, Edge>(getNetwork(), layout, alpha, beta);
+		}
 		if( selectedLayout.equalsIgnoreCase("TreeLayout"))
 		{			
 			BrowsableForestNetwork network = new BrowsableForestNetwork((BrowsableNetwork)getNetwork());

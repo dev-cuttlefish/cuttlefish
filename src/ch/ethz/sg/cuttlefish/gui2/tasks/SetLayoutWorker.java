@@ -21,7 +21,7 @@ public class SetLayoutWorker extends SwingWorker<Object, Object> {
 		try {
 			networkPanel.setLayoutByName(layoutName);
 		} catch (Exception e) {
-			System.out.println("hm");
+			e.printStackTrace();
 		}
 		synchronized (networkPanel) {
 			networkPanel.notifyAll();	

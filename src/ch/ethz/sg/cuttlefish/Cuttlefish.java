@@ -30,6 +30,7 @@ import ch.ethz.sg.cuttlefish.layout.ARF2Layout;
 import ch.ethz.sg.cuttlefish.layout.FixedLayout;
 import ch.ethz.sg.cuttlefish.layout.KCoreLayout;
 import ch.ethz.sg.cuttlefish.layout.WeightedARF2Layout;
+import ch.ethz.sg.cuttlefish.layout.WeightedKCoreLayout;
 import ch.ethz.sg.cuttlefish.misc.AppletExporter;
 import ch.ethz.sg.cuttlefish.misc.CxfSaver;
 import ch.ethz.sg.cuttlefish.misc.CxfToCmx;
@@ -166,6 +167,9 @@ public class Cuttlefish {
 			layout = new FRLayout<Vertex, Edge>(getNetwork());
 		} else if (l.compareToIgnoreCase("k-core") == 0) {
 			layout = new KCoreLayout<Vertex, Edge>(getNetwork(), null);
+		} else if (l.compareToIgnoreCase("weighted-k-core") == 0) {
+			//TODO ilias: configure command line to pass alpha, beta
+			layout = new WeightedKCoreLayout<Vertex, Edge>(getNetwork(), null);
 		} else if (l.compareToIgnoreCase("iso-m") == 0) {
 			layout = new ISOMLayout<Vertex, Edge>(getNetwork());
 		} else if (l.compareToIgnoreCase("circle") == 0) {
@@ -365,7 +369,7 @@ public class Cuttlefish {
 		Option outputFormat = OptionBuilder
 				.withValueSeparator()
 				.withDescription(
-						"output format: tikz (default), cxf, applet, svg, json, cmx, graphml")
+						"output format: tikz (default), cxf, applet, svg, json, cmx, graphml, jpeg")
 				.withLongOpt("out-format").withArgName("input format").hasArg()
 				.create();
 		Option gui = OptionBuilder

@@ -202,7 +202,7 @@ public class KCoreLayout<V, E>  extends AbstractLayout<V,E> {
 				}
 			}
 			computeCore(degree, degree.get(minDegreeV));
-		}	
+		}
 	}
 	
 	private void computeCore(Map<V, Integer> degree, int core) {
@@ -228,5 +228,10 @@ public class KCoreLayout<V, E>  extends AbstractLayout<V,E> {
 		}		
 	}
 
-
+	public Map<V, Integer> getCoreness() {
+		Map<V, Integer> coreness = new HashMap<V, Integer>();
+		coreness.putAll(this.coreness);
+		
+		return coreness;
+	}
 }
