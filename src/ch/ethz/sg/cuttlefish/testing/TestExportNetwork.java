@@ -138,7 +138,7 @@ public class TestExportNetwork {
 		validateEdgeWeights(layout.getGraph(), importedLayout.getGraph());
 
 		testFile.delete();
-		log("All tests have been completed successfully!\n");
+		log("\nAll tests have been completed successfully!");
 
 	}
 

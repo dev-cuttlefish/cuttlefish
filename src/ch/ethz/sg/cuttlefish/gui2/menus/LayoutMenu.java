@@ -58,6 +58,7 @@ public class LayoutMenu extends AbstractMenu implements Observer {
 	private JMenuItem repaintButton;
 	private JRadioButtonMenuItem arf;
 	private JRadioButtonMenuItem kcore;
+	private JRadioButtonMenuItem weightedKcore;
 	private JRadioButtonMenuItem fixed;
 	private JRadioButtonMenuItem weightedArf;
 	// private JRadioButtonMenuItem spring;
@@ -81,6 +82,7 @@ public class LayoutMenu extends AbstractMenu implements Observer {
 		layoutButtons = new ButtonGroup();		
 		arf = new JRadioButtonMenuItem("ARF");
 		kcore = new JRadioButtonMenuItem("KCore");
+		weightedKcore = new JRadioButtonMenuItem("Weighted KCore");
 		fixed = new JRadioButtonMenuItem("Fixed");
 		weightedArf = new JRadioButtonMenuItem("Weighted ARF");
 		//spring = new JRadioButtonMenuItem("Spring");
@@ -93,6 +95,7 @@ public class LayoutMenu extends AbstractMenu implements Observer {
 		arf.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_1, ActionEvent.ALT_MASK));
 		kcore.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_2, ActionEvent.ALT_MASK));
 		//spring.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_3, ActionEvent.ALT_MASK));
+		weightedKcore.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_3, ActionEvent.ALT_MASK));
 		kamada.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_4, ActionEvent.ALT_MASK));
 		fruchterman.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_5, ActionEvent.ALT_MASK));
 		isom.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_6, ActionEvent.ALT_MASK));
@@ -101,6 +104,7 @@ public class LayoutMenu extends AbstractMenu implements Observer {
 		radialTree.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_9, ActionEvent.ALT_MASK));
 		layoutButtons.add(arf);
 		layoutButtons.add(kcore);
+		layoutButtons.add(weightedKcore);
 		layoutButtons.add(fixed);
 		layoutButtons.add(weightedArf);
 		//layoutButtons.add(spring);
@@ -114,6 +118,7 @@ public class LayoutMenu extends AbstractMenu implements Observer {
 		layoutMap = new HashMap<JRadioButtonMenuItem, String>();
 		layoutMap.put(arf, "ARFLayout");
 		layoutMap.put(kcore, "KCore");
+		layoutMap.put(weightedKcore, "WeightedKCore");
 		layoutMap.put(fixed, "Fixed");
 		layoutMap.put(weightedArf, "WeightedARFLayout");
 		//layoutMap.put(spring, "SpringLayout");
@@ -150,6 +155,7 @@ public class LayoutMenu extends AbstractMenu implements Observer {
 		
 		this.add(arf);
 		this.add(kcore);
+		this.add(weightedKcore);
 		this.add(fixed);
 		this.add(weightedArf);
 		//this.add(spring);
@@ -188,6 +194,18 @@ public class LayoutMenu extends AbstractMenu implements Observer {
 				}
 				else
 					lastSelectedLayout.setSelected(true);
+			}
+		});
+		weightedKcore.addActionListener(new ActionListener() {			
+			public void actionPerformed(ActionEvent e) {
+				if(checkKCoreLayout()) {
+					if(checkWeightedKCoreLayout()) {
+						layoutSelected(weightedKcore);
+					}
+				}
+				else {
+					lastSelectedLayout.setSelected(true);
+				}
 			}
 		});
 		fixed.addActionListener(new ActionListener() {
@@ -290,15 +308,34 @@ public class LayoutMenu extends AbstractMenu implements Observer {
 			}
 		}
 		int answer = JOptionPane.showConfirmDialog(networkPanel, "This layout assigns colors to nodes. This operation cannot be undone. Proceed?", "Confirm layout", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null);
-		if(answer == JOptionPane.YES_OPTION)
-			return true;		
-		return false;
+		return answer == JOptionPane.YES_OPTION; 
 	}
 	
+	private boolean checkWeightedKCoreLayout() {
+		boolean accepted = true;
+		String msg = "Please specify the parameters (α, β) of Weighted";
+		msg += "\nKCore Layout (comma separated). Defaults are";
+		msg += "\n(α = 1, β = 1):"; 
+		String s = (String) JOptionPane.showInputDialog(null, msg,
+				"Parameter configuration", JOptionPane.PLAIN_MESSAGE,
+				null, null, "1, 1");
+		
+		double alpha = 1, beta = 1;
+		if(s != null) {
+			alpha = new Double(s.split(",")[0]);
+			beta = new Double(s.split(",")[1]);
+		} else {
+			accepted = false;
+		}
+
+		networkPanel.setLayoutParameters(new Object[] {alpha, beta});
+		return accepted;
+	}
+
 	private void layoutSelected(JRadioButtonMenuItem selected) {
 		lastSelectedLayout = selected;
 		selected.setSelected(true);	
-		networkPanel.setLayout(layoutMap.get(selected ));		
+		networkPanel.setLayout(layoutMap.get(selected));		
 	}
 
 	@Override

@@ -17,7 +17,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  
-*/
+ */
 
 package ch.ethz.sg.cuttlefish.misc;
 
@@ -25,11 +25,11 @@ import java.awt.Color;
 
 /**
  * Class that stores the information related to the edges of the network.
+ * 
  * @author David Garcia Becerra
  */
-public class Edge implements Comparable<Edge>{
-	
-	
+public class Edge implements Comparable<Edge> {
+
 	private int idTemp;
 	private int id;
 	private String label;
@@ -40,103 +40,127 @@ public class Edge implements Comparable<Edge>{
 	private String shape = "curved";
 	private String var1 = null;
 	private String var2 = null;
-	
-	public Edge(){
+
+	public Edge() {
 	}
-	
+
 	/**
-	 * @param idTemp the idTemp to set
+	 * @param idTemp
+	 *            the idTemp to set
 	 */
 	public void setIdTemp(int idTemp) {
 		this.idTemp = idTemp;
 	}
+
 	/**
 	 * @return the idTemp
 	 */
 	public int getIdTemp() {
 		return idTemp;
 	}
+
 	/**
-	 * @param id the id to set
+	 * @param id
+	 *            the id to set
 	 */
 	public void setId(int id) {
 		this.id = id;
 	}
+
 	/**
 	 * @return the id
 	 */
 	public int getId() {
 		return id;
 	}
+
 	/**
-	 * @param label the label to set
+	 * @param label
+	 *            the label to set
 	 */
 	public void setLabel(String label) {
 		this.label = label;
 	}
+
 	/**
 	 * @return the label
 	 */
 	public String getLabel() {
 		return label;
 	}
+
 	/**
-	 * @param color the color to set
+	 * @param color
+	 *            the color to set
 	 */
 	public void setColor(Color color) {
 		this.color = color;
 	}
+
 	/**
 	 * @return the color
 	 */
 	public Color getColor() {
 		if (color == null)
-			return new Color(0,0,0);
+			return new Color(0, 0, 0);
 		return color;
 	}
+
 	/**
-	 * @param width the width to set
+	 * @param width
+	 *            the width to set
 	 */
 	public void setWidth(double width) {
 		this.width = width;
 	}
+
 	/**
 	 * @return the width
 	 */
 	public double getWidth() {
 		return width;
 	}
+
 	/**
-	/**
-	 * @param weight the weight to set
+	 * /**
+	 * 
+	 * @param weight
+	 *            the weight to set
 	 */
 	public void setWeight(double weight) {
 		this.weight = weight;
 	}
+
 	/**
 	 * @return the weight
 	 */
 	public double getWeight() {
 		return weight;
 	}
+
 	/**
-	 * @param excluded the excluded to set
+	 * @param excluded
+	 *            the excluded to set
 	 */
 	public void setExcluded(boolean excluded) {
 		this.excluded = excluded;
 	}
+
 	/**
 	 * @return the exclude
 	 */
 	public boolean isExcluded() {
 		return excluded;
 	}
+
 	/**
-	 * @param fixed the fixed to set
+	 * @param fixed
+	 *            the fixed to set
 	 */
 
 	/**
-	 * @param shape the shape to set
+	 * @param shape
+	 *            the shape to set
 	 */
 	public void setShape(String shape) {
 		this.shape = shape;
@@ -150,7 +174,8 @@ public class Edge implements Comparable<Edge>{
 	}
 
 	/**
-	 * @param var1 the var1 to set
+	 * @param var1
+	 *            the var1 to set
 	 */
 	public void setVar1(String var1) {
 		this.var1 = var1;
@@ -164,7 +189,8 @@ public class Edge implements Comparable<Edge>{
 	}
 
 	/**
-	 * @param var2 the var2 to set
+	 * @param var2
+	 *            the var2 to set
 	 */
 	public void setVar2(String var2) {
 		this.var2 = var2;
@@ -188,15 +214,19 @@ public class Edge implements Comparable<Edge>{
 			return -1;
 		return 0;
 	}
-	
+
 	public boolean equals(Object o) {
-		if(!(o instanceof Edge))
+		if (!(o instanceof Edge))
 			return false;
-		
-		if(compareTo((Edge) o) != 0)
+
+		if (this.id != ((Edge) o).getId())
 			return false;
-		
+
 		return true;
+	}
+
+	public String toString() {
+		return "Edge { ID=" + id + " | Weight="+weight+" }";
 	}
 
 }
