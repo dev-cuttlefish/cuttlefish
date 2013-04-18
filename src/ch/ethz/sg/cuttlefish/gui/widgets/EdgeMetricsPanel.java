@@ -290,6 +290,7 @@ public class EdgeMetricsPanel extends BrowserWidget  {
 				weights.remove(index);
 				inDegrees.remove(index);
 			}
+			p.close();
 			
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
@@ -327,6 +328,7 @@ public class EdgeMetricsPanel extends BrowserWidget  {
 				p.println(n_vals + "\t" + degree);
 				n_vals++;
 			}
+			p.close();
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

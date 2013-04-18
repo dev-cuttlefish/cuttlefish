@@ -1,21 +1,14 @@
 package ch.ethz.sg.cuttlefish;
 
-import java.awt.Dimension;
-import java.awt.Graphics2D;
-import java.awt.Rectangle;
-import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.PrintStream;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-
-import javax.swing.JFrame;
+import java.util.StringTokenizer;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -36,6 +29,7 @@ import ch.ethz.sg.cuttlefish.misc.CxfSaver;
 import ch.ethz.sg.cuttlefish.misc.CxfToCmx;
 import ch.ethz.sg.cuttlefish.misc.Edge;
 import ch.ethz.sg.cuttlefish.misc.GraphMLExporter;
+import ch.ethz.sg.cuttlefish.misc.JpegExporter;
 import ch.ethz.sg.cuttlefish.misc.SVGExporter;
 import ch.ethz.sg.cuttlefish.misc.TikzExporter;
 import ch.ethz.sg.cuttlefish.misc.Vertex;
@@ -45,12 +39,6 @@ import ch.ethz.sg.cuttlefish.networks.CxfNetwork;
 import ch.ethz.sg.cuttlefish.networks.GraphMLNetwork;
 import ch.ethz.sg.cuttlefish.networks.JsonNetwork;
 import ch.ethz.sg.cuttlefish.networks.PajekNetwork;
-
-import com.sun.image.codec.jpeg.ImageFormatException;
-import com.sun.image.codec.jpeg.JPEGCodec;
-import com.sun.image.codec.jpeg.JPEGEncodeParam;
-import com.sun.image.codec.jpeg.JPEGImageEncoder;
-
 import edu.uci.ics.jung.algorithms.layout.CircleLayout;
 import edu.uci.ics.jung.algorithms.layout.FRLayout;
 import edu.uci.ics.jung.algorithms.layout.ISOMLayout;
@@ -73,13 +61,11 @@ public class Cuttlefish {
 	private static VisualizationViewer<Vertex, Edge> vv;
 	private static boolean done = false;
 
-	
-	
 	public static void main(String[] args) {
-		if(args.length != 0) {			
+		if (args.length != 0) {
 			initOptions();
 			CommandLineParser parser = new GnuParser();
-	
+
 			try {
 				// parse the command line arguments
 				opts = parser.parse(options, args);
@@ -87,20 +73,20 @@ public class Cuttlefish {
 				// something went wrong..
 				e.printStackTrace();
 			}
-			
+
 			if (opts.hasOption("help") || !opts.hasOption("input")) {
 				printUsage();
 				System.exit(0);
 			}
-			
+
 			// this helps us to press Ctrl+C in order to stop iterative layouts
 			Runtime.getRuntime().addShutdownHook(new Thread() {
-			    public void run() {
-			       done = true;
-			       outputNetwork();
-			    }
-			 });
-			
+				public void run() {
+					done = true;
+					outputNetwork();
+				}
+			});
+
 			parseOptions(args);
 		} else {
 			startGui();
@@ -113,7 +99,7 @@ public class Cuttlefish {
 	}
 
 	private static void parseOptions(String[] args) {
-		
+
 		if (opts.hasOption("help")) {
 			printUsage();
 			System.exit(0);
@@ -159,8 +145,8 @@ public class Cuttlefish {
 		} else if (l.compareToIgnoreCase("weighted-arf") == 0) {
 			layout = new WeightedARF2Layout<Vertex, Edge>(getNetwork(), true,
 					Integer.MAX_VALUE);
-		//} else if (l.compareToIgnoreCase("spring") == 0) {
-		//	layout = new SpringLayout<Vertex, Edge>(getNetwork());
+			// } else if (l.compareToIgnoreCase("spring") == 0) {
+			// layout = new SpringLayout<Vertex, Edge>(getNetwork());
 		} else if (l.compareToIgnoreCase("kamada-kawai") == 0) {
 			layout = new KKLayout<Vertex, Edge>(getNetwork());
 		} else if (l.compareToIgnoreCase("fruchterman-reingold") == 0) {
@@ -168,28 +154,33 @@ public class Cuttlefish {
 		} else if (l.compareToIgnoreCase("k-core") == 0) {
 			layout = new KCoreLayout<Vertex, Edge>(getNetwork(), null);
 		} else if (l.compareToIgnoreCase("weighted-k-core") == 0) {
-			//TODO ilias: configure command line to pass alpha, beta
+			// TODO ilias: configure command line to pass alpha, beta
 			layout = new WeightedKCoreLayout<Vertex, Edge>(getNetwork(), null);
 		} else if (l.compareToIgnoreCase("iso-m") == 0) {
 			layout = new ISOMLayout<Vertex, Edge>(getNetwork());
 		} else if (l.compareToIgnoreCase("circle") == 0) {
 			layout = new CircleLayout<Vertex, Edge>(getNetwork());
 		} else if (l.compareToIgnoreCase("tree") == 0) {
-			BrowsableForestNetwork tree = new BrowsableForestNetwork((BrowsableNetwork)getNetwork());
+			BrowsableForestNetwork tree = new BrowsableForestNetwork(
+					(BrowsableNetwork) getNetwork());
 			layout = new TreeLayout<Vertex, Edge>(tree);
 		} else if (l.compareToIgnoreCase("radial-tree") == 0) {
-			BrowsableForestNetwork tree = new BrowsableForestNetwork((BrowsableNetwork)getNetwork());
+			BrowsableForestNetwork tree = new BrowsableForestNetwork(
+					(BrowsableNetwork) getNetwork());
 			layout = new RadialTreeLayout<Vertex, Edge>(tree);
 		} else if (l.compareToIgnoreCase("k-core") == 0) {
 
 		} else if (l.compareToIgnoreCase("fixed") == 0) {
-			layout = new FixedLayout<Vertex, Edge>(getNetwork(), new CircleLayout<Vertex, Edge>(getNetwork()));
+			layout = new FixedLayout<Vertex, Edge>(getNetwork(),
+					new CircleLayout<Vertex, Edge>(getNetwork()));
 		} else {
 			System.out.println("Unspoported layout: " + l);
 			System.exit(0);
 		}
 		// We need to create a visualization viewer, otherwise JUNG
 		// won't fire up the layout algorithm...
+		//TODO: Ilias: this is the cause of the delay
+		out("Creating Visualization");
 		vv = new VisualizationViewer<Vertex, Edge>(layout);
 		out("Setting layout: " + l);
 		if (layout instanceof IterativeContext) {
@@ -199,26 +190,29 @@ public class Cuttlefish {
 			done = false;
 			double change = 0;
 			while (!done) {
-				done = ((IterativeContext) layout).done();				
+				done = ((IterativeContext) layout).done();
 				if (layout instanceof ARF2Layout) {
-					change = Math.abs(((ARF2Layout<Vertex, Edge>) layout).getChange());					
+					change = Math.abs(((ARF2Layout<Vertex, Edge>) layout)
+							.getChange());
 				}
 				if (layout instanceof WeightedARF2Layout) {
-					change = Math.abs(((WeightedARF2Layout<Vertex, Edge>) layout).getChange());
-				}				
-				System.out.print("[" + sdf.format(cal.getTime()) + "] Layout change: " + change + "\r");
-				done = change < 10;				
+					change = Math
+							.abs(((WeightedARF2Layout<Vertex, Edge>) layout)
+									.getChange());
+				}
+				System.out.print("[" + sdf.format(cal.getTime())
+						+ "] Layout change: " + change + "\r");
+				done = change < 1000;
 				// since the layout won't tell us when it finishes,
 				// we have no choice but to pull its status
 				try {
 					Thread.sleep(100);
-				} catch (InterruptedException e) {					
+				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
 
-
 			}
-			out("Iterative layout finished");
+			out("Iterative layout finished ");
 		}
 		out("Layout set");
 	}
@@ -242,64 +236,54 @@ public class Cuttlefish {
 		} else if (format.compareToIgnoreCase("svg") == 0) {
 			out("Exporting to interactive svg");
 			SVGExporter e = new SVGExporter(getNetwork(), getLayout());
-			int height=1000, width=1000;
+			int height = 1000, width = 1000;
 			e.toSVG(new File(opts.getOptionValue("output")), height, width);
 		} else if (format.compareToIgnoreCase("cmx") == 0) {
 			out("Exporting to CMX");
-			if(getNetwork() instanceof CxfNetwork) {
+			if (getNetwork() instanceof CxfNetwork) {
 				String file = opts.getOptionValue("output");
-				CxfToCmx.cxfToCmx((CxfNetwork)getNetwork(), new File(file+"_linkevent.csv"), new File(file+"_linkeventparent.csv"), new File(file+"_linkeventrecipient.csv"), new File(file+"_linkeventsender.csv"), new File(file+"_node.csv"));	
-			}
-			else {
+				CxfToCmx.cxfToCmx((CxfNetwork) getNetwork(), new File(file
+						+ "_linkevent.csv"), new File(file
+						+ "_linkeventparent.csv"), new File(file
+						+ "_linkeventrecipient.csv"), new File(file
+						+ "_linkeventsender.csv"), new File(file + "_node.csv"));
+			} else {
 				out("You can convert only CXF networks!");
 			}
-						
+
 		} else if (format.compareToIgnoreCase("jpeg") == 0) {
-			int width = 1000, height = 1000;
-			out("Exporting to jpeg");
-			getLayout();
-			Dimension size = vv.getSize();
-			BufferedImage img = new BufferedImage(size.width, size.height,
-					BufferedImage.TYPE_INT_RGB);
-			Graphics2D g2 = img.createGraphics();
-			JFrame frame = new JFrame();
-			frame.setSize(width,height);
-			frame.add(vv);
-			vv.setSize(width, height);
-			frame.setVisible(true);
-			vv.paintImmediately(new Rectangle(width,height));
-			g2.draw(new Rectangle(300, 300));
-			g2.drawImage(vv.createImage(1000, 1000), 0, 0, vv);
-			OutputStream out;
-			try {
-				out = new FileOutputStream(opts.getOptionValue("output"));
-				JPEGImageEncoder encoder = JPEGCodec.createJPEGEncoder(out);
-				JPEGEncodeParam param = JPEGCodec.getDefaultJPEGEncodeParam(img);
-				param.setQuality(1.0f, true);
-				encoder.setJPEGEncodeParam(param);
-				encoder.encode(img, param);
-				out.close();
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			} catch (ImageFormatException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}			
-		} else if(format.compareToIgnoreCase("json") == 0) {
+			String size = opts.getOptionValue("out-size", "1000x1000");
+			StringTokenizer token = new StringTokenizer(size);
+
+			int width = Integer.parseInt(token.nextToken("x"));
+			int height = Integer.parseInt(token.nextToken());
+			out("Exporting to jpeg (" + width + ", " + height + ")");
+
+			final Layout<Vertex, Edge> layout = getLayout();
+			final BrowsableNetwork network = getNetwork();
+			JpegExporter jpeg = new JpegExporter(layout, network, vv, height, width);
+			boolean done = jpeg.exportToJpeg(opts.getOptionValue("output"));
+
+			if (done)
+				out("Network exported in file '"
+						+ opts.getOptionValue("output") + "'");
+
+		} else if (format.compareToIgnoreCase("json") == 0) {
 			String file = opts.getOptionValue("output");
-			AppletExporter exporter = new AppletExporter(getNetwork(), getLayout());
+			AppletExporter exporter = new AppletExporter(getNetwork(),
+					getLayout());
 			try {
 				exporter.exportJsonData(new PrintStream(new File(file)));
 			} catch (FileNotFoundException e) {
 				out("File not found");
 				e.printStackTrace();
 			}
-		} else if(format.compareToIgnoreCase("graphml") == 0){
+		} else if (format.compareToIgnoreCase("graphml") == 0) {
 			String filename = opts.getOptionValue("output");
-			
+
 			// Updated version of GraphML I/O
-			GraphMLExporter exporter = new GraphMLExporter(getNetwork(), getLayout());
+			GraphMLExporter exporter = new GraphMLExporter(getNetwork(),
+					getLayout());
 			exporter.export(new File(filename));
 		} else {
 			System.out.println("Unsupported output format '" + format + "'\n");
@@ -323,16 +307,17 @@ public class Cuttlefish {
 			PajekNetwork n = new PajekNetwork();
 			n.load(new File(file));
 			network = n;
-		} else if (format.compareToIgnoreCase("json") == 0 ) {
+		} else if (format.compareToIgnoreCase("json") == 0) {
+			BufferedReader reader = null;
 			try {
-				BufferedReader reader = new BufferedReader(new FileReader(file));
+				reader = new BufferedReader(new FileReader(file));
 				String line = null;
 				StringBuilder stringBuilder = new StringBuilder();
 				String ls = System.getProperty("line.separator");
-				while( ( line = reader.readLine() ) != null ) {
-			        stringBuilder.append( line );
-			        stringBuilder.append( ls );
-			    }
+				while ((line = reader.readLine()) != null) {
+					stringBuilder.append(line);
+					stringBuilder.append(ls);
+				}
 				JsonNetwork n = new JsonNetwork(stringBuilder.toString());
 				network = n;
 			} catch (FileNotFoundException e) {
@@ -341,9 +326,17 @@ public class Cuttlefish {
 			} catch (IOException e) {
 				out("Error while reading file");
 				e.printStackTrace();
-			}			
+			}
+
+			try {
+				if (reader != null)
+					reader.close();
+			} catch (IOException io) {
+				io.printStackTrace();
+			}
+
 		} else {
-			
+
 			System.out.println("Unsupported input format '" + format + "'\n");
 			printUsage();
 			System.exit(0);
@@ -359,8 +352,10 @@ public class Cuttlefish {
 		Option input = OptionBuilder.withDescription("input file")
 				.withValueSeparator().withLongOpt("input")
 				.withArgName("input file").hasArg().create("i");
-		Option inputFormat = OptionBuilder.withValueSeparator()
-				.withDescription("input format: cxf (default), json, graphml, pajek")
+		Option inputFormat = OptionBuilder
+				.withValueSeparator()
+				.withDescription(
+						"input format: cxf (default), json, graphml, pajek")
 				.withLongOpt("in-format").withArgName("input format").hasArg()
 				.create();
 		Option output = OptionBuilder.withValueSeparator()
@@ -372,6 +367,10 @@ public class Cuttlefish {
 						"output format: tikz (default), cxf, applet, svg, json, cmx, graphml, jpeg")
 				.withLongOpt("out-format").withArgName("input format").hasArg()
 				.create();
+		Option imgSize = OptionBuilder.withValueSeparator()
+				.withDescription("image size: e.g. 1000x1000")
+				.withArgName("<width>x<height>").withLongOpt("out-size")
+				.hasArg().create();
 		Option gui = OptionBuilder
 				.withDescription("start the graphical interface")
 				.withLongOpt("gui").create("g");
@@ -388,6 +387,7 @@ public class Cuttlefish {
 		options.addOption(outputFormat);
 		options.addOption(gui);
 		options.addOption(layout);
+		options.addOption(imgSize);
 	}
 
 	private static void printUsage() {

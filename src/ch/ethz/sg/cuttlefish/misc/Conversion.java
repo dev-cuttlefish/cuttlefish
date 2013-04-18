@@ -86,7 +86,7 @@ public class Conversion {
 		}
 	}
 	
-	public static double[][] readMatrix(File file) throws IOException{
+	public static double[][] readMatrix(File file) throws IOException {
 		 
 		 FileReader fileReader = new FileReader(file);
 	     BufferedReader input = new BufferedReader(fileReader);
@@ -115,9 +115,8 @@ public class Conversion {
 				x++;
 			} 
 		     
+		input.close();
 		return matrix;
-	 
-	     
 	}
 	
 	public static DirectedSparseGraph<Vertex, Edge> matrixToGraph(double[][] matrix){

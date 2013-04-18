@@ -135,6 +135,7 @@ public class GraphMLImporter {
 		return true;
 	}
 
+	@SuppressWarnings("unused")
 	private void readKey(XMLStreamReader xmlReader) {
 		/*
 		 * Currently, the attributes defined in GraphML for data types are not
