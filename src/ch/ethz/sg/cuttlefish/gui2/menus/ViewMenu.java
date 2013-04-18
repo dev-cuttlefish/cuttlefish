@@ -32,6 +32,7 @@ import ch.ethz.sg.cuttlefish.gui2.NetworkPanel;
 import ch.ethz.sg.cuttlefish.gui2.toolbars.DBToolbar;
 import ch.ethz.sg.cuttlefish.gui2.toolbars.MouseToolbar;
 import ch.ethz.sg.cuttlefish.gui2.toolbars.SimulationToolbar;
+import ch.ethz.sg.cuttlefish.gui2.toolbars.UndoableToolbar;
 import ch.ethz.sg.cuttlefish.gui2.toolbars.ZoomToolbar;
 import ch.ethz.sg.cuttlefish.misc.Observer;
 import ch.ethz.sg.cuttlefish.misc.Subject;
@@ -46,6 +47,7 @@ public class ViewMenu extends AbstractMenu implements ItemListener, Observer{
 	JCheckBoxMenuItem zoomToolbarCheckbox;
 	JCheckBoxMenuItem simulationToolbarCheckbox;
 	JCheckBoxMenuItem dbToolbarCheckbox;
+	JCheckBoxMenuItem undoToolbarCheckbox;
 	
 	public ViewMenu(NetworkPanel networkPanel, CuttlefishToolbars toolbars) {
 		super(networkPanel, toolbars);
@@ -58,16 +60,20 @@ public class ViewMenu extends AbstractMenu implements ItemListener, Observer{
 		zoomToolbarCheckbox = new JCheckBoxMenuItem("Zoom toolbar");
 		simulationToolbarCheckbox = new JCheckBoxMenuItem("Simulation toolbar");
 		dbToolbarCheckbox = new JCheckBoxMenuItem("Explore toolbar");
+		undoToolbarCheckbox = new JCheckBoxMenuItem("Undo/Redo toolbar");
+		undoToolbarCheckbox.setSelected(true);
 		
 		mouseToolbarCheckbox.addItemListener(this);
 		zoomToolbarCheckbox.addItemListener(this);
 		simulationToolbarCheckbox.addItemListener(this);
 		dbToolbarCheckbox.addItemListener(this);
+		undoToolbarCheckbox.addItemListener(this);
 		
 		this.add(mouseToolbarCheckbox);
 		this.add(zoomToolbarCheckbox);
 		this.add(simulationToolbarCheckbox);
 		this.add(dbToolbarCheckbox);
+		this.add(undoToolbarCheckbox);
 
 		
 	}
@@ -82,6 +88,8 @@ public class ViewMenu extends AbstractMenu implements ItemListener, Observer{
 			toolbars.getSimulationToolbar().setVisible(simulationToolbarCheckbox.getState() );
 		} else if (e.getItem() == dbToolbarCheckbox) {
 			toolbars.getDBToolbar().setVisible(dbToolbarCheckbox.getState() );
+		} else if (e.getItem() == undoToolbarCheckbox) {
+			toolbars.getUndoToolbar().setVisible(undoToolbarCheckbox.getState());
 		} else {
 			System.err.println("Unknown event");
 		}
@@ -106,6 +114,13 @@ public class ViewMenu extends AbstractMenu implements ItemListener, Observer{
 				dbToolbarCheckbox.setEnabled(true);
 			} else {
 				dbToolbarCheckbox.setEnabled(false);
+			}
+		} else if (o instanceof UndoableToolbar) {
+			undoToolbarCheckbox.setSelected(((UndoableToolbar)o).isVisible());
+			if(((UndoableToolbar)o).isEnabled()) {
+				undoToolbarCheckbox.setEnabled(true);
+			} else {
+				undoToolbarCheckbox.setEnabled(false);
 			}
 		}
 	}

@@ -51,12 +51,14 @@ public class Vertex implements Comparable<Vertex> {
 	private boolean isRoot = false;
 	private Point2D position;
 	
+	private static int idSeed = 0;
+	
 	/**
 	 * General constructor for a vertex
 	 * @param id
 	 */
 	public Vertex(int id){
-		this.id = id;
+		this.id = generateID(id);
 		Ellipse2D ellipse = new Ellipse2D.Float();
 		ellipse.setFrameFromCenter(0,0,size,size);
 		shape = ellipse;
@@ -69,7 +71,7 @@ public class Vertex implements Comparable<Vertex> {
 	 * @param label
 	 */
 	public Vertex(int id, String label){
-		this.id = id;
+		this.id = generateID(id);
 		this.label = label;
 		Ellipse2D ellipse = new Ellipse2D.Float();
 		ellipse.setFrameFromCenter(0,0,size,size);
@@ -81,11 +83,24 @@ public class Vertex implements Comparable<Vertex> {
 	 * Constructor for an annonymous vertex
 	 */
 	public Vertex() {
-		this.id = -1;  //Anonymous vertex
+		this.id = generateID(-1);
 		Ellipse2D ellipse = new Ellipse2D.Float();
 		ellipse.setFrameFromCenter(0,0,size,size);
 		shape = ellipse;
 		position = null;
+	}
+	
+	private static int generateID(int id) {
+		
+		if (id < 0 ) {
+			return idSeed++;
+		}
+		
+		if (id > idSeed) {
+			idSeed = id;
+		}
+		
+		return id;
 	}
 
 	/**
@@ -218,6 +233,14 @@ public class Vertex implements Comparable<Vertex> {
 	 */
 	public Shape getShape() {
 		return shape;
+	}
+	
+	public String getShapeString() {
+		if (this.shape instanceof Rectangle2D) {
+			return "square";
+		}
+		
+		return "circle";
 	}
 
 	/**

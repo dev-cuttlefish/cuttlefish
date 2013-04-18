@@ -30,6 +30,7 @@ import javax.swing.JPanel;
 import ch.ethz.sg.cuttlefish.gui2.toolbars.DBToolbar;
 import ch.ethz.sg.cuttlefish.gui2.toolbars.MouseToolbar;
 import ch.ethz.sg.cuttlefish.gui2.toolbars.SimulationToolbar;
+import ch.ethz.sg.cuttlefish.gui2.toolbars.UndoableToolbar;
 import ch.ethz.sg.cuttlefish.gui2.toolbars.ZoomToolbar;
 
 public class CuttlefishToolbars extends JPanel {
@@ -39,6 +40,8 @@ public class CuttlefishToolbars extends JPanel {
 	private SimulationToolbar simulationToolbar;
 	private DBToolbar dbToolbar;
 	private static final long serialVersionUID = 1L;
+	
+	private UndoableToolbar undoToolbar;
 
 	public CuttlefishToolbars(NetworkPanel networkPanel) {
 		super();
@@ -54,6 +57,9 @@ public class CuttlefishToolbars extends JPanel {
 		this.add(dbToolbar);
 		simulationToolbar.setVisible(true);
 		dbToolbar.setVisible(true);
+		
+		undoToolbar = new UndoableToolbar(networkPanel);
+		this.add(undoToolbar);
 	}
 	
 	public MouseToolbar getMouseToolbar() {
@@ -70,6 +76,10 @@ public class CuttlefishToolbars extends JPanel {
 	
 	public DBToolbar getDBToolbar() {
 		return dbToolbar;
+	}
+	
+	public UndoableToolbar getUndoToolbar() {
+		return undoToolbar;
 	}
 	
 }

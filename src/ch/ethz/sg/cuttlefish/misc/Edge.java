@@ -31,7 +31,7 @@ import java.awt.Color;
 public class Edge implements Comparable<Edge> {
 
 	private int idTemp;
-	private int id;
+	private long id;
 	private String label;
 	private Color color = null;
 	private double weight;
@@ -40,8 +40,11 @@ public class Edge implements Comparable<Edge> {
 	private String shape = "curved";
 	private String var1 = null;
 	private String var2 = null;
+	
+	private static long idSeed = 0L;
 
 	public Edge() {
+		this.id = ++idSeed;
 	}
 
 	/**
@@ -70,7 +73,7 @@ public class Edge implements Comparable<Edge> {
 	/**
 	 * @return the id
 	 */
-	public int getId() {
+	public long getId() {
 		return id;
 	}
 

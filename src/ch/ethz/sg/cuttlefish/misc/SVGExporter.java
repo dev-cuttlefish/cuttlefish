@@ -30,10 +30,11 @@ public class SVGExporter {
 	}
 	
 	public void toSVG(File file, int height, int width) {
+		PrintStream p = null;
 		try {
 			String jsFilename = file.getAbsolutePath() + ".js";
 			exportJScript(new File(jsFilename));
-			PrintStream p = new PrintStream(file);
+			p = new PrintStream(file);
 			/*p.println("<?xml version='1.0'?>");
 			p.println("<html xmlns='http://www.w3.org/1999/xhtml' xmlns:svg='http://www.w3.org/2000/svg' xmlns:xul='http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul' xmlns:xlink='http://www.w3.org/1999/xlink'>");
 			p.println("<head>");
@@ -126,6 +127,10 @@ public class SVGExporter {
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
+		
+		if (p != null)
+			p.close();
+		
 		return;
 	}
 
