@@ -5,6 +5,13 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Observable;
 
+/**
+ * Controller of the Undo/Redo operations. The operations are
+ * based on a list of actions, the "history", that can be
+ * reverted or re-executed.
+ *
+ */
+
 public class UndoableControl extends Observable {
 
 	private List<UndoableAction> history;
