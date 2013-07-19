@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<cf:Configuration
+	xmlns:cf="http://www.sg.ethz.ch/research/cuttlefish/configuration.xsd"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.sg.ethz.ch/research/cuttlefish/configuration.xsd src/ch/ethz/sg/cuttlefish/resources/configuration.xsd ">
+	<GUI>
+		<Tab id="Data" condition="*" name="Data">
+			<Widget id="Import" name="Import"
+				class="ch.ethz.sg.cuttlefish.gui.widgets.DataSourcePanel">
+				<Argument name="sources">datasources.xml</Argument>
+			</Widget>
+			<Widget id="Export" name="Export"
+				class="ch.ethz.sg.cuttlefish.gui.widgets.ExportPanel" />
+		</Tab>
+
+		<Tab name="Simulation"
+			condition="ch.ethz.sg.cuttlefish.networks.ISimulation"
+			id="Simulation">
+			<Widget name="Control"
+				class="ch.ethz.sg.cuttlefish.gui.widgets.SimulationPanel"
+				id="Control" />
+		</Tab>
+<!--
+                <Tab name="Static cxf Network" id="CxfNetwork" condition="ch.ethz.sg.cuttlefish.networks.StaticCxfNetwork">
+                        <Widget name="Load cxf file" class="ch.ethz.sg.cuttlefish.gui.widgets.CxfNetworkPanel" id="CxfNetworkPanel"></Widget></Tab>
+		<Tab name="Pajek Network" id="PajekNetwork" condition="ch.ethz.sg.cuttlefish.networks.PajekNetwork">
+			<Widget name="Load Pajek File" class="ch.ethz.sg.cuttlefish.gui.widgets.PajekPanel" id="PajekPanel"></Widget></Tab>
+		<Tab name="GraphML Network" id="GraphML" condition="ch.ethz.sg.cuttlefish.networks.GraphMLNetwork">
+			<Widget name="Load GraphML File" class="ch.ethz.sg.cuttlefish.gui.widgets.GraphMLPanel" id="GraphMLPanel"></Widget></Tab>
+		<Tab name="User Network" id="UserNetwork" condition="ch.ethz.sg.cuttlefish.networks.UserNetwork">
+			<Widget name="Load cff File" class="ch.ethz.sg.cuttlefish.gui.widgets.UserNetworkPanel" id="UserNetworkPanel"></Widget></Tab>
+		<Tab name="Interactive cxf Network" id="InteractiveCxfNetwork" condition="ch.ethz.sg.cuttlefish.networks.InteractiveCxfNetwork">
+			<Widget name="Load cxf file" class="ch.ethz.sg.cuttlefish.gui.widgets.InteractiveCxfNetworkPanel" id="ICxfNetworkPanel"></Widget>
+			<Widget name="Load cef instructions" class="ch.ethz.sg.cuttlefish.gui.widgets.CefInstructionPanel" id="InstructionPanel"></Widget>
+		</Tab>
+-->
+		<Tab name="Database Browsing" id="DBNetwork" condition="ch.ethz.sg.cuttlefish.networks.DBNetwork">
+			<Widget name="Connect to DataBase" class="ch.ethz.sg.cuttlefish.gui.widgets.DBConnectPanel" id="DBConnectPanel"></Widget>
+			<Widget name="Execute query" class="ch.ethz.sg.cuttlefish.gui.widgets.DBQueryPanel" id="DBQueryPanel"></Widget>
+			<Widget name="Filter network" class="ch.ethz.sg.cuttlefish.gui.widgets.DBFilterPanel" id="DBFilterPanel"></Widget>
+			<Widget name="Browse network" class="ch.ethz.sg.cuttlefish.gui.widgets.DBBrowsePanel" id="DBBrowsePanel"></Widget>			
+			<Widget name="Expand vertices" class="ch.ethz.sg.cuttlefish.gui.widgets.DBExpandPanel" id="DBExpandPanel"></Widget></Tab>			
+	</GUI>
+	<Arguments>
+
+	</Arguments>
+</cf:Configuration>

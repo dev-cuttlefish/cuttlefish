@@ -1,0 +1,46 @@
+[ addNode: (4) label{2} size{10} color{0,0,0}
+addEdge: (4,2)
+addEdge: (4,3)
+
+editNode: (1) color{0.2,0.2,0.2}
+editNode: (2) size{15} color{0.2,0.2,0.2} label{3}
+editNode: (3) size{15} color{0.2,0.2,0.2} label{3} ]
+
+
+[ addNode: (5) label{2} size{10} color{0,0,0}
+addEdge: (5,2)
+addEdge: (5,4)
+
+editNode: (1) color{0.4,0.4,0.4}
+editNode: (2) color{0.4,0.4,0.4} label{4} size{20}
+editNode: (3) color{0.4,0.4,0.4}
+editNode: (4) color{0.2,0.2,0.2} label{3} size{15} ]
+
+
+[ addNode: (6) label{2} size{10} color{0,0,0}
+addEdge: (6,2)
+addEdge: (6,4)
+
+editNode: (1) color{0.6,0.6,0.6}
+editNode: (2) color{0.6,0.6,0.6} label{5} size{25}
+editNode: (3) color{0.6,0.6,0.6}
+editNode: (4) color{0.4,0.4,0.4} label{4} size{20}
+editNode: (5) color{0.2,0.2,0.2} ]
+
+[ removeEdge: (1,2)
+addEdge: (1,4) color{1,0,0} label{REWIRE} width{3}
+
+editNode: (2) label{4} size{20}
+editNode: (4) label{5} size{25}
+]
+
+[ addEdge: (5,6) color{0,1,0} label{CREATE} width{3}
+editEdge: (1,4) color{1,1,1} label{} width{1}
+
+editNode: (5) label{3} size{15}
+editNode: (6) label{3} size{15} ]
+
+removeNode: (6)
+removeNode: (5)
+removeNode: (4)
+
