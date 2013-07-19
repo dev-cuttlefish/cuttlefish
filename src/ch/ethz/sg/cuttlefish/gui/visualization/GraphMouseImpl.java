@@ -174,6 +174,7 @@ public final class GraphMouseImpl implements GraphMouse {
 						UndoableControl.getController().actionExecuted(action);
 					}
 				}
+				renderer.getEdgeRenderer().drawEdgeToPoint(null, null);
 			}
 
 			renderer.animate(false, ANIMATE_LABELS);
@@ -211,6 +212,11 @@ public final class GraphMouseImpl implements GraphMouse {
 
 		if (isMoving && mouseInMode(Mode.INTERACTING)) {
 			grabbed.setPosition(s);
+		}
+
+		if (isCreatingEdge) {
+			renderer.getEdgeRenderer()
+					.drawEdgeToPoint(grabbed.getPosition(), s);
 		}
 	}
 

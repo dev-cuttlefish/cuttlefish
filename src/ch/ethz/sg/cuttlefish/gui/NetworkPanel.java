@@ -412,16 +412,16 @@ public class NetworkPanel extends JPanel implements Subject, ItemListener,
 		/*
 		 * layout instanceof TreeLayout || layout instanceof RadialTreeLayout ||
 		 */
+
+		stopLayout();
 		if (layout instanceof CircleLayout || layout instanceof KCoreLayout
 				|| layout instanceof WeightedKCoreLayout) {
-			stopLayout();
 			setNetwork(((BrowsableForestNetwork) getNetwork())
 					.getOriginalNetwork());
-			resumeLayout();
 		}
+		resumeLayout();
 
 		Cuttlefish.debug(this, "onNetworkChange");
-		this.repaintViewer();
 	}
 
 	@Override
@@ -712,5 +712,4 @@ public class NetworkPanel extends JPanel implements Subject, ItemListener,
 		JOptionPane.showMessageDialog(this, message, title,
 				JOptionPane.ERROR_MESSAGE);
 	}
-
 }

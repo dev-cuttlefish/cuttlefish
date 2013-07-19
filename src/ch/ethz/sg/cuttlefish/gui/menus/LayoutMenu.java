@@ -60,6 +60,7 @@ public class LayoutMenu extends AbstractMenu implements Observer {
 	private JRadioButtonMenuItem kamada;
 	private JRadioButtonMenuItem fruchterman;
 	private JRadioButtonMenuItem yifanhu;
+	private JRadioButtonMenuItem forceatlas;
 	private JRadioButtonMenuItem isom;
 	private JRadioButtonMenuItem circle;
 	private JRadioButtonMenuItem tree;
@@ -83,6 +84,7 @@ public class LayoutMenu extends AbstractMenu implements Observer {
 		kamada = new JRadioButtonMenuItem("Kamada Kawai");
 		fruchterman = new JRadioButtonMenuItem("Fruchterman Reingold");
 		yifanhu = new JRadioButtonMenuItem("Yifan Hu");
+		forceatlas = new JRadioButtonMenuItem("ForceAtlas 2");
 		isom = new JRadioButtonMenuItem("ISO M");
 		circle = new JRadioButtonMenuItem("Circle");
 		tree = new JRadioButtonMenuItem("Tree");
@@ -113,6 +115,7 @@ public class LayoutMenu extends AbstractMenu implements Observer {
 		layoutButtons.add(kamada);
 		layoutButtons.add(fruchterman);
 		layoutButtons.add(yifanhu);
+		layoutButtons.add(forceatlas);
 		layoutButtons.add(isom);
 		layoutButtons.add(circle);
 		layoutButtons.add(tree);
@@ -127,6 +130,7 @@ public class LayoutMenu extends AbstractMenu implements Observer {
 		layoutMap.put(kamada, "kamada-kawai");
 		layoutMap.put(fruchterman, "fruchterman-reingold");
 		layoutMap.put(yifanhu, "yifanhu");
+		layoutMap.put(forceatlas, "force-atlas");
 		layoutMap.put(isom, "iso-m");
 		layoutMap.put(circle, "circle");
 		layoutMap.put(tree, "tree");
@@ -157,6 +161,7 @@ public class LayoutMenu extends AbstractMenu implements Observer {
 		this.add(kamada);
 		this.add(fruchterman);
 		this.add(yifanhu);
+		this.add(forceatlas);
 		this.add(isom);
 		this.add(circle);
 		this.add(tree);
@@ -217,6 +222,11 @@ public class LayoutMenu extends AbstractMenu implements Observer {
 		yifanhu.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				layoutSelected(yifanhu);
+			}
+		});
+		forceatlas.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				layoutSelected(forceatlas);
 			}
 		});
 		isom.addActionListener(new ActionListener() {

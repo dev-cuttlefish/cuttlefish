@@ -129,7 +129,7 @@ public class ARFLayout implements Layout {
 		advancePositions();
 
 		// Do a single step when less than 3 nodes exist
-		if (graph.getNodeCount() < 3)
+		if (graph.getNodeCount() <= 3)
 			converged = true;
 
 		if (Cuttlefish.VERBOSE_LAYOUT)

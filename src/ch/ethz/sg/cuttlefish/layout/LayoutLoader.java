@@ -10,6 +10,7 @@ import java.util.TreeMap;
 import org.gephi.layout.api.LayoutController;
 import org.gephi.layout.api.LayoutModel;
 import org.gephi.layout.plugin.force.yifanHu.YifanHu;
+import org.gephi.layout.plugin.forceAtlas2.ForceAtlas2Builder;
 import org.gephi.layout.plugin.fruchterman.FruchtermanReingoldBuilder;
 import org.gephi.layout.spi.Layout;
 import org.gephi.layout.spi.LayoutBuilder;
@@ -53,6 +54,7 @@ public class LayoutLoader {
 		// TODO ilias: Add Force Atlas (2)
 		builders.put("fruchterman-reingold", FruchtermanReingoldBuilder.class);
 		builders.put("yifanhu", YifanHu.class);
+		builders.put("force-atlas", ForceAtlas2Builder.class);
 
 		// TODO ilias: Port from jung2 if necessary
 		// Tree, Radial Tree, Kamada Kawai, ISO-M
@@ -70,6 +72,7 @@ public class LayoutLoader {
 		abbreviations.put("K-Core", "kcore");
 		abbreviations.put("Weighted K-Core", "weighted-kcore");
 		abbreviations.put("Yifan Hu", "yifanhu");
+		abbreviations.put("ForceAtlas 2", "force-atlas");
 	}
 
 	public static String getKeyList() {
@@ -106,7 +109,8 @@ public class LayoutLoader {
 
 				if (evt.getPropertyName().equals(LayoutModel.SELECTED_LAYOUT)) {
 					// Selected layout changed
-					if (networkPanel != null && !networkPanel.getNetwork().isEmpty())
+					if (networkPanel != null
+							&& !networkPanel.getNetwork().isEmpty())
 						networkPanel.getNetworkRenderer().animate(true, true);
 
 				} else if (evt.getPropertyName().equals(LayoutModel.RUNNING)) {
