@@ -24,6 +24,8 @@ public class EdgeRenderer extends ShapeRenderer {
 	// TODO ilias: used for debugging: remove
 	private final static boolean OVERRIDE_DIRECTED = true;
 
+	private Point2D incompFrom, incompTo;
+
 	public EdgeRenderer(GLAutoDrawable drawable, NetworkRenderer networkRenderer) {
 		super(drawable, networkRenderer);
 		this.DLIST_LINE = getDisplayListIndex(Constants.LINE_STRAIGHT);
@@ -106,6 +108,9 @@ public class EdgeRenderer extends ShapeRenderer {
 			else
 				drawLine(edge);
 		}
+
+		if (incompFrom != null && incompTo != null)
+			drawIncompleteEdge();
 	}
 
 	// Draws a quad curve to represent an edge.
@@ -189,6 +194,36 @@ public class EdgeRenderer extends ShapeRenderer {
 			gl.glCallList(DLIST_ARROW);
 			gl.glPopMatrix();
 		}
+	}
+
+	public void drawEdgeToPoint(Point2D from, Point2D to) {
+		incompFrom = from;
+		incompTo = to;
+	}
+
+	private void drawIncompleteEdge() {
+		double a = Math.toDegrees(Utilities
+				.calculateAngle(incompFrom, incompTo));
+		double dist = incompFrom.distance(incompTo);
+
+		gl.glColor3f((153.0f / 255), 0, 0);
+		gl.glLineWidth(1f);
+
+		// draw line
+		gl.glPushMatrix();
+		gl.glTranslated(incompFrom.getX(), incompFrom.getY(), 0);
+		gl.glScaled(dist, dist, 1);
+		gl.glRotated(a, 0, 0, 1);
+		gl.glCallList(DLIST_LINE);
+		gl.glPopMatrix();
+
+		// draw arrow on line
+		gl.glPushMatrix();
+		gl.glTranslated(incompTo.getX(), incompTo.getY(), 0);
+		gl.glRotated(a, 0, 0, 1);
+		gl.glScaled(1 / scaleFactor, 1 / scaleFactor, 1);
+		gl.glCallList(DLIST_ARROW);
+		gl.glPopMatrix();
 	}
 
 	private void drawLoop(Edge e) {

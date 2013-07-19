@@ -343,4 +343,8 @@ public class NetworkRenderer implements GLEventListener {
 	public GLCanvas getCanvas() {
 		return canvas;
 	}
+
+	public EdgeRenderer getEdgeRenderer() {
+		return edgeRenderer;
+	}
 }
