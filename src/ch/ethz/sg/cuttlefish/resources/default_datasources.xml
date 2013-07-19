@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cf:DataSources xmlns:cf="http://www.sg.ethz.ch/research/cuttlefish/datasources.xsd"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.sg.ethz.ch/research/cuttlefish/datasources.xsd datasources.xsd ">
+	<Source id="selectInput" class="selectInput" name="Select input"></Source>
+	<Source id="staticCxfNetwork"
+		class="ch.ethz.sg.cuttlefish.networks.StaticCxfNetwork" name="CXF network">
+	</Source>
+	<Source id="cxfNetwork" name="Interactive CXF network" class="ch.ethz.sg.cuttlefish.networks.InteractiveCxfNetwork"></Source>
+	<Source id="Database" name="Database network" class="ch.ethz.sg.cuttlefish.networks.DBNetwork"></Source>
+	<Source id="pajekNet" name="Pajek network" class="ch.ethz.sg.cuttlefish.networks.PajekNetwork"></Source>
+	<Source id="graphML" name="GraphML network" class="ch.ethz.sg.cuttlefish.networks.GraphMLNetwork"></Source>
+	<Source id="userNetwork" name="CFF network" class="ch.ethz.sg.cuttlefish.networks.UserNetwork"></Source>
+	<Source id="sim1" name="Test simulation" class="ch.ethz.sg.cuttlefish.networks.TestSimulation">
+		<Argument name="test">Argument</Argument>
+		<Argument name="alpha">10.0</Argument></Source>
+	<Source id="sim2" name="BA simulation" class="ch.ethz.sg.cuttlefish.networks.BASimulation"></Source>
+</cf:DataSources>

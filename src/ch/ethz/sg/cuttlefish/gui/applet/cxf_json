@@ -1,0 +1,47 @@
+[ 
+  { 
+    "id": 0,
+    "label": "node0",
+    "color": "{1,0,0}",
+    "borderColor": "{0,1,0}",
+    "size": 20,
+    "shape": "square",
+    "width": 3,
+    "x": 4,
+    "y": 5,
+    "var1": "var1",
+    "var2": "var2",
+    "hide": "false",
+    "fixed": "false"
+  },
+  {
+    "id": 1,
+    "label": "node1",
+    "color": "{1,0,0}",
+    "borderColor": "{0,1,0}",
+    "size": 20,
+    "shape": "square",
+    "width": 3,
+    "x": 4,
+    "y": 5,
+    "var1": "var1",
+    "var2": "var2",
+    "hide": "false",
+    "fixed": "false"
+  }
+]
+
+
+[
+  {
+    "id_origin": 0,
+    "id_dest": 1,
+    "label": "edge01",
+    "weight": 4,
+    "width": 5,
+    "color": "{0,0,1}",
+    "var1": "var1",
+    "var2": "var2",
+    "hide": "false"
+  }
+]
