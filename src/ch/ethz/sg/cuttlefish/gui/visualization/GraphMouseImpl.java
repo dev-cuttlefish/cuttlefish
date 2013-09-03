@@ -11,6 +11,7 @@ import ch.ethz.sg.cuttlefish.gui.undoable.UndoableControl;
 import ch.ethz.sg.cuttlefish.gui.undoable.actions.CreateEdgeUndoableAction;
 import ch.ethz.sg.cuttlefish.gui.undoable.actions.CreateVertexUndoableAction;
 import ch.ethz.sg.cuttlefish.gui.visualization.geometry.ClosestShapePickSupport;
+import ch.ethz.sg.cuttlefish.gui.visualization.mouse.EditVertexMenu;
 import ch.ethz.sg.cuttlefish.networks.Edge;
 import ch.ethz.sg.cuttlefish.networks.Vertex;
 
@@ -100,6 +101,14 @@ public final class GraphMouseImpl implements GraphMouse {
 					networkPanel.getNetwork(), vertex);
 			action.execute();
 			UndoableControl.getController().actionExecuted(action);
+
+		} else if (e.getButton() == MouseEvent.BUTTON3) {
+			// && mouseInMode(Mode.EDITING)
+			Vertex v = shapePickSupport.selectVertexByPoint(renderer
+					.screenToWorld(p));
+
+			if (v != null)
+				new EditVertexMenu(v, e).show();
 		}
 	}
 
