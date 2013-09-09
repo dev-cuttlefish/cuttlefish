@@ -1,19 +1,19 @@
-package ch.ethz.sg.cuttlefish.gui.visualization.geometry;
+package ch.ethz.sg.cuttlefish.gui.visualization;
 
 import java.awt.geom.Point2D;
 
-import ch.ethz.sg.cuttlefish.gui.visualization.Constants;
 import ch.ethz.sg.cuttlefish.networks.Vertex;
 
 public final class Utilities {
 
-	public static Point2D getBorderPoint(Point2D fromPoint, Vertex v, double scale) {
+	public static Point2D getBorderPoint(Vertex v, Point2D fromPoint,
+			double scale) {
 		double angle = calculateAngle(fromPoint, v.getPosition());
 
-		return getBorderPoint(angle, v, scale);
+		return getBorderPoint(v, angle, scale);
 	}
 
-	public static Point2D getBorderPoint(double angrad, Vertex v, double scale) {
+	public static Point2D getBorderPoint(Vertex v, double angrad, double scale) {
 		double x, y;
 		Point2D b = null;
 
@@ -39,7 +39,7 @@ public final class Utilities {
 			} else {
 				r = -size / Math.sin(angrad);
 			}
-			
+
 			r /= scale;
 
 			x = v.getPosition().getX() - r * Math.cos(angrad);
@@ -52,20 +52,20 @@ public final class Utilities {
 		return b;
 	}
 
-	public static double getBorderDistance(Point2D point, Vertex v, double scale) {
+	public static double getBorderDistance(Vertex v, Point2D point, double scale) {
 		double angle = calculateAngle(point, v.getPosition());
 
-		return getBorderDistance(angle, v, scale);
+		return getBorderDistance(v, angle, scale);
 	}
 
-	public static double getBorderDistance(double angle, Vertex v, double scale) {
+	public static double getBorderDistance(Vertex v, double angle, double scale) {
 		double dist = -1;
 
 		if (v.getShape().equalsIgnoreCase(Constants.SHAPE_DISK)) {
 			dist = v.getSize() / scale;
 
 		} else if (v.getShape().equalsIgnoreCase(Constants.SHAPE_SQUARE)) {
-			Point2D border = getBorderPoint(angle, v, scale);
+			Point2D border = getBorderPoint(v, angle, scale);
 
 			return v.getPosition().distance(border);
 		}
@@ -95,22 +95,5 @@ public final class Utilities {
 	public static final boolean rangeContains(double val, double leftLimit,
 			double rightLimit) {
 		return leftLimit <= val && val < rightLimit;
-	}
-
-	/**
-	 * Calculates the distance of point p from the line that passes through
-	 * points a and b
-	 * 
-	 * @param a
-	 * @param b
-	 * @param p
-	 * @return
-	 */
-	public static double pointToLineDistance(Point2D a, Point2D b, Point2D p) {
-		double normalLength = Math.hypot(b.getX() - a.getX(),
-				b.getY() - a.getY());
-		return Math.abs((p.getX() - a.getX()) * (b.getY() - a.getY())
-				- (p.getY() - a.getY()) * (b.getX() - a.getX()))
-				/ normalLength;
 	}
 }

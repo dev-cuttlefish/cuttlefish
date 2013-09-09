@@ -25,7 +25,7 @@ package ch.ethz.sg.cuttlefish.gui;
 import java.awt.image.BufferedImage;
 import java.util.Set;
 
-import ch.ethz.sg.cuttlefish.gui.visualization.GraphMouse;
+import ch.ethz.sg.cuttlefish.gui.visualization.mouse.GraphMouse;
 import ch.ethz.sg.cuttlefish.networks.BrowsableNetwork;
 import ch.ethz.sg.cuttlefish.networks.Edge;
 import ch.ethz.sg.cuttlefish.networks.Vertex;

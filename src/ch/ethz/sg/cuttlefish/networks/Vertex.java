@@ -434,37 +434,6 @@ public class Vertex implements Comparable<Vertex> {
 		this.internalNode.getNodeData().setY((float) y);
 	}
 
-	public boolean containsPoint(double px, double py, double scaleFactor) {
-		boolean res = false;
-		double size = getSize() / scaleFactor;
-		double dist = getPosition().distance(px, py) / 1;
-
-		if (getShape().equals(Constants.SHAPE_DISK)) {
-			res = (dist <= size);
-
-		} else if (getShape().equals(Constants.SHAPE_SQUARE)) {
-			boolean contains = true;
-			double x = getPosition().getX();
-			double y = getPosition().getY();
-
-			contains &= px >= x - size;
-			contains &= py >= y - size;
-
-			contains &= px >= x - size;
-			contains &= py <= y + size;
-
-			contains &= px <= x + size;
-			contains &= py <= y + size;
-
-			contains &= px <= x + size;
-			contains &= py >= y - size;
-
-			res = contains;
-		}
-
-		return res;
-	}
-
 	public String toString() {
 		return Integer.toString(getId());
 	}

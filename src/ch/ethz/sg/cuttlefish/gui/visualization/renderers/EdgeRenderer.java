@@ -8,7 +8,8 @@ import javax.media.opengl.GLAutoDrawable;
 
 import ch.ethz.sg.cuttlefish.gui.visualization.Constants;
 import ch.ethz.sg.cuttlefish.gui.visualization.NetworkRenderer;
-import ch.ethz.sg.cuttlefish.gui.visualization.geometry.Utilities;
+import ch.ethz.sg.cuttlefish.gui.visualization.Utilities;
+import ch.ethz.sg.cuttlefish.gui.visualization.mouse.IntersectingShapePickSupport;
 import ch.ethz.sg.cuttlefish.networks.Edge;
 
 public class EdgeRenderer extends ShapeRenderer {
@@ -18,7 +19,7 @@ public class EdgeRenderer extends ShapeRenderer {
 	private final int DLIST_ARROW;
 
 	public final static boolean EDGE_WEIGHT_AS_WIDTH = true;
-	private final static Point2D QUADCURVE_CTRL_POINT = new Point2D.Double(0.5,
+	public final static Point2D QUADCURVE_CTRL_POINT = new Point2D.Double(0.5,
 			40);
 
 	// TODO ilias: used for debugging: remove
@@ -148,7 +149,8 @@ public class EdgeRenderer extends ShapeRenderer {
 				if (0.495 < t && t < 0.505)
 					c.setLocation(x, y);
 
-				if (e.getTarget().containsPoint(x, y, scaleFactor)) {
+				if (IntersectingShapePickSupport.containsPoint(e.getTarget(),
+						new Point2D.Double(x, y), scaleFactor)) {
 					// hit border!
 					break;
 				}
@@ -185,7 +187,7 @@ public class EdgeRenderer extends ShapeRenderer {
 
 		if (e.isDirected() || OVERRIDE_DIRECTED) {
 			// draw arrow on line
-			Point2D b = Utilities.getBorderPoint(from, e.getTarget(),
+			Point2D b = Utilities.getBorderPoint(e.getTarget(), from,
 					scaleFactor);
 			gl.glPushMatrix();
 			gl.glTranslated(b.getX(), b.getY(), 0);

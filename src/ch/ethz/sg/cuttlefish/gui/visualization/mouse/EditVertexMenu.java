@@ -14,6 +14,7 @@ import javax.swing.JSeparator;
 
 import ch.ethz.sg.cuttlefish.gui.undoable.UndoableAction;
 import ch.ethz.sg.cuttlefish.gui.undoable.UndoableControl;
+import ch.ethz.sg.cuttlefish.gui.undoable.actions.DeleteVertexUndoableAction;
 import ch.ethz.sg.cuttlefish.gui.undoable.actions.SetVertexBorderColorUndoableAction;
 import ch.ethz.sg.cuttlefish.gui.undoable.actions.SetVertexBorderWidthUndoableAction;
 import ch.ethz.sg.cuttlefish.gui.undoable.actions.SetVertexFillColorUndoableAction;
@@ -21,30 +22,35 @@ import ch.ethz.sg.cuttlefish.gui.undoable.actions.SetVertexLabelUndoableAction;
 import ch.ethz.sg.cuttlefish.gui.undoable.actions.SetVertexShapeUndoableAction;
 import ch.ethz.sg.cuttlefish.gui.undoable.actions.SetVertexSizeUndoableAction;
 import ch.ethz.sg.cuttlefish.gui.visualization.Constants;
+import ch.ethz.sg.cuttlefish.networks.BrowsableNetwork;
 import ch.ethz.sg.cuttlefish.networks.Vertex;
 
 public class EditVertexMenu {
 
 	private JPopupMenu menu;
 	private JMenuItem mID, mFillColor, mBorderColor, mSize, mBorderWidth,
-			mLabel, mShape;
+			mLabel, mShape, mDelete;
 
 	private Vertex vertex;
+	private BrowsableNetwork network;
 	private MouseEvent event;
 
-	public EditVertexMenu(Vertex v, MouseEvent e) {
+	public EditVertexMenu(Vertex v, BrowsableNetwork network, MouseEvent e) {
 
 		this.vertex = v;
 		this.event = e;
+		this.network = network;
 
 		// Menu items
 		mID = new JMenuItem("ID: " + v.getId());
+		mID.setEnabled(false);
 		mLabel = new JMenuItem("Label: " + v.getLabel());
 		mSize = new JMenuItem("Size: " + v.getSize());
 		mFillColor = new JMenuItem("Set fill color...");
 		mBorderColor = new JMenuItem("Set border color...");
 		mBorderWidth = new JMenuItem("Set border width...");
 		mShape = new JMenuItem("Set shape...");
+		mDelete = new JMenuItem("Delete");
 
 		// Add items to popup
 		menu = new JPopupMenu();
@@ -57,6 +63,9 @@ public class EditVertexMenu {
 		menu.add(mBorderColor);
 		menu.add(mBorderWidth);
 		menu.add(mShape);
+		menu.add(new JSeparator());
+
+		menu.add(mDelete);
 
 		addListeners();
 		// TODO ilias: undoable actions
@@ -165,6 +174,17 @@ public class EditVertexMenu {
 					action.execute();
 					UndoableControl.getController().actionExecuted(action);
 				}
+			}
+		});
+
+		mDelete.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				UndoableAction action = new DeleteVertexUndoableAction(network,
+						vertex);
+				action.execute();
+				UndoableControl.getController().actionExecuted(action);
 			}
 		});
 	}

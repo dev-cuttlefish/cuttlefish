@@ -15,6 +15,7 @@ import javax.media.opengl.awt.GLCanvas;
 import javax.media.opengl.glu.GLU;
 
 import ch.ethz.sg.cuttlefish.gui.NetworkPanel;
+import ch.ethz.sg.cuttlefish.gui.visualization.mouse.GraphMouse;
 import ch.ethz.sg.cuttlefish.gui.visualization.renderers.EdgeRenderer;
 import ch.ethz.sg.cuttlefish.gui.visualization.renderers.LabelRenderer;
 import ch.ethz.sg.cuttlefish.gui.visualization.renderers.VertexRenderer;

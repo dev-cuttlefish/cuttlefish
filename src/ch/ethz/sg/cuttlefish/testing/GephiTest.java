@@ -1,4 +1,4 @@
-package ch.ethz.sg.cuttlefish.gui.visualization;
+package ch.ethz.sg.cuttlefish.testing;
 
 import org.gephi.graph.api.DirectedGraph;
 import org.gephi.graph.api.Edge;
