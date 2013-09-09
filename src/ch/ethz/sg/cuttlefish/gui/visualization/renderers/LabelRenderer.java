@@ -7,7 +7,7 @@ import javax.media.opengl.GLAutoDrawable;
 
 import ch.ethz.sg.cuttlefish.gui.visualization.Constants;
 import ch.ethz.sg.cuttlefish.gui.visualization.NetworkRenderer;
-import ch.ethz.sg.cuttlefish.gui.visualization.geometry.Utilities;
+import ch.ethz.sg.cuttlefish.gui.visualization.Utilities;
 import ch.ethz.sg.cuttlefish.networks.Edge;
 import ch.ethz.sg.cuttlefish.networks.Vertex;
 

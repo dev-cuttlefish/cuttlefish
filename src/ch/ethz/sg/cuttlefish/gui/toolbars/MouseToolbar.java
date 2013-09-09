@@ -29,7 +29,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 
 import ch.ethz.sg.cuttlefish.gui.NetworkPanel;
-import ch.ethz.sg.cuttlefish.gui.visualization.GraphMouse;
+import ch.ethz.sg.cuttlefish.gui.visualization.mouse.GraphMouse;
 
 public class MouseToolbar extends AbstractToolbar {
 

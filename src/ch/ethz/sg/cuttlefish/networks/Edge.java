@@ -65,7 +65,7 @@ public class Edge implements Comparable<Edge> {
 	private final Color DEFAULT_COLOR = Color.darkGray;
 	private final String DEFAULT_VAR1 = null;
 	private final String DEFAULT_VAR2 = null;
-	private final String DEFAULT_EDGE_TYPE = Constants.LINE_CURVED;
+	private final String DEFAULT_EDGE_TYPE = Constants.LINE_STRAIGHT;
 	private final boolean DEFAULT_EXCLUDED = false;
 
 	org.gephi.graph.api.Edge internalEdge;

@@ -45,11 +45,10 @@ import org.openide.util.NotImplementedException;
 import ch.ethz.sg.cuttlefish.Cuttlefish;
 import ch.ethz.sg.cuttlefish.gui.tasks.SetLayoutWorker;
 import ch.ethz.sg.cuttlefish.gui.undoable.UndoableControl;
-import ch.ethz.sg.cuttlefish.gui.visualization.GraphMouse;
-import ch.ethz.sg.cuttlefish.gui.visualization.GraphMouse.Mode;
-import ch.ethz.sg.cuttlefish.gui.visualization.GraphMouseImpl;
+import ch.ethz.sg.cuttlefish.gui.visualization.mouse.GraphMouse;
+import ch.ethz.sg.cuttlefish.gui.visualization.mouse.GraphMouseImpl;
+import ch.ethz.sg.cuttlefish.gui.visualization.mouse.GraphMouse.Mode;
 import ch.ethz.sg.cuttlefish.gui.visualization.NetworkRenderer;
-import ch.ethz.sg.cuttlefish.gui.visualization.geometry.ClosestShapePickSupport;
 import ch.ethz.sg.cuttlefish.layout.LayoutLoader;
 import ch.ethz.sg.cuttlefish.layout.arf.ARFLayout;
 import ch.ethz.sg.cuttlefish.layout.arf.WeightedARFLayout;
@@ -92,7 +91,6 @@ public class NetworkPanel extends JPanel implements Subject, ItemListener,
 	private GLCanvas canvas = null;
 	LayoutLoader layoutLoader = null;
 	private NetworkRenderer networkRenderer = null;
-	private ClosestShapePickSupport pickSupport = null;
 	private GraphMouse gMouse;
 
 	public NetworkPanel() {
@@ -162,10 +160,8 @@ public class NetworkPanel extends JPanel implements Subject, ItemListener,
 		canvas = networkRenderer.getCanvas();
 		add(canvas, BorderLayout.CENTER);
 
-		pickSupport = new ClosestShapePickSupport(networkRenderer);
 		gMouse = new GraphMouseImpl(this);
 		gMouse.setMode(Mode.TRANSFORMING);
-		gMouse.setShapePickSupport(pickSupport);
 
 		// Add OpenGL and Mouse event listeners
 		canvas.addGLEventListener(getNetworkRenderer());

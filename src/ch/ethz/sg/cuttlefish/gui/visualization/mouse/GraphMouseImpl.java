@@ -1,4 +1,4 @@
-package ch.ethz.sg.cuttlefish.gui.visualization;
+package ch.ethz.sg.cuttlefish.gui.visualization.mouse;
 
 import java.awt.Cursor;
 import java.awt.event.MouseEvent;
@@ -10,8 +10,7 @@ import ch.ethz.sg.cuttlefish.gui.undoable.UndoableAction;
 import ch.ethz.sg.cuttlefish.gui.undoable.UndoableControl;
 import ch.ethz.sg.cuttlefish.gui.undoable.actions.CreateEdgeUndoableAction;
 import ch.ethz.sg.cuttlefish.gui.undoable.actions.CreateVertexUndoableAction;
-import ch.ethz.sg.cuttlefish.gui.visualization.geometry.ClosestShapePickSupport;
-import ch.ethz.sg.cuttlefish.gui.visualization.mouse.EditVertexMenu;
+import ch.ethz.sg.cuttlefish.gui.visualization.NetworkRenderer;
 import ch.ethz.sg.cuttlefish.networks.Edge;
 import ch.ethz.sg.cuttlefish.networks.Vertex;
 
@@ -31,7 +30,7 @@ public final class GraphMouseImpl implements GraphMouse {
 
 	private NetworkPanel networkPanel = null;
 	private NetworkRenderer renderer = null;
-	private ClosestShapePickSupport shapePickSupport;
+	private PickSupport pickSupport = null;
 
 	private static final double ZOOM_SENSITIVITY = 20;
 	private static final boolean ANIMATE_LABELS = false;
@@ -40,6 +39,7 @@ public final class GraphMouseImpl implements GraphMouse {
 		this.networkPanel = networkPanel;
 		this.renderer = networkPanel.getNetworkRenderer();
 		this.renderer.setGraphMouse(this);
+		this.pickSupport = new IntersectingShapePickSupport(this.renderer);
 	}
 
 	public Point2D getPanning() {
@@ -74,14 +74,6 @@ public final class GraphMouseImpl implements GraphMouse {
 		return mouseMode == mode;
 	}
 
-	public ClosestShapePickSupport getShapePickSupport() {
-		return shapePickSupport;
-	}
-
-	public void setShapePickSupport(ClosestShapePickSupport pickSupport) {
-		shapePickSupport = pickSupport;
-	}
-
 	/*
 	 * MouseListener
 	 */
@@ -91,6 +83,8 @@ public final class GraphMouseImpl implements GraphMouse {
 
 		if (p == null)
 			return;
+
+		p = renderer.screenToWorld(p);
 
 		if (e.getButton() == MouseEvent.BUTTON1 && mouseInMode(Mode.EDITING)) {
 			// create a node
@@ -103,12 +97,18 @@ public final class GraphMouseImpl implements GraphMouse {
 			UndoableControl.getController().actionExecuted(action);
 
 		} else if (e.getButton() == MouseEvent.BUTTON3) {
-			// && mouseInMode(Mode.EDITING)
-			Vertex v = shapePickSupport.selectVertexByPoint(renderer
-					.screenToWorld(p));
+			Vertex v = pickSupport.pickVertex(p);
 
-			if (v != null)
-				new EditVertexMenu(v, e).show();
+			if (v != null) {
+				new EditVertexMenu(v, networkPanel.getNetwork(), e).show();
+
+			} else {
+				Edge edge = pickSupport.pickEdge(p);
+
+				if (edge != null) {
+					new EditEdgeMenu(edge, networkPanel.getNetwork(), e).show();
+				}
+			}
 		}
 	}
 
@@ -131,23 +131,17 @@ public final class GraphMouseImpl implements GraphMouse {
 				panStart = p;
 
 			} else if (mouseInMode(Mode.INTERACTING)) {
-				if (shapePickSupport != null) {
-					grabbed = shapePickSupport.selectVertexByPoint(renderer
-							.screenToWorld(p));
-					isMoving = (grabbed != null);
-				}
+				grabbed = pickSupport.pickVertex(renderer.screenToWorld(p));
+				isMoving = (grabbed != null);
 
 			} else if (mouseInMode(Mode.EDITING)) {
 				e.getComponent().setCursor(
 						Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
-				if (shapePickSupport != null) {
-					grabbed = shapePickSupport.selectVertexByPoint(renderer
-							.screenToWorld(p));
+				grabbed = pickSupport.pickVertex(renderer.screenToWorld(p));
 
-					if (grabbed != null) {
-						// create an edge
-						isCreatingEdge = true;
-					}
+				if (grabbed != null) {
+					// create an edge
+					isCreatingEdge = true;
 				}
 
 			}
@@ -162,11 +156,10 @@ public final class GraphMouseImpl implements GraphMouse {
 	public void mouseReleased(MouseEvent e) {
 		if (e.getButton() == MouseEvent.BUTTON1) {
 
-			if (isCreatingEdge && shapePickSupport != null) {
-				Point2D p = e.getPoint();
+			if (isCreatingEdge) {
+				Point2D p = renderer.screenToWorld(e.getPoint());
 				Vertex source = grabbed;
-				Vertex target = shapePickSupport.selectVertexByPoint(renderer
-						.screenToWorld(p));
+				Vertex target = pickSupport.pickVertex(p);
 
 				if (target != null) {
 					// Find the new edge and wrap it in an UndoableAction
