@@ -4,11 +4,13 @@ import java.awt.Shape;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
+import java.awt.geom.QuadCurve2D;
 import java.awt.geom.Rectangle2D;
-import java.awt.geom.RectangularShape;
 
 import ch.ethz.sg.cuttlefish.gui.visualization.Constants;
 import ch.ethz.sg.cuttlefish.gui.visualization.NetworkRenderer;
+import ch.ethz.sg.cuttlefish.gui.visualization.Utilities;
+import ch.ethz.sg.cuttlefish.gui.visualization.renderers.EdgeRenderer;
 import ch.ethz.sg.cuttlefish.networks.Edge;
 import ch.ethz.sg.cuttlefish.networks.Vertex;
 
@@ -24,8 +26,7 @@ public class IntersectingShapePickSupport implements PickSupport {
 		Vertex picked = null;
 
 		for (Vertex v : nr.getVertices()) {
-			if (IntersectingShapePickSupport.containsPoint(v, p,
-					nr.getScaleFactor())) {
+			if (containsPoint(v, p, nr.getScaleFactor())) {
 				picked = v;
 				break;
 			}
@@ -38,8 +39,7 @@ public class IntersectingShapePickSupport implements PickSupport {
 		Edge picked = null;
 
 		for (Edge e : nr.getEdges()) {
-			if (IntersectingShapePickSupport.containsPoint(e, p,
-					nr.getScaleFactor())) {
+			if (containsPoint(e, p, nr.getScaleFactor())) {
 				picked = e;
 				break;
 			}
@@ -56,13 +56,28 @@ public class IntersectingShapePickSupport implements PickSupport {
 					.getTarget().getPosition());
 
 		} else if (edge.getShape().equalsIgnoreCase(Constants.LINE_CURVED)) {
+			Point2D from = edge.getSource().getPosition();
+			Point2D to = edge.getTarget().getPosition();
+			double fx = from.getX();
+			double fy = from.getY();
+			double tx = to.getX();
+			double ty = to.getY();
+			double a = Utilities.calculateAngle(from, to);
+			double h = EdgeRenderer.QUADCURVE_CTRL_POINT.getY() / scaleFactor;
+
+			// Calculate Control Point
+			double cx = (fx + tx) / 2 - h * Math.sin(a);
+			double cy = (fy + ty) / 2 + h * Math.cos(a);
+
+			edgeShape = new QuadCurve2D.Double(fx, fy, cx, cy, tx, ty);
 
 		} else if (edge.getShape().equalsIgnoreCase(Constants.LINE_LOOP)) {
-
+			// TODO ilias: Calculate shape for loop
 		}
 
-		// Create a small circular area around point
-		double pickRadius = 2;
+		// Create a small rectangular area around point, and use it
+		// to check for intersection with the line of the edge
+		double pickRadius = 1;
 		double px = p.getX();
 		double py = p.getY();
 		Rectangle2D pickArea = new Rectangle2D.Double(px - pickRadius, py
@@ -73,19 +88,19 @@ public class IntersectingShapePickSupport implements PickSupport {
 
 	public static boolean containsPoint(Vertex vertex, Point2D p,
 			double scaleFactor) {
-		RectangularShape shape = null;
+		Shape vertexShape = null;
 		double size = vertex.getSize() / scaleFactor;
 		double x = vertex.getPosition().getX() - size;
 		double y = vertex.getPosition().getY() - size;
 
 		if (vertex.getShape().equals(Constants.SHAPE_DISK)) {
-			shape = new Ellipse2D.Double(x, y, 2 * size, 2 * size);
+			vertexShape = new Ellipse2D.Double(x, y, 2 * size, 2 * size);
 
 		} else if (vertex.getShape().equals(Constants.SHAPE_SQUARE)) {
-			shape = new Rectangle2D.Double(x, y, 2 * size, 2 * size);
+			vertexShape = new Rectangle2D.Double(x, y, 2 * size, 2 * size);
 		}
 
-		return shape.contains(p);
+		return vertexShape.contains(p);
 	}
 
 }
