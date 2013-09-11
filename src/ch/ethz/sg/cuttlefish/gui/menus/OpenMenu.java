@@ -187,7 +187,7 @@ public class OpenMenu extends AbstractMenu implements Subject {
 				notifyObservers();
 			}
 		});
-		graphmlNetwork.addActionListener(new ActionListener() {
+		jsonNetwork.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				networkSelected(jsonNetwork);
 				toolbars.getSimulationToolbar().setVisible(false);
