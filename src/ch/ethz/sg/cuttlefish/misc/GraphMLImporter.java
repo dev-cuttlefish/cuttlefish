@@ -274,6 +274,10 @@ public class GraphMLImporter {
 				break;
 		}
 
+		if (vs != null && vt != null) {
+			e = new Edge(vs, vt, 1, directed);
+		}
+
 		while (xmlReader.hasNext() && !elemEnd) {
 			int event = xmlReader.next();
 
@@ -289,7 +293,6 @@ public class GraphMLImporter {
 			}
 		}
 
-		e = new Edge(vs, vt, 1, directed);
 		network.addEdge(e);
 	}
 
@@ -328,11 +331,5 @@ public class GraphMLImporter {
 			}
 		}
 
-	}
-
-	public static void main(String args[]) throws FileNotFoundException {
-		new GraphMLNetwork(
-				new File(
-						"/home/ilias/workspace/cuttlefish/ilias/networks/cuttle_direct.graphml"));
 	}
 }
