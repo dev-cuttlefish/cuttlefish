@@ -30,12 +30,12 @@ public class TikzExporter implements GraphExporter, CharacterExporter,
 	private Workspace workspace;
 	private Writer writer;
 
-	private final double defaultCoordinateFactor = 0.025;
+	private final double defaultCoordinateFactor = 1;
 	private final double defaultNodeSizeFactor = 1;
-	private final double defaultEdgeSizeFactor = 0.5;
-	private double coordinateFactor = defaultCoordinateFactor;
-	private double nodeSizeFactor = defaultNodeSizeFactor;
-	private double edgeSizeFactor = defaultEdgeSizeFactor;
+	private final double defaultEdgeSizeFactor = 1;
+	private double coordinateFactor;
+	private double nodeSizeFactor;
+	private double edgeSizeFactor;
 
 	private double maxY = 0;
 	private boolean hideVertexLabels = false;
@@ -62,6 +62,8 @@ public class TikzExporter implements GraphExporter, CharacterExporter,
 		symbols.setDecimalSeparator('.');
 		formatter = new DecimalFormat("###.#######", symbols);
 		formatter.setGroupingUsed(false);
+		setScalingFactors(defaultNodeSizeFactor, defaultEdgeSizeFactor,
+				defaultCoordinateFactor);
 	}
 
 	@Override
@@ -260,13 +262,14 @@ public class TikzExporter implements GraphExporter, CharacterExporter,
 			coordinates = vertex.getPosition();
 			s = 1;
 		}
+		// TODO ilias: sometimes the coordinates are much bigger than tikz can handle
 		writer.append("\\node at ("
-				+ formatter.format(coordinates.getX() * coordinateFactor)
+				+ formatter.format(coordinates.getX() * (coordinateFactor/10.0))
 				+ ","
 				+ formatter.format((maxY - coordinates.getY())
-						* coordinateFactor) + ") [");
+						* (coordinateFactor/10.0)) + ") [");
 		if (vertex != null) {
-			writer.append(vertex.getShape());
+			writer.append(vertex.getShape()).append(",");
 		}
 		writer.append(" line width=" + formatter.format(vertex.getWidth() * s)
 				+ ",");
@@ -477,6 +480,8 @@ public class TikzExporter implements GraphExporter, CharacterExporter,
 	}
 
 	public void setDefaultFactors() {
+		setScalingFactors(defaultNodeSizeFactor, defaultEdgeSizeFactor,
+				defaultCoordinateFactor);
 		this.nodeSizeFactor = defaultNodeSizeFactor;
 		this.edgeSizeFactor = defaultEdgeSizeFactor;
 		this.coordinateFactor = defaultCoordinateFactor;
