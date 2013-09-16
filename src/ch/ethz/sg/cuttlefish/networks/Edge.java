@@ -24,6 +24,7 @@ package ch.ethz.sg.cuttlefish.networks;
 import java.awt.Color;
 
 import org.gephi.data.attributes.api.AttributeController;
+import org.gephi.data.attributes.api.AttributeOrigin;
 import org.gephi.data.attributes.api.AttributeType;
 import org.gephi.graph.api.GraphController;
 import org.openide.util.Lookup;
@@ -45,28 +46,35 @@ public class Edge implements Comparable<Edge> {
 	private final static String ATTR_IS_EXCLUDED = "edge_boolean_excluded";
 	private final static String ATTR_ID = "edge_int_id";
 
-	static {
-		addAttribute(Edge.ATTR_ID, AttributeType.INT);
-		addAttribute(Edge.ATTR_WIDTH, AttributeType.DOUBLE);
-		addAttribute(Edge.ATTR_VAR1, AttributeType.STRING);
-		addAttribute(Edge.ATTR_VAR2, AttributeType.STRING);
-		addAttribute(Edge.ATTR_IS_EXCLUDED, AttributeType.BOOLEAN);
-		addAttribute(Edge.ATTR_CURVE_TYPE, AttributeType.STRING);
-	}
-
-	public static void addAttribute(String name, AttributeType type) {
-		Lookup.getDefault().lookup(AttributeController.class).getModel()
-				.getEdgeTable().addColumn(name, type);
-	}
-
 	// Defaults
-	private final int DEFAULT_ID = -1;
-	private final int DEFAULT_WIDTH = 1;
-	private final Color DEFAULT_COLOR = Color.darkGray;
-	private final String DEFAULT_VAR1 = null;
-	private final String DEFAULT_VAR2 = null;
-	private final String DEFAULT_EDGE_TYPE = Constants.LINE_CURVED;
-	private final boolean DEFAULT_EXCLUDED = false;
+	private final static Integer DEFAULT_ID = -1;
+	private final static Double DEFAULT_WIDTH = 1.0;
+	private final static Color DEFAULT_COLOR = Color.darkGray;
+	private final static String DEFAULT_VAR1 = null;
+	private final static String DEFAULT_VAR2 = null;
+	private final static String DEFAULT_CURVE_TYPE = Constants.LINE_CURVED;
+	private final static Boolean DEFAULT_EXCLUDED = false;
+
+	static {
+		addAttribute(Edge.ATTR_ID, AttributeType.INT, DEFAULT_ID);
+		addAttribute(Edge.ATTR_WIDTH, AttributeType.DOUBLE, DEFAULT_WIDTH);
+		addAttribute(Edge.ATTR_VAR1, AttributeType.STRING, DEFAULT_VAR1);
+		addAttribute(Edge.ATTR_VAR2, AttributeType.STRING, DEFAULT_VAR2);
+		addAttribute(Edge.ATTR_IS_EXCLUDED, AttributeType.BOOLEAN,
+				DEFAULT_EXCLUDED);
+		addAttribute(Edge.ATTR_CURVE_TYPE, AttributeType.STRING,
+				DEFAULT_CURVE_TYPE);
+	}
+
+	public static void addAttribute(String name, AttributeType type,
+			Object defaultValue) {
+		Lookup.getDefault()
+				.lookup(AttributeController.class)
+				.getModel()
+				.getEdgeTable()
+				.addColumn(name, name, type, AttributeOrigin.PROPERTY,
+						defaultValue);
+	}
 
 	org.gephi.graph.api.Edge internalEdge;
 
@@ -74,22 +82,12 @@ public class Edge implements Comparable<Edge> {
 		return internalEdge;
 	}
 
-	private void defaults() {
-		setId(DEFAULT_ID);
-		setWidth(DEFAULT_WIDTH);
-		setVar1(DEFAULT_VAR1);
-		setVar2(DEFAULT_VAR2);
-		setExcluded(DEFAULT_EXCLUDED);
-		setShape(DEFAULT_EDGE_TYPE);
-		setColor(DEFAULT_COLOR);
-	}
-
 	public Edge(Vertex source, Vertex target) {
 		this.internalEdge = Lookup.getDefault().lookup(GraphController.class)
 				.getModel().factory()
 				.newEdge(source.internalNode, target.internalNode);
 
-		defaults();
+		setColor(DEFAULT_COLOR);
 	}
 
 	public Edge(Vertex source, Vertex target, boolean directed) {
@@ -97,7 +95,7 @@ public class Edge implements Comparable<Edge> {
 				.getModel().factory()
 				.newEdge(source.internalNode, target.internalNode, 1, directed);
 
-		defaults();
+		setColor(DEFAULT_COLOR);
 	}
 
 	public Edge(Vertex source, Vertex target, float weight, boolean directed) {
@@ -108,11 +106,18 @@ public class Edge implements Comparable<Edge> {
 				.factory()
 				.newEdge(source.internalNode, target.internalNode, weight,
 						directed);
-		defaults();
+
+		setColor(DEFAULT_COLOR);
 	}
 
 	public Edge(org.gephi.graph.api.Edge internal) {
 		this.internalEdge = internal;
+
+		// A new org.gephi.graph.api.Edge has an invalid colour
+		// so it must be adjusted
+		if (this.internalEdge.getEdgeData().r() < 0) {
+			setColor(DEFAULT_COLOR);
+		}
 	}
 
 	/**
@@ -121,8 +126,6 @@ public class Edge implements Comparable<Edge> {
 	 */
 	public void setId(int id) {
 		this.internalEdge.getAttributes().setValue(Edge.ATTR_ID, id);
-		this.internalEdge.getAttributes().setValue(Edge.ATTR_CURVE_TYPE,
-				DEFAULT_EDGE_TYPE);
 	}
 
 	/**
@@ -158,6 +161,7 @@ public class Edge implements Comparable<Edge> {
 
 	public static void setColor(org.gephi.graph.api.Edge edge, Color color) {
 		float[] rgb = color.getRGBColorComponents(null);
+
 		edge.getEdgeData().setR(rgb[0]);
 		edge.getEdgeData().setG(rgb[1]);
 		edge.getEdgeData().setB(rgb[2]);

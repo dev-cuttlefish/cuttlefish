@@ -18,7 +18,7 @@ public class EdgeRenderer extends ShapeRenderer {
 	private final int DLIST_LOOP;
 	private final int DLIST_ARROW;
 
-	public final static boolean EDGE_WEIGHT_AS_WIDTH = true;
+	public static boolean EDGE_WEIGHT_AS_WIDTH = false;
 	public final static Point2D QUADCURVE_CTRL_POINT = new Point2D.Double(0.5,
 			40);
 

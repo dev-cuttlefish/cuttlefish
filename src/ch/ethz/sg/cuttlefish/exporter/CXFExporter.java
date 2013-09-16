@@ -22,6 +22,7 @@ public class CXFExporter implements GraphExporter, CharacterExporter,
 
 	@Override
 	public boolean execute() {
+		System.out.println("Exporting");
 		try {
 			exportData();
 
@@ -63,7 +64,6 @@ public class CXFExporter implements GraphExporter, CharacterExporter,
 	}
 
 	private void exportData() throws IOException {
-
 		if (Utils.checkForDuplicatedVertexIds(network))
 			Utils.reassignVertexIds(network);
 

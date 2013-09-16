@@ -25,6 +25,7 @@ import java.awt.Color;
 import java.awt.geom.Point2D;
 
 import org.gephi.data.attributes.api.AttributeController;
+import org.gephi.data.attributes.api.AttributeOrigin;
 import org.gephi.data.attributes.api.AttributeType;
 import org.gephi.graph.api.GraphController;
 import org.gephi.graph.api.Node;
@@ -55,56 +56,50 @@ public class Vertex implements Comparable<Vertex> {
 	private final static String ATTR_BORDER_G = "vertex_float_border_color_G";
 	private final static String ATTR_BORDER_B = "vertex_float_border_color_B";
 
-	static {
-		addAttribute(ATTR_ID, AttributeType.INT);
-		addAttribute(ATTR_IS_ROOT, AttributeType.BOOLEAN);
-		addAttribute(ATTR_IS_EXCLUDED, AttributeType.BOOLEAN);
-		addAttribute(ATTR_VAR1, AttributeType.STRING);
-		addAttribute(ATTR_VAR2, AttributeType.STRING);
-		addAttribute(ATTR_SHAPE_TYPE, AttributeType.STRING);
-		addAttribute(ATTR_IS_SHADOWED, AttributeType.BOOLEAN);
-		addAttribute(ATTR_WIDTH, AttributeType.INT);
-		addAttribute(ATTR_BORDER_R, AttributeType.FLOAT);
-		addAttribute(ATTR_BORDER_G, AttributeType.FLOAT);
-		addAttribute(ATTR_BORDER_B, AttributeType.FLOAT);
-	}
-
-	public static void addAttribute(String name, AttributeType type) {
-		Lookup.getDefault().lookup(AttributeController.class).getModel()
-				.getNodeTable().addColumn(name, type);
-	}
-
 	// Defaults
-	private final int DEFAULT_ID = -1;
-	private final int DEFAULT_WIDTH = 1;
-	private final int DEFAULT_SIZE = 10;
-	private final Color DEFAULT_BORDER_COLOR = Color.darkGray;
-	private final Color DEFAULT_FILL_COLOR = Color.lightGray;
-	private final String DEFAULT_VAR1 = null;
-	private final String DEFAULT_VAR2 = null;
-	private final String DEFAULT_SHAPE = Constants.SHAPE_DISK;
-	private final boolean DEFAULT_ROOT = false;
-	private final boolean DEFAULT_EXCLUDED = false;
-	private final boolean DEFAULT_SHADOWED = false;
+	private final static Integer DEFAULT_ID = -1;
+	private final static Integer DEFAULT_WIDTH = 1;
+	private final static Integer DEFAULT_SIZE = 10;
+	private final static String DEFAULT_VAR1 = null;
+	private final static String DEFAULT_VAR2 = null;
+	private final static String DEFAULT_SHAPE = Constants.SHAPE_DISK;
+	private final static Boolean DEFAULT_ROOT = false;
+	private final static Boolean DEFAULT_EXCLUDED = false;
+	private final static Boolean DEFAULT_SHADOWED = false;
+	private final static Color DEFAULT_FILL_COLOR = Color.lightGray;
+	private final static Color DEFAULT_BORDER_COLOR = Color.darkGray;
+
+	static {
+		addAttribute(ATTR_ID, AttributeType.INT, DEFAULT_ID);
+		addAttribute(ATTR_IS_ROOT, AttributeType.BOOLEAN, DEFAULT_ROOT);
+		addAttribute(ATTR_IS_EXCLUDED, AttributeType.BOOLEAN, DEFAULT_EXCLUDED);
+		addAttribute(ATTR_VAR1, AttributeType.STRING, DEFAULT_VAR1);
+		addAttribute(ATTR_VAR2, AttributeType.STRING, DEFAULT_VAR2);
+		addAttribute(ATTR_SHAPE_TYPE, AttributeType.STRING, DEFAULT_SHAPE);
+		addAttribute(ATTR_IS_SHADOWED, AttributeType.BOOLEAN, DEFAULT_SHADOWED);
+		addAttribute(ATTR_WIDTH, AttributeType.INT, DEFAULT_WIDTH);
+
+		float[] color = DEFAULT_BORDER_COLOR.getColorComponents(null);
+		addAttribute(ATTR_BORDER_R, AttributeType.FLOAT, new Float(color[0]));
+		addAttribute(ATTR_BORDER_G, AttributeType.FLOAT, new Float(color[1]));
+		addAttribute(ATTR_BORDER_B, AttributeType.FLOAT, new Float(color[2]));
+	}
+
+	public static void addAttribute(String name, AttributeType type,
+			Object defaultValue) {
+
+		Lookup.getDefault()
+				.lookup(AttributeController.class)
+				.getModel()
+				.getNodeTable()
+				.addColumn(name, name, type, AttributeOrigin.PROPERTY,
+						defaultValue);
+	}
 
 	Node internalNode;
 
 	public Node getInternalNode() {
 		return internalNode;
-	}
-
-	public void defaults() {
-		setId(DEFAULT_ID);
-		setIsRoot(DEFAULT_ROOT);
-		setExcluded(DEFAULT_EXCLUDED);
-		setVar1(DEFAULT_VAR1);
-		setVar2(DEFAULT_VAR2);
-		setShape(DEFAULT_SHAPE);
-		setShadowed(DEFAULT_SHADOWED);
-		setWidth(DEFAULT_WIDTH);
-		setSize(DEFAULT_SIZE);
-		setBorderColor(DEFAULT_BORDER_COLOR);
-		setFillColor(DEFAULT_FILL_COLOR);
 	}
 
 	/**
@@ -116,8 +111,9 @@ public class Vertex implements Comparable<Vertex> {
 		this.internalNode = Lookup.getDefault().lookup(GraphController.class)
 				.getModel().factory().newNode();
 
-		defaults();
 		setId(id);
+		setSize(DEFAULT_SIZE);
+		setFillColor(DEFAULT_FILL_COLOR);
 	}
 
 	/**
@@ -130,9 +126,10 @@ public class Vertex implements Comparable<Vertex> {
 		this.internalNode = Lookup.getDefault().lookup(GraphController.class)
 				.getModel().factory().newNode(label);
 
-		defaults();
 		setId(id);
 		setLabel(label);
+		setSize(DEFAULT_SIZE);
+		setFillColor(DEFAULT_FILL_COLOR);
 	}
 
 	/**
@@ -142,7 +139,9 @@ public class Vertex implements Comparable<Vertex> {
 		this.internalNode = Lookup.getDefault().lookup(GraphController.class)
 				.getModel().factory().newNode();
 
-		defaults();
+		setId(DEFAULT_ID);
+		setSize(DEFAULT_SIZE);
+		setFillColor(DEFAULT_FILL_COLOR);
 	}
 
 	// Used to wrap Gephi nodes to Cuttlefish vertices
