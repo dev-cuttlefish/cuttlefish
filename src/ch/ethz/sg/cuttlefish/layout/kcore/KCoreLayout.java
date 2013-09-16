@@ -118,12 +118,12 @@ public class KCoreLayout implements Layout {
 		finished = true;
 
 		if (Cuttlefish.VERBOSE_LAYOUT)
-			Cuttlefish.debug(this, "");
+			Cuttlefish.debug(this, "Layout completed.");
 	}
 
 	@Override
 	public boolean canAlgo() {
-		return finished;
+		return !finished;
 	}
 
 	@Override

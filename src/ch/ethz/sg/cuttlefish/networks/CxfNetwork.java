@@ -307,6 +307,7 @@ public class CxfNetwork extends BrowsableNetwork {
 			else if (field.toLowerCase().contains("options"))
 				token = parseOptions(token, field.toLowerCase(), it);
 
+			// TODO ilias: add logic to hide labels, etc
 			else if (lineFields.get(0).equalsIgnoreCase("configuration:")) {
 				while (it.hasNext()) {
 					field = it.next();

@@ -60,7 +60,7 @@ public class NetworkRenderer implements GLEventListener {
 	private final boolean AA_MULTISAMPLING = false;
 	private final boolean AA_SMOOTHING = true;
 	private final boolean AA_SMOOTH_LINES = true;
-	private final boolean AA_SMOOTH_POLYGONS = true;
+	private final boolean AA_SMOOTH_POLYGONS = false;
 	private final boolean AA_SMOOTH_POINTS = true;
 
 	private GLCapabilities getCaps() {
@@ -96,6 +96,7 @@ public class NetworkRenderer implements GLEventListener {
 		this.canvas = new GLCanvas(getCaps());
 		this.drawable = canvas;
 		this.animator = new FPSAnimator(drawable, ANIMATION_FPS);
+		this.animator.setPrintExceptions(true); // disables debug messages
 	}
 
 	/*

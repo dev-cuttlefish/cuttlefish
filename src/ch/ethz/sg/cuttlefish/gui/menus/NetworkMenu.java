@@ -26,7 +26,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.io.File;
-import java.io.IOException;
 import java.util.Observable;
 
 import javax.swing.JFileChooser;
@@ -34,6 +33,9 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
 
+import org.gephi.io.exporter.spi.Exporter;
+
+import ch.ethz.sg.cuttlefish.exporter.NetworkExportController;
 import ch.ethz.sg.cuttlefish.gui.Cuttlefish;
 import ch.ethz.sg.cuttlefish.gui.CuttlefishToolbars;
 import ch.ethz.sg.cuttlefish.gui.NetworkPanel;
@@ -159,16 +161,17 @@ public class NetworkMenu extends AbstractMenu implements Observer,
 					saveTo.delete();
 				try {
 					saveTo.createNewFile();
-				} catch (IOException e1) {
+
+					Exporter exporter = NetworkExportController
+							.getExporter("cxf");
+					NetworkExportController.export(networkPanel.getNetwork(),
+							saveTo, exporter);
+				} catch (Exception e1) {
 					JOptionPane.showMessageDialog(null, e1.getMessage(),
 							"Could not write to file",
 							JOptionPane.ERROR_MESSAGE);
 					e1.printStackTrace();
 				}
-				// CxfSaver saver = new
-				// CxfSaver((BrowsableNetwork)networkPanel.getNetwork(),
-				// networkPanel.getNetworkLayout());
-				// saver.save(saveTo);
 			}
 		});
 
@@ -184,11 +187,11 @@ public class NetworkMenu extends AbstractMenu implements Observer,
 					File file = fc.getSelectedFile();
 					try {
 						file.createNewFile();
-						// TODO ilias: restore: CxfSaver saver = new
-						// CxfSaver((BrowsableNetwork)networkPanel.getNetwork(),
-						// networkPanel.getNetworkLayout());
-						// saver.save(file);
-					} catch (IOException ioEx) {
+						Exporter exporter = NetworkExportController
+								.getExporter("cxf");
+						NetworkExportController.export(
+								networkPanel.getNetwork(), file, exporter);
+					} catch (Exception ioEx) {
 						JOptionPane.showMessageDialog(null, ioEx.getMessage(),
 								"Error", JOptionPane.ERROR_MESSAGE);
 						System.err.println("Impossible to write");

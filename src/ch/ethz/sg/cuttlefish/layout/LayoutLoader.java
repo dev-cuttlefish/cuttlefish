@@ -17,6 +17,7 @@ import org.gephi.layout.spi.LayoutBuilder;
 import org.openide.util.Lookup;
 import org.openide.util.NotImplementedException;
 
+import ch.ethz.sg.cuttlefish.Cuttlefish;
 import ch.ethz.sg.cuttlefish.gui.NetworkPanel;
 import ch.ethz.sg.cuttlefish.layout.arf.ARFLayoutBuilder;
 import ch.ethz.sg.cuttlefish.layout.arf.WeightedARFLayoutBuilder;
@@ -51,7 +52,7 @@ public class LayoutLoader {
 		builders.put("weighted-kcore", WeightedKCoreLayoutBuilder.class);
 
 		// Gephi Toolkit Layouts
-		// TODO ilias: Add Force Atlas (2)
+		// TODO ilias: debug ForceAtlas2
 		builders.put("fruchterman-reingold", FruchtermanReingoldBuilder.class);
 		builders.put("yifanhu", YifanHu.class);
 		builders.put("force-atlas", ForceAtlas2Builder.class);
@@ -97,6 +98,8 @@ public class LayoutLoader {
 		this(null);
 	}
 
+	private long layoutTime = 0;
+
 	public LayoutLoader(NetworkPanel panel) {
 		networkPanel = panel;
 		layoutModel = Lookup.getDefault().lookup(LayoutController.class)
@@ -110,8 +113,17 @@ public class LayoutLoader {
 				if (evt.getPropertyName().equals(LayoutModel.SELECTED_LAYOUT)) {
 					// Selected layout changed
 					if (networkPanel != null
-							&& !networkPanel.getNetwork().isEmpty())
-						networkPanel.getNetworkRenderer().animate(true, true);
+							&& !networkPanel.getNetwork().isEmpty()) {
+
+						// Network might be too large to animate layout
+						// computation
+						if (networkPanel.getNetwork().getVertexCount() > 5000
+								|| networkPanel.getNetwork().getEdgeCount() > 5000)
+							networkPanel.getNetworkRenderer().animate(true,
+									true);
+
+						layoutTime = System.currentTimeMillis();
+					}
 
 				} else if (evt.getPropertyName().equals(LayoutModel.RUNNING)) {
 					// Layout state changed
@@ -137,6 +149,11 @@ public class LayoutLoader {
 									"Layout set: "
 											+ networkPanel.getNetworkLayout()
 													.getBuilder().getName());
+
+							layoutTime = System.currentTimeMillis()
+									- layoutTime;
+							Cuttlefish.debug(this, "# Layout computed in "
+									+ (layoutTime / 1000.0) + "s.");
 						}
 					}
 				}

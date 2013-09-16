@@ -74,6 +74,7 @@ public class WeightedKCoreLayout implements Layout {
 
 		cmax = -1;
 		maxDegree = -1;
+		finished = false;
 
 		for (Node v : graph.getNodes()) {
 			if (cmax < coreness.get(v))
@@ -99,7 +100,7 @@ public class WeightedKCoreLayout implements Layout {
 	@Override
 	public void goAlgo() {
 		double maxSize = 10;
-
+		System.out.println("coloring nodes " + graph.getNodeCount());
 		for (Node v : graph.getNodes()) {
 			double r;
 			if (rho.get(v).equals(java.lang.Double.NaN) || rho.get(v) == 0d) {
@@ -113,22 +114,22 @@ public class WeightedKCoreLayout implements Layout {
 			double origDegree = Math.log(graph.getDegree(v));
 			if (origDegree < 1)
 				origDegree = 1;
-			vertex.setSize((float) (maxSize * origDegree / Math.log(maxDegree)));
 			float hue = (float) coreness.get(v) / (float) cmax;
+			
+			vertex.setSize((float) (maxSize * origDegree / Math.log(maxDegree)));
 			vertex.setFillColor(Color.getHSBColor(hue, 1f, 1f));
-
 			vertex.setPosition(x * RHO_SCALE / cmax, y * RHO_SCALE / cmax);
 		}
 
 		finished = true;
 
 		if (Cuttlefish.VERBOSE_LAYOUT)
-			Cuttlefish.debug(this, "Algorithm completed");
+			Cuttlefish.debug(this, "Layout completed");
 	}
 
 	@Override
 	public boolean canAlgo() {
-		return finished;
+		return !finished;
 	}
 
 	@Override
@@ -387,7 +388,7 @@ public class WeightedKCoreLayout implements Layout {
 	public void setBeta(double beta) {
 		this.paramBeta = beta;
 	}
-	
+
 	public Map<Node, Integer> getCoreness() {
 		return coreness;
 	}

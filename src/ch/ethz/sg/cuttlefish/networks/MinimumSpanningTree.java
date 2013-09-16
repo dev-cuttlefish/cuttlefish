@@ -47,8 +47,8 @@ public class MinimumSpanningTree {
 		EDGE_ATTR_MST = "edge_int_mstid";
 		NODE_ATTR_MST = "node_int_mstid";
 
-		Edge.addAttribute(EDGE_ATTR_MST, AttributeType.LONG);
-		Vertex.addAttribute(NODE_ATTR_MST, AttributeType.LONG);
+		Edge.addAttribute(EDGE_ATTR_MST, AttributeType.LONG, -1);
+		Vertex.addAttribute(NODE_ATTR_MST, AttributeType.LONG, -1);
 	}
 
 	// Instance fields
