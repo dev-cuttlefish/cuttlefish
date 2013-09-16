@@ -66,6 +66,8 @@ public class ExportMenu extends AbstractMenu {
 	private JMenuItem dumpToDB;
 	private JMenuItem toCMX;
 	private JMenuItem toGraphml;
+	
+	private JMenuItem toPDF;
 
 	private JMenuItem toApplet;
 	private JFileChooser snapshotFileChooser;
@@ -90,6 +92,7 @@ public class ExportMenu extends AbstractMenu {
 		toApplet = new JMenuItem("To Applet");
 		toSVG = new JMenuItem("To interactive SVG");
 		toGraphml = new JMenuItem("To GraphML");
+		toPDF = new JMenuItem("To PDF");
 
 		this.add(toGraphml);
 		this.add(toAdjMatrix);
@@ -104,6 +107,9 @@ public class ExportMenu extends AbstractMenu {
 		this.addSeparator();
 		this.add(dumpToDB);
 		this.add(toCMX);
+		
+		this.addSeparator();
+		this.add(toPDF);
 
 		dumpToDB.addActionListener(new ActionListener() {
 			@Override
@@ -420,6 +426,29 @@ public class ExportMenu extends AbstractMenu {
 				}
 			}
 		});
+		
+		toPDF.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				JFileChooser pdfFileChooser = new FileChooser();
+				pdfFileChooser.setDialogTitle("Exporting cuttlefish network to PDF");
+				pdfFileChooser.setSelectedFile(new File("network.pdf"));
+				pdfFileChooser.setFileFilter(new FileNameExtensionFilter(
+						".pdf files", "pdf"));
+				if (pdfFileChooser.showSaveDialog(networkPanel) == JFileChooser.APPROVE_OPTION) {
+
+					try {
+						Exporter exporter = NetworkExportController
+								.getExporter("pdf");
+						NetworkExportController.export(
+								networkPanel.getNetwork(),
+								pdfFileChooser.getSelectedFile(), exporter);
+					} catch (Exception ex) {
+						errorPopup(ex, "Output error when saving in PDF!");
+					}
+				}
+			}
+		});
 	}
 
 	/**
@@ -431,6 +460,7 @@ public class ExportMenu extends AbstractMenu {
 	public void exportToTikz() {
 		TikzExporter tikz = (TikzExporter) NetworkExportController
 				.getExporter("tikz");
+		tikz.setNetwork(networkPanel.getNetwork());
 		getTikzDialog(tikz).setVisible(true);
 	}
 
