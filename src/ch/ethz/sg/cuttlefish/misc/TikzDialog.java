@@ -512,7 +512,14 @@ public class TikzDialog extends JFrame {
 	}
 
 	private void browseButtonActionPerformed(java.awt.event.ActionEvent evt) {
-		FileChooser fc = new FileChooser();
+		String output = networkPanel.getNetwork().getNetworkFileName();
+
+		if (output == null || output.isEmpty())
+			output = "network";
+
+		output += ".tex";
+
+		JFileChooser fc = new JFileChooser(output);
 		fc.setDialogTitle("Output to file...");
 		fc.setFileFilter(new FileNameExtensionFilter(".tex files", "tex"));
 		int returnVal = fc.showSaveDialog(networkPanel);

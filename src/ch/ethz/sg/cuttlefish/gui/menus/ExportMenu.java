@@ -82,6 +82,15 @@ public class ExportMenu extends AbstractMenu {
 		initialize();
 		this.setText("Export");
 	}
+	
+	private String getOutputName(String extension) {
+		String output = networkPanel.getNetwork().getNetworkFileName(); 
+		
+		if (output == null || output.isEmpty())
+			output = "network";			
+		
+		return output + "." + extension;
+	}
 
 	private void initialize() {
 		toJpeg = new JMenuItem("JPG");
@@ -136,7 +145,7 @@ public class ExportMenu extends AbstractMenu {
 				JFileChooser graphmlFileChooser = new FileChooser();
 				graphmlFileChooser
 						.setDialogTitle("Exporting cuttlefish network to GraphML");
-				graphmlFileChooser.setSelectedFile(new File("network.graphml"));
+				graphmlFileChooser.setSelectedFile(new File(getOutputName("graphml")));
 				graphmlFileChooser.setFileFilter(new FileNameExtensionFilter(
 						".graphml files", "graphml"));
 				if (graphmlFileChooser.showSaveDialog(networkPanel) == JFileChooser.APPROVE_OPTION) {
@@ -157,7 +166,7 @@ public class ExportMenu extends AbstractMenu {
 		toSVG.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				String svgFilename = "network.svg";
+				String svgFilename = getOutputName("svg");
 				JFileChooser fc = getSVGFileChooser();
 				fc.setSelectedFile(new File(svgFilename));
 				int returnVal = fc.showSaveDialog(networkPanel);
@@ -183,7 +192,7 @@ public class ExportMenu extends AbstractMenu {
 				try {
 					String imageFilename = "applet.jpg";
 					JFileChooser fc = getSnapshotFileChooser();
-					fc.setSelectedFile(new File("network.jpg"));
+					fc.setSelectedFile(new File(getOutputName("jpg")));
 					int returnVal = fc.showSaveDialog(networkPanel);
 					int imageHeight = networkPanel.getNetworkRenderer()
 							.getHeight();
@@ -197,7 +206,7 @@ public class ExportMenu extends AbstractMenu {
 					fc = getAppletChooser();
 					fc.setSelectedFile(new File("network.html"));
 					returnVal = fc.showSaveDialog(networkPanel);
-					String networkFilename = "network.html";
+					String networkFilename = getOutputName("html");
 					if (returnVal == JFileChooser.APPROVE_OPTION) {
 						networkFilename = fc.getSelectedFile().getName();
 						AppletExporter applet = (AppletExporter) NetworkExportController
@@ -236,10 +245,7 @@ public class ExportMenu extends AbstractMenu {
 							@Override
 							public void run() {
 								JFileChooser fc = getSnapshotFileChooser();
-								fc.setSelectedFile(new File(
-										((BrowsableNetwork) networkPanel
-												.getNetwork()).getName()
-												+ ".jpg"));
+								fc.setSelectedFile(new File(getOutputName("jpg")));
 								int returnVal = fc.showSaveDialog(null);
 								if (returnVal != JFileChooser.APPROVE_OPTION)
 									return;
@@ -363,9 +369,7 @@ public class ExportMenu extends AbstractMenu {
 				new Thread(new Runnable() {
 					public void run() {
 						JFileChooser fc = getCMXFileChooser();
-						fc.setSelectedFile(new File(
-								((BrowsableNetwork) networkPanel.getNetwork())
-										.getName()));
+						fc.setSelectedFile(new File(getOutputName("cmx")));
 						int returnVal = fc.showSaveDialog(networkPanel);
 						if (returnVal == JFileChooser.APPROVE_OPTION) {
 							String baseFilename = fc.getSelectedFile()
@@ -388,9 +392,7 @@ public class ExportMenu extends AbstractMenu {
 			public void actionPerformed(ActionEvent e) {
 				try {
 					JFileChooser fc = getDatFileChooser();
-					fc.setSelectedFile(new File(
-							((BrowsableNetwork) networkPanel.getNetwork())
-									.getName() + ".dat"));
+					fc.setSelectedFile(new File(getOutputName("dat")));
 					int returnVal = fc.showSaveDialog(networkPanel);
 
 					if (returnVal == JFileChooser.APPROVE_OPTION) {
@@ -413,9 +415,7 @@ public class ExportMenu extends AbstractMenu {
 			public void actionPerformed(ActionEvent e) {
 				try {
 					JFileChooser fc = getDatFileChooser();
-					fc.setSelectedFile(new File(
-							((BrowsableNetwork) networkPanel.getNetwork())
-									.getName() + ".dat"));
+					fc.setSelectedFile(new File(getOutputName("dat")));
 					int returnVal = fc.showSaveDialog(networkPanel);
 
 					if (returnVal == JFileChooser.APPROVE_OPTION) {
@@ -436,7 +436,7 @@ public class ExportMenu extends AbstractMenu {
 				JFileChooser pdfFileChooser = new FileChooser();
 				pdfFileChooser
 						.setDialogTitle("Exporting cuttlefish network to PDF");
-				pdfFileChooser.setSelectedFile(new File("network.pdf"));
+				pdfFileChooser.setSelectedFile(new File(getOutputName("pdf")));
 				pdfFileChooser.setFileFilter(new FileNameExtensionFilter(
 						".pdf files", "pdf"));
 				if (pdfFileChooser.showSaveDialog(networkPanel) == JFileChooser.APPROVE_OPTION) {
@@ -461,7 +461,7 @@ public class ExportMenu extends AbstractMenu {
 				JFileChooser pngFileChooser = new FileChooser();
 				pngFileChooser
 						.setDialogTitle("Exporting cuttlefish network to PNG");
-				pngFileChooser.setSelectedFile(new File("network.png"));
+				pngFileChooser.setSelectedFile(new File(getOutputName("png")));
 				pngFileChooser.setFileFilter(new FileNameExtensionFilter(
 						".png files", "png"));
 				if (pngFileChooser.showSaveDialog(networkPanel) == JFileChooser.APPROVE_OPTION) {

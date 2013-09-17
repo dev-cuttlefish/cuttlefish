@@ -90,6 +90,7 @@ public class WeightedARFLayout implements Layout {
 	private boolean converged = false;
 	private int maxUpdates = Integer.MAX_VALUE;
 	private int countUpdates = 0;
+	private boolean randomize = true;
 
 	private GraphModel graphModel = null;
 	private Graph graph = null;
@@ -111,6 +112,7 @@ public class WeightedARFLayout implements Layout {
 		graph = graphModel.getGraphVisible();
 		change = Double.MAX_VALUE;
 		random = new Random();
+		randomize = true;
 
 		computeWeightScalingParameters();
 
@@ -119,12 +121,7 @@ public class WeightedARFLayout implements Layout {
 		}
 
 		if (!keepInitialPositions) {
-			for (Node n : graph.getNodes()) {
-				float radius = 2000 * random.nextFloat();
-				float alpha = 360 * random.nextFloat();
-				n.getNodeData().setX(radius * (float) Math.cos(alpha));
-				n.getNodeData().setY(radius * (float) Math.sin(alpha));
-			}
+			randomizePositions();
 		}
 
 		if (Cuttlefish.VERBOSE_LAYOUT)
@@ -148,6 +145,11 @@ public class WeightedARFLayout implements Layout {
 
 		countUpdates++;
 
+		if (change > 1000 && randomize) {
+			randomizePositions();
+			randomize = false;
+		}
+
 		if (Cuttlefish.VERBOSE_LAYOUT)
 			Cuttlefish.debug(this, "Change = " + change);
 	}
@@ -168,6 +170,15 @@ public class WeightedARFLayout implements Layout {
 				Cuttlefish.debug(this, n + ": " + n.getNodeData().x() + ", "
 						+ n.getNodeData().y());
 			}
+		}
+	}
+
+	private void randomizePositions() {
+		for (Node n : graph.getNodes()) {
+			float radius = 2000 * random.nextFloat();
+			float alpha = 360 * random.nextFloat();
+			n.getNodeData().setX(radius * (float) Math.cos(alpha));
+			n.getNodeData().setY(radius * (float) Math.sin(alpha));
 		}
 	}
 

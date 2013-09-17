@@ -82,6 +82,7 @@ public class ARFLayout implements Layout {
 	private Random random;
 	private boolean fixedThreshold = THRESHOLD_TYPE_FIXED;
 	private boolean converged = false;
+	private boolean randomize = true;
 
 	private GraphModel graphModel = null;
 	private Graph graph = null;
@@ -104,18 +105,14 @@ public class ARFLayout implements Layout {
 		graph = graphModel.getGraphVisible();
 		change = Double.MAX_VALUE;
 		random = new Random();
+		randomize = true;
 
 		if (!fixedThreshold) {
 			threshold = epsilon * graph.getNodeCount();
 		}
 
 		if (!keepInitialPositions) {
-			for (Node n : graph.getNodes()) {
-				float radius = 2000 * random.nextFloat();
-				float alpha = 360 * random.nextFloat();
-				n.getNodeData().setX(radius * (float) Math.cos(alpha));
-				n.getNodeData().setY(radius * (float) Math.sin(alpha));
-			}
+			randomizePositions();
 		}
 
 		if (Cuttlefish.VERBOSE_LAYOUT)
@@ -131,6 +128,11 @@ public class ARFLayout implements Layout {
 		// Do a single step when less than 3 nodes exist
 		if (graph.getNodeCount() <= 3)
 			converged = true;
+		
+		if (change > 1000 && randomize) {
+			randomizePositions();
+			randomize = false;
+		}
 
 		if (Cuttlefish.VERBOSE_LAYOUT)
 			Cuttlefish.debug(this, "Change = " + change);
@@ -151,6 +153,15 @@ public class ARFLayout implements Layout {
 				Cuttlefish.debug(this, n + ": " + n.getNodeData().x() + ", "
 						+ n.getNodeData().y());
 			}
+		}
+	}
+
+	private void randomizePositions() {
+		for (Node n : graph.getNodes()) {
+			float radius = 2000 * random.nextFloat();
+			float alpha = 360 * random.nextFloat();
+			n.getNodeData().setX(radius * (float) Math.cos(alpha));
+			n.getNodeData().setY(radius * (float) Math.sin(alpha));
 		}
 	}
 
