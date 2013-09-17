@@ -214,6 +214,7 @@ public class NetworkRenderer implements GLEventListener {
 	 *            Controls animation of labels; the last frame of the animation
 	 *            always displays labels.
 	 */
+	private boolean animationAlreadyActive = false;
 	public void animate(boolean enable, boolean animateLabels) {
 		if (animator == null || drawable == null)
 			return;
@@ -221,13 +222,16 @@ public class NetworkRenderer implements GLEventListener {
 		if (enable) {
 			if (!animator.isAnimating())
 				animator.start();
+			else
+				animationAlreadyActive = true;
 			this.animateLabels = animateLabels;
 
 		} else {
-			if (animator.isAnimating())
+			if (animator.isAnimating() && !animationAlreadyActive)
 				animator.stop();
 
 			this.animateLabels = true;
+			animationAlreadyActive = false;
 			drawable.display(); // draw last frame
 		}
 	}

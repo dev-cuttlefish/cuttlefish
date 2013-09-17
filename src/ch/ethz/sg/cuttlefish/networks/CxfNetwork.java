@@ -45,7 +45,6 @@ import ch.ethz.sg.cuttlefish.gui.visualization.Constants;
 public class CxfNetwork extends BrowsableNetwork {
 
 	private static final long serialVersionUID = 1L;
-	private String networkFileName = null;
 	FileReader fr;
 	BufferedReader br;
 	boolean directed = true;
@@ -224,7 +223,7 @@ public class CxfNetwork extends BrowsableNetwork {
 		}
 		line = null;
 
-		this.networkFileName = graphFile.getName();
+		this.setNetworkFileName(graphFile.getName());
 	}
 
 	/**
@@ -655,63 +654,6 @@ public class CxfNetwork extends BrowsableNetwork {
 	}
 
 	public String getCxfName() {
-		return networkFileName;
+		return this.getNetworkFileName();
 	}
-
-	// @Override
-	// public boolean addEdge(Edge e, Vertex v1, Vertex v2, EdgeType edge_type)
-	// {
-	// if (findEdgeSet(v1, v2).size() > 0 && !multiGraph) {
-	// System.err.println("The graph does not allow parallel edges");
-	// return false;
-	// }
-	//
-	// super.addEdge(e);
-	// if (directed)
-	// return super.addEdge(e, v1, v2, EdgeType.DIRECTED);
-	// else
-	// return super.addEdge(e, v1, v2, EdgeType.UNDIRECTED);
-	// };
-	//
-	// @Override
-	// public boolean addEdge(Edge e, Vertex v1, Vertex v2) {
-	// if (findEdgeSet(v1, v2).size() > 0 && !isMultiGraph()) {
-	// System.err.println("The graph does not allow parallel edges");
-	// return false;
-	// }
-	//
-	// if (directed)
-	// return super.addEdge(e, v1, v2, EdgeType.DIRECTED);
-	// else
-	// return super.addEdge(e, v1, v2, EdgeType.UNDIRECTED);
-	// };
-	//
-	// @Override
-	// public boolean addEdge(Edge edge, Pair<? extends Vertex> endpoints) {
-	// if (findEdgeSet(endpoints.getFirst(), endpoints.getSecond()).size() > 0
-	// && !multiGraph) {
-	// System.err.println("The graph does not allow parallel edges");
-	// return false;
-	// }
-	//
-	// if (directed)
-	// return super.addEdge(edge, endpoints, EdgeType.DIRECTED);
-	// else
-	// return super.addEdge(edge, endpoints, EdgeType.UNDIRECTED);
-	// };
-	//
-	// @Override
-	// public boolean addEdge(Edge edge, Pair<? extends Vertex> endpoints,
-	// EdgeType edgeType) {
-	// if (findEdgeSet(endpoints.getFirst(), endpoints.getSecond()).size() > 0
-	// && !multiGraph) {
-	// System.err.println("The graph does not allow parallel edges");
-	// return false;
-	// }
-	//
-	// if (directed)
-	// return super.addEdge(edge, endpoints, EdgeType.DIRECTED);
-	// else
-	// return super.addEdge(edge, endpoints, EdgeType.UNDIRECTED);
-	// };
 }

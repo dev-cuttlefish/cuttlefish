@@ -67,6 +67,12 @@ public class BrowsableNetwork implements Serializable {
 	private boolean directed = false;
 
 	/**
+	 * When an existing network is opened, this field keeps track of its name to
+	 * be used when exporting as well.
+	 */
+	private String networkFileName = null;
+
+	/**
 	 * Creates a new Network accessor interface by clearing the underlying graph
 	 * structure.
 	 */
@@ -471,6 +477,16 @@ public class BrowsableNetwork implements Serializable {
 		return name;
 	}
 
+	public String getNetworkFileName() {		
+		return networkFileName;
+	}
+
+	public void setNetworkFileName(String networkFileName) {
+		int ext = networkFileName.lastIndexOf('.');
+		
+		this.networkFileName = networkFileName.substring(0, ext);
+	}
+	
 	public void printNetwork() {
 
 		System.out.println("Nodes: " + getVertexCount());

@@ -10,6 +10,7 @@ import ch.ethz.sg.cuttlefish.gui.undoable.UndoableAction;
 import ch.ethz.sg.cuttlefish.gui.undoable.UndoableControl;
 import ch.ethz.sg.cuttlefish.gui.undoable.actions.CreateEdgeUndoableAction;
 import ch.ethz.sg.cuttlefish.gui.undoable.actions.CreateVertexUndoableAction;
+import ch.ethz.sg.cuttlefish.gui.undoable.actions.SetVertexPositionUndoableAction;
 import ch.ethz.sg.cuttlefish.gui.visualization.NetworkRenderer;
 import ch.ethz.sg.cuttlefish.networks.Edge;
 import ch.ethz.sg.cuttlefish.networks.Vertex;
@@ -183,6 +184,14 @@ public final class GraphMouseImpl implements GraphMouse {
 			e.getComponent().setCursor(
 					Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 
+			if (isMoving && mouseInMode(Mode.INTERACTING)) {
+				UndoableAction action = new SetVertexPositionUndoableAction(
+						grabbed, grabbed.getPosition(), oldPosition);
+				action.execute();
+				UndoableControl.getController().actionExecuted(action);
+				oldPosition = null;
+			}
+			
 			// vertex moved; must recompute layout
 			if (isMoving || isCreatingEdge || isCreatingVertex)
 				networkPanel.resumeLayout();
@@ -201,6 +210,7 @@ public final class GraphMouseImpl implements GraphMouse {
 	 * MouseMotionListener
 	 */
 
+	private Point2D oldPosition;
 	public void mouseDragged(MouseEvent e) {
 		Point2D p = e.getPoint();
 		Point2D s = renderer.screenToWorld(p);
@@ -213,6 +223,9 @@ public final class GraphMouseImpl implements GraphMouse {
 		}
 
 		if (isMoving && mouseInMode(Mode.INTERACTING)) {
+			
+			if (oldPosition == null)
+				oldPosition = grabbed.getPosition();
 			grabbed.setPosition(s);
 		}
 

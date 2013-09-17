@@ -100,16 +100,16 @@ public class LayoutMenu extends AbstractMenu implements Observer {
 		weightedKcore.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_4,
 				ActionEvent.ALT_MASK));
 
-		fixed.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_5,
+		fruchterman.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_5,
 				ActionEvent.ALT_MASK));
-		circle.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_6,
+		yifanhu.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_6,
 				ActionEvent.ALT_MASK));
-
-		fruchterman.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_7,
+		forceatlas.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_7,
 				ActionEvent.ALT_MASK));
-		yifanhu.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_8,
+		
+		circle.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_8,
 				ActionEvent.ALT_MASK));
-		forceatlas.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_9,
+		fixed.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_9,
 				ActionEvent.ALT_MASK));
 
 		// isom.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_6,
@@ -173,12 +173,12 @@ public class LayoutMenu extends AbstractMenu implements Observer {
 		this.add(kcore);
 		this.add(weightedKcore);
 
-		this.add(fixed);
-		this.add(circle);
-
 		this.add(fruchterman);
 		this.add(yifanhu);
 		this.add(forceatlas);
+		
+		this.add(circle);
+		this.add(fixed);
 
 		// this.add(tree);
 		// this.add(radialTree);
