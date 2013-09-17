@@ -66,8 +66,9 @@ public class ExportMenu extends AbstractMenu {
 	private JMenuItem dumpToDB;
 	private JMenuItem toCMX;
 	private JMenuItem toGraphml;
-	
+
 	private JMenuItem toPDF;
+	private JMenuItem toPNG;
 
 	private JMenuItem toApplet;
 	private JFileChooser snapshotFileChooser;
@@ -93,6 +94,7 @@ public class ExportMenu extends AbstractMenu {
 		toSVG = new JMenuItem("To interactive SVG");
 		toGraphml = new JMenuItem("To GraphML");
 		toPDF = new JMenuItem("To PDF");
+		toPNG = new JMenuItem("To PNG");
 
 		this.add(toGraphml);
 		this.add(toAdjMatrix);
@@ -107,9 +109,10 @@ public class ExportMenu extends AbstractMenu {
 		this.addSeparator();
 		this.add(dumpToDB);
 		this.add(toCMX);
-		
+
 		this.addSeparator();
 		this.add(toPDF);
+		this.add(toPNG);
 
 		dumpToDB.addActionListener(new ActionListener() {
 			@Override
@@ -426,12 +429,13 @@ public class ExportMenu extends AbstractMenu {
 				}
 			}
 		});
-		
+
 		toPDF.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				JFileChooser pdfFileChooser = new FileChooser();
-				pdfFileChooser.setDialogTitle("Exporting cuttlefish network to PDF");
+				pdfFileChooser
+						.setDialogTitle("Exporting cuttlefish network to PDF");
 				pdfFileChooser.setSelectedFile(new File("network.pdf"));
 				pdfFileChooser.setFileFilter(new FileNameExtensionFilter(
 						".pdf files", "pdf"));
@@ -445,6 +449,31 @@ public class ExportMenu extends AbstractMenu {
 								pdfFileChooser.getSelectedFile(), exporter);
 					} catch (Exception ex) {
 						errorPopup(ex, "Output error when saving in PDF!");
+					}
+				}
+			}
+		});
+
+		toPNG.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				JFileChooser pngFileChooser = new FileChooser();
+				pngFileChooser
+						.setDialogTitle("Exporting cuttlefish network to PNG");
+				pngFileChooser.setSelectedFile(new File("network.png"));
+				pngFileChooser.setFileFilter(new FileNameExtensionFilter(
+						".png files", "png"));
+				if (pngFileChooser.showSaveDialog(networkPanel) == JFileChooser.APPROVE_OPTION) {
+
+					try {
+						Exporter exporter = NetworkExportController
+								.getExporter("png");
+						NetworkExportController.export(
+								networkPanel.getNetwork(),
+								pngFileChooser.getSelectedFile(), exporter);
+					} catch (Exception ex) {
+						errorPopup(ex, "Output error when saving in PNG!");
 					}
 				}
 			}

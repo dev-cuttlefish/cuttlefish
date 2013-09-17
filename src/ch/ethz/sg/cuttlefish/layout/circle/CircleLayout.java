@@ -86,7 +86,8 @@ public class CircleLayout implements Layout {
 
 		double angle, angleSum = 0;
 		for (Node n : nodeOrderedList) {
-			double r = new Vertex(n).getSize() * Math.sqrt(2);
+			double s = new Vertex(n).getSize();
+			double r = s * Math.sqrt(2);
 			angle = Math.asin(r / radius) * 2;
 			angleSum += angle;
 			getCircleData(n).setAngle(angle);
@@ -94,10 +95,10 @@ public class CircleLayout implements Layout {
 
 		double delta = (2 * Math.PI - angleSum) / nodeOrderedList.size();
 
-		if (delta < 0) {
+		if (delta < 0.02) {
 			// Vertices overlap within the current circle.
 			// Radius must be increased.
-			radius *= 1.1;
+			radius *= 1.2;
 			if (Cuttlefish.VERBOSE_LAYOUT)
 				Cuttlefish.debug(this, "Radius = " + radius);
 
@@ -135,11 +136,6 @@ public class CircleLayout implements Layout {
 	public void endAlgo() {
 		if (Cuttlefish.VERBOSE_LAYOUT) {
 			Cuttlefish.debug(this, "Layout ended");
-
-			for (Node n : graphModel.getGraph().getNodes()) {
-				Cuttlefish.debug(this, n + ": " + n.getNodeData().x() + ", "
-						+ n.getNodeData().y());
-			}
 		}
 	}
 
@@ -154,10 +150,10 @@ public class CircleLayout implements Layout {
 		dimension = new Dimension(1000, 800);
 		converged = false;
 		radius = 0;
-		
+
 		if (nodeOrderedList != null)
 			nodeOrderedList.clear();
-		
+
 		if (circleNodeDataMap != null)
 			circleNodeDataMap.clear();
 	}

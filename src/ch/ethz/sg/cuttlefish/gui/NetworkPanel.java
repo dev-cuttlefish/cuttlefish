@@ -45,10 +45,10 @@ import org.openide.util.NotImplementedException;
 import ch.ethz.sg.cuttlefish.Cuttlefish;
 import ch.ethz.sg.cuttlefish.gui.tasks.SetLayoutWorker;
 import ch.ethz.sg.cuttlefish.gui.undoable.UndoableControl;
-import ch.ethz.sg.cuttlefish.gui.visualization.mouse.GraphMouse;
-import ch.ethz.sg.cuttlefish.gui.visualization.mouse.GraphMouseImpl;
-import ch.ethz.sg.cuttlefish.gui.visualization.mouse.GraphMouse.Mode;
 import ch.ethz.sg.cuttlefish.gui.visualization.NetworkRenderer;
+import ch.ethz.sg.cuttlefish.gui.visualization.mouse.GraphMouse;
+import ch.ethz.sg.cuttlefish.gui.visualization.mouse.GraphMouse.Mode;
+import ch.ethz.sg.cuttlefish.gui.visualization.mouse.GraphMouseImpl;
 import ch.ethz.sg.cuttlefish.layout.LayoutLoader;
 import ch.ethz.sg.cuttlefish.layout.arf.ARFLayout;
 import ch.ethz.sg.cuttlefish.layout.arf.WeightedARFLayout;
@@ -498,6 +498,7 @@ public class NetworkPanel extends JPanel implements Subject, ItemListener,
 
 		} else if (newLayout instanceof FruchtermanReingold) {
 			layoutIterationLimit = 700;
+
 		}
 
 		// TODO ilias: check that fixed vertices remain fixed during layout

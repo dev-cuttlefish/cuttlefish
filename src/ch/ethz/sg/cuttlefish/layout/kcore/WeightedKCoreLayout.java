@@ -69,8 +69,9 @@ public class WeightedKCoreLayout implements Layout {
 
 		// check if all vertices have the same coreness
 		// and if yes, randomly places the nodes
-		if (singleCoreCheck())
+		if (singleCoreCheck()) {
 			return;
+		}
 
 		cmax = -1;
 		maxDegree = -1;
@@ -100,9 +101,13 @@ public class WeightedKCoreLayout implements Layout {
 	@Override
 	public void goAlgo() {
 		double maxSize = 10;
-		System.out.println("coloring nodes " + graph.getNodeCount());
+
 		for (Node v : graph.getNodes()) {
 			double r;
+			
+			if (!rho.containsKey(v))
+				continue;
+			
 			if (rho.get(v).equals(java.lang.Double.NaN) || rho.get(v) == 0d) {
 				r = (new Random()).nextDouble() / 2 * cmaxRadius;
 			} else {
@@ -302,11 +307,11 @@ public class WeightedKCoreLayout implements Layout {
 		}
 	}
 
-	private List<Node> getNeighborsWithHigherCoreness(Graph g, Node v) {
+	private List<Node> getNeighborsWithHigherCoreness(Graph graph, Node v) {
 		List<Node> neighborsWithHigherCoreness = new ArrayList<Node>();
 
-		for (Edge e : g.getEdges(v)) {
-			Node n = g.getOpposite(v, e);
+		for (Edge e : graph.getEdges(v)) {
+			Node n = graph.getOpposite(v, e);
 			if (coreness.get(n) >= coreness.get(v)) {
 				neighborsWithHigherCoreness.add(n);
 			}

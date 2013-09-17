@@ -137,7 +137,9 @@ public class TikzExporter implements GraphExporter, CharacterExporter,
 				}
 			}
 		}
-		nodeSizeFactor = 0.75 * k;
+
+		// TODO ilias: why this??
+		// nodeSizeFactor = 0.75 * k;
 
 		writer.append("\\documentclass{minimal}").append("\n");
 		writer.append("\\usepackage{tikz, tkz-graph}").append("\n");
@@ -262,12 +264,14 @@ public class TikzExporter implements GraphExporter, CharacterExporter,
 			coordinates = vertex.getPosition();
 			s = 1;
 		}
-		// TODO ilias: sometimes the coordinates are much bigger than tikz can handle
+		// TODO ilias: sometimes the coordinates are much bigger than tikz can
+		// handle
 		writer.append("\\node at ("
-				+ formatter.format(coordinates.getX() * (coordinateFactor/10.0))
+				+ formatter.format(coordinates.getX()
+						* (coordinateFactor / 10.0))
 				+ ","
 				+ formatter.format((maxY - coordinates.getY())
-						* (coordinateFactor/10.0)) + ") [");
+						* (coordinateFactor / 10.0)) + ") [");
 		if (vertex != null) {
 			writer.append(vertex.getShape()).append(",");
 		}
