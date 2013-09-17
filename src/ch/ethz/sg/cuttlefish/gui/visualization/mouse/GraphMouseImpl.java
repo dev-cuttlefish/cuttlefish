@@ -33,7 +33,7 @@ public final class GraphMouseImpl implements GraphMouse {
 	private PickSupport pickSupport = null;
 
 	private static final double ZOOM_SENSITIVITY = 20;
-	private static final boolean ANIMATE_LABELS = false;
+	private static final boolean ANIMATE_LABELS = true;
 
 	public GraphMouseImpl(NetworkPanel networkPanel) {
 		this.networkPanel = networkPanel;

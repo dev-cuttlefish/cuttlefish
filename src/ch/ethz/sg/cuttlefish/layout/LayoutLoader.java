@@ -17,7 +17,6 @@ import org.gephi.layout.spi.LayoutBuilder;
 import org.openide.util.Lookup;
 import org.openide.util.NotImplementedException;
 
-import ch.ethz.sg.cuttlefish.Cuttlefish;
 import ch.ethz.sg.cuttlefish.gui.NetworkPanel;
 import ch.ethz.sg.cuttlefish.layout.arf.ARFLayoutBuilder;
 import ch.ethz.sg.cuttlefish.layout.arf.WeightedARFLayoutBuilder;
@@ -117,8 +116,9 @@ public class LayoutLoader {
 
 						// Network might be too large to animate layout
 						// computation
-						if (networkPanel.getNetwork().getVertexCount() > 5000
-								|| networkPanel.getNetwork().getEdgeCount() > 5000)
+						int renderLimit = 2000;
+						if (networkPanel.getNetwork().getVertexCount() < renderLimit
+								&& networkPanel.getNetwork().getEdgeCount() < renderLimit)
 							networkPanel.getNetworkRenderer().animate(true,
 									true);
 
@@ -152,8 +152,9 @@ public class LayoutLoader {
 
 							layoutTime = System.currentTimeMillis()
 									- layoutTime;
-							Cuttlefish.debug(this, "# Layout computed in "
-									+ (layoutTime / 1000.0) + "s.");
+
+							// Cuttlefish.debug(this, "# Layout computed in "
+							// + (layoutTime / 1000.0) + "s.");
 						}
 					}
 				}

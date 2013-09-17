@@ -89,24 +89,38 @@ public class LayoutMenu extends AbstractMenu implements Observer {
 		circle = new JRadioButtonMenuItem("Circle");
 		tree = new JRadioButtonMenuItem("Tree");
 		radialTree = new JRadioButtonMenuItem("Radial Tree");
+
 		arf.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_1,
 				ActionEvent.ALT_MASK));
-		kcore.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_2,
+		weightedArf.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_2,
 				ActionEvent.ALT_MASK));
-		weightedKcore.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_3,
+
+		kcore.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_3,
 				ActionEvent.ALT_MASK));
-		kamada.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_4,
+		weightedKcore.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_4,
 				ActionEvent.ALT_MASK));
-		fruchterman.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_5,
+
+		fixed.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_5,
 				ActionEvent.ALT_MASK));
-		isom.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_6,
+		circle.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_6,
 				ActionEvent.ALT_MASK));
-		circle.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_7,
+
+		fruchterman.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_7,
 				ActionEvent.ALT_MASK));
-		tree.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_8,
+		yifanhu.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_8,
 				ActionEvent.ALT_MASK));
-		radialTree.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_9,
+		forceatlas.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_9,
 				ActionEvent.ALT_MASK));
+
+		// isom.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_6,
+		// ActionEvent.ALT_MASK));
+		// tree.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_8,
+		// ActionEvent.ALT_MASK));
+		// radialTree.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_9,
+		// ActionEvent.ALT_MASK));
+		// kamada.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_4,
+		// ActionEvent.ALT_MASK));
+
 		layoutButtons.add(arf);
 		layoutButtons.add(kcore);
 		layoutButtons.add(weightedKcore);
@@ -154,18 +168,22 @@ public class LayoutMenu extends AbstractMenu implements Observer {
 		this.addSeparator();
 
 		this.add(arf);
+		this.add(weightedArf);
+
 		this.add(kcore);
 		this.add(weightedKcore);
+
 		this.add(fixed);
-		this.add(weightedArf);
-		this.add(kamada);
+		this.add(circle);
+
 		this.add(fruchterman);
 		this.add(yifanhu);
 		this.add(forceatlas);
-		this.add(isom);
-		this.add(circle);
-		this.add(tree);
-		this.add(radialTree);
+
+		// this.add(tree);
+		// this.add(radialTree);
+		// this.add(kamada);
+		// this.add(isom);
 
 		stopButton.addActionListener(new ActionListener() {
 			@Override
