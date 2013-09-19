@@ -103,8 +103,11 @@ public class SimulationToolbar extends AbstractToolbar implements Observer {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				resetButton.setEnabled(true);
-				((ISimulation) networkPanel.getNetwork()).update(sleepTime);
+				boolean isRunning = ((ISimulation) networkPanel.getNetwork())
+						.update(sleepTime);
 				networkPanel.onNetworkChange();
+				stepButton.setEnabled(isRunning);
+				runButton.setEnabled(isRunning);
 			}
 		});
 		settingsButton.addActionListener(new ActionListener() {
@@ -181,9 +184,9 @@ public class SimulationToolbar extends AbstractToolbar implements Observer {
 				isRunning = false;
 				thread = null;
 				((ISimulation) networkPanel.getNetwork()).reset();
-				System.out.println("ResetChange");
 				networkPanel.onNetworkChange();
 				runButton.setIcon(getRunIcon());
+				runButton.setEnabled(true);
 				stepButton.setEnabled(true);
 				resetButton.setEnabled(false);
 			}
@@ -204,11 +207,12 @@ public class SimulationToolbar extends AbstractToolbar implements Observer {
 			frameLabel.setText(" "
 					+ ((InteractiveCxfNetwork) o).getCurrentLabel() + " ");
 			if (networkPanel.getNetworkLayout() instanceof WeightedARFLayout) {
-				WeightedARFLayout layout = (WeightedARFLayout) networkPanel.getNetworkLayout(); 
+				WeightedARFLayout layout = (WeightedARFLayout) networkPanel
+						.getNetworkLayout();
 				layout.setSleepTime(((InteractiveCxfNetwork) o)
-								.getCurrentSleepTime());
+						.getCurrentSleepTime());
 				layout.setMaxUpdates(((InteractiveCxfNetwork) o)
-								.getCurrentMaxStepUpdates());
+						.getCurrentMaxStepUpdates());
 			}
 		}
 	}

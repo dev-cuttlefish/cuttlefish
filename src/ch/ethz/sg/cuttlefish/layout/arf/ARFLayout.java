@@ -62,7 +62,7 @@ public class ARFLayout implements Layout {
 
 	/**
 	 * deltaT controls the calculation precision: smaller deltaT results in
-	 * higher precession
+	 * higher precision
 	 */
 	private float deltaT = 2;
 
