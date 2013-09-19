@@ -86,6 +86,10 @@ public class OpenMenu extends AbstractMenu implements Subject {
 		dbNetwork.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D,
 				ActionEvent.ALT_MASK));
 		dbNetwork.setMnemonic('D');
+		
+		interactiveNetwork.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_I,
+				ActionEvent.ALT_MASK));
+		interactiveNetwork.setMnemonic('I');
 
 		networkClassMap = new HashMap<JMenuItem, Class<?>>();
 		try {
@@ -119,7 +123,6 @@ public class OpenMenu extends AbstractMenu implements Subject {
 		this.setMnemonic('O');
 		cxfNetwork.setMnemonic('C');
 		dbNetwork.setMnemonic('D');
-		interactiveNetwork.setMnemonic('I');
 		pajekNetwork.setMnemonic('P');
 		graphmlNetwork.setMnemonic('G');
 		graphmlNetwork.setMnemonic('J');

@@ -37,21 +37,17 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import org.gephi.layout.api.LayoutController;
-import org.gephi.layout.plugin.fruchterman.FruchtermanReingold;
 import org.gephi.layout.spi.Layout;
 import org.openide.util.Lookup;
 import org.openide.util.NotImplementedException;
 
 import ch.ethz.sg.cuttlefish.Cuttlefish;
-import ch.ethz.sg.cuttlefish.gui.tasks.SetLayoutWorker;
 import ch.ethz.sg.cuttlefish.gui.undoable.UndoableControl;
 import ch.ethz.sg.cuttlefish.gui.visualization.NetworkRenderer;
 import ch.ethz.sg.cuttlefish.gui.visualization.mouse.GraphMouse;
 import ch.ethz.sg.cuttlefish.gui.visualization.mouse.GraphMouse.Mode;
 import ch.ethz.sg.cuttlefish.gui.visualization.mouse.GraphMouseImpl;
 import ch.ethz.sg.cuttlefish.layout.LayoutLoader;
-import ch.ethz.sg.cuttlefish.layout.arf.ARFLayout;
-import ch.ethz.sg.cuttlefish.layout.arf.WeightedARFLayout;
 import ch.ethz.sg.cuttlefish.layout.circle.CircleLayout;
 import ch.ethz.sg.cuttlefish.layout.kcore.KCoreLayout;
 import ch.ethz.sg.cuttlefish.layout.kcore.WeightedKCoreLayout;
@@ -67,25 +63,13 @@ public class NetworkPanel extends JPanel implements Subject, ItemListener,
 
 	private static final long serialVersionUID = 1L;
 
-	private final boolean LIMIT_LAYOUT_ITERATIONS = false;
-	private int layoutIterationLimit = 0;
-
 	private BrowsableNetwork network = null;
-	private Layout layout = null;
 	private String currentLayout = null;
 	private String layoutType = null;
 	private List<Observer> observers = null;
 	private StatusBar statusBar = null;
-	private SetLayoutWorker setLayoutWorker = null;
 	private int width;
 	private int height;
-
-	/*
-	 * Used so that the user will be able to pass layout parameters when
-	 * necessary. For example, in Weighted KCore, the user must specify two
-	 * parameters, alpha & beta from input.
-	 */
-	private Object[] layoutParameters = new Object[2];
 
 	// Updated visualization
 	private GLCanvas canvas = null;
@@ -108,24 +92,6 @@ public class NetworkPanel extends JPanel implements Subject, ItemListener,
 	}
 
 	public NetworkRenderer getNetworkRenderer() {
-		//
-		// // Create renderer if it doesn't exist
-		// if (networkRenderer == null) {
-		// if (network == null) {
-		// synchronized (this) {
-		// try {
-		// this.wait();
-		// } catch (InterruptedException e) {
-		// e.printStackTrace();
-		// }
-		// }
-		// }
-		//
-		// networkRenderer = new NetworkRenderer(network.getVertices(),
-		// network.getEdges(), width, height);
-		// networkRenderer.setNetwork(network);
-		// }
-		//
 
 		if (networkRenderer == null) {
 			networkRenderer = new NetworkRenderer(this, width, height);
@@ -154,7 +120,8 @@ public class NetworkPanel extends JPanel implements Subject, ItemListener,
 
 		BrowsableNetwork network = new BrowsableNetwork();
 		networkRenderer = new NetworkRenderer(this, width, height);
-		layoutLoader = new LayoutLoader(this);
+		layoutLoader = LayoutLoader.getInstance(this);
+
 		setNetwork(network);
 
 		canvas = networkRenderer.getCanvas();
@@ -168,143 +135,11 @@ public class NetworkPanel extends JPanel implements Subject, ItemListener,
 		canvas.addMouseMotionListener(getNetworkRenderer().getGraphMouse());
 		canvas.addMouseListener(getNetworkRenderer().getGraphMouse());
 		canvas.addMouseWheelListener(getNetworkRenderer().getGraphMouse());
-
-		// TODO ilias: Popups disabled
-		// PopupMousePlugin<Vertex, Edge> popupMouse = new
-		// PopupMousePlugin<Vertex, Edge>(this);
-		// popupMouse.setVertexPopup(new MouseMenus.VertexMenu());
-		// popupMouse.setEdgePopup(new MouseMenus.EdgeMenu(null));
-		//
-		// graphMouse = new
-		// EditingModalGraphMouse<Vertex,Edge>(getVisualizationViewer().getRenderContext(),
-		// vertexFactory, edgeFactory);
-		// graphMouse.getAnnotatingPlugin().setAnnotationColor(getForeground());
-		//
-		// // starting on transforming mode, the most used
-		// graphMouse.setMode(ModalGraphMouse.Mode.TRANSFORMING);
-		// graphMouse.remove(graphMouse.getPopupEditingPlugin());
-		// PopupMousePlugin<Vertex, Edge> popupMouse = new
-		// PopupMousePlugin<Vertex, Edge>(this);
-		// popupMouse.setVertexPopup(new MouseMenus.VertexMenu());
-		// popupMouse.setEdgePopup(new MouseMenus.EdgeMenu(null));
-		// graphMouse.add(popupMouse);
-
-		// Vertex rendering
-		// RenderContext<Vertex,Edge> renderContext =
-		// getVisualizationViewer().getRenderContext();
-		// Transformer<Vertex, Shape> vertexShapeTransformer = new
-		// Transformer<Vertex, Shape>() {
-		// public Shape transform(Vertex vertex) {
-		// return vertex.getShape();} };
-		// Transformer<Vertex,String> vertexLabelTransformer = new
-		// Transformer<Vertex,String>(){
-		// public String transform(Vertex vertex) {
-		//
-		// if (network instanceof CxfNetwork)
-		// if (((CxfNetwork)network).hideVertexLabels())
-		// return null;
-		// return vertex.getLabel();
-		//
-		// } };
-		// Transformer<Vertex, Stroke> vertexStrokeTransformer = new
-		// Transformer<Vertex, Stroke>(){
-		// public Stroke transform(Vertex vertex) {
-		// return new BasicStroke(new Double(vertex.getWidth()).intValue()); }
-		// };
-		// Transformer<Vertex, Paint> vertexPaintTransformer = new
-		// Transformer<Vertex, Paint>(){
-		// public Paint transform(Vertex vertex) {
-		// return vertex.getFillColor(); } };
-		// Transformer<Vertex, Paint> vertexBorderTransformer = new
-		// Transformer<Vertex, Paint>(){
-		// public Paint transform(Vertex vertex) {
-		// return vertex.getColor(); } };
-
-		// This predicate selects which vertices to ignore
-		// Predicate<Context<Graph<Vertex, Edge>, Vertex>>
-		// vertexIncludePredicate = new Predicate<Context<Graph<Vertex, Edge>,
-		// Vertex>>() {
-		// public boolean evaluate(Context<Graph<Vertex, Edge>, Vertex> context)
-		// {
-		// Vertex vertex = context.element;
-		// return !vertex.isExcluded();
-		// }
-		// };
-
-		// // vertex label, shape and border width
-		// renderContext.setVertexShapeTransformer(vertexShapeTransformer);
-		// renderContext.setVertexLabelTransformer(vertexLabelTransformer);
-		// renderContext.setVertexDrawPaintTransformer(vertexBorderTransformer);
-		// renderContext.setVertexIncludePredicate(vertexIncludePredicate);
-		// renderContext.setLabelOffset(20); //shift of the vertex label to
-		// center the first character under the vertex
-		// //vertex colors
-		// renderContext.setVertexStrokeTransformer(vertexStrokeTransformer);
-		// renderContext.setVertexFillPaintTransformer(vertexPaintTransformer);
-
-		// Edge rendering
-		// Transformer<Edge, Paint> edgePaintTransformer = new Transformer<Edge,
-		// Paint>(){
-		// public Paint transform(Edge edge) {
-		// return edge.getColor(); } };
-		// Transformer<Edge, String> edgeLabelTransformer = new
-		// Transformer<Edge, String>(){
-		// public String transform(Edge edge) {
-		// if (network instanceof CxfNetwork)
-		// if (((CxfNetwork)network).hideEdgeLabels())
-		// return null;
-		// return edge.getLabel();} };
-		//
-		//
-		// Transformer<Context<Graph<Vertex,Edge>, Edge>, Shape>
-		// edgeShapeTransformer = new Transformer<Context<Graph<Vertex,Edge>,
-		// Edge>, Shape>() {
-		// public Shape transform(Context<Graph<Vertex, Edge>, Edge> context) {
-		// if(network instanceof CxfNetwork) {
-		// if( ((CxfNetwork)network).getEdgeShape() == "line" ) {
-		// return new EdgeShape.Line<Vertex, Edge>().transform(context);
-		// }
-		// } else if (network instanceof BrowsableForestNetwork) {
-		// if( ((BrowsableForestNetwork)network).getEdgeShape() == "line" ) {
-		// return new EdgeShape.Line<Vertex, Edge>().transform(context);
-		// }
-		// }
-		// // The default edge shape is QuadCurve
-		// return new EdgeShape.QuadCurve<Vertex, Edge>().transform(context);
-		// }
-		// };
-		// renderContext.setEdgeShapeTransformer(edgeShapeTransformer);
-		//
-		// Transformer<Edge,Stroke> edgeStrokeTransformer = new
-		// Transformer<Edge, Stroke>() {
-		// public Stroke transform(Edge edge) {
-		// return new BasicStroke(new Double(edge.getWidth()).intValue()); } };
-		// // This predicate selects which edges to ignore
-		// Predicate<Context<Graph<Vertex,Edge>,Edge>> edgeIncludePredicate =
-		// new Predicate<Context<Graph<Vertex,Edge>,Edge>>() {
-		// public boolean evaluate(Context<Graph<Vertex, Edge>, Edge> context) {
-		// Edge edge = context.element;
-		// return !edge.isExcluded(); } };
-		//
-		// renderContext.setEdgeDrawPaintTransformer(edgePaintTransformer);
-		// renderContext.setArrowFillPaintTransformer(edgePaintTransformer);
-		// renderContext.setArrowDrawPaintTransformer(edgePaintTransformer);
-		// //arrows are of the same color as the edge
-		// renderContext.setEdgeLabelTransformer(edgeLabelTransformer);
-		// renderContext.setEdgeStrokeTransformer(edgeStrokeTransformer);
-		// renderContext.setEdgeIncludePredicate(edgeIncludePredicate);
-
-		// Mouse settings
-		// getVisualizationViewer().setPickSupport(new
-		// ShapePickSupport<Vertex,Edge>(getVisualizationViewer()));
-		// getVisualizationViewer().setGraphMouse(graphMouse);
-		// getVisualizationViewer().getPickedVertexState().addItemListener(this);
-		// getVisualizationViewer().setDoubleBuffered(true);
 	}
 
 	@Override
 	public Layout getNetworkLayout() {
-		return layout;
+		return layoutLoader.getSelectedLayout();
 	}
 
 	@Override
@@ -330,25 +165,12 @@ public class NetworkPanel extends JPanel implements Subject, ItemListener,
 		 * Default layout: ARF If the network is not a forest and the layout is
 		 * a tree layout, change the layout to the default ARF layout.
 		 */
-		if (layout == null) {
-			setLayoutByName("arf");
-			// for the first setting of the layout we busy wait until
-			// the thread layout setter thread sets the layout
-			while (layout == null) {
-				try {
-					Thread.sleep(1000);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-		// else if (layout instanceof TreeLayout) {
-		// network = new BrowsableForestNetwork(network);
-		// //layout.setGraph(network);
-		// }
 
-		if (layout != null /* && layout.getGraph() != network */) {// consistency
-																	// check
+		if (getNetworkLayout() == null) {
+			setLayoutByName(LayoutLoader.DEFAULT_LAYOUT);
+
+		} else {
+			// check
 			// between layout
 			// and network
 			// layout.setGraph(network);
@@ -364,13 +186,7 @@ public class NetworkPanel extends JPanel implements Subject, ItemListener,
 			// .getVertexCount());
 
 			// network.init(); TODO ilias: this will clear the network
-			try {
-				layout = layoutLoader.getLayout(layout.getBuilder().getName());
-			} catch (Exception e) {
-				errorPopup(layout.getBuilder().getName() + " Layout error",
-						e.getLocalizedMessage());
-			}
-			setLayout(layout);
+			layoutLoader.resetLayout();
 		}
 
 		refreshAnnotations();
@@ -410,8 +226,9 @@ public class NetworkPanel extends JPanel implements Subject, ItemListener,
 		 */
 
 		stopLayout();
-		if (layout instanceof CircleLayout || layout instanceof KCoreLayout
-				|| layout instanceof WeightedKCoreLayout) {
+		if (getNetworkLayout() instanceof CircleLayout
+				|| getNetworkLayout() instanceof KCoreLayout
+				|| getNetworkLayout() instanceof WeightedKCoreLayout) {
 			setNetwork(((BrowsableForestNetwork) getNetwork())
 					.getOriginalNetwork());
 		}
@@ -452,186 +269,17 @@ public class NetworkPanel extends JPanel implements Subject, ItemListener,
 	}
 
 	public void setLayoutParameters(Object[] parameters) {
-		for (int i = 0; i < parameters.length; ++i) {
-			layoutParameters[i] = parameters[i];
-		}
+		layoutLoader.setLayoutParameters(parameters);
 	}
 
 	@Override
 	public void setLayoutByName(String selectedLayout) {
-		Layout newLayout = null;
-
-		try {
-			newLayout = layoutLoader.getLayout(selectedLayout);
-		} catch (Exception e) {
-			errorPopup(selectedLayout + " Layout error",
-					e.getLocalizedMessage());
-			return;
-		}
-
-		if (newLayout == null) {
-			throw new RuntimeException("Unknown layout: " + selectedLayout);
-		}
-
-		layoutIterationLimit = 0;
-		if (LIMIT_LAYOUT_ITERATIONS)
-			layoutIterationLimit = getNetwork().getVertexCount();
-
-		if (newLayout instanceof ARFLayout) {
-			ARFLayout arf = (ARFLayout) newLayout;
-			arf.setIncremental(((BrowsableNetwork) getNetwork())
-					.isIncremental());
-			arf.keepInitialPostitions(true);
-
-		} else if (newLayout instanceof WeightedARFLayout) {
-			WeightedARFLayout weightedArf = (WeightedARFLayout) newLayout;
-			weightedArf.setIncremental(((BrowsableNetwork) getNetwork())
-					.isIncremental());
-			weightedArf.keepInitialPostitions(true);
-
-		} else if (newLayout instanceof WeightedKCoreLayout) {
-			double alpha = (Double) layoutParameters[0];
-			double beta = (Double) layoutParameters[1];
-
-			((WeightedKCoreLayout) newLayout).setAlpha(alpha);
-			((WeightedKCoreLayout) newLayout).setBeta(beta);
-
-		} else if (newLayout instanceof FruchtermanReingold) {
-			layoutIterationLimit = 700;
-
-		}
-
-		// TODO ilias: check that fixed vertices remain fixed during layout
-
-		setLayout(newLayout);
+		layoutLoader.setLayoutByName(selectedLayout);
 		layoutType = selectedLayout;
 
 		for (Observer o : observers)
 			o.update(this);
 	}
-
-	private void setLayout(Layout layout) {
-		this.layout = layout;
-		LayoutController layoutController = Lookup.getDefault().lookup(
-				LayoutController.class);
-
-		// configure layout parameters & execution
-		layoutController.stopLayout();
-		layoutController.setLayout(layout);
-
-		if (!network.isEmpty() && layoutController.canExecute()) {
-			if (layoutIterationLimit > 0)
-				layoutController.executeLayout(layoutIterationLimit);
-			else
-				layoutController.executeLayout();
-
-			getStatusBar().setBusyMessage(
-					"Setting layout to " + layout.getBuilder().getName(),
-					layoutController);
-		}
-	}
-
-	@Deprecated
-	public void setLayout2(String selectedLayout) {
-		if (setLayoutWorker != null) {
-			// make sure we stopped the previous layout worker
-			while (!setLayoutWorker.isDone()) {
-				setLayoutWorker.cancel(true);
-			}
-			setLayoutWorker = null;
-		}
-		setLayoutWorker = new SetLayoutWorker(selectedLayout, this);
-		setLayoutWorker.execute();
-	}
-
-	@Deprecated
-	public void setLayoutByName2(String selectedLayout) {
-		throw new NotImplementedException(
-				"This is no longer supported! Gephi Layouts are independent workers");
-	}
-
-	// public void setLayoutByName(String selectedLayout) {
-	//
-	// layoutType = selectedLayout;
-	// Layout<Vertex, Edge> newLayout = null;
-	// currentLayout = selectedLayout;
-	//
-	// if (selectedLayout.equalsIgnoreCase("arf")) {
-	// newLayout = new ARF2Layout<Vertex, Edge>(getNetwork(),
-	// ((BrowsableNetwork) getNetwork()).isIncremental(), layout);
-	// ((ARF2Layout<Vertex, Edge>) newLayout).setMaxUpdates(Integer.MAX_VALUE);
-	// if (((ARF2Layout<Vertex, Edge>) newLayout).getMaxUpdates() <
-	// getNetwork().getVertexCount())
-	// ((ARF2Layout<Vertex, Edge>)
-	// newLayout).setMaxUpdates(getNetwork().getVertexCount());
-	// }
-	// if (selectedLayout.equalsIgnoreCase("weighted-arf")) {
-	// newLayout = new WeightedARF2Layout<Vertex, Edge>(getNetwork(),
-	// ((BrowsableNetwork) getNetwork()).isIncremental(), layout);
-	// ((WeightedARF2Layout<Vertex, Edge>)
-	// newLayout).setMaxUpdates(Integer.MAX_VALUE);
-	// if (((WeightedARF2Layout<Vertex, Edge>) newLayout).getMaxUpdates() <
-	// getNetwork().getVertexCount())
-	// ((WeightedARF2Layout<Vertex, Edge>)
-	// newLayout).setMaxUpdates(getNetwork().getVertexCount());
-	// }
-	// if (selectedLayout.equalsIgnoreCase("SpringLayout")) {
-	// newLayout = new SpringLayout2<Vertex, Edge>(getNetwork());
-	// ((SpringLayout2<Vertex, Edge>) newLayout).setForceMultiplier(10);
-	// }
-	// if (selectedLayout.equalsIgnoreCase("kamada-kawai")) {
-	// newLayout = new KKLayout<Vertex, Edge>(getNetwork());
-	// ((KKLayout<Vertex, Edge>) newLayout).setExchangeVertices(false);
-	// ((KKLayout<Vertex, Edge>)
-	// newLayout).setDisconnectedDistanceMultiplier(3);
-	// ((KKLayout<Vertex, Edge>) newLayout).setLengthFactor(0.15);
-	// }
-	// if (selectedLayout.equalsIgnoreCase("fruchterman-reingold")) {
-	// newLayout = new FRLayout2<Vertex, Edge>(getNetwork());
-	// }
-	// if (selectedLayout.equalsIgnoreCase("iso-m")) {
-	// newLayout = new ISOMLayout<Vertex, Edge>(getNetwork());
-	// }
-	// if (selectedLayout.equalsIgnoreCase("circle"))
-	// newLayout = new CircleLayout<Vertex, Edge>(getNetwork());
-	// if (selectedLayout.equalsIgnoreCase("fixed"))
-	// newLayout = new FixedLayout<Vertex, Edge>(getNetwork(), layout);
-	// if (selectedLayout.equalsIgnoreCase("kcore"))
-	// newLayout = new KCoreLayout<Vertex, Edge>(getNetwork(), layout);
-	// if (selectedLayout.equalsIgnoreCase("weighted-kcore")) {
-	// double alpha = (Double) layoutParameters[0];
-	// double beta = (Double) layoutParameters[1];
-	// newLayout = new WeightedKCoreLayout<Vertex, Edge>(getNetwork(), layout,
-	// alpha, beta);
-	// }
-	// if (selectedLayout.equalsIgnoreCase("tree")) {
-	// BrowsableForestNetwork network = new
-	// BrowsableForestNetwork((BrowsableNetwork) getNetwork());
-	// setNetwork(network);
-	// newLayout = new TreeLayout<Vertex, Edge>(network);
-	// }
-	// if (selectedLayout.equalsIgnoreCase("radial-tree")) {
-	// BrowsableForestNetwork network = new
-	// BrowsableForestNetwork((BrowsableNetwork) getNetwork());
-	// setNetwork(network);
-	// newLayout = new RadialTreeLayout<Vertex, Edge>(network);
-	//
-	// }
-	//
-	// layout = newLayout;
-	// for (Vertex v : getNetwork().getVertices())
-	// if (v.isFixed())
-	// layout.lock(v, true);
-	//
-	// // centerGraph() requires double invocation
-	// // centerGraph();
-	// centerGraph();
-	// repaintViewer();
-	//
-	// for (Observer o : observers)
-	// o.update(this);
-	//
-	// }
 
 	/**
 	 * Getter for the graph mouse associated to the panel
@@ -705,7 +353,7 @@ public class NetworkPanel extends JPanel implements Subject, ItemListener,
 		return canvas;
 	}
 
-	private void errorPopup(String title, String message) {
+	public void errorPopup(String title, String message) {
 		JOptionPane.showMessageDialog(this, message, title,
 				JOptionPane.ERROR_MESSAGE);
 	}

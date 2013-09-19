@@ -166,7 +166,7 @@ public class Cuttlefish {
 	}
 
 	private static void loadSelectedLayout() {
-		LayoutLoader loader = new LayoutLoader();
+		LayoutLoader loader = LayoutLoader.getInstance();
 		String layoutName = opts.getOptionValue("layout", "fixed");
 		Layout layout = loader.getLayout(layoutName);
 

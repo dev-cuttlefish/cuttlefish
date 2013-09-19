@@ -31,6 +31,7 @@ import java.util.List;
 
 import javax.swing.JOptionPane;
 
+import ch.ethz.sg.cuttlefish.layout.LayoutLoader;
 import ch.ethz.sg.cuttlefish.misc.Observer;
 import ch.ethz.sg.cuttlefish.misc.Subject;
 
@@ -89,7 +90,12 @@ public class InteractiveCxfNetwork extends CxfNetwork implements ISimulation,
 	private void execute(Token token) {
 		if (token.type == null)
 			return;
-		if (token.type.equalsIgnoreCase("addNode")) {
+
+		if (token.type.equalsIgnoreCase("layout")) {
+			String layout = token.var1;
+			LayoutLoader.getInstance().setLayoutByName(layout);
+
+		} else if (token.type.equalsIgnoreCase("addNode")) {
 			if (hash.containsKey(token.id))
 				System.out
 						.println("WARNING: trying to add an existing node -- Use editNode");
@@ -267,8 +273,9 @@ public class InteractiveCxfNetwork extends CxfNetwork implements ISimulation,
 	}
 
 	/*
-	 * Unused: does not reset the network to the initial (pre-simulation) network
-	 * but rather creates an intersection of the simulation network states
+	 * Unused: does not reset the network to the initial (pre-simulation)
+	 * network but rather creates an intersection of the simulation network
+	 * states
 	 */
 	@SuppressWarnings("unused")
 	private void resetNetwork(File graphFile) {
