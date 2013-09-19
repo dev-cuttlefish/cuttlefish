@@ -35,6 +35,7 @@ import org.gephi.graph.api.MixedGraph;
 import org.gephi.graph.api.Node;
 import org.openide.util.Lookup;
 
+import ch.ethz.sg.cuttlefish.gui.visualization.Constants;
 import ch.ethz.sg.cuttlefish.misc.Pair;
 
 public class BrowsableNetwork implements Serializable {
@@ -64,7 +65,12 @@ public class BrowsableNetwork implements Serializable {
 	private Hashtable<String, String> arguments = new Hashtable<String, String>();
 	protected boolean networkLoaded = false;
 	private boolean incremental = false;
-	private boolean directed = false;
+
+	// Parameters required for rendering
+	protected boolean hideVertexLabels = false;
+	protected boolean hideEdgeLabels = false;
+	protected boolean directed = true;
+	protected String edgeShape = Constants.LINE_CURVED;
 
 	/**
 	 * When an existing network is opened, this field keeps track of its name to
@@ -432,10 +438,6 @@ public class BrowsableNetwork implements Serializable {
 
 	public void addEdge(Edge e) {
 		graph.addEdge(e.getInternalEdge());
-
-		if (e.isDirected()) {
-			this.directed = true;
-		}
 	}
 
 	public void addEdge(Vertex v1, Vertex v2) {
@@ -477,16 +479,28 @@ public class BrowsableNetwork implements Serializable {
 		return name;
 	}
 
-	public String getNetworkFileName() {		
+	public String getNetworkFileName() {
 		return networkFileName;
 	}
 
 	public void setNetworkFileName(String networkFileName) {
 		int ext = networkFileName.lastIndexOf('.');
-		
+
 		this.networkFileName = networkFileName.substring(0, ext);
 	}
+
+	public boolean hideVertexLabels() {
+		return hideVertexLabels;
+	}
+
+	public boolean hideEdgeLabels() {
+		return hideEdgeLabels;
+	}
 	
+	public String getEdgeShape() {
+		return edgeShape;
+	}
+
 	public void printNetwork() {
 
 		System.out.println("Nodes: " + getVertexCount());

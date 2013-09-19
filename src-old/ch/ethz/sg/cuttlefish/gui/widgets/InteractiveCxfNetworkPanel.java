@@ -109,9 +109,7 @@ public class InteractiveCxfNetworkPanel extends BrowserWidget {
 	}
 
 	@Override
-	public void init() {
-		// TODO Auto-generated method stub
-		
+	public void init() {		
 	}
 
 }

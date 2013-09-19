@@ -35,16 +35,20 @@ public class LabelRenderer {
 		if (HIDE_LABELS)
 			return;
 
-		for (Vertex v : renderer.getVertices()) {
-			if (!v.isExcluded() && v.getLabel() != null
-					&& !v.getLabel().isEmpty())
-				drawLabel(v);
+		if (!renderer.getNetwork().hideVertexLabels()) {
+			for (Vertex v : renderer.getVertices()) {
+				if (!v.isExcluded() && v.getLabel() != null
+						&& !v.getLabel().isEmpty())
+					drawLabel(v);
+			}
 		}
 
-		for (Edge e : renderer.getEdges()) {
-			if (!e.isExcluded() && e.getLabel() != null
-					&& !e.getLabel().isEmpty() && !e.isLoop())
-				drawLabel(e);
+		if (!renderer.getNetwork().hideEdgeLabels()) {
+			for (Edge e : renderer.getEdges()) {
+				if (!e.isExcluded() && e.getLabel() != null
+						&& !e.getLabel().isEmpty() && !e.isLoop())
+					drawLabel(e);
+			}
 		}
 	}
 
@@ -62,11 +66,9 @@ public class LabelRenderer {
 	}
 
 	private void drawLabel(Edge e) {
-		double lineWidth = e.getWidth();
-		if (EdgeRenderer.EDGE_WEIGHT_AS_WIDTH && e.getWeight() > lineWidth)
-			lineWidth = e.getWeight();
-
 		Point2D from, to;
+		double lineWidth = e.getWidth();
+
 		if (e.getSource().getPosition().getX() < e.getTarget().getPosition()
 				.getX()) {
 			from = e.getSource().getPosition();

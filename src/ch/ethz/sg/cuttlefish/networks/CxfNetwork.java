@@ -47,10 +47,7 @@ public class CxfNetwork extends BrowsableNetwork {
 	private static final long serialVersionUID = 1L;
 	FileReader fr;
 	BufferedReader br;
-	boolean directed = true;
-	private String edgeShape = Constants.LINE_CURVED;
-	private boolean hideVertexLabels = false;
-	private boolean hideEdgeLabels = false;
+
 	// By default CxfNetwork does not allow
 	// parallel edges
 	private boolean multiGraph = false;
@@ -105,15 +102,6 @@ public class CxfNetwork extends BrowsableNetwork {
 		load(graphFile);
 	}
 
-	/**
-	 * Empty the currently loaded network.
-	 * 
-	 * @param
-	 */
-	private void emptyNetwork() {
-		clearGraph();
-	}
-
 	public String getEdgeShape() {
 		return edgeShape;
 	}
@@ -152,10 +140,12 @@ public class CxfNetwork extends BrowsableNetwork {
 	protected boolean confirmFileFormatWarning(String warning,
 			String dialogTitle) {
 		System.out.println(warning);
+
 		int answer = JOptionPane.showConfirmDialog(null, warning, dialogTitle,
 				2, JOptionPane.WARNING_MESSAGE);
+
 		if (answer == JOptionPane.CANCEL_OPTION) {
-			emptyNetwork();
+			clearGraph();
 			return false;
 		}
 		return true;
@@ -178,7 +168,7 @@ public class CxfNetwork extends BrowsableNetwork {
 		line = null;
 
 		// First, empty the network
-		emptyNetwork();
+		clearGraph();
 
 		br = new BufferedReader(new FileReader(graphFile));
 		Token token;
@@ -306,7 +296,6 @@ public class CxfNetwork extends BrowsableNetwork {
 			else if (field.toLowerCase().contains("options"))
 				token = parseOptions(token, field.toLowerCase(), it);
 
-			// TODO ilias: add logic to hide labels, etc
 			else if (lineFields.get(0).equalsIgnoreCase("configuration:")) {
 				while (it.hasNext()) {
 					field = it.next();
@@ -324,7 +313,7 @@ public class CxfNetwork extends BrowsableNetwork {
 						JOptionPane.showMessageDialog(null,
 								"Unkown configuration line " + token.line,
 								"cxf error", JOptionPane.WARNING_MESSAGE);
-						System.out.println("Unkown field configuration line"
+						System.out.println("Unknown field configuration line"
 								+ token.line);
 					}
 				}

@@ -15,14 +15,14 @@ public abstract class ShapeRenderer {
 	protected double scaleFactor = 1;
 	protected double panX = 0;
 	protected double panY = 0;
-	protected NetworkRenderer networkRenderer;
+	protected NetworkRenderer renderer;
 
 	private Map<String, Integer> displayList;
 
 	public ShapeRenderer(GLAutoDrawable drawable,
 			NetworkRenderer networkRenderer) {
 		this.drawable = drawable;
-		this.networkRenderer = networkRenderer;
+		this.renderer = networkRenderer;
 		gl = drawable.getGL().getGL2();
 
 		displayList = new HashMap<String, Integer>();
