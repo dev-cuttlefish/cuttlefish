@@ -316,20 +316,20 @@ public class CxfNetwork extends BrowsableNetwork {
 						JOptionPane.showMessageDialog(null,
 								"Unknown configuration line " + token.line,
 								"cxf error", JOptionPane.WARNING_MESSAGE);
-						System.out.println("Unknown field configuration line"
+						System.out.println("Unknown field configuration line "
 								+ token.line);
 					}
 				}
 				token.type = "configuration";
 
-			} else if (field.toLowerCase().contains("layout")) {
+			} else if (lineFields.get(0).equalsIgnoreCase("layout:")) {
 				token = parseLayout(token, field.toLowerCase(), it);
 
 			} else if ((!lineFields.isEmpty()) && (!token.freeze)
 					&& (!token.commit)) {
 				JOptionPane.showMessageDialog(null, "Unknown object in line "
 						+ token.line, "cxf error", JOptionPane.WARNING_MESSAGE);
-				System.out.println("Unkown object in line" + token.line);
+				System.out.println("Unkown object in line " + token.line);
 			}
 
 		} catch (IOException ioEx) {
@@ -411,14 +411,32 @@ public class CxfNetwork extends BrowsableNetwork {
 		return token;
 	}
 
+	// TODO ilias: remove
+	public boolean USE_PARAMS = false;
+
 	private Token parseLayout(Token token, String preField, Iterator<String> it) {
 		int i = preField.indexOf(":");
-		token.type = preField.substring(0, i);
+		token.type = preField.substring(0, i); // type: layout
+		token.var1 = it.next(); // var1: layout name
 
-		// while (it.hasNext()) {
-		// String field = it.next();
-		// System.out.println(field);
-		// }
+		if (USE_PARAMS) {
+			if (it.hasNext() && token.params == null) {
+				token.params = new HashMap<String, String>();
+			}
+
+			// arguments list
+			// arg{val}
+			while (it.hasNext()) {
+				String field = it.next();
+				int l = field.indexOf("{");
+				int r = field.indexOf("}");
+
+				String arg = field.substring(0, l);
+				String val = field.substring(l + 1, r);
+
+				token.params.put(arg, val);
+			}
+		}
 
 		return token;
 	}

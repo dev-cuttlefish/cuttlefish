@@ -65,7 +65,7 @@ public class FixedLayout implements Layout {
 
 	@Override
 	public void endAlgo() {
-
+		finished = true;
 	}
 
 	@Override

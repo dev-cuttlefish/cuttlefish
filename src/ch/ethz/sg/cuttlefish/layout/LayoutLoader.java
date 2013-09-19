@@ -184,8 +184,9 @@ public class LayoutLoader {
 		try {
 			newLayout = getLayout(selectedLayout);
 		} catch (Exception e) {
-			networkPanel.errorPopup(selectedLayout + " Layout error",
-					e.getLocalizedMessage());
+			// networkPanel.errorPopup(selectedLayout + " Layout error",
+			// e.getLocalizedMessage());
+			e.printStackTrace();
 			return;
 		}
 
@@ -220,6 +221,10 @@ public class LayoutLoader {
 			layoutIterationLimit = 700;
 
 		}
+		// else if (newLayout instanceof ForceAtlas2) {
+		// double tolerance = 0.00001;
+		// ((ForceAtlas2) newLayout).setJitterTolerance(tolerance);
+		// }
 
 		// TODO ilias: check that fixed vertices remain fixed during layout
 		layoutName = selectedLayout;
@@ -228,6 +233,14 @@ public class LayoutLoader {
 
 	public void resetLayout() {
 		setLayoutByName(layoutName);
+	}
+
+	public void stopLayout() {
+		LayoutController layoutController = Lookup.getDefault().lookup(
+				LayoutController.class);
+
+		if (layoutController.canStop())
+			layoutController.stopLayout();
 	}
 
 	public Layout getSelectedLayout() {
@@ -242,7 +255,9 @@ public class LayoutLoader {
 				LayoutController.class);
 
 		// configure layout parameters & execution
-		layoutController.stopLayout();
+		if (layoutController.canStop())
+			layoutController.stopLayout();
+
 		layoutController.setLayout(layout);
 
 		if (!networkPanel.getNetwork().isEmpty()

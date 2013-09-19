@@ -228,8 +228,9 @@ public class NetworkRenderer implements GLEventListener {
 			this.animateLabels = animateLabels;
 
 		} else {
-			if (animator.isAnimating() && !animationAlreadyActive)
+			if (animator.isAnimating() && !animationAlreadyActive) {
 				animator.stop();
+			}
 
 			this.animateLabels = true;
 			animationAlreadyActive = false;

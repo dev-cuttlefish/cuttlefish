@@ -375,10 +375,8 @@ public class InteractiveCxfNetwork extends CxfNetwork implements ISimulation,
 
 	@Override
 	public boolean update(long passedTime) {
-
 		if (!done) {
 			Token token = instructionTokens.get(instructionIndex);
-
 			if (token.freeze) {
 				execute(token);
 				instructionIndex++;

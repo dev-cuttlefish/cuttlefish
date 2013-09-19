@@ -36,9 +36,7 @@ import javax.media.opengl.awt.GLCanvas;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-import org.gephi.layout.api.LayoutController;
 import org.gephi.layout.spi.Layout;
-import org.openide.util.Lookup;
 import org.openide.util.NotImplementedException;
 
 import ch.ethz.sg.cuttlefish.Cuttlefish;
@@ -65,7 +63,7 @@ public class NetworkPanel extends JPanel implements Subject, ItemListener,
 
 	private BrowsableNetwork network = null;
 	private String currentLayout = null;
-	private String layoutType = null;
+	// private String layoutType = null;
 	private List<Observer> observers = null;
 	private StatusBar statusBar = null;
 	private int width;
@@ -234,18 +232,13 @@ public class NetworkPanel extends JPanel implements Subject, ItemListener,
 		}
 		resumeLayout();
 
-		Cuttlefish.debug(this, "onNetworkChange");
+		//Cuttlefish.debug(this, "onNetworkChange");
 	}
 
 	@Override
 	public void stopLayout() {
 		// TODO ilias: lock all nodes if fixed here!
-
-		LayoutController layoutController = Lookup.getDefault().lookup(
-				LayoutController.class);
-
-		if (layoutController.canStop())
-			layoutController.stopLayout();
+		layoutLoader.stopLayout();
 	}
 
 	public void centerLayout() {
@@ -260,8 +253,9 @@ public class NetworkPanel extends JPanel implements Subject, ItemListener,
 	@Override
 	public void resumeLayout() {
 
-		if (layoutType != null && !layoutType.isEmpty())
-			setLayoutByName(layoutType);
+		// if (layoutType != null && !layoutType.isEmpty())
+		// setLayoutByName(layoutType);
+		layoutLoader.resetLayout();
 
 		// TODO ilias: lock all nodes if fixed here!
 		// boolean fixed = getNetworkLayout() instanceof FixedLayout;
@@ -275,7 +269,6 @@ public class NetworkPanel extends JPanel implements Subject, ItemListener,
 	@Override
 	public void setLayoutByName(String selectedLayout) {
 		layoutLoader.setLayoutByName(selectedLayout);
-		layoutType = selectedLayout;
 
 		for (Observer o : observers)
 			o.update(this);
