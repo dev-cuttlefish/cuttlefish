@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.StringTokenizer;
 
 import javax.swing.JOptionPane;
@@ -81,6 +82,8 @@ public class CxfNetwork extends BrowsableNetwork {
 		boolean isRoot = false;
 		boolean freeze = false;
 		boolean commit = false;
+
+		Map<String, String> params = null;
 	}
 
 	ArrayList<Token> instructionTokens = null;
@@ -311,16 +314,20 @@ public class CxfNetwork extends BrowsableNetwork {
 						multiGraph = true;
 					else {
 						JOptionPane.showMessageDialog(null,
-								"Unkown configuration line " + token.line,
+								"Unknown configuration line " + token.line,
 								"cxf error", JOptionPane.WARNING_MESSAGE);
 						System.out.println("Unknown field configuration line"
 								+ token.line);
 					}
 				}
 				token.type = "configuration";
+
+			} else if (field.toLowerCase().contains("layout")) {
+				token = parseLayout(token, field.toLowerCase(), it);
+
 			} else if ((!lineFields.isEmpty()) && (!token.freeze)
 					&& (!token.commit)) {
-				JOptionPane.showMessageDialog(null, "Unkown object in line "
+				JOptionPane.showMessageDialog(null, "Unknown object in line "
 						+ token.line, "cxf error", JOptionPane.WARNING_MESSAGE);
 				System.out.println("Unkown object in line" + token.line);
 			}
@@ -376,7 +383,8 @@ public class CxfNetwork extends BrowsableNetwork {
 						|| lineLc.startsWith("removenode")
 						|| lineLc.startsWith("removeedge")
 						|| lineLc.startsWith("editnode")
-						|| lineLc.startsWith("editedge") || lineLc
+						|| lineLc.startsWith("editedge")
+						|| lineLc.startsWith("layout") || lineLc
 							.startsWith("["));
 	}
 
@@ -403,9 +411,20 @@ public class CxfNetwork extends BrowsableNetwork {
 		return token;
 	}
 
+	private Token parseLayout(Token token, String preField, Iterator<String> it) {
+		int i = preField.indexOf(":");
+		token.type = preField.substring(0, i);
+
+		// while (it.hasNext()) {
+		// String field = it.next();
+		// System.out.println(field);
+		// }
+
+		return token;
+	}
+
 	private Token parseNode(Token t, String preField, Iterator<String> it) {
 		String field = null;
-		;
 		Token token = t;
 		token.type = preField.substring(0, preField.indexOf(":"));
 		float R, G, B;

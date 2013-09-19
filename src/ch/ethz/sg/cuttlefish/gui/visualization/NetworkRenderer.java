@@ -97,7 +97,6 @@ public class NetworkRenderer implements GLEventListener {
 		this.canvas = new GLCanvas(getCaps());
 		this.drawable = canvas;
 		this.animator = new FPSAnimator(drawable, ANIMATION_FPS);
-		this.animator.setPrintExceptions(true); // disables debug messages
 	}
 
 	/*
@@ -162,7 +161,7 @@ public class NetworkRenderer implements GLEventListener {
 	public void display(GLAutoDrawable drawable) {
 		GL2 gl = drawable.getGL().getGL2();
 		this.drawable = drawable;
-		
+
 		// Apply transformations
 		double transx = -origin.getX(), transy = -origin.getY();
 

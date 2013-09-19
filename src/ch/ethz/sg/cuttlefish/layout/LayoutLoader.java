@@ -11,6 +11,7 @@ import org.gephi.layout.api.LayoutController;
 import org.gephi.layout.api.LayoutModel;
 import org.gephi.layout.plugin.force.yifanHu.YifanHu;
 import org.gephi.layout.plugin.forceAtlas2.ForceAtlas2Builder;
+import org.gephi.layout.plugin.fruchterman.FruchtermanReingold;
 import org.gephi.layout.plugin.fruchterman.FruchtermanReingoldBuilder;
 import org.gephi.layout.spi.Layout;
 import org.gephi.layout.spi.LayoutBuilder;
@@ -18,12 +19,15 @@ import org.openide.util.Lookup;
 import org.openide.util.NotImplementedException;
 
 import ch.ethz.sg.cuttlefish.gui.NetworkPanel;
+import ch.ethz.sg.cuttlefish.layout.arf.ARFLayout;
 import ch.ethz.sg.cuttlefish.layout.arf.ARFLayoutBuilder;
+import ch.ethz.sg.cuttlefish.layout.arf.WeightedARFLayout;
 import ch.ethz.sg.cuttlefish.layout.arf.WeightedARFLayoutBuilder;
 import ch.ethz.sg.cuttlefish.layout.circle.CircleLayoutBuilder;
 import ch.ethz.sg.cuttlefish.layout.fixed.FixedLayout;
 import ch.ethz.sg.cuttlefish.layout.fixed.FixedLayoutBuilder;
 import ch.ethz.sg.cuttlefish.layout.kcore.KCoreLayoutBuilder;
+import ch.ethz.sg.cuttlefish.layout.kcore.WeightedKCoreLayout;
 import ch.ethz.sg.cuttlefish.layout.kcore.WeightedKCoreLayoutBuilder;
 import ch.ethz.sg.cuttlefish.networks.BrowsableNetwork;
 import ch.ethz.sg.cuttlefish.networks.Vertex;
@@ -32,10 +36,12 @@ public class LayoutLoader {
 
 	// Static fields and methods
 
-	private static final String DEFAULT = "fixed";
+	public static final String DEFAULT_LAYOUT = "arf";
 	private static final Map<String, Class<? extends LayoutBuilder>> builders;
 	private static final Map<String, Class<? extends LayoutBuilder>> unsupported;
 	private static final Map<String, String> abbreviations;
+
+	private static LayoutLoader instance = null;
 
 	static {
 		builders = new TreeMap<String, Class<? extends LayoutBuilder>>();
@@ -75,11 +81,23 @@ public class LayoutLoader {
 		abbreviations.put("ForceAtlas 2", "force-atlas");
 	}
 
+	public static LayoutLoader getInstance() {
+		return getInstance(null);
+	}
+
+	public static LayoutLoader getInstance(NetworkPanel panel) {
+		if (instance == null) {
+			instance = new LayoutLoader(panel);
+		}
+
+		return instance;
+	}
+
 	public static String getKeyList() {
 		StringBuilder sb = new StringBuilder();
 
 		for (String layout : builders.keySet()) {
-			if (layout.equalsIgnoreCase(DEFAULT)) {
+			if (layout.equalsIgnoreCase(DEFAULT_LAYOUT)) {
 				layout = layout + "(default)";
 			}
 			sb.append(layout).append(", ");
@@ -93,13 +111,13 @@ public class LayoutLoader {
 	private LayoutModel layoutModel = null;
 	private NetworkPanel networkPanel = null;
 
-	public LayoutLoader() {
-		this(null);
-	}
-
+	private final boolean LIMIT_LAYOUT_ITERATIONS = false;
+	private int layoutIterationLimit = 0;
 	private long layoutTime = 0;
+	private Object[] layoutParameters = new Object[2];
+	private String layoutName = null;
 
-	public LayoutLoader(NetworkPanel panel) {
+	private LayoutLoader(NetworkPanel panel) {
 		networkPanel = panel;
 		layoutModel = Lookup.getDefault().lookup(LayoutController.class)
 				.getModel();
@@ -152,9 +170,6 @@ public class LayoutLoader {
 
 							layoutTime = System.currentTimeMillis()
 									- layoutTime;
-
-							// Cuttlefish.debug(this, "# Layout computed in "
-							// + (layoutTime / 1000.0) + "s.");
 						}
 					}
 				}
@@ -163,10 +178,90 @@ public class LayoutLoader {
 
 	}
 
-	private boolean shouldNormalize() {
-		boolean isFixed = layoutModel.getSelectedLayout() instanceof FixedLayout;
+	public void setLayoutByName(String selectedLayout) {
+		Layout newLayout = null;
 
-		return !isFixed;
+		try {
+			newLayout = getLayout(selectedLayout);
+		} catch (Exception e) {
+			networkPanel.errorPopup(selectedLayout + " Layout error",
+					e.getLocalizedMessage());
+			return;
+		}
+
+		if (newLayout == null) {
+			throw new RuntimeException("Unknown layout: " + selectedLayout);
+		}
+
+		layoutIterationLimit = 0;
+		if (LIMIT_LAYOUT_ITERATIONS)
+			layoutIterationLimit = networkPanel.getNetwork().getVertexCount();
+
+		if (newLayout instanceof ARFLayout) {
+			ARFLayout arf = (ARFLayout) newLayout;
+			arf.setIncremental(((BrowsableNetwork) networkPanel.getNetwork())
+					.isIncremental());
+			arf.keepInitialPostitions(true);
+
+		} else if (newLayout instanceof WeightedARFLayout) {
+			WeightedARFLayout weightedArf = (WeightedARFLayout) newLayout;
+			weightedArf.setIncremental(((BrowsableNetwork) networkPanel
+					.getNetwork()).isIncremental());
+			weightedArf.keepInitialPostitions(true);
+
+		} else if (newLayout instanceof WeightedKCoreLayout) {
+			double alpha = (Double) layoutParameters[0];
+			double beta = (Double) layoutParameters[1];
+
+			((WeightedKCoreLayout) newLayout).setAlpha(alpha);
+			((WeightedKCoreLayout) newLayout).setBeta(beta);
+
+		} else if (newLayout instanceof FruchtermanReingold) {
+			layoutIterationLimit = 700;
+
+		}
+
+		// TODO ilias: check that fixed vertices remain fixed during layout
+		layoutName = selectedLayout;
+		setLayout(newLayout);
+	}
+
+	public void resetLayout() {
+		setLayoutByName(layoutName);
+	}
+
+	public Layout getSelectedLayout() {
+		LayoutController layoutController = Lookup.getDefault().lookup(
+				LayoutController.class);
+
+		return layoutController.getModel().getSelectedLayout();
+	}
+
+	private void setLayout(Layout layout) {
+		LayoutController layoutController = Lookup.getDefault().lookup(
+				LayoutController.class);
+
+		// configure layout parameters & execution
+		layoutController.stopLayout();
+		layoutController.setLayout(layout);
+
+		if (!networkPanel.getNetwork().isEmpty()
+				&& layoutController.canExecute()) {
+			if (layoutIterationLimit > 0)
+				layoutController.executeLayout(layoutIterationLimit);
+			else
+				layoutController.executeLayout();
+
+			networkPanel.getStatusBar().setBusyMessage(
+					"Setting layout to " + layout.getBuilder().getName(),
+					layoutController);
+		}
+	}
+
+	public void setLayoutParameters(Object[] parameters) {
+		for (int i = 0; i < parameters.length; ++i) {
+			layoutParameters[i] = parameters[i];
+		}
 	}
 
 	public Layout getLayout(String name) {
@@ -229,6 +324,12 @@ public class LayoutLoader {
 		}
 
 		return normBounds;
+	}
+
+	private boolean shouldNormalize() {
+		boolean isFixed = layoutModel.getSelectedLayout() instanceof FixedLayout;
+
+		return !isFixed;
 	}
 
 }
