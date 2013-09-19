@@ -19,6 +19,7 @@ import ch.ethz.sg.cuttlefish.gui.visualization.mouse.GraphMouse;
 import ch.ethz.sg.cuttlefish.gui.visualization.renderers.EdgeRenderer;
 import ch.ethz.sg.cuttlefish.gui.visualization.renderers.LabelRenderer;
 import ch.ethz.sg.cuttlefish.gui.visualization.renderers.VertexRenderer;
+import ch.ethz.sg.cuttlefish.networks.BrowsableNetwork;
 import ch.ethz.sg.cuttlefish.networks.Edge;
 import ch.ethz.sg.cuttlefish.networks.Vertex;
 
@@ -161,7 +162,7 @@ public class NetworkRenderer implements GLEventListener {
 	public void display(GLAutoDrawable drawable) {
 		GL2 gl = drawable.getGL().getGL2();
 		this.drawable = drawable;
-
+		
 		// Apply transformations
 		double transx = -origin.getX(), transy = -origin.getY();
 
@@ -215,6 +216,7 @@ public class NetworkRenderer implements GLEventListener {
 	 *            always displays labels.
 	 */
 	private boolean animationAlreadyActive = false;
+
 	public void animate(boolean enable, boolean animateLabels) {
 		if (animator == null || drawable == null)
 			return;
@@ -344,6 +346,10 @@ public class NetworkRenderer implements GLEventListener {
 
 	public Collection<Edge> getEdges() {
 		return networkPanel.getNetwork().getEdges();
+	}
+
+	public BrowsableNetwork getNetwork() {
+		return networkPanel.getNetwork();
 	}
 
 	public GLCanvas getCanvas() {

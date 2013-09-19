@@ -18,12 +18,8 @@ public class EdgeRenderer extends ShapeRenderer {
 	private final int DLIST_LOOP;
 	private final int DLIST_ARROW;
 
-	public static boolean EDGE_WEIGHT_AS_WIDTH = false;
 	public final static Point2D QUADCURVE_CTRL_POINT = new Point2D.Double(0.5,
 			40);
-
-	// TODO ilias: used for debugging: remove
-	private final static boolean OVERRIDE_DIRECTED = true;
 
 	private Point2D incompFrom, incompTo;
 
@@ -88,14 +84,11 @@ public class EdgeRenderer extends ShapeRenderer {
 	@Override
 	public void render() {
 
-		for (Edge edge : networkRenderer.getEdges()) {
+		for (Edge edge : renderer.getEdges()) {
 			if (edge.isExcluded())
 				continue;
 
 			float lineWidth = (float) edge.getWidth();
-			if (EDGE_WEIGHT_AS_WIDTH && edge.getWeight() > lineWidth)
-				lineWidth = (float) edge.getWeight();
-
 			float[] color = edge.getColor().getColorComponents(null);
 			gl.glColor3f(color[0], color[1], color[2]);
 			gl.glLineWidth(lineWidth);
@@ -103,7 +96,8 @@ public class EdgeRenderer extends ShapeRenderer {
 			if (edge.isLoop())
 				drawLoop(edge);
 
-			else if (edge.isCurved())
+			else if (renderer.getNetwork().getEdgeShape()
+					.equalsIgnoreCase(Constants.LINE_CURVED))
 				drawCurve(edge);
 
 			else
@@ -144,7 +138,7 @@ public class EdgeRenderer extends ShapeRenderer {
 			y = c1y + (c2y - c1y) * t;
 			gl.glVertex2d(x, y);
 
-			if (e.isDirected() || OVERRIDE_DIRECTED) {
+			if (renderer.getNetwork().isDirected()) {
 				// store the point to direct the arrow
 				if (0.495 < t && t < 0.505)
 					c.setLocation(x, y);
@@ -158,7 +152,7 @@ public class EdgeRenderer extends ShapeRenderer {
 		}
 		gl.glEnd();
 
-		if (e.isDirected() || OVERRIDE_DIRECTED) {
+		if (renderer.getNetwork().isDirected()) {
 			// draw arrow
 			Point2D b = new Point2D.Double(x, y);
 			double arrowAngle = Utilities.calculateAngle(c, b);
@@ -185,7 +179,7 @@ public class EdgeRenderer extends ShapeRenderer {
 		gl.glCallList(DLIST_LINE);
 		gl.glPopMatrix();
 
-		if (e.isDirected() || OVERRIDE_DIRECTED) {
+		if (renderer.getNetwork().isDirected()) {
 			// draw arrow on line
 			Point2D b = Utilities.getBorderPoint(e.getTarget(), from,
 					scaleFactor);
@@ -239,7 +233,7 @@ public class EdgeRenderer extends ShapeRenderer {
 		gl.glCallList(DLIST_LOOP);
 		gl.glPopMatrix();
 
-		if (e.isDirected() || OVERRIDE_DIRECTED) {
+		if (renderer.getNetwork().isDirected()) {
 			// TODO: draw arrow on loop?
 		}
 	}

@@ -17,7 +17,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  
-*/
+ */
 
 package ch.ethz.sg.cuttlefish.networks;
 
@@ -34,8 +34,9 @@ import javax.swing.JOptionPane;
 import ch.ethz.sg.cuttlefish.misc.Observer;
 import ch.ethz.sg.cuttlefish.misc.Subject;
 
-public class InteractiveCxfNetwork extends CxfNetwork implements ISimulation, Subject {
-	
+public class InteractiveCxfNetwork extends CxfNetwork implements ISimulation,
+		Subject {
+
 	boolean done;
 	private static final long serialVersionUID = 1L;
 	private ArrayList<Observer> observers;
@@ -43,174 +44,175 @@ public class InteractiveCxfNetwork extends CxfNetwork implements ISimulation, Su
 	private int currentSleepTime = 0;
 	private int currentMaxStepUpdates = 50;
 
-	public InteractiveCxfNetwork(){
+	public InteractiveCxfNetwork() {
 		super();
 		observers = new ArrayList<Observer>();
 		setIncremental(true);
 	}
-	
+
 	public InteractiveCxfNetwork(File graphFile) throws FileNotFoundException {
 		load(graphFile);
 		setIncremental(true);
 		done = false;
 	}
-	
-	public void loadInstructions(File instructionsFile)
-	{
+
+	public void loadInstructions(File instructionsFile) {
 		setIncremental(true);
 		try {
 			fr = new FileReader(instructionsFile);
 		} catch (FileNotFoundException fnfEx) {
-			JOptionPane.showMessageDialog(null,fnfEx.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(null, fnfEx.getMessage(), "Error",
+					JOptionPane.ERROR_MESSAGE);
 			System.err.println("cxf network file not found");
 			fnfEx.printStackTrace();
 		}
-		
+
 		br = new BufferedReader(fr);
-	
+
 		Token token;
 		instructionTokens = new ArrayList<Token>();
-		
+
 		while ((token = getNextToken()) != null)
 			instructionTokens.add(token);
-		
+
 		return;
 	}
-	
+
 	public int getCurrentSleepTime() {
 		return currentSleepTime;
 	}
+
 	public int getCurrentMaxStepUpdates() {
 		return currentMaxStepUpdates;
 	}
 
-	
-	private void execute(Token token)
-	{
+	private void execute(Token token) {
 		if (token.type == null)
 			return;
-		if (token.type.equalsIgnoreCase("addNode"))
-		{
+		if (token.type.equalsIgnoreCase("addNode")) {
 			if (hash.containsKey(token.id))
-				System.out.println("WARNING: trying to add an existing node -- Use editNode");
-			else
-			{
+				System.out
+						.println("WARNING: trying to add an existing node -- Use editNode");
+			else {
 				Vertex v = createVertex(token);
 				hash.put(token.id, v);
 				addVertex(v);
 			}
-		}
-		else if (token.type.equalsIgnoreCase("removeNode"))
-		{
-			if (hash.containsKey(token.id))
-			{
+		} else if (token.type.equalsIgnoreCase("removeNode")) {
+			if (hash.containsKey(token.id)) {
 				Vertex v = hash.get(token.id);
-				
-				if (directed)
-				{
+
+				if (directed) {
 					for (Edge e : getOutEdges(v))
 						removeEdge(e);
 					for (Edge e : getInEdges(v))
 						removeEdge(e);
-				}
-				else
+				} else
 					for (Edge e : getIncidentEdges(v))
 						removeEdge(e);
 				removeVertex(v);
 				hash.remove(token.id);
 			}
-				
-		}
-		else if (token.type.equalsIgnoreCase("editNode"))
-		{
-			if (hash.containsKey(token.id))
-			{
+
+		} else if (token.type.equalsIgnoreCase("editNode")) {
+			if (hash.containsKey(token.id)) {
 				Vertex v = hash.get(token.id);
-				editVertex(v,token);
+				editVertex(v, token);
+			} else {
+				JOptionPane.showMessageDialog(null,
+						"Editing an inexistent node --- use addNode",
+						"Warning", JOptionPane.WARNING_MESSAGE);
+				System.out
+						.println("WARNING: editing an inexistent node --- use addNode");
 			}
-			else
-			{
-				JOptionPane.showMessageDialog(null,"Editing an inexistent node --- use addNode","Warning",JOptionPane.WARNING_MESSAGE);
-				System.out.println("WARNING: editing an inexistent node --- use addNode");
-			}
-			
-		}
-		else if (token.type.equalsIgnoreCase("addEdge"))
-		{
-			if (hash.containsKey(token.id_source) && hash.containsKey(token.id_dest))
-			{
+
+		} else if (token.type.equalsIgnoreCase("addEdge")) {
+			if (hash.containsKey(token.id_source)
+					&& hash.containsKey(token.id_dest)) {
 				Vertex vSource = hash.get(token.id_source);
 				Vertex vDest = hash.get(token.id_dest);
 				if (findEdge(vSource, vDest) != null)
-					System.out.println("WARNING: the edge ("+token.id_source +
-							","+token.id_dest +") already existed -- use editEdge");
+					System.out.println("WARNING: the edge (" + token.id_source
+							+ "," + token.id_dest
+							+ ") already existed -- use editEdge");
 				Edge e = createEdge(token);
 				addEdge(e);
+			} else if (!token.commit && !token.freeze) {
+				JOptionPane.showMessageDialog(null,
+						"One of the endpoints of the added edge ("
+								+ token.id_source + "," + token.id_dest
+								+ ") does not exist", "Warning",
+						JOptionPane.WARNING_MESSAGE);
+				System.out
+						.println("WARNING: one of the endpoints of the added edge ("
+								+ token.id_source
+								+ ","
+								+ token.id_dest
+								+ ") does not exist");
 			}
-			else if (!token.commit && !token.freeze)
-			{
-				JOptionPane.showMessageDialog(null,"One of the endpoints of the added edge ("+token.id_source +
-						","+token.id_dest +") does not exist","Warning",JOptionPane.WARNING_MESSAGE);
-				System.out.println("WARNING: one of the endpoints of the added edge ("+token.id_source +
-						","+token.id_dest +") does not exist");
-			}
-		}
-		else if (token.type.equalsIgnoreCase("removeEdge"))
-		{
-			if (hash.containsKey(token.id_source) && hash.containsKey(token.id_dest))
-			{
+		} else if (token.type.equalsIgnoreCase("removeEdge")) {
+			if (hash.containsKey(token.id_source)
+					&& hash.containsKey(token.id_dest)) {
 				Vertex vSource = hash.get(token.id_source);
 				Vertex vDest = hash.get(token.id_dest);
 				Edge e;
 				if ((e = findEdge(vSource, vDest)) != null)
 					removeEdge(e);
+			} else {
+				JOptionPane.showMessageDialog(null,
+						"One of the endpoints of the added edge ("
+								+ token.id_source + "," + token.id_dest
+								+ ") does not exist", "Warning",
+						JOptionPane.WARNING_MESSAGE);
+				System.out
+						.println("WARNING: one of the endpoints of the added edge ("
+								+ token.id_source
+								+ ","
+								+ token.id_dest
+								+ ") does not exist");
 			}
-			else
-			{
-				JOptionPane.showMessageDialog(null,"One of the endpoints of the added edge ("+token.id_source +
-						","+token.id_dest +") does not exist","Warning",JOptionPane.WARNING_MESSAGE);
-				System.out.println("WARNING: one of the endpoints of the added edge ("+token.id_source +
-						","+token.id_dest +") does not exist");
-			}
-		}
-		else if (token.type.equalsIgnoreCase("editEdge"))
-		{
-			if (hash.containsKey(token.id_source) && hash.containsKey(token.id_dest))
-			{
+		} else if (token.type.equalsIgnoreCase("editEdge")) {
+			if (hash.containsKey(token.id_source)
+					&& hash.containsKey(token.id_dest)) {
 				Vertex vSource = hash.get(token.id_source);
 				Vertex vDest = hash.get(token.id_dest);
 				Edge e;
 				if ((e = findEdge(vSource, vDest)) != null)
-					editEdge(e,token);
+					editEdge(e, token);
 				else
-					System.out.println("WARNING: the edited edge ("+token.id_source +
-							","+token.id_dest +") didn't exist -- use addEdge");
-			}
-			else
-			{
-				JOptionPane.showMessageDialog(null,"One of the endpoints of the added edge ("+token.id_source +
-						","+token.id_dest +") does not exist","Warning",JOptionPane.WARNING_MESSAGE);
-				System.out.println("WARNING: one of the endpoints of the added edge ("+token.id_source +
-						","+token.id_dest +") does not exist");
+					System.out.println("WARNING: the edited edge ("
+							+ token.id_source + "," + token.id_dest
+							+ ") didn't exist -- use addEdge");
+			} else {
+				JOptionPane.showMessageDialog(null,
+						"One of the endpoints of the added edge ("
+								+ token.id_source + "," + token.id_dest
+								+ ") does not exist", "Warning",
+						JOptionPane.WARNING_MESSAGE);
+				System.out
+						.println("WARNING: one of the endpoints of the added edge ("
+								+ token.id_source
+								+ ","
+								+ token.id_dest
+								+ ") does not exist");
 			}
 
-		}
-		else if (token.type.equalsIgnoreCase("options")) {
+		} else if (token.type.equalsIgnoreCase("options")) {
 			System.out.println("Changing frame label to " + token.label);
 			currentLabel = token.label;
 			currentSleepTime = token.sleepTime;
 			currentMaxStepUpdates = token.maxUpdateSteps;
-			for(Observer o : observers)
+			for (Observer o : observers)
 				o.update(this);
-		}		
+		}
 		return;
 	}
-	
+
 	public String getCurrentLabel() {
 		return currentLabel;
 	}
-	
-	private void editVertex(Vertex v, Token token){
+
+	private void editVertex(Vertex v, Token token) {
 		if (token.label != null)
 			v.setLabel(token.label);
 		if (token.size != null)
@@ -232,8 +234,8 @@ public class InteractiveCxfNetwork extends CxfNetwork implements ISimulation, Su
 		v.setExcluded(token.hide);
 		return;
 	}
-	
-	private void editEdge(Edge e, Token token){
+
+	private void editEdge(Edge e, Token token) {
 		if (token.weight != null)
 			e.setWeight(token.weight);
 		if (token.label != null)
@@ -249,31 +251,39 @@ public class InteractiveCxfNetwork extends CxfNetwork implements ISimulation, Su
 		e.setExcluded(token.hide);
 		return;
 	}
-	
+
 	@Override
 	public void reset() {
 		instructionIndex = 0;
-		resetNetwork(graphFile);
 		currentLabel = "";
-		for(Observer o : observers)
+
+		reload();
+		// resetNetwork(graphFile);
+
+		for (Observer o : observers)
 			o.update(this);
+
 		done = false;
 	}
-	
-	private void resetNetwork(File graphFile) {		
+
+	/*
+	 * Unused: does not reset the network to the initial (pre-simulation) network
+	 * but rather creates an intersection of the simulation network states
+	 */
+	@SuppressWarnings("unused")
+	private void resetNetwork(File graphFile) {
 		try {
 			br = new BufferedReader(new FileReader(graphFile));
-			Token token;
 			ArrayList<Token> edgeTokens = new ArrayList<Token>();
-			while ((token = getNextToken()) != null)
-			{
-				if (token.type.toLowerCase().contains("node"))
-				{
+			Token token;
+
+			while ((token = getNextToken()) != null) {
+				if (token.type.toLowerCase().contains("node")) {
 					Vertex v = createVertex(token);
-			
-					if (hash.get(v.getId()) != null)
-					{
-						// the node is already in the network, reset the attributes to the
+
+					if (hash.get(v.getId()) != null) {
+						// the node is already in the network, reset the
+						// attributes to the
 						// ones specified in the cxf file
 						Vertex w = hash.get(v.getId());
 						w.setBorderColor(v.getBorderColor());
@@ -287,46 +297,44 @@ public class InteractiveCxfNetwork extends CxfNetwork implements ISimulation, Su
 						w.setVar1(v.getVar1());
 						w.setVar2(v.getVar2());
 						w.setWidth(v.getWidth());
-					}
-					else{
+					} else {
 						// the node was removed, reinsert it in the network
 						addVertex(v);
-						//we store the ids and vertices in a hash table
+						// we store the ids and vertices in a hash table
 						hash.put(v.getId(), v);
 					}
-				}
-				else if (token.type.toLowerCase().contains("edge")) {
+				} else if (token.type.toLowerCase().contains("edge")) {
 					edgeTokens.add(token);
-				} else if (!token.type.toLowerCase().equalsIgnoreCase("configuration"))
-				{
-					if(!confirmFileFormatWarning("Unknown command in line " + token.line, "cxf error") )
-						return;					
-				}
-			}
-			
-			//remember what edges are currently in the graph
-			List<Edge> existingEdges = new LinkedList<Edge>();
-			for(Edge e : getEdges()){
-				existingEdges.add(e);
-			}
-			
-			for (Token t : edgeTokens)
-			{
-				// Check if the edge is already there
-				Vertex source = hash.get(t.id_source);
-				Vertex dest = hash.get(t.id_dest);				
-				if ((source == null) || (dest == null))
-				{
-					if(!confirmFileFormatWarning("Malformed edge (nonexistent endpoint): (" + t.id_source + "," + t.id_dest + ") in line "+t.line, "cxf error") )
+				} else if (!token.type.toLowerCase().equalsIgnoreCase(
+						"configuration")) {
+					if (!confirmFileFormatWarning("Unknown command in line "
+							+ token.line, "cxf error"))
 						return;
 				}
-				else
-				{
+			}
+
+			// remember what edges are currently in the graph
+			List<Edge> existingEdges = new LinkedList<Edge>();
+			for (Edge e : getEdges()) {
+				existingEdges.add(e);
+			}
+
+			for (Token t : edgeTokens) {
+				// Check if the edge is already there
+				Vertex source = hash.get(t.id_source);
+				Vertex dest = hash.get(t.id_dest);
+				if ((source == null) || (dest == null)) {
+					if (!confirmFileFormatWarning(
+							"Malformed edge (nonexistent endpoint): ("
+									+ t.id_source + "," + t.id_dest
+									+ ") in line " + t.line, "cxf error"))
+						return;
+				} else {
 					// check if the edge is already in the graph
-					Edge edge = findEdge(source, dest);					
+					Edge edge = findEdge(source, dest);
 					Edge newEdge = createEdge(t);
-					if(edge != null) {						
-						//the edge is there, just reinitialize its attributes
+					if (edge != null) {
+						// the edge is there, just reinitialize its attributes
 						edge.setColor(newEdge.getColor());
 						edge.setExcluded(newEdge.isExcluded());
 						edge.setLabel(newEdge.getLabel());
@@ -335,52 +343,48 @@ public class InteractiveCxfNetwork extends CxfNetwork implements ISimulation, Su
 						edge.setVar2(newEdge.getVar2());
 						edge.setWeight(newEdge.getWeight());
 						edge.setWidth(newEdge.getWidth());
-						//this edge is processed
+						// this edge is processed
 						existingEdges.remove(edge);
-					} else {						
-						addEdge(newEdge);	
-					}					
+					} else {
+						addEdge(newEdge);
+					}
 				}
 			}
-			//now we remove all edges that are in the graph
+			// now we remove all edges that are in the graph
 			// but should not be there
-			for(Edge e : existingEdges) {
+			for (Edge e : existingEdges) {
 				removeEdge(e);
 			}
 			line = null;
-		
+
 		} catch (FileNotFoundException fnfEx) {
-			JOptionPane.showMessageDialog(null,fnfEx.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(null, fnfEx.getMessage(), "Error",
+					JOptionPane.ERROR_MESSAGE);
 			System.err.println("Network file not found");
 			fnfEx.printStackTrace();
 		}
-		
-		
+
 	}
 
 	@Override
 	public boolean update(long passedTime) {
 
-		if (!done)
-		{
+		if (!done) {
 			Token token = instructionTokens.get(instructionIndex);
-			
-			if (token.freeze)
-			{
+
+			if (token.freeze) {
 				execute(token);
 				instructionIndex++;
 				boolean commited = token.commit;
-				while ((instructionIndex < instructionTokens.size()) && (!commited))
-				{
+				while ((instructionIndex < instructionTokens.size())
+						&& (!commited)) {
 					token = instructionTokens.get(instructionIndex);
 					execute(token);
 					instructionIndex++;
 					commited = token.commit;
 				}
-				
-			}
-			else if (instructionIndex < instructionTokens.size())
-			{
+
+			} else if (instructionIndex < instructionTokens.size()) {
 				execute(token);
 				instructionIndex++;
 			}

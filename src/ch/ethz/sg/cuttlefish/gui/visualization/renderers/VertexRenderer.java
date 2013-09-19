@@ -40,7 +40,7 @@ public class VertexRenderer extends ShapeRenderer {
 	@Override
 	public void render() {
 
-		for (Vertex v : networkRenderer.getVertices()) {
+		for (Vertex v : renderer.getVertices()) {
 			if (!v.isExcluded()) {
 				drawVertex(v);
 			}
