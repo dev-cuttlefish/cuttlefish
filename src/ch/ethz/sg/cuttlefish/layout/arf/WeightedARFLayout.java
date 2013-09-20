@@ -20,6 +20,7 @@ package ch.ethz.sg.cuttlefish.layout.arf;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import org.gephi.graph.api.Edge;
@@ -43,33 +44,57 @@ public class WeightedARFLayout implements Layout {
 	private final LayoutBuilder layoutBuilder;
 	private boolean incremental;
 	private boolean keepInitialPositions;
+	public final static String PARAMETER_KEEP_POSITIONS = "keep_positions";
 
 	/**
 	 * the parameter a controls the attraction between connected nodes.
 	 */
 	private float a = 3;
+	public static final String PARAMETER_ALPHA = "alpha";
 
 	/**
 	 * a scaling factor for the attractive term. Connected as well as
 	 * unconnected nodes are affected.
 	 */
 	private float attraction = 0.2f;
+	public static final String PARAMETER_ATTRACTION = "attraction";
 
 	/**
 	 * b scales the repulsive force
 	 */
 	private float b = 8;
+	public static final String PARAMETER_BETA = "beta";
 
 	/**
 	 * deltaT controls the calculation precision: smaller deltaT results in
 	 * higher precession
 	 */
 	private float deltaT = 2;
+	public static final String PARAMETER_DELTA = "delta";
 
 	/**
 	 * a maximum force for a node
 	 */
 	private float forceCutoff = 7;
+	public static final String PARAMETER_FORCE_CUTOFF = "force_cutoff";
+
+	/**
+	 * Controls how much slower the new layout will be computed, by scaling the
+	 * updates to the vertices' coordinates. A value of 1 will perform normal
+	 * steps. Values greater than one will scale the computed coordinates down
+	 * and thus will slow down convergence.
+	 * 
+	 * The sensitivity must always be greater than zero.
+	 */
+	private int sensitivity = 1;
+	public static final String PARAMETER_SENSITIVITY = "sensitivity";
+
+	/**
+	 * When enabled, before each computation step the layout is centered.
+	 * Warning: keeping the layout centered adds a computation of O(|V|).
+	 */
+	private boolean keepCentered = false;
+	public static final String PARAMETER_KEEP_CENTERED = "keep_centered";
 
 	private double minWeight = 1;
 	private double maxWeight = 3;
@@ -87,7 +112,7 @@ public class WeightedARFLayout implements Layout {
 	private int updatesPerFrame = 1;
 	private double change;
 	private Random random;
-	private boolean fixedThreshold = true;
+	private boolean fixedThreshold = false;
 	private boolean converged = false;
 	private int maxUpdates = Integer.MAX_VALUE;
 	private int countUpdates = 0;
@@ -115,6 +140,7 @@ public class WeightedARFLayout implements Layout {
 		random = new Random();
 		randomize = true;
 
+		loadParameters();
 		computeWeightScalingParameters();
 
 		if (!fixedThreshold) {
@@ -141,18 +167,21 @@ public class WeightedARFLayout implements Layout {
 			}
 		}
 
+		if (keepCentered)
+			LayoutLoader.getInstance().centerLayout();
+
 		graph = graphModel.getGraphVisible();
 		advancePositions();
 
 		countUpdates++;
 
-		if (change > 1000 && randomize) {
+		if (change > 30000 && randomize) {
 			randomizePositions();
 			randomize = false;
 		}
 
-		if (LayoutLoader.VERBOSE_LAYOUT)
-			Cuttlefish.debug(this, "Change = " + change);
+		// if (LayoutLoader.VERBOSE_LAYOUT)
+		// Cuttlefish.debug(this, "Change = " + change);
 	}
 
 	@Override
@@ -165,11 +194,43 @@ public class WeightedARFLayout implements Layout {
 	public void endAlgo() {
 
 		if (LayoutLoader.VERBOSE_LAYOUT) {
-			Cuttlefish.debug(this, "Layout ended");
+			Cuttlefish.debug(this, "Layout ended. Change: " + change);
+		}
+	}
 
-			for (Node n : graphModel.getGraph().getNodes()) {
-				Cuttlefish.debug(this, n + ": " + n.getNodeData().x() + ", "
-						+ n.getNodeData().y());
+	private void loadParameters() {
+		Map<String, String> params = LayoutLoader.getInstance()
+				.getLayoutParameters();
+
+		if (params != null && !params.isEmpty()) {
+			for (String key : params.keySet()) {
+
+				String value = params.get(key);
+
+				if (key.equalsIgnoreCase(PARAMETER_SENSITIVITY)) {
+					sensitivity = Integer.parseInt(value);
+
+				} else if (key.equalsIgnoreCase(PARAMETER_KEEP_POSITIONS)) {
+					keepInitialPositions = Boolean.parseBoolean(value);
+
+				} else if (key.equalsIgnoreCase(PARAMETER_KEEP_CENTERED)) {
+					keepCentered = Boolean.parseBoolean(value);
+
+				} else if (key.equalsIgnoreCase(PARAMETER_ALPHA)) {
+					a = Float.parseFloat(value);
+
+				} else if (key.equalsIgnoreCase(PARAMETER_ATTRACTION)) {
+					attraction = Float.parseFloat(value);
+
+				} else if (key.equalsIgnoreCase(PARAMETER_BETA)) {
+					b = Float.parseFloat(value);
+
+				} else if (key.equalsIgnoreCase(PARAMETER_DELTA)) {
+					deltaT = Float.parseFloat(value);
+
+				} else if (key.equalsIgnoreCase(PARAMETER_FORCE_CUTOFF)) {
+					forceCutoff = Float.parseFloat(value);
+				}
 			}
 		}
 	}
@@ -227,8 +288,10 @@ public class WeightedARFLayout implements Layout {
 
 				f.setLocation(f.getX() * delta, f.getY() * delta);
 
-				n.getNodeData().setX(n.getNodeData().x() + (float) f.getX());
-				n.getNodeData().setY(n.getNodeData().y() + (float) f.getY());
+				n.getNodeData().setX(
+						n.getNodeData().x() + (float) f.getX() / sensitivity);
+				n.getNodeData().setY(
+						n.getNodeData().y() + (float) f.getY() / sensitivity);
 
 				change += Math.abs(f.getX()) + Math.abs(f.getY());
 			}

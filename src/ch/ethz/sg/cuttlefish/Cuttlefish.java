@@ -38,12 +38,10 @@ public class Cuttlefish {
 	private static Calendar cal = Calendar.getInstance();
 	private static SimpleDateFormat sdf = new SimpleDateFormat(
 			"yyy-MM-dd HH:mm:ss");
-	private static BrowsableNetwork network = null;
 	private static CommandLine opts;
 
-	// New fields
 	private static org.gephi.layout.spi.Layout layout = null;
-
+	private static BrowsableNetwork network = null;
 	private static boolean shouldStop = false;
 
 	/**
