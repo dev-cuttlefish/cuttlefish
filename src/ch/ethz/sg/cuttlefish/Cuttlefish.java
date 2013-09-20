@@ -46,8 +46,6 @@ public class Cuttlefish {
 
 	private static boolean shouldStop = false;
 
-	public static final boolean VERBOSE_LAYOUT = false;
-
 	/**
 	 * Initialize a Gephi Toolkit project.
 	 */

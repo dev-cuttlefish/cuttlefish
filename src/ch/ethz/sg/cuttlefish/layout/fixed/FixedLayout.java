@@ -28,6 +28,9 @@ import org.gephi.layout.spi.Layout;
 import org.gephi.layout.spi.LayoutBuilder;
 import org.gephi.layout.spi.LayoutProperty;
 
+import ch.ethz.sg.cuttlefish.Cuttlefish;
+import ch.ethz.sg.cuttlefish.layout.LayoutLoader;
+
 public class FixedLayout implements Layout {
 
 	private LayoutBuilder layoutBuilder = null;
@@ -46,6 +49,9 @@ public class FixedLayout implements Layout {
 			throw new RuntimeException(
 					"The GraphModel for this layout cannot be null!");
 		}
+		
+		if (LayoutLoader.VERBOSE_LAYOUT)
+			Cuttlefish.debug(this, "Layout initialized.");
 	}
 
 	@Override
@@ -66,6 +72,9 @@ public class FixedLayout implements Layout {
 	@Override
 	public void endAlgo() {
 		finished = true;
+		
+		if (LayoutLoader.VERBOSE_LAYOUT)
+			Cuttlefish.debug(this, "Layout ended.");
 	}
 
 	@Override

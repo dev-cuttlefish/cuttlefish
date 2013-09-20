@@ -31,6 +31,7 @@ import org.gephi.layout.spi.LayoutBuilder;
 import org.gephi.layout.spi.LayoutProperty;
 
 import ch.ethz.sg.cuttlefish.Cuttlefish;
+import ch.ethz.sg.cuttlefish.layout.LayoutLoader;
 
 /**
  * 
@@ -124,7 +125,7 @@ public class WeightedARFLayout implements Layout {
 			randomizePositions();
 		}
 
-		if (Cuttlefish.VERBOSE_LAYOUT)
+		if (LayoutLoader.VERBOSE_LAYOUT)
 			Cuttlefish.debug(this, "Layout initialized. Change threshold = "
 					+ threshold);
 	}
@@ -150,7 +151,7 @@ public class WeightedARFLayout implements Layout {
 			randomize = false;
 		}
 
-		if (Cuttlefish.VERBOSE_LAYOUT)
+		if (LayoutLoader.VERBOSE_LAYOUT)
 			Cuttlefish.debug(this, "Change = " + change);
 	}
 
@@ -163,7 +164,7 @@ public class WeightedARFLayout implements Layout {
 	@Override
 	public void endAlgo() {
 
-		if (Cuttlefish.VERBOSE_LAYOUT) {
+		if (LayoutLoader.VERBOSE_LAYOUT) {
 			Cuttlefish.debug(this, "Layout ended");
 
 			for (Node n : graphModel.getGraph().getNodes()) {

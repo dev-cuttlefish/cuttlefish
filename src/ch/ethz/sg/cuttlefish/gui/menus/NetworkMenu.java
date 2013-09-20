@@ -40,6 +40,7 @@ import ch.ethz.sg.cuttlefish.gui.Cuttlefish;
 import ch.ethz.sg.cuttlefish.gui.CuttlefishToolbars;
 import ch.ethz.sg.cuttlefish.gui.NetworkPanel;
 import ch.ethz.sg.cuttlefish.gui.undoable.UndoableControl;
+import ch.ethz.sg.cuttlefish.layout.LayoutLoader;
 import ch.ethz.sg.cuttlefish.misc.FileChooser;
 import ch.ethz.sg.cuttlefish.misc.Observer;
 import ch.ethz.sg.cuttlefish.misc.Subject;
@@ -137,7 +138,7 @@ public class NetworkMenu extends AbstractMenu implements Observer,
 				}
 				networkPanel.setNetwork(new CxfNetwork());
 				networkPanel.getNetwork().setDirected(directed);
-				networkPanel.setLayoutByName("arf");
+				networkPanel.setLayoutByName(LayoutLoader.DEFAULT_LAYOUT);
 				toolbars.getDBToolbar().setVisible(false);
 				toolbars.getSimulationToolbar().setVisible(false);
 				saveNetwork.setEnabled(false);
