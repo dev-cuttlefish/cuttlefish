@@ -412,10 +412,11 @@ public class CxfNetwork extends BrowsableNetwork {
 	}
 
 	// TODO ilias: remove
-	public boolean USE_PARAMS = false;
+	public boolean USE_PARAMS = true;
 
 	private Token parseLayout(Token token, String preField, Iterator<String> it) {
 		int i = preField.indexOf(":");
+		String field;
 		token.type = preField.substring(0, i); // type: layout
 		token.var1 = it.next(); // var1: layout name
 
@@ -427,10 +428,15 @@ public class CxfNetwork extends BrowsableNetwork {
 			// arguments list
 			// arg{val}
 			while (it.hasNext()) {
-				String field = it.next();
+				field = it.next();
+
+				if (field.contains("]")) {
+					token.commit = true;
+					break;
+				}
+
 				int l = field.indexOf("{");
 				int r = field.indexOf("}");
-
 				String arg = field.substring(0, l);
 				String val = field.substring(l + 1, r);
 

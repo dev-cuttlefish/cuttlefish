@@ -16,6 +16,7 @@ import org.gephi.layout.spi.LayoutBuilder;
 import org.gephi.layout.spi.LayoutProperty;
 
 import ch.ethz.sg.cuttlefish.Cuttlefish;
+import ch.ethz.sg.cuttlefish.layout.LayoutLoader;
 import ch.ethz.sg.cuttlefish.networks.Vertex;
 
 /**
@@ -66,7 +67,7 @@ public class CircleLayout implements Layout {
 		for (Node n : graph.getNodes())
 			nodeOrderedList.add(n);
 
-		if (Cuttlefish.VERBOSE_LAYOUT)
+		if (LayoutLoader.VERBOSE_LAYOUT)
 			Cuttlefish.debug(this, "Layout initialized.");
 	}
 
@@ -99,7 +100,7 @@ public class CircleLayout implements Layout {
 			// Vertices overlap within the current circle.
 			// Radius must be increased.
 			radius *= 1.2;
-			if (Cuttlefish.VERBOSE_LAYOUT)
+			if (LayoutLoader.VERBOSE_LAYOUT)
 				Cuttlefish.debug(this, "Radius = " + radius);
 
 			return;
@@ -123,7 +124,7 @@ public class CircleLayout implements Layout {
 
 		converged = true;
 
-		if (Cuttlefish.VERBOSE_LAYOUT)
+		if (LayoutLoader.VERBOSE_LAYOUT)
 			Cuttlefish.debug(this, "Radius = " + radius);
 	}
 
@@ -134,7 +135,7 @@ public class CircleLayout implements Layout {
 
 	@Override
 	public void endAlgo() {
-		if (Cuttlefish.VERBOSE_LAYOUT) {
+		if (LayoutLoader.VERBOSE_LAYOUT) {
 			Cuttlefish.debug(this, "Layout ended");
 		}
 	}

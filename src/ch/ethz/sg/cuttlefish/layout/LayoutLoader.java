@@ -37,6 +37,8 @@ public class LayoutLoader {
 	// Static fields and methods
 
 	public static final String DEFAULT_LAYOUT = "arf";
+	public static final boolean VERBOSE_LAYOUT = false;
+
 	private static final Map<String, Class<? extends LayoutBuilder>> builders;
 	private static final Map<String, Class<? extends LayoutBuilder>> unsupported;
 	private static final Map<String, String> abbreviations;
@@ -117,6 +119,8 @@ public class LayoutLoader {
 	private Object[] layoutParameters = new Object[2];
 	private String layoutName = null;
 
+	private Map<String, String> parameters = null;
+
 	private LayoutLoader(NetworkPanel panel) {
 		networkPanel = panel;
 		layoutModel = Lookup.getDefault().lookup(LayoutController.class)
@@ -150,14 +154,18 @@ public class LayoutLoader {
 							&& !(Boolean) evt.getNewValue();
 
 					Rectangle2D rect = null;
-					if (shouldNormalize())
+					boolean normBeforeCenter = false;
+
+					if (normBeforeCenter && shouldNormalize())
 						rect = normalizeLayout();
 
 					if (networkPanel != null) {
 
-						if (shouldNormalize())
+						if (normBeforeCenter && shouldNormalize())
 							networkPanel.getNetworkRenderer().centerNetwork(
 									rect);
+						else
+							centerLayout();
 
 						if (layoutStopped) {
 							networkPanel.getNetworkRenderer().animate(false,
@@ -184,8 +192,6 @@ public class LayoutLoader {
 		try {
 			newLayout = getLayout(selectedLayout);
 		} catch (Exception e) {
-			// networkPanel.errorPopup(selectedLayout + " Layout error",
-			// e.getLocalizedMessage());
 			e.printStackTrace();
 			return;
 		}
@@ -221,10 +227,6 @@ public class LayoutLoader {
 			layoutIterationLimit = 700;
 
 		}
-		// else if (newLayout instanceof ForceAtlas2) {
-		// double tolerance = 0.00001;
-		// ((ForceAtlas2) newLayout).setJitterTolerance(tolerance);
-		// }
 
 		// TODO ilias: check that fixed vertices remain fixed during layout
 		layoutName = selectedLayout;
@@ -232,6 +234,7 @@ public class LayoutLoader {
 	}
 
 	public void resetLayout() {
+		parameters = null;
 		setLayoutByName(layoutName);
 	}
 
@@ -241,6 +244,8 @@ public class LayoutLoader {
 
 		if (layoutController.canStop())
 			layoutController.stopLayout();
+
+		parameters = null;
 	}
 
 	public Layout getSelectedLayout() {
@@ -271,6 +276,21 @@ public class LayoutLoader {
 					"Setting layout to " + layout.getBuilder().getName(),
 					layoutController);
 		}
+	}
+
+	public boolean isLayoutRunning() {
+		LayoutController layoutController = Lookup.getDefault().lookup(
+				LayoutController.class);
+
+		return layoutController.canStop();
+	}
+
+	public Map<String, String> getLayoutParameters() {
+		return parameters;
+	}
+
+	public void setLayoutParameters(Map<String, String> parameters) {
+		this.parameters = parameters;
 	}
 
 	public void setLayoutParameters(Object[] parameters) {
@@ -339,6 +359,10 @@ public class LayoutLoader {
 		}
 
 		return normBounds;
+	}
+
+	public void centerLayout() {
+		networkPanel.getNetworkRenderer().centerNetwork();
 	}
 
 	private boolean shouldNormalize() {

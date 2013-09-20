@@ -18,6 +18,7 @@ import org.gephi.layout.spi.LayoutBuilder;
 import org.gephi.layout.spi.LayoutProperty;
 
 import ch.ethz.sg.cuttlefish.Cuttlefish;
+import ch.ethz.sg.cuttlefish.layout.LayoutLoader;
 import ch.ethz.sg.cuttlefish.networks.Vertex;
 
 public class KCoreLayout implements Layout {
@@ -78,7 +79,7 @@ public class KCoreLayout implements Layout {
 		computeRho(graph, cmax);
 		computeAlpha(graph, cmax);
 
-		if (Cuttlefish.VERBOSE_LAYOUT)
+		if (LayoutLoader.VERBOSE_LAYOUT)
 			Cuttlefish.debug(this, "Layout initialized.");
 	}
 
@@ -117,7 +118,7 @@ public class KCoreLayout implements Layout {
 
 		finished = true;
 
-		if (Cuttlefish.VERBOSE_LAYOUT)
+		if (LayoutLoader.VERBOSE_LAYOUT)
 			Cuttlefish.debug(this, "Layout completed.");
 	}
 
@@ -128,7 +129,7 @@ public class KCoreLayout implements Layout {
 
 	@Override
 	public void endAlgo() {
-		if (Cuttlefish.VERBOSE_LAYOUT) {
+		if (LayoutLoader.VERBOSE_LAYOUT) {
 			Cuttlefish.debug(this, "Layout ended");
 
 			for (Node n : graphModel.getGraph().getNodes()) {

@@ -20,6 +20,7 @@ package ch.ethz.sg.cuttlefish.layout.arf;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import org.gephi.graph.api.Graph;
@@ -30,6 +31,7 @@ import org.gephi.layout.spi.LayoutBuilder;
 import org.gephi.layout.spi.LayoutProperty;
 
 import ch.ethz.sg.cuttlefish.Cuttlefish;
+import ch.ethz.sg.cuttlefish.layout.LayoutLoader;
 
 /**
  * 
@@ -43,11 +45,12 @@ public class ARFLayout implements Layout {
 	private final LayoutBuilder layoutBuilder;
 	private boolean incremental;
 	private boolean keepInitialPositions;
+	private final static String PARAMETER_KEEP_POSITIONS = "keep_positions";
 
 	/**
 	 * the parameter a controls the attraction between connected nodes.
 	 */
-	private float a = 3;
+	private float a = 3f;
 
 	/**
 	 * a scaling factor for the attractive term. Connected as well as
@@ -58,18 +61,29 @@ public class ARFLayout implements Layout {
 	/**
 	 * b scales the repulsive force
 	 */
-	private float b = 8;
+	private float b = 8f;
 
 	/**
 	 * deltaT controls the calculation precision: smaller deltaT results in
 	 * higher precision
 	 */
-	private float deltaT = 2;
+	private float deltaT = 2f;
 
 	/**
 	 * a maximum force for a node
 	 */
-	private float forceCutoff = 7;
+	private float forceCutoff = 7f;
+
+	/**
+	 * Controls how much slower the new layout will be computed, by scaling the
+	 * updates to the vertices' coordinates. A value of 1 will perform normal
+	 * steps. Values greater than one will scale the computed coordinates down
+	 * and thus will slow down convergence.
+	 * 
+	 * The sensitivity must always be greater than zero.
+	 */
+	private int sensitivity = 1;
+	public static final String PARAMETER_SENSITIVITY = "sensitivity";
 
 	/**
 	 * if the movement in the system is less than epsilon*|V|, the algorithm
@@ -107,34 +121,43 @@ public class ARFLayout implements Layout {
 		random = new Random();
 		randomize = true;
 
-		if (!fixedThreshold) {
+		loadParameters();
+
+		if (sensitivity < 1)
+			sensitivity = 1;
+
+		if (!fixedThreshold)
 			threshold = epsilon * graph.getNodeCount();
-		}
 
-		if (!keepInitialPositions) {
+		if (!keepInitialPositions)
 			randomizePositions();
-		}
 
-		if (Cuttlefish.VERBOSE_LAYOUT)
+		if (LayoutLoader.VERBOSE_LAYOUT)
 			Cuttlefish.debug(this, "Layout initialized. Change threshold = "
 					+ threshold);
+
+		iterations = 0;
 	}
+
+	private int iterations;
 
 	@Override
 	public void goAlgo() {
 		graph = graphModel.getGraphVisible();
+		LayoutLoader.getInstance().centerLayout();
 		advancePositions();
+		++iterations;
 
 		// Do a single step when less than 3 nodes exist
 		if (graph.getNodeCount() <= 3)
 			converged = true;
-		
-		if (change > 1000 && randomize) {
+
+		if (change > 30000 && randomize) {
 			randomizePositions();
 			randomize = false;
 		}
 
-		if (Cuttlefish.VERBOSE_LAYOUT)
+		if (LayoutLoader.VERBOSE_LAYOUT)
 			Cuttlefish.debug(this, "Change = " + change);
 	}
 
@@ -146,12 +169,26 @@ public class ARFLayout implements Layout {
 	@Override
 	public void endAlgo() {
 
-		if (Cuttlefish.VERBOSE_LAYOUT) {
-			Cuttlefish.debug(this, "Layout ended");
+		if (LayoutLoader.VERBOSE_LAYOUT) {
+			Cuttlefish.debug(this, "Layout ended. Iterations: " + iterations + ", Change: " + change);
+		}
+	}
 
-			for (Node n : graphModel.getGraph().getNodes()) {
-				Cuttlefish.debug(this, n + ": " + n.getNodeData().x() + ", "
-						+ n.getNodeData().y());
+	private void loadParameters() {
+		Map<String, String> params = LayoutLoader.getInstance()
+				.getLayoutParameters();
+
+		if (params != null && !params.isEmpty()) {
+			for (String key : params.keySet()) {
+
+				String value = params.get(key);
+
+				if (key.equalsIgnoreCase(PARAMETER_SENSITIVITY)) {
+					sensitivity = Integer.parseInt(value);
+
+				} else if (key.equalsIgnoreCase(PARAMETER_KEEP_POSITIONS)) {
+					keepInitialPositions = Boolean.parseBoolean(value);
+				}
 			}
 		}
 	}
@@ -180,8 +217,10 @@ public class ARFLayout implements Layout {
 
 				f.setLocation(f.getX() * delta, f.getY() * delta);
 
-				n.getNodeData().setX(n.getNodeData().x() + (float) f.getX());
-				n.getNodeData().setY(n.getNodeData().y() + (float) f.getY());
+				n.getNodeData().setX(
+						n.getNodeData().x() + (float) (f.getX() / sensitivity));
+				n.getNodeData().setY(
+						n.getNodeData().y() + (float) (f.getY() / sensitivity));
 
 				c += Math.abs(f.getX()) + Math.abs(f.getY());
 			}
@@ -281,6 +320,7 @@ public class ARFLayout implements Layout {
 		forceCutoff = 7;
 		fixedThreshold = THRESHOLD_TYPE_FIXED;
 		converged = false;
+		sensitivity = 1;
 
 		if (fixedThreshold || graph == null) {
 			threshold = 10;

@@ -23,8 +23,6 @@
 package ch.ethz.sg.cuttlefish.gui;
 
 import java.awt.BorderLayout;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.LinkedList;
@@ -39,7 +37,6 @@ import javax.swing.JPanel;
 import org.gephi.layout.spi.Layout;
 import org.openide.util.NotImplementedException;
 
-import ch.ethz.sg.cuttlefish.Cuttlefish;
 import ch.ethz.sg.cuttlefish.gui.undoable.UndoableControl;
 import ch.ethz.sg.cuttlefish.gui.visualization.NetworkRenderer;
 import ch.ethz.sg.cuttlefish.gui.visualization.mouse.GraphMouse;
@@ -54,16 +51,16 @@ import ch.ethz.sg.cuttlefish.misc.Subject;
 import ch.ethz.sg.cuttlefish.networks.BrowsableForestNetwork;
 import ch.ethz.sg.cuttlefish.networks.BrowsableNetwork;
 import ch.ethz.sg.cuttlefish.networks.Edge;
+import ch.ethz.sg.cuttlefish.networks.InteractiveCxfNetwork;
 import ch.ethz.sg.cuttlefish.networks.Vertex;
 
-public class NetworkPanel extends JPanel implements Subject, ItemListener,
-		INetworkBrowser, Runnable, java.util.Observer {
+public class NetworkPanel extends JPanel implements Subject, INetworkBrowser,
+		Runnable, java.util.Observer {
 
 	private static final long serialVersionUID = 1L;
 
 	private BrowsableNetwork network = null;
 	private String currentLayout = null;
-	// private String layoutType = null;
 	private List<Observer> observers = null;
 	private StatusBar statusBar = null;
 	private int width;
@@ -166,24 +163,7 @@ public class NetworkPanel extends JPanel implements Subject, ItemListener,
 
 		if (getNetworkLayout() == null) {
 			setLayoutByName(LayoutLoader.DEFAULT_LAYOUT);
-
 		} else {
-			// check
-			// between layout
-			// and network
-			// layout.setGraph(network);
-
-			// maxUpdates in ARF2Layout depends on the network size, this way
-			// it's
-			// updated if the network changes
-			// if ((layout != null && layout instanceof ARF2Layout)
-			// && (((ARF2Layout<Vertex, Edge>) layout).getMaxUpdates() <
-			// getNetwork()
-			// .getVertexCount()))
-			// ((ARF2Layout<Vertex, Edge>) layout).setMaxUpdates(getNetwork()
-			// .getVertexCount());
-
-			// network.init(); TODO ilias: this will clear the network
 			layoutLoader.resetLayout();
 		}
 
@@ -223,16 +203,23 @@ public class NetworkPanel extends JPanel implements Subject, ItemListener,
 		 * layout instanceof TreeLayout || layout instanceof RadialTreeLayout ||
 		 */
 
-		stopLayout();
+		/*
+		 * If the network is Interactive (simulation network), then do not reset
+		 * the layout before it's completed.
+		 */
+		if (network instanceof InteractiveCxfNetwork
+				&& layoutLoader.isLayoutRunning()) {
+			return;
+		}
+
 		if (getNetworkLayout() instanceof CircleLayout
 				|| getNetworkLayout() instanceof KCoreLayout
 				|| getNetworkLayout() instanceof WeightedKCoreLayout) {
 			setNetwork(((BrowsableForestNetwork) getNetwork())
 					.getOriginalNetwork());
 		}
-		resumeLayout();
 
-		//Cuttlefish.debug(this, "onNetworkChange");
+		resumeLayout();
 	}
 
 	@Override
@@ -253,8 +240,6 @@ public class NetworkPanel extends JPanel implements Subject, ItemListener,
 	@Override
 	public void resumeLayout() {
 
-		// if (layoutType != null && !layoutType.isEmpty())
-		// setLayoutByName(layoutType);
 		layoutLoader.resetLayout();
 
 		// TODO ilias: lock all nodes if fixed here!
@@ -279,10 +264,6 @@ public class NetworkPanel extends JPanel implements Subject, ItemListener,
 	 * 
 	 * @return EditingModalGraphMouse automatically created by JUNG2.0
 	 */
-	// public EditingModalGraphMouse<Vertex, Edge> getMouse() {
-	// return graphMouse;
-	// }
-
 	public GraphMouse getMouse() {
 		return gMouse;
 	}
@@ -301,24 +282,12 @@ public class NetworkPanel extends JPanel implements Subject, ItemListener,
 
 	@Override
 	public Set<Vertex> getPickedVertices() {
-		// return getVisualizationViewer().getPickedVertexState().getPicked();
-		throw new NotImplementedException(
-				"Not implemented yet for the Gephi Toolkit!");
+		throw new NotImplementedException("Not implemented yet!");
 	}
 
 	@Override
 	public Set<Edge> getPickedEdges() {
-		// return getVisualizationViewer().getPickedEdgeState().getPicked();
-		throw new NotImplementedException(
-				"Not implemented yet for the Gephi Toolkit!");
-	}
-
-	@Override
-	public void itemStateChanged(ItemEvent e) {
-		// TODO ilias: Check if necessary
-		Cuttlefish.debug(this,
-				"itemStateChanged: When does this happen? Is it necessary?");
-		refreshAnnotations();
+		throw new NotImplementedException("Not implemented yet!");
 	}
 
 	@Override

@@ -282,10 +282,16 @@ public class NetworkRenderer implements GLEventListener {
 
 		double deltaX = this.getCenter().getX() - (right + left) / 2;
 		double deltaY = this.getCenter().getY() - (top + bottom) / 2;
+		double zoom = height / (top - bottom + RENDER_MARGIN);
 
 		if (!Double.isInfinite(deltaX) && !Double.isInfinite(deltaY)
 				&& !Double.isNaN(deltaX) && !Double.isNaN(deltaY)) {
-			this.translate(deltaX, deltaY);
+			
+			translate(deltaX, deltaY);
+			scale(zoom, getCenter());
+			
+			graphMouse.setZoomFactor(zoom);
+			graphMouse.setZoomPosition(getCenter());
 		}
 	}
 

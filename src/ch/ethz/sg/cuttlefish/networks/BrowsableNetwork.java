@@ -22,6 +22,7 @@
 package ch.ethz.sg.cuttlefish.networks;
 
 import java.awt.Color;
+import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -422,6 +423,23 @@ public class BrowsableNetwork implements Serializable {
 		graph.addNode(v.getInternalNode());
 	}
 
+	public Point2D getPointNearGraph() {
+		Point2D pt = new Point2D.Float(0, 0);
+		Vertex randomVertex = randomVertex();
+
+		if (randomVertex != null) {
+			double x = randomVertex.getPosition().getX();
+			double y = randomVertex.getPosition().getY();
+
+			double newX = x + Math.random() * x / 10;
+			double newY = y + Math.random() * y / 10;
+
+			pt.setLocation(newX, newY);
+		}
+
+		return pt;
+	}
+
 	public Edge findEdge(Vertex v1, Vertex v2) {
 		if (graph.getEdge(v1.getInternalNode(), v2.getInternalNode()) != null)
 			return new Edge(graph.getEdge(v1.getInternalNode(),
@@ -496,7 +514,7 @@ public class BrowsableNetwork implements Serializable {
 	public boolean hideEdgeLabels() {
 		return hideEdgeLabels;
 	}
-	
+
 	public String getEdgeShape() {
 		return edgeShape;
 	}

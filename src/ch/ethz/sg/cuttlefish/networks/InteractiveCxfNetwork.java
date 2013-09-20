@@ -93,6 +93,7 @@ public class InteractiveCxfNetwork extends CxfNetwork implements ISimulation,
 
 		if (token.type.equalsIgnoreCase("layout")) {
 			String layout = token.var1;
+			LayoutLoader.getInstance().setLayoutParameters(token.params);
 			LayoutLoader.getInstance().setLayoutByName(layout);
 
 		} else if (token.type.equalsIgnoreCase("addNode")) {
@@ -102,6 +103,9 @@ public class InteractiveCxfNetwork extends CxfNetwork implements ISimulation,
 			else {
 				Vertex v = createVertex(token);
 				hash.put(token.id, v);
+
+				// add the new vertex somewhere near the existing ones
+				v.setPosition(getPointNearGraph());
 				addVertex(v);
 			}
 		} else if (token.type.equalsIgnoreCase("removeNode")) {

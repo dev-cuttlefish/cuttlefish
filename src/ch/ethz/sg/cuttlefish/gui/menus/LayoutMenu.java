@@ -40,6 +40,7 @@ import javax.swing.KeyStroke;
 
 import ch.ethz.sg.cuttlefish.gui.CuttlefishToolbars;
 import ch.ethz.sg.cuttlefish.gui.NetworkPanel;
+import ch.ethz.sg.cuttlefish.layout.LayoutLoader;
 import ch.ethz.sg.cuttlefish.misc.Observer;
 import ch.ethz.sg.cuttlefish.misc.Subject;
 import ch.ethz.sg.cuttlefish.networks.BrowsableForestNetwork;
@@ -150,7 +151,15 @@ public class LayoutMenu extends AbstractMenu implements Observer {
 		layoutMap.put(tree, "tree");
 		layoutMap.put(radialTree, "radial-tree");
 
-		layoutSelected(arf);
+		JRadioButtonMenuItem selected = arf;
+		for (JRadioButtonMenuItem s : layoutMap.keySet()) {
+			if (LayoutLoader.DEFAULT_LAYOUT.equalsIgnoreCase(layoutMap.get(s))) {
+				selected = s;
+				break;
+			}
+		}
+		
+		layoutSelected(selected);
 
 		stopButton = new JMenuItem("Lock");
 		repaintButton = new JMenuItem("Restart layout");
