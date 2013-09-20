@@ -28,9 +28,7 @@ import java.io.File;
 import javax.swing.JFrame;
 
 public class Cuttlefish extends JFrame {
-	/**
-	 * 
-	 */
+	
 	private static final long serialVersionUID = 2232589699110179555L;
 	public static File currentDirectory = null;
 	private CuttlefishMenu mainMenu = null;

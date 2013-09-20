@@ -41,9 +41,13 @@ public class WeightedKCoreLayout implements Layout {
 	private int coreIndex = 0;
 	private double lastCore = 0;
 	private Map<Edge, Float> normalizedWeight = new HashMap<Edge, Float>();
-	private double paramAlpha;
-	private double paramBeta;
 	private int maxDegree;
+
+	private double paramAlpha;
+	public static final String PARAMETER_ALPHA = "alpha";
+
+	private double paramBeta;
+	public static final String PARAMETER_BETA = "beta";
 
 	private boolean finished = false;
 
@@ -65,6 +69,8 @@ public class WeightedKCoreLayout implements Layout {
 		coreness = new HashMap<Node, Integer>();
 		rho = new HashMap<Node, Double>();
 		alpha = new HashMap<Node, Double>();
+
+		loadParameters();
 
 		computeGraphCoreness();
 
@@ -105,10 +111,10 @@ public class WeightedKCoreLayout implements Layout {
 
 		for (Node v : graph.getNodes()) {
 			double r;
-			
+
 			if (!rho.containsKey(v))
 				continue;
-			
+
 			if (rho.get(v).equals(java.lang.Double.NaN) || rho.get(v) == 0d) {
 				r = (new Random()).nextDouble() / 2 * cmaxRadius;
 			} else {
@@ -121,16 +127,13 @@ public class WeightedKCoreLayout implements Layout {
 			if (origDegree < 1)
 				origDegree = 1;
 			float hue = (float) coreness.get(v) / (float) cmax;
-			
+
 			vertex.setSize((float) (maxSize * origDegree / Math.log(maxDegree)));
 			vertex.setFillColor(Color.getHSBColor(hue, 1f, 1f));
 			vertex.setPosition(x * RHO_SCALE / cmax, y * RHO_SCALE / cmax);
 		}
 
 		finished = true;
-
-		if (LayoutLoader.VERBOSE_LAYOUT)
-			Cuttlefish.debug(this, "Layout completed");
 	}
 
 	@Override
@@ -142,12 +145,28 @@ public class WeightedKCoreLayout implements Layout {
 	public void endAlgo() {
 		if (LayoutLoader.VERBOSE_LAYOUT) {
 			Cuttlefish.debug(this, "Layout ended");
+		}
+	}
 
-			for (Node n : graphModel.getGraph().getNodes()) {
-				Cuttlefish.debug(this, n + ": " + n.getNodeData().x() + ", "
-						+ n.getNodeData().y());
+	private void loadParameters() {
+		Map<String, String> params = LayoutLoader.getInstance()
+				.getLayoutParameters();
+
+		if (params != null && !params.isEmpty()) {
+			for (String key : params.keySet()) {
+
+				double value = Double.parseDouble(params.get(key));
+
+				if (key.equalsIgnoreCase(PARAMETER_ALPHA)) {
+					paramAlpha = value;
+
+				} else if (key.equalsIgnoreCase(PARAMETER_BETA)) {
+					paramBeta = value;
+
+				}
 			}
 		}
+
 	}
 
 	@Override

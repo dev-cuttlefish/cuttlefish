@@ -45,34 +45,39 @@ public class ARFLayout implements Layout {
 	private final LayoutBuilder layoutBuilder;
 	private boolean incremental;
 	private boolean keepInitialPositions;
-	private final static String PARAMETER_KEEP_POSITIONS = "keep_positions";
+	public final static String PARAMETER_KEEP_POSITIONS = "keep_positions";
 
 	/**
 	 * the parameter a controls the attraction between connected nodes.
 	 */
 	private float a = 3f;
+	public static final String PARAMETER_ALPHA = "alpha";
 
 	/**
 	 * a scaling factor for the attractive term. Connected as well as
 	 * unconnected nodes are affected.
 	 */
 	private float attraction = 0.2f;
+	public static final String PARAMETER_ATTRACTION = "attraction";
 
 	/**
 	 * b scales the repulsive force
 	 */
 	private float b = 8f;
+	public static final String PARAMETER_BETA = "beta";
 
 	/**
 	 * deltaT controls the calculation precision: smaller deltaT results in
 	 * higher precision
 	 */
 	private float deltaT = 2f;
+	public static final String PARAMETER_DELTA = "delta";
 
 	/**
 	 * a maximum force for a node
 	 */
 	private float forceCutoff = 7f;
+	public static final String PARAMETER_FORCE_CUTOFF = "force_cutoff";
 
 	/**
 	 * Controls how much slower the new layout will be computed, by scaling the
@@ -84,6 +89,13 @@ public class ARFLayout implements Layout {
 	 */
 	private int sensitivity = 1;
 	public static final String PARAMETER_SENSITIVITY = "sensitivity";
+
+	/**
+	 * When enabled, before each computation step the layout is centered.
+	 * Warning: keeping the layout centered adds a computation of O(|V|).
+	 */
+	private boolean keepCentered = false;
+	public static final String PARAMETER_KEEP_CENTERED = "keep_centered";
 
 	/**
 	 * if the movement in the system is less than epsilon*|V|, the algorithm
@@ -143,8 +155,11 @@ public class ARFLayout implements Layout {
 
 	@Override
 	public void goAlgo() {
+
+		if (keepCentered)
+			LayoutLoader.getInstance().centerLayout();
+
 		graph = graphModel.getGraphVisible();
-		LayoutLoader.getInstance().centerLayout();
 		advancePositions();
 		++iterations;
 
@@ -157,8 +172,8 @@ public class ARFLayout implements Layout {
 			randomize = false;
 		}
 
-		if (LayoutLoader.VERBOSE_LAYOUT)
-			Cuttlefish.debug(this, "Change = " + change);
+		// if (LayoutLoader.VERBOSE_LAYOUT)
+		// Cuttlefish.debug(this, "Change = " + change);
 	}
 
 	@Override
@@ -170,7 +185,8 @@ public class ARFLayout implements Layout {
 	public void endAlgo() {
 
 		if (LayoutLoader.VERBOSE_LAYOUT) {
-			Cuttlefish.debug(this, "Layout ended. Iterations: " + iterations + ", Change: " + change);
+			Cuttlefish.debug(this, "Layout ended. Iterations: " + iterations
+					+ ", Change: " + change);
 		}
 	}
 
@@ -188,6 +204,24 @@ public class ARFLayout implements Layout {
 
 				} else if (key.equalsIgnoreCase(PARAMETER_KEEP_POSITIONS)) {
 					keepInitialPositions = Boolean.parseBoolean(value);
+
+				} else if (key.equalsIgnoreCase(PARAMETER_KEEP_CENTERED)) {
+					keepCentered = Boolean.parseBoolean(value);
+
+				} else if (key.equalsIgnoreCase(PARAMETER_ALPHA)) {
+					a = Float.parseFloat(value);
+
+				} else if (key.equalsIgnoreCase(PARAMETER_ATTRACTION)) {
+					attraction = Float.parseFloat(value);
+
+				} else if (key.equalsIgnoreCase(PARAMETER_BETA)) {
+					b = Float.parseFloat(value);
+
+				} else if (key.equalsIgnoreCase(PARAMETER_DELTA)) {
+					deltaT = Float.parseFloat(value);
+
+				} else if (key.equalsIgnoreCase(PARAMETER_FORCE_CUTOFF)) {
+					forceCutoff = Float.parseFloat(value);
 				}
 			}
 		}
@@ -321,6 +355,7 @@ public class ARFLayout implements Layout {
 		fixedThreshold = THRESHOLD_TYPE_FIXED;
 		converged = false;
 		sensitivity = 1;
+		keepCentered = false;
 
 		if (fixedThreshold || graph == null) {
 			threshold = 10;

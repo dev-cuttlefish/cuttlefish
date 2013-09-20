@@ -13,6 +13,7 @@ import org.gephi.layout.plugin.force.yifanHu.YifanHu;
 import org.gephi.layout.plugin.forceAtlas2.ForceAtlas2Builder;
 import org.gephi.layout.plugin.fruchterman.FruchtermanReingold;
 import org.gephi.layout.plugin.fruchterman.FruchtermanReingoldBuilder;
+import org.gephi.layout.plugin.random.Random;
 import org.gephi.layout.spi.Layout;
 import org.gephi.layout.spi.LayoutBuilder;
 import org.openide.util.Lookup;
@@ -59,12 +60,12 @@ public class LayoutLoader {
 		builders.put("weighted-kcore", WeightedKCoreLayoutBuilder.class);
 
 		// Gephi Toolkit Layouts
-		// TODO ilias: debug ForceAtlas2
 		builders.put("fruchterman-reingold", FruchtermanReingoldBuilder.class);
 		builders.put("yifanhu", YifanHu.class);
 		builders.put("force-atlas", ForceAtlas2Builder.class);
+		builders.put("random", Random.class);
 
-		// TODO ilias: Port from jung2 if necessary
+		// TODO: Port from jung2 if necessary
 		// Tree, Radial Tree, Kamada Kawai, ISO-M
 		unsupported.put("tree", null);
 		unsupported.put("radial-tree", null);
@@ -81,6 +82,7 @@ public class LayoutLoader {
 		abbreviations.put("Weighted K-Core", "weighted-kcore");
 		abbreviations.put("Yifan Hu", "yifanhu");
 		abbreviations.put("ForceAtlas 2", "force-atlas");
+		abbreviations.put("Random", "random");
 	}
 
 	public static LayoutLoader getInstance() {
@@ -115,11 +117,9 @@ public class LayoutLoader {
 
 	private final boolean LIMIT_LAYOUT_ITERATIONS = false;
 	private int layoutIterationLimit = 0;
-	private long layoutTime = 0;
-	private Object[] layoutParameters = new Object[2];
 	private String layoutName = null;
 
-	private Map<String, String> parameters = null;
+	private Map<String, String> layoutParameters = null;
 
 	private LayoutLoader(NetworkPanel panel) {
 		networkPanel = panel;
@@ -131,20 +131,20 @@ public class LayoutLoader {
 			@Override
 			public void propertyChange(PropertyChangeEvent evt) {
 
+				// Cuttlefish.debug(instance, evt.getPropertyName() + ": " +
+				// evt.getNewValue());
+
 				if (evt.getPropertyName().equals(LayoutModel.SELECTED_LAYOUT)) {
 					// Selected layout changed
 					if (networkPanel != null
 							&& !networkPanel.getNetwork().isEmpty()) {
 
-						// Network might be too large to animate layout
-						// computation
+						// Network might be too large to animate
 						int renderLimit = 2000;
 						if (networkPanel.getNetwork().getVertexCount() < renderLimit
 								&& networkPanel.getNetwork().getEdgeCount() < renderLimit)
 							networkPanel.getNetworkRenderer().animate(true,
 									true);
-
-						layoutTime = System.currentTimeMillis();
 					}
 
 				} else if (evt.getPropertyName().equals(LayoutModel.RUNNING)) {
@@ -153,32 +153,32 @@ public class LayoutLoader {
 					boolean layoutStopped = (Boolean) evt.getOldValue()
 							&& !(Boolean) evt.getNewValue();
 
-					Rectangle2D rect = null;
-					boolean normBeforeCenter = false;
+					if (networkPanel == null) {
+						// Command line execution
 
-					if (normBeforeCenter && shouldNormalize())
-						rect = normalizeLayout();
+						if (layoutStopped && shouldNormalize()) {
+							normalizeLayout();
+						}
 
-					if (networkPanel != null) {
-
-						if (normBeforeCenter && shouldNormalize())
-							networkPanel.getNetworkRenderer().centerNetwork(
-									rect);
-						else
-							centerLayout();
+					} else {
+						// GUI execution
 
 						if (layoutStopped) {
 							networkPanel.getNetworkRenderer().animate(false,
 									true);
-
 							networkPanel.getStatusBar().setMessage(
 									"Layout set: "
-											+ networkPanel.getNetworkLayout()
-													.getBuilder().getName());
-
-							layoutTime = System.currentTimeMillis()
-									- layoutTime;
+											+ getSelectedLayout().getBuilder()
+													.getName());
 						}
+
+						if (shouldNormalize()) {
+							Rectangle2D rect = normalizeLayout();
+							networkPanel.getNetworkRenderer().centerNetwork(
+									rect);
+							networkPanel.getNetworkRenderer().repaint();
+						}
+
 					}
 				}
 			}
@@ -217,11 +217,16 @@ public class LayoutLoader {
 			weightedArf.keepInitialPostitions(true);
 
 		} else if (newLayout instanceof WeightedKCoreLayout) {
-			double alpha = (Double) layoutParameters[0];
-			double beta = (Double) layoutParameters[1];
+			if (layoutParameters != null) {
+				double alpha = Double.parseDouble(layoutParameters
+						.get(WeightedKCoreLayout.PARAMETER_ALPHA));
 
-			((WeightedKCoreLayout) newLayout).setAlpha(alpha);
-			((WeightedKCoreLayout) newLayout).setBeta(beta);
+				double beta = Double.parseDouble(layoutParameters
+						.get(WeightedKCoreLayout.PARAMETER_BETA));
+
+				((WeightedKCoreLayout) newLayout).setAlpha(alpha);
+				((WeightedKCoreLayout) newLayout).setBeta(beta);
+			}
 
 		} else if (newLayout instanceof FruchtermanReingold) {
 			layoutIterationLimit = 700;
@@ -234,7 +239,7 @@ public class LayoutLoader {
 	}
 
 	public void resetLayout() {
-		parameters = null;
+		layoutParameters = null;
 		setLayoutByName(layoutName);
 	}
 
@@ -245,7 +250,7 @@ public class LayoutLoader {
 		if (layoutController.canStop())
 			layoutController.stopLayout();
 
-		parameters = null;
+		layoutParameters = null;
 	}
 
 	public Layout getSelectedLayout() {
@@ -286,17 +291,11 @@ public class LayoutLoader {
 	}
 
 	public Map<String, String> getLayoutParameters() {
-		return parameters;
+		return layoutParameters;
 	}
 
 	public void setLayoutParameters(Map<String, String> parameters) {
-		this.parameters = parameters;
-	}
-
-	public void setLayoutParameters(Object[] parameters) {
-		for (int i = 0; i < parameters.length; ++i) {
-			layoutParameters[i] = parameters[i];
-		}
+		this.layoutParameters = parameters;
 	}
 
 	public Layout getLayout(String name) {
@@ -330,8 +329,6 @@ public class LayoutLoader {
 	 */
 	public Rectangle2D normalizeLayout() {
 
-		// TODO ilias: Performance benefit if the bounding rectangle is
-		// created every time a node is added?
 		BrowsableNetwork network = BrowsableNetwork.loadExistingNetwork();
 		if (network.isEmpty())
 			return null;

@@ -27,6 +27,7 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Observable;
 import java.util.Set;
 
@@ -43,9 +44,6 @@ import ch.ethz.sg.cuttlefish.gui.visualization.mouse.GraphMouse;
 import ch.ethz.sg.cuttlefish.gui.visualization.mouse.GraphMouse.Mode;
 import ch.ethz.sg.cuttlefish.gui.visualization.mouse.GraphMouseImpl;
 import ch.ethz.sg.cuttlefish.layout.LayoutLoader;
-import ch.ethz.sg.cuttlefish.layout.circle.CircleLayout;
-import ch.ethz.sg.cuttlefish.layout.kcore.KCoreLayout;
-import ch.ethz.sg.cuttlefish.layout.kcore.WeightedKCoreLayout;
 import ch.ethz.sg.cuttlefish.misc.Observer;
 import ch.ethz.sg.cuttlefish.misc.Subject;
 import ch.ethz.sg.cuttlefish.networks.BrowsableForestNetwork;
@@ -212,9 +210,7 @@ public class NetworkPanel extends JPanel implements Subject, INetworkBrowser,
 			return;
 		}
 
-		if (getNetworkLayout() instanceof CircleLayout
-				|| getNetworkLayout() instanceof KCoreLayout
-				|| getNetworkLayout() instanceof WeightedKCoreLayout) {
+		if (getNetworkLayout() instanceof BrowsableForestNetwork) {
 			setNetwork(((BrowsableForestNetwork) getNetwork())
 					.getOriginalNetwork());
 		}
@@ -247,7 +243,7 @@ public class NetworkPanel extends JPanel implements Subject, INetworkBrowser,
 		// getNetwork().fixVertices(!fixed);
 	}
 
-	public void setLayoutParameters(Object[] parameters) {
+	public void setLayoutParameters(Map<String, String> parameters) {
 		layoutLoader.setLayoutParameters(parameters);
 	}
 

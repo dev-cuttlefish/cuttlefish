@@ -41,6 +41,7 @@ import javax.swing.KeyStroke;
 import ch.ethz.sg.cuttlefish.gui.CuttlefishToolbars;
 import ch.ethz.sg.cuttlefish.gui.NetworkPanel;
 import ch.ethz.sg.cuttlefish.layout.LayoutLoader;
+import ch.ethz.sg.cuttlefish.layout.kcore.WeightedKCoreLayout;
 import ch.ethz.sg.cuttlefish.misc.Observer;
 import ch.ethz.sg.cuttlefish.misc.Subject;
 import ch.ethz.sg.cuttlefish.networks.BrowsableForestNetwork;
@@ -57,15 +58,18 @@ public class LayoutMenu extends AbstractMenu implements Observer {
 	private JRadioButtonMenuItem kcore;
 	private JRadioButtonMenuItem weightedKcore;
 	private JRadioButtonMenuItem fixed;
+	private JRadioButtonMenuItem circle;
 	private JRadioButtonMenuItem weightedArf;
-	private JRadioButtonMenuItem kamada;
 	private JRadioButtonMenuItem fruchterman;
 	private JRadioButtonMenuItem yifanhu;
 	private JRadioButtonMenuItem forceatlas;
+	private JRadioButtonMenuItem random;
+
+	private JRadioButtonMenuItem kamada;
 	private JRadioButtonMenuItem isom;
-	private JRadioButtonMenuItem circle;
 	private JRadioButtonMenuItem tree;
 	private JRadioButtonMenuItem radialTree;
+
 	private JRadioButtonMenuItem lastSelectedLayout;
 	private Map<JRadioButtonMenuItem, String> layoutMap;
 
@@ -86,6 +90,7 @@ public class LayoutMenu extends AbstractMenu implements Observer {
 		fruchterman = new JRadioButtonMenuItem("Fruchterman Reingold");
 		yifanhu = new JRadioButtonMenuItem("Yifan Hu");
 		forceatlas = new JRadioButtonMenuItem("ForceAtlas 2");
+		random = new JRadioButtonMenuItem("Random");
 		isom = new JRadioButtonMenuItem("ISO M");
 		circle = new JRadioButtonMenuItem("Circle");
 		tree = new JRadioButtonMenuItem("Tree");
@@ -107,10 +112,12 @@ public class LayoutMenu extends AbstractMenu implements Observer {
 				ActionEvent.ALT_MASK));
 		forceatlas.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_7,
 				ActionEvent.ALT_MASK));
-		
+
 		circle.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_8,
 				ActionEvent.ALT_MASK));
 		fixed.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_9,
+				ActionEvent.ALT_MASK));
+		random.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_0,
 				ActionEvent.ALT_MASK));
 
 		// isom.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_6,
@@ -135,6 +142,7 @@ public class LayoutMenu extends AbstractMenu implements Observer {
 		layoutButtons.add(circle);
 		layoutButtons.add(tree);
 		layoutButtons.add(radialTree);
+		layoutButtons.add(random);
 
 		layoutMap = new HashMap<JRadioButtonMenuItem, String>();
 		layoutMap.put(arf, "arf");
@@ -150,6 +158,7 @@ public class LayoutMenu extends AbstractMenu implements Observer {
 		layoutMap.put(circle, "circle");
 		layoutMap.put(tree, "tree");
 		layoutMap.put(radialTree, "radial-tree");
+		layoutMap.put(random, "random");
 
 		JRadioButtonMenuItem selected = arf;
 		for (JRadioButtonMenuItem s : layoutMap.keySet()) {
@@ -158,7 +167,7 @@ public class LayoutMenu extends AbstractMenu implements Observer {
 				break;
 			}
 		}
-		
+
 		layoutSelected(selected);
 
 		stopButton = new JMenuItem("Lock");
@@ -178,16 +187,16 @@ public class LayoutMenu extends AbstractMenu implements Observer {
 
 		this.add(arf);
 		this.add(weightedArf);
-
 		this.add(kcore);
 		this.add(weightedKcore);
-
 		this.add(fruchterman);
 		this.add(yifanhu);
 		this.add(forceatlas);
+		this.addSeparator();
 		
 		this.add(circle);
 		this.add(fixed);
+		this.add(random);
 
 		// this.add(tree);
 		// this.add(radialTree);
@@ -254,6 +263,11 @@ public class LayoutMenu extends AbstractMenu implements Observer {
 		forceatlas.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				layoutSelected(forceatlas);
+			}
+		});
+		random.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				layoutSelected(random);
 			}
 		});
 		isom.addActionListener(new ActionListener() {
@@ -374,15 +388,19 @@ public class LayoutMenu extends AbstractMenu implements Observer {
 				"Parameter configuration", JOptionPane.PLAIN_MESSAGE, null,
 				null, "1, 1");
 
-		double alpha = 1, beta = 1;
+		String alpha = "1", beta = "1";
 		if (s != null) {
-			alpha = new Double(s.split(",")[0]);
-			beta = new Double(s.split(",")[1]);
+			alpha = s.split(",")[0];
+			beta = s.split(",")[1];
 		} else {
 			accepted = false;
 		}
 
-		networkPanel.setLayoutParameters(new Object[] { alpha, beta });
+		Map<String, String> params = new HashMap<String, String>();
+		params.put(WeightedKCoreLayout.PARAMETER_ALPHA, alpha);
+		params.put(WeightedKCoreLayout.PARAMETER_BETA, beta);
+
+		networkPanel.setLayoutParameters(params);
 		return accepted;
 	}
 
