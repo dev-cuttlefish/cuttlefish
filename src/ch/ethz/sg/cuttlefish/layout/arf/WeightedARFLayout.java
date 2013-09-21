@@ -301,10 +301,7 @@ public class WeightedARFLayout implements Layout {
 	}
 
 	private void setChange(double change) {
-		if (this.change == change) {
-			converged = true;
-		}
-
+		this.converged = this.change <= change; // this.change == change;
 		this.change = change;
 	}
 
