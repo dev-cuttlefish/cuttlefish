@@ -178,6 +178,7 @@ public class ARFLayout implements Layout {
 
 	@Override
 	public boolean canAlgo() {
+		// TODO ilias: remove converged field (unnecessary), also from weighted arf
 		return (graphModel != null) && (change > threshold) && !converged;
 	}
 
@@ -260,7 +261,7 @@ public class ARFLayout implements Layout {
 			}
 		}
 
-		converged = (change == c);
+		converged = change <= threshold;// (change == c);
 		change = c;
 		align(100, 100);
 	}
