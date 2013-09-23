@@ -127,7 +127,6 @@ public class LayoutLoader {
 				.getModel();
 
 		layoutModel.addPropertyChangeListener(new LayoutChangeListener());
-
 	}
 
 	public void setLayoutByName(String selectedLayout) {
@@ -271,11 +270,11 @@ public class LayoutLoader {
 	 * Normalizes the coordinates of the nodes of the graph, by bringing them
 	 * close to the origin
 	 */
-	public Rectangle2D normalizeLayout() {
+	public void normalizeLayout() {
 
 		BrowsableNetwork network = BrowsableNetwork.loadExistingNetwork();
 		if (network.isEmpty())
-			return null;
+			return;
 
 		Point2D anyPoint = network.randomVertex().getPosition();
 		Rectangle2D oldBounds = new Rectangle2D.Double(anyPoint.getX(),
@@ -285,37 +284,48 @@ public class LayoutLoader {
 			oldBounds.add(v.getPosition());
 
 		double x, y;
-		Rectangle2D normBounds = null;
 		for (Vertex v : network.getVertices()) {
 			x = v.getPosition().getX();
 			y = v.getPosition().getY();
 
 			v.setPosition(x - oldBounds.getMinX(), y - oldBounds.getMinY());
-
-			if (normBounds == null)
-				normBounds = new Rectangle2D.Double(v.getPosition().getX(), v
-						.getPosition().getY(), 0, 0);
-			else
-				normBounds.add(v.getPosition());
 		}
-
-		return normBounds;
 	}
 
-	public void centerLayout() {
+	public void centerLayout(boolean forceRepaint) {
 		networkPanel.getNetworkRenderer().centerNetwork();
+
+		if (forceRepaint)
+			networkPanel.getNetworkRenderer().repaint();
 	}
+
+	// LayoutChangeListener inner class
 
 	class LayoutChangeListener implements PropertyChangeListener {
-
 		@Override
 		public void propertyChange(PropertyChangeEvent evt) {
+
+			// Cuttlefish.debug(instance, evt.getPropertyName() + ": " +
+			// evt.getNewValue());
 
 			if (evt.getPropertyName().equals(LayoutModel.SELECTED_LAYOUT))
 				layoutSelectedChanged();
 
 			else if (evt.getPropertyName().equals(LayoutModel.RUNNING))
 				layoutStateChanged(evt);
+		}
+
+		private void layoutSelectedChanged() {
+			// Selected layout changed
+			if (networkPanel != null && !networkPanel.getNetwork().isEmpty()) {
+
+				// Network might be too large to animate
+				int renderLimit = 4000;
+				boolean animate = networkPanel.getNetwork().getVertexCount() < renderLimit
+						&& networkPanel.getNetwork().getEdgeCount() < renderLimit;
+
+				networkPanel.getNetworkRenderer().animate(animate, true);
+			}
 		}
 
 		private void layoutStateChanged(PropertyChangeEvent evt) {
@@ -342,25 +352,11 @@ public class LayoutLoader {
 											.getName());
 				}
 
-				if (shouldNormalize()) {
-					Rectangle2D rect = normalizeLayout();
-					networkPanel.getNetworkRenderer().centerNetwork(rect);
-					networkPanel.getNetworkRenderer().repaint();
-				}
+				if (shouldNormalize())
+					normalizeLayout();
 
-			}
-		}
+				centerLayout(true);
 
-		private void layoutSelectedChanged() {
-			// Selected layout changed
-			if (networkPanel != null && !networkPanel.getNetwork().isEmpty()) {
-
-				// Network might be too large to animate
-				int renderLimit = 2000;
-				boolean animate = networkPanel.getNetwork().getVertexCount() < renderLimit
-						&& networkPanel.getNetwork().getEdgeCount() < renderLimit;
-
-				networkPanel.getNetworkRenderer().animate(animate, true);
 			}
 		}
 

@@ -1,7 +1,6 @@
 package ch.ethz.sg.cuttlefish.gui.visualization;
 
 import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
 import java.nio.DoubleBuffer;
 import java.nio.IntBuffer;
 import java.util.Collection;
@@ -238,25 +237,6 @@ public class NetworkRenderer implements GLEventListener {
 		}
 	}
 
-	public void centerNetwork(Rectangle2D bounds) {
-		if (bounds == null)
-			return;
-
-		double left = bounds.getMinX();
-		double right = bounds.getMaxX();
-		double bottom = bounds.getMinY();
-		double top = bounds.getMaxY();
-		double deltaX = getCenter().getX() - (right + left) / 2;
-		double deltaY = getCenter().getY() - (top + bottom) / 2;
-		double zoom = height / (top - bottom + RENDER_MARGIN);
-
-		translate(deltaX, deltaY);
-		scale(zoom, getCenter());
-
-		graphMouse.setZoomFactor(zoom);
-		graphMouse.setZoomPosition(getCenter());
-	}
-
 	/**
 	 * This method finds the location of the graph relative to the viewer and
 	 * shifts is so that it appears in the center of JUNG's VisualizationViewer.
@@ -286,10 +266,10 @@ public class NetworkRenderer implements GLEventListener {
 
 		if (!Double.isInfinite(deltaX) && !Double.isInfinite(deltaY)
 				&& !Double.isNaN(deltaX) && !Double.isNaN(deltaY)) {
-			
+
 			translate(deltaX, deltaY);
 			scale(zoom, getCenter());
-			
+
 			graphMouse.setZoomFactor(zoom);
 			graphMouse.setZoomPosition(getCenter());
 		}

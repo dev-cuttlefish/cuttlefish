@@ -23,7 +23,6 @@
 package ch.ethz.sg.cuttlefish.gui;
 
 import java.awt.BorderLayout;
-import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.LinkedList;
 import java.util.List;
@@ -225,12 +224,8 @@ public class NetworkPanel extends JPanel implements Subject, INetworkBrowser,
 	}
 
 	public void centerLayout() {
-		Rectangle2D rect = layoutLoader.normalizeLayout();
-
-		if (rect != null) {
-			networkRenderer.centerNetwork(rect);
-			networkRenderer.repaint();
-		}
+		networkRenderer.centerNetwork();
+		networkRenderer.repaint();
 	}
 
 	@Override

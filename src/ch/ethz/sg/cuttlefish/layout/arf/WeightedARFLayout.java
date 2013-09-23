@@ -116,6 +116,8 @@ public class WeightedARFLayout implements Layout {
 	private boolean converged = false;
 	private int maxUpdates = Integer.MAX_VALUE;
 	private int countUpdates = 0;
+	private boolean randOnce = true;
+	private int unchangedCount = 0;
 
 	private GraphModel graphModel = null;
 	private Graph graph = null;
@@ -136,13 +138,18 @@ public class WeightedARFLayout implements Layout {
 
 		graph = graphModel.getGraphVisible();
 		change = Double.MAX_VALUE;
-		random = new Random(System.currentTimeMillis());
+		random = new Random();
+		randOnce = true;
+		sensitivity = 1;
+		keepCentered = false;
+		unchangedCount = 0;
 
 		loadParameters();
 		computeWeightScalingParameters();
 
-		if (!fixedThreshold)
+		if (!fixedThreshold) {
 			threshold = epsilon * graph.getNodeCount();
+		}
 
 		if (!keepInitialPositions) {
 			randomizePositions();
@@ -164,13 +171,19 @@ public class WeightedARFLayout implements Layout {
 			}
 		}
 
-		if (keepCentered)
-			LayoutLoader.getInstance().centerLayout();
-
 		graph = graphModel.getGraphVisible();
 		advancePositions();
-
 		countUpdates++;
+
+		if (keepCentered)
+			LayoutLoader.getInstance().centerLayout(false);
+
+		// Do a single step when less than 3 nodes exist
+		if (graph.getNodeCount() <= 3)
+			converged = true;
+
+		// if (LayoutLoader.VERBOSE_LAYOUT)
+		// Cuttlefish.debug(this, "Change = " + change);
 	}
 
 	@Override
@@ -183,56 +196,8 @@ public class WeightedARFLayout implements Layout {
 	public void endAlgo() {
 
 		if (LayoutLoader.VERBOSE_LAYOUT) {
-			Cuttlefish.debug(this, "Layout ended. Change: " + change);
-		}
-	}
-
-	private void loadParameters() {
-		Map<String, String> params = LayoutLoader.getInstance()
-				.getLayoutParameters();
-
-		if (params != null && !params.isEmpty()) {
-			for (String key : params.keySet()) {
-
-				String value = params.get(key);
-
-				if (key.equalsIgnoreCase(PARAMETER_SENSITIVITY)) {
-					sensitivity = Integer.parseInt(value);
-
-					if (sensitivity < 1)
-						sensitivity = 1;
-
-				} else if (key.equalsIgnoreCase(PARAMETER_KEEP_POSITIONS)) {
-					keepInitialPositions = Boolean.parseBoolean(value);
-
-				} else if (key.equalsIgnoreCase(PARAMETER_KEEP_CENTERED)) {
-					keepCentered = Boolean.parseBoolean(value);
-
-				} else if (key.equalsIgnoreCase(PARAMETER_ALPHA)) {
-					a = Float.parseFloat(value);
-
-				} else if (key.equalsIgnoreCase(PARAMETER_ATTRACTION)) {
-					attraction = Float.parseFloat(value);
-
-				} else if (key.equalsIgnoreCase(PARAMETER_BETA)) {
-					b = Float.parseFloat(value);
-
-				} else if (key.equalsIgnoreCase(PARAMETER_DELTA)) {
-					deltaT = Float.parseFloat(value);
-
-				} else if (key.equalsIgnoreCase(PARAMETER_FORCE_CUTOFF)) {
-					forceCutoff = Float.parseFloat(value);
-				}
-			}
-		}
-	}
-
-	private void randomizePositions() {
-		for (Node n : graph.getNodes()) {
-			float radius = 2000 * random.nextFloat();
-			float alpha = 360 * random.nextFloat();
-			n.getNodeData().setX(radius * (float) Math.cos(alpha));
-			n.getNodeData().setY(radius * (float) Math.sin(alpha));
+			Cuttlefish.debug(this, "Layout ended. Iterations: " + countUpdates
+					+ ", Change: " + change);
 		}
 	}
 
@@ -266,7 +231,7 @@ public class WeightedARFLayout implements Layout {
 	}
 
 	private void advancePositions() {
-		double c = 0;
+		double change = 0;
 		int nodeCount = graph.getNodeCount();
 
 		for (int iter = 0; iter < updatesPerFrame; ++iter) {
@@ -285,35 +250,40 @@ public class WeightedARFLayout implements Layout {
 				n.getNodeData().setY(
 						n.getNodeData().y() + (float) f.getY() / sensitivity);
 
-				c += Math.abs(f.getX()) + Math.abs(f.getY());
+				change += Math.abs(f.getX()) + Math.abs(f.getY());
 			}
 		}
-
-		setChange(c);
+		setChange(change);
+		align(100, 100);
 	}
 
-	private int unchangedCount = 0;
-	private int increasedCount = 0;
-
 	private void setChange(double c) {
-		int limit = 3;
+		int limit = 5;
 
-		if (c == change && ++unchangedCount == limit) {
-			unchangedCount = 0;
-			converged = true;
+		if (c == change) {
+			++unchangedCount;
 
-		} else if (c > change && ++increasedCount == limit) {
-			increasedCount = 0;
-			randomizePositions();
+			if (unchangedCount == limit) {
+				unchangedCount = 0;
+				converged = true;
+			}
+
+		} else if (c > change) {
+			// TODO ilias: what to do when change increases continuously?
 
 		} else if (c < change) {
 			converged = change <= threshold;
 			unchangedCount = 0;
-			increasedCount = 0;
+		}
+
+		// When the change is high, randomizing positions will help
+		// faster convergence.
+		if (c > 50000 && randOnce) {
+			randomizePositions();
+			randOnce = false;
 		}
 
 		change = c;
-		align(100, 100);
 	}
 
 	private void align(float x0, float y0) {
@@ -415,6 +385,55 @@ public class WeightedARFLayout implements Layout {
 			e.printStackTrace();
 		}
 		return properties.toArray(new LayoutProperty[0]);
+	}
+
+	private void loadParameters() {
+		Map<String, String> params = LayoutLoader.getInstance()
+				.getLayoutParameters();
+
+		if (params != null && !params.isEmpty()) {
+			for (String key : params.keySet()) {
+
+				String value = params.get(key);
+
+				if (key.equalsIgnoreCase(PARAMETER_SENSITIVITY)) {
+					sensitivity = Integer.parseInt(value);
+
+					if (sensitivity < 1)
+						sensitivity = 1;
+
+				} else if (key.equalsIgnoreCase(PARAMETER_KEEP_POSITIONS)) {
+					keepInitialPositions = Boolean.parseBoolean(value);
+
+				} else if (key.equalsIgnoreCase(PARAMETER_KEEP_CENTERED)) {
+					keepCentered = Boolean.parseBoolean(value);
+
+				} else if (key.equalsIgnoreCase(PARAMETER_ALPHA)) {
+					a = Float.parseFloat(value);
+
+				} else if (key.equalsIgnoreCase(PARAMETER_ATTRACTION)) {
+					attraction = Float.parseFloat(value);
+
+				} else if (key.equalsIgnoreCase(PARAMETER_BETA)) {
+					b = Float.parseFloat(value);
+
+				} else if (key.equalsIgnoreCase(PARAMETER_DELTA)) {
+					deltaT = Float.parseFloat(value);
+
+				} else if (key.equalsIgnoreCase(PARAMETER_FORCE_CUTOFF)) {
+					forceCutoff = Float.parseFloat(value);
+				}
+			}
+		}
+	}
+
+	private void randomizePositions() {
+		for (Node n : graph.getNodes()) {
+			float radius = 2000 * random.nextFloat();
+			float alpha = 360 * random.nextFloat();
+			n.getNodeData().setX(radius * (float) Math.cos(alpha));
+			n.getNodeData().setY(radius * (float) Math.sin(alpha));
+		}
 	}
 
 	@Override
