@@ -116,7 +116,6 @@ public class WeightedARFLayout implements Layout {
 	private boolean converged = false;
 	private int maxUpdates = Integer.MAX_VALUE;
 	private int countUpdates = 0;
-	private boolean randomize = true;
 
 	private GraphModel graphModel = null;
 	private Graph graph = null;
@@ -137,15 +136,13 @@ public class WeightedARFLayout implements Layout {
 
 		graph = graphModel.getGraphVisible();
 		change = Double.MAX_VALUE;
-		random = new Random();
-		randomize = true;
+		random = new Random(System.currentTimeMillis());
 
 		loadParameters();
 		computeWeightScalingParameters();
 
-		if (!fixedThreshold) {
+		if (!fixedThreshold)
 			threshold = epsilon * graph.getNodeCount();
-		}
 
 		if (!keepInitialPositions) {
 			randomizePositions();
@@ -174,19 +171,11 @@ public class WeightedARFLayout implements Layout {
 		advancePositions();
 
 		countUpdates++;
-
-		if (change > 30000 && randomize) {
-			randomizePositions();
-			randomize = false;
-		}
-
-		// if (LayoutLoader.VERBOSE_LAYOUT)
-		// Cuttlefish.debug(this, "Change = " + change);
 	}
 
 	@Override
 	public boolean canAlgo() {
-		return (graphModel != null) && (change > threshold) && !converged
+		return (graphModel != null) && !converged
 				&& (countUpdates < maxUpdates);
 	}
 
@@ -209,6 +198,9 @@ public class WeightedARFLayout implements Layout {
 
 				if (key.equalsIgnoreCase(PARAMETER_SENSITIVITY)) {
 					sensitivity = Integer.parseInt(value);
+
+					if (sensitivity < 1)
+						sensitivity = 1;
 
 				} else if (key.equalsIgnoreCase(PARAMETER_KEEP_POSITIONS)) {
 					keepInitialPositions = Boolean.parseBoolean(value);
@@ -274,7 +266,7 @@ public class WeightedARFLayout implements Layout {
 	}
 
 	private void advancePositions() {
-		double change = 0;
+		double c = 0;
 		int nodeCount = graph.getNodeCount();
 
 		for (int iter = 0; iter < updatesPerFrame; ++iter) {
@@ -293,16 +285,35 @@ public class WeightedARFLayout implements Layout {
 				n.getNodeData().setY(
 						n.getNodeData().y() + (float) f.getY() / sensitivity);
 
-				change += Math.abs(f.getX()) + Math.abs(f.getY());
+				c += Math.abs(f.getX()) + Math.abs(f.getY());
 			}
 		}
-		setChange(change);
-		align(100, 100);
+
+		setChange(c);
 	}
 
-	private void setChange(double change) {
-		this.converged = this.change <= change; // this.change == change;
-		this.change = change;
+	private int unchangedCount = 0;
+	private int increasedCount = 0;
+
+	private void setChange(double c) {
+		int limit = 3;
+
+		if (c == change && ++unchangedCount == limit) {
+			unchangedCount = 0;
+			converged = true;
+
+		} else if (c > change && ++increasedCount == limit) {
+			increasedCount = 0;
+			randomizePositions();
+
+		} else if (c < change) {
+			converged = change <= threshold;
+			unchangedCount = 0;
+			increasedCount = 0;
+		}
+
+		change = c;
+		align(100, 100);
 	}
 
 	private void align(float x0, float y0) {
