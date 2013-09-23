@@ -417,9 +417,7 @@ public class Vertex implements Comparable<Vertex> {
 	 * @param position
 	 */
 	public void setPosition(Point2D position) {
-		this.internalNode.getNodeData().setX((float) position.getX());
-		this.internalNode.getNodeData().setY((float) position.getY());
-		this.internalNode.getNodeData().setZ(0);
+		setPosition((float) position.getX(), (float) position.getY());
 	}
 
 	/**
@@ -431,6 +429,7 @@ public class Vertex implements Comparable<Vertex> {
 	public void setPosition(double x, double y) {
 		this.internalNode.getNodeData().setX((float) x);
 		this.internalNode.getNodeData().setY((float) y);
+		this.internalNode.getNodeData().setZ(0);
 	}
 
 	public String toString() {

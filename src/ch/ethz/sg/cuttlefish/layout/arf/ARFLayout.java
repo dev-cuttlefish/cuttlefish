@@ -87,14 +87,14 @@ public class ARFLayout implements Layout {
 	 * 
 	 * The sensitivity must always be greater than zero.
 	 */
-	private int sensitivity = 1;
+	private int sensitivity;
 	public static final String PARAMETER_SENSITIVITY = "sensitivity";
 
 	/**
 	 * When enabled, before each computation step the layout is centered.
 	 * Warning: keeping the layout centered adds a computation of O(|V|).
 	 */
-	private boolean keepCentered = false;
+	private boolean keepCentered;
 	public static final String PARAMETER_KEEP_CENTERED = "keep_centered";
 
 	/**
@@ -108,6 +108,8 @@ public class ARFLayout implements Layout {
 	private Random random;
 	private boolean fixedThreshold = THRESHOLD_TYPE_FIXED;
 	private boolean converged = false;
+	private boolean randOnce = true;
+	private int unchangedCount = 0;
 
 	private GraphModel graphModel = null;
 	private Graph graph = null;
@@ -129,7 +131,11 @@ public class ARFLayout implements Layout {
 
 		graph = graphModel.getGraphVisible();
 		change = Double.MAX_VALUE;
-		random = new Random(System.currentTimeMillis());
+		random = new Random();
+		randOnce = true;
+		sensitivity = 1;
+		keepCentered = false;
+		unchangedCount = 0;
 
 		loadParameters();
 
@@ -150,18 +156,22 @@ public class ARFLayout implements Layout {
 
 	@Override
 	public void goAlgo() {
-		keepCentered = true;
-
-		if (keepCentered)
-			LayoutLoader.getInstance().centerLayout();
-
 		graph = graphModel.getGraphVisible();
 		advancePositions();
 		++iterations;
 
+		if (keepCentered) {
+			// center without repainting, since this would double
+			// the rendering process
+			LayoutLoader.getInstance().centerLayout(false);
+		}
+
 		// Do a single step when less than 3 nodes exist
 		if (graph.getNodeCount() <= 3)
 			converged = true;
+
+		// if (LayoutLoader.VERBOSE_LAYOUT)
+		// Cuttlefish.debug(this, "Change = " + change);
 	}
 
 	@Override
@@ -178,62 +188,12 @@ public class ARFLayout implements Layout {
 		}
 	}
 
-	private void loadParameters() {
-		Map<String, String> params = LayoutLoader.getInstance()
-				.getLayoutParameters();
-
-		if (params != null && !params.isEmpty()) {
-			for (String key : params.keySet()) {
-
-				String value = params.get(key);
-
-				if (key.equalsIgnoreCase(PARAMETER_SENSITIVITY)) {
-					sensitivity = Integer.parseInt(value);
-
-					if (sensitivity < 1)
-						sensitivity = 1;
-
-				} else if (key.equalsIgnoreCase(PARAMETER_KEEP_POSITIONS)) {
-					keepInitialPositions = Boolean.parseBoolean(value);
-
-				} else if (key.equalsIgnoreCase(PARAMETER_KEEP_CENTERED)) {
-					keepCentered = Boolean.parseBoolean(value);
-
-				} else if (key.equalsIgnoreCase(PARAMETER_ALPHA)) {
-					a = Float.parseFloat(value);
-
-				} else if (key.equalsIgnoreCase(PARAMETER_ATTRACTION)) {
-					attraction = Float.parseFloat(value);
-
-				} else if (key.equalsIgnoreCase(PARAMETER_BETA)) {
-					b = Float.parseFloat(value);
-
-				} else if (key.equalsIgnoreCase(PARAMETER_DELTA)) {
-					deltaT = Float.parseFloat(value);
-
-				} else if (key.equalsIgnoreCase(PARAMETER_FORCE_CUTOFF)) {
-					forceCutoff = Float.parseFloat(value);
-				}
-			}
-		}
-	}
-
-	private void randomizePositions() {
-		for (Node n : graph.getNodes()) {
-			float radius = 2000 * random.nextFloat();
-			float alpha = 360 * random.nextFloat();
-			n.getNodeData().setX(radius * (float) Math.cos(alpha));
-			n.getNodeData().setY(radius * (float) Math.sin(alpha));
-		}
-	}
-
 	private void advancePositions() {
 		double c = 0;
 		int nodeCount = graph.getNodeCount();
 
 		for (int iter = 0; iter < updatesPerFrame; ++iter) {
 			for (Node n : graph.getNodes()) {
-
 				Point2D.Float f = getForceforNode(n);
 				double log = Math.log10(nodeCount) == 0 ? 1 : Math
 						.log10(nodeCount);
@@ -252,30 +212,36 @@ public class ARFLayout implements Layout {
 		}
 
 		setChange(c);
+		align(100, 100);
 	}
 
-	private int unchangedCount = 0;
-	private int increasedCount = 0;
-
 	private void setChange(double c) {
-		int limit = 3;
+		int limit = 5;
 
-		if (c == change && ++unchangedCount == limit) {
-			unchangedCount = 0;
-			converged = true;
+		if (c == change) {
+			++unchangedCount;
 
-		} else if (c > change && ++increasedCount == limit) {
-			increasedCount = 0;
-			randomizePositions();
+			if (unchangedCount == limit) {
+				unchangedCount = 0;
+				converged = true;
+			}
+
+		} else if (c > change) {
+			// TODO ilias: what to do when change increases continuously?
 
 		} else if (c < change) {
 			converged = change <= threshold;
 			unchangedCount = 0;
-			increasedCount = 0;
+		}
+
+		// When the change is high, randomizing positions will help
+		// faster convergence.
+		if (c > 50000 && randOnce) {
+			randomizePositions();
+			randOnce = false;
 		}
 
 		change = c;
-		align(100, 100);
 	}
 
 	private void align(float x0, float y0) {
@@ -358,6 +324,55 @@ public class ARFLayout implements Layout {
 		return properties.toArray(new LayoutProperty[0]);
 	}
 
+	private void loadParameters() {
+		Map<String, String> params = LayoutLoader.getInstance()
+				.getLayoutParameters();
+
+		if (params != null && !params.isEmpty()) {
+			for (String key : params.keySet()) {
+
+				String value = params.get(key);
+
+				if (key.equalsIgnoreCase(PARAMETER_SENSITIVITY)) {
+					sensitivity = Integer.parseInt(value);
+
+					if (sensitivity < 1)
+						sensitivity = 1;
+
+				} else if (key.equalsIgnoreCase(PARAMETER_KEEP_POSITIONS)) {
+					keepInitialPositions = Boolean.parseBoolean(value);
+
+				} else if (key.equalsIgnoreCase(PARAMETER_KEEP_CENTERED)) {
+					keepCentered = Boolean.parseBoolean(value);
+
+				} else if (key.equalsIgnoreCase(PARAMETER_ALPHA)) {
+					a = Float.parseFloat(value);
+
+				} else if (key.equalsIgnoreCase(PARAMETER_ATTRACTION)) {
+					attraction = Float.parseFloat(value);
+
+				} else if (key.equalsIgnoreCase(PARAMETER_BETA)) {
+					b = Float.parseFloat(value);
+
+				} else if (key.equalsIgnoreCase(PARAMETER_DELTA)) {
+					deltaT = Float.parseFloat(value);
+
+				} else if (key.equalsIgnoreCase(PARAMETER_FORCE_CUTOFF)) {
+					forceCutoff = Float.parseFloat(value);
+				}
+			}
+		}
+	}
+
+	private void randomizePositions() {
+		for (Node n : graph.getNodes()) {
+			float radius = 2000 * random.nextFloat();
+			float alpha = 360 * random.nextFloat();
+			n.getNodeData().setX(radius * (float) Math.cos(alpha));
+			n.getNodeData().setY(radius * (float) Math.sin(alpha));
+		}
+	}
+
 	@Override
 	public void resetPropertiesValues() {
 		a = 3;
@@ -367,8 +382,6 @@ public class ARFLayout implements Layout {
 		forceCutoff = 7;
 		fixedThreshold = THRESHOLD_TYPE_FIXED;
 		converged = false;
-		sensitivity = 1;
-		keepCentered = false;
 
 		if (fixedThreshold || graph == null) {
 			threshold = 10;
