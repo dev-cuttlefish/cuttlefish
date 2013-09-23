@@ -126,63 +126,7 @@ public class LayoutLoader {
 		layoutModel = Lookup.getDefault().lookup(LayoutController.class)
 				.getModel();
 
-		layoutModel.addPropertyChangeListener(new PropertyChangeListener() {
-
-			@Override
-			public void propertyChange(PropertyChangeEvent evt) {
-
-				// Cuttlefish.debug(instance, evt.getPropertyName() + ": " +
-				// evt.getNewValue());
-
-				if (evt.getPropertyName().equals(LayoutModel.SELECTED_LAYOUT)) {
-					// Selected layout changed
-					if (networkPanel != null
-							&& !networkPanel.getNetwork().isEmpty()) {
-
-						// Network might be too large to animate
-						int renderLimit = 2000;
-						if (networkPanel.getNetwork().getVertexCount() < renderLimit
-								&& networkPanel.getNetwork().getEdgeCount() < renderLimit)
-							networkPanel.getNetworkRenderer().animate(true,
-									true);
-					}
-
-				} else if (evt.getPropertyName().equals(LayoutModel.RUNNING)) {
-					// Layout state changed
-
-					boolean layoutStopped = (Boolean) evt.getOldValue()
-							&& !(Boolean) evt.getNewValue();
-
-					if (networkPanel == null) {
-						// Command line execution
-
-						if (layoutStopped && shouldNormalize()) {
-							normalizeLayout();
-						}
-
-					} else {
-						// GUI execution
-
-						if (layoutStopped) {
-							networkPanel.getNetworkRenderer().animate(false,
-									true);
-							networkPanel.getStatusBar().setMessage(
-									"Layout set: "
-											+ getSelectedLayout().getBuilder()
-													.getName());
-						}
-
-						if (shouldNormalize()) {
-							Rectangle2D rect = normalizeLayout();
-							networkPanel.getNetworkRenderer().centerNetwork(
-									rect);
-							networkPanel.getNetworkRenderer().repaint();
-						}
-
-					}
-				}
-			}
-		});
+		layoutModel.addPropertyChangeListener(new LayoutChangeListener());
 
 	}
 
@@ -362,10 +306,68 @@ public class LayoutLoader {
 		networkPanel.getNetworkRenderer().centerNetwork();
 	}
 
-	private boolean shouldNormalize() {
-		boolean isFixed = layoutModel.getSelectedLayout() instanceof FixedLayout;
+	class LayoutChangeListener implements PropertyChangeListener {
 
-		return !isFixed;
+		@Override
+		public void propertyChange(PropertyChangeEvent evt) {
+
+			if (evt.getPropertyName().equals(LayoutModel.SELECTED_LAYOUT))
+				layoutSelectedChanged();
+
+			else if (evt.getPropertyName().equals(LayoutModel.RUNNING))
+				layoutStateChanged(evt);
+		}
+
+		private void layoutStateChanged(PropertyChangeEvent evt) {
+			// Layout state changed
+
+			boolean layoutStopped = (Boolean) evt.getOldValue()
+					&& !(Boolean) evt.getNewValue();
+
+			if (networkPanel == null) {
+				// Command line execution
+
+				if (layoutStopped && shouldNormalize()) {
+					normalizeLayout();
+				}
+
+			} else {
+				// GUI execution
+
+				if (layoutStopped) {
+					networkPanel.getNetworkRenderer().animate(false, true);
+					networkPanel.getStatusBar().setMessage(
+							"Layout set: "
+									+ getSelectedLayout().getBuilder()
+											.getName());
+				}
+
+				if (shouldNormalize()) {
+					Rectangle2D rect = normalizeLayout();
+					networkPanel.getNetworkRenderer().centerNetwork(rect);
+					networkPanel.getNetworkRenderer().repaint();
+				}
+
+			}
+		}
+
+		private void layoutSelectedChanged() {
+			// Selected layout changed
+			if (networkPanel != null && !networkPanel.getNetwork().isEmpty()) {
+
+				// Network might be too large to animate
+				int renderLimit = 2000;
+				boolean animate = networkPanel.getNetwork().getVertexCount() < renderLimit
+						&& networkPanel.getNetwork().getEdgeCount() < renderLimit;
+
+				networkPanel.getNetworkRenderer().animate(animate, true);
+			}
+		}
+
+		private boolean shouldNormalize() {
+			boolean isFixed = layoutModel.getSelectedLayout() instanceof FixedLayout;
+
+			return !isFixed;
+		}
 	}
-
 }

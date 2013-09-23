@@ -108,7 +108,6 @@ public class ARFLayout implements Layout {
 	private Random random;
 	private boolean fixedThreshold = THRESHOLD_TYPE_FIXED;
 	private boolean converged = false;
-	private boolean randomize = true;
 
 	private GraphModel graphModel = null;
 	private Graph graph = null;
@@ -130,13 +129,9 @@ public class ARFLayout implements Layout {
 
 		graph = graphModel.getGraphVisible();
 		change = Double.MAX_VALUE;
-		random = new Random();
-		randomize = true;
+		random = new Random(System.currentTimeMillis());
 
 		loadParameters();
-
-		if (sensitivity < 1)
-			sensitivity = 1;
 
 		if (!fixedThreshold)
 			threshold = epsilon * graph.getNodeCount();
@@ -155,6 +150,7 @@ public class ARFLayout implements Layout {
 
 	@Override
 	public void goAlgo() {
+		keepCentered = true;
 
 		if (keepCentered)
 			LayoutLoader.getInstance().centerLayout();
@@ -166,20 +162,11 @@ public class ARFLayout implements Layout {
 		// Do a single step when less than 3 nodes exist
 		if (graph.getNodeCount() <= 3)
 			converged = true;
-
-		if (change > 30000 && randomize) {
-			randomizePositions();
-			randomize = false;
-		}
-
-		// if (LayoutLoader.VERBOSE_LAYOUT)
-		// Cuttlefish.debug(this, "Change = " + change);
 	}
 
 	@Override
 	public boolean canAlgo() {
-		// TODO ilias: remove converged field (unnecessary), also from weighted arf
-		return (graphModel != null) && (change > threshold) && !converged;
+		return (graphModel != null) && !converged;
 	}
 
 	@Override
@@ -202,6 +189,9 @@ public class ARFLayout implements Layout {
 
 				if (key.equalsIgnoreCase(PARAMETER_SENSITIVITY)) {
 					sensitivity = Integer.parseInt(value);
+
+					if (sensitivity < 1)
+						sensitivity = 1;
 
 				} else if (key.equalsIgnoreCase(PARAMETER_KEEP_POSITIONS)) {
 					keepInitialPositions = Boolean.parseBoolean(value);
@@ -261,7 +251,29 @@ public class ARFLayout implements Layout {
 			}
 		}
 
-		converged = change <= threshold;// (change == c);
+		setChange(c);
+	}
+
+	private int unchangedCount = 0;
+	private int increasedCount = 0;
+
+	private void setChange(double c) {
+		int limit = 3;
+
+		if (c == change && ++unchangedCount == limit) {
+			unchangedCount = 0;
+			converged = true;
+
+		} else if (c > change && ++increasedCount == limit) {
+			increasedCount = 0;
+			randomizePositions();
+
+		} else if (c < change) {
+			converged = change <= threshold;
+			unchangedCount = 0;
+			increasedCount = 0;
+		}
+
 		change = c;
 		align(100, 100);
 	}
