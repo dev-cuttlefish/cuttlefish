@@ -36,6 +36,7 @@ import java.util.StringTokenizer;
 
 import javax.swing.JOptionPane;
 
+import ch.ethz.sg.cuttlefish.Cuttlefish;
 import ch.ethz.sg.cuttlefish.gui.visualization.Constants;
 
 /**
@@ -127,15 +128,6 @@ public class CxfNetwork extends BrowsableNetwork {
 		multiGraph = b;
 	}
 
-	/**
-	 * Getter for directed
-	 * 
-	 * @return
-	 */
-	public boolean isDirected() {
-		return directed;
-	}
-
 	public void setEdgeShape(String edgeType) {
 		this.edgeShape = edgeType;
 	}
@@ -163,7 +155,7 @@ public class CxfNetwork extends BrowsableNetwork {
 	public void load(File graphFile) throws FileNotFoundException {
 		this.graphFile = graphFile;
 		hash = new HashMap<Integer, Vertex>();
-		directed = true;
+		setDirected(true);
 		edgeShape = Constants.LINE_CURVED;
 		hideVertexLabels = false;
 		hideEdgeLabels = false;
@@ -303,7 +295,7 @@ public class CxfNetwork extends BrowsableNetwork {
 				while (it.hasNext()) {
 					field = it.next();
 					if (field.equalsIgnoreCase("undirected"))
-						directed = false;
+						setDirected(false);
 					else if (field.equalsIgnoreCase("hide_node_labels"))
 						hideVertexLabels = true;
 					else if (field.equalsIgnoreCase("hide_edge_labels"))
@@ -335,7 +327,7 @@ public class CxfNetwork extends BrowsableNetwork {
 		} catch (IOException ioEx) {
 			JOptionPane.showMessageDialog(null, ioEx.getMessage(), "Error",
 					JOptionPane.ERROR_MESSAGE);
-			System.err.println("Input error");
+			Cuttlefish.err("Input error");
 			ioEx.printStackTrace();
 		}
 
@@ -658,7 +650,7 @@ public class CxfNetwork extends BrowsableNetwork {
 
 		if (token.id_source != null && token.id_dest != null) {
 			e = new Edge(hash.get(token.id_source), hash.get(token.id_dest),
-					directed);
+					isDirected());
 			if (token.weight != null)
 				e.setWeight(token.weight);
 			if (token.label != null)
@@ -666,7 +658,7 @@ public class CxfNetwork extends BrowsableNetwork {
 			if (token.size != null)
 				e.setWidth(token.size);
 			if (token.color != null)
-				e.setColor(token.color);
+				;//TODO ilias: e.setColor(token.color);
 			if (token.var1 != null)
 				e.setVar1(token.var1);
 			if (token.var2 != null)

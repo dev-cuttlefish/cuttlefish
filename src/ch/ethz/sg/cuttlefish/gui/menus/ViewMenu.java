@@ -27,6 +27,7 @@ import java.awt.event.ItemListener;
 
 import javax.swing.JCheckBoxMenuItem;
 
+import ch.ethz.sg.cuttlefish.Cuttlefish;
 import ch.ethz.sg.cuttlefish.gui.CuttlefishToolbars;
 import ch.ethz.sg.cuttlefish.gui.NetworkPanel;
 import ch.ethz.sg.cuttlefish.gui.toolbars.DBToolbar;
@@ -94,7 +95,7 @@ public class ViewMenu extends AbstractMenu implements ItemListener, Observer {
 			toolbars.getUndoToolbar()
 					.setVisible(undoToolbarCheckbox.getState());
 		} else {
-			System.err.println("Unknown event");
+			Cuttlefish.err("Unknown event");
 		}
 	}
 

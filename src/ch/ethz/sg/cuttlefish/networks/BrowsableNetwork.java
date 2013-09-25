@@ -30,9 +30,9 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 
+import org.gephi.graph.api.Graph;
 import org.gephi.graph.api.GraphController;
 import org.gephi.graph.api.GraphModel;
-import org.gephi.graph.api.MixedGraph;
 import org.gephi.graph.api.Node;
 import org.openide.util.Lookup;
 
@@ -51,17 +51,13 @@ public class BrowsableNetwork implements Serializable {
 
 	/*
 	 * The GraphModel interface contains the graph data structure and is used to
-	 * create graph objects on demand. BrowsableNetwork is modelled as a
-	 * MixedGraph, while BrowsableForestNetwork as a HierarchicalDirectedGraph.
+	 * create graph objects on demand. BrowsableNetwork is modelled as a Graph,
+	 * while BrowsableForestNetwork as a HierarchicalDirectedGraph.
 	 * Nevertheless, the data structure is the same.
 	 */
 	protected GraphModel graphModel;
 
-	/*
-	 * A MixedGraph enables access to the graph and allows both directed and
-	 * undirected edges.
-	 */
-	private MixedGraph graph;
+	private Graph graph;
 
 	private Hashtable<String, String> arguments = new Hashtable<String, String>();
 	protected boolean networkLoaded = false;
@@ -70,7 +66,7 @@ public class BrowsableNetwork implements Serializable {
 	// Parameters required for rendering
 	protected boolean hideVertexLabels = false;
 	protected boolean hideEdgeLabels = false;
-	protected boolean directed = true;
+	private boolean directed = true;
 	protected String edgeShape = Constants.LINE_CURVED;
 
 	/**
@@ -97,7 +93,7 @@ public class BrowsableNetwork implements Serializable {
 		this.graphModel = Lookup.getDefault().lookup(GraphController.class)
 				.getModel();
 
-		this.graph = graphModel.getMixedGraphVisible();
+		setGraph();
 
 		if (clearGraph)
 			this.graph.clear();
@@ -113,8 +109,15 @@ public class BrowsableNetwork implements Serializable {
 	public void init() {
 		this.graphModel = Lookup.getDefault().lookup(GraphController.class)
 				.getModel();
-		this.graph = graphModel.getMixedGraphVisible();
+		setGraph();
 		this.graph.clear();
+	}
+
+	private void setGraph() {
+		if (directed)
+			graph = graphModel.getDirectedGraphVisible();
+		else
+			graph = graphModel.getUndirectedGraphVisible();
 	}
 
 	public void updateAnnotations() {
@@ -475,9 +478,6 @@ public class BrowsableNetwork implements Serializable {
 
 	public void removeEdge(Edge e) {
 		graph.removeEdge(e.getInternalEdge());
-
-		if (getEdgeCount() == 0)
-			clearEdges();
 	}
 
 	public boolean isDirected() {
@@ -486,6 +486,8 @@ public class BrowsableNetwork implements Serializable {
 
 	public void setDirected(boolean directed) {
 		this.directed = directed;
+
+		setGraph();
 	}
 
 	public void fixVertices(boolean fixed) {

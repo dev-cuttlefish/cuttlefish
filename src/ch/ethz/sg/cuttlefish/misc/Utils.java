@@ -32,31 +32,36 @@ import java.util.Set;
 
 import javax.swing.JOptionPane;
 
+import ch.ethz.sg.cuttlefish.Cuttlefish;
 import ch.ethz.sg.cuttlefish.networks.BrowsableNetwork;
 import ch.ethz.sg.cuttlefish.networks.Edge;
 import ch.ethz.sg.cuttlefish.networks.Vertex;
 
 /**
  * Class with static methods of general usage
+ * 
  * @author david
  */
 public class Utils {
-	
+
 	/**
-	 * Calculates the center of masses of a network given its layout and as if the nodes had constant weight.
-	 * @param layout positions of the nodes of the networks
-	 * @param graph network to analyze
+	 * Calculates the center of masses of a network given its layout and as if
+	 * the nodes had constant weight.
+	 * 
+	 * @param layout
+	 *            positions of the nodes of the networks
+	 * @param graph
+	 *            network to analyze
 	 * @return Point2D with the coordinates of the center
 	 */
-	static public Point2D caculateCenter(BrowsableNetwork graph)
-	{
-		Point2D center = new Point2D.Double(0.0d,0.0d);
+	static public Point2D caculateCenter(BrowsableNetwork graph) {
+		Point2D center = new Point2D.Double(0.0d, 0.0d);
 		double n = 0.0d;
-		
-		for (Vertex vertex : graph.getVertices())
-		{
+
+		for (Vertex vertex : graph.getVertices()) {
 			Point2D vertexPosition = vertex.getPosition();
-			center.setLocation(center.getX() + vertexPosition.getX(), center.getY() + vertexPosition.getY());
+			center.setLocation(center.getX() + vertexPosition.getX(),
+					center.getY() + vertexPosition.getY());
 			n++;
 		}
 		center.setLocation(center.getX() / n, center.getY() / n);
@@ -65,80 +70,92 @@ public class Utils {
 
 	/**
 	 * Writes on the output a list of the edges of the network
-	 * @param graph to print
-	 * @param ps output stream
+	 * 
+	 * @param graph
+	 *            to print
+	 * @param ps
+	 *            output stream
 	 */
 	public static void writeEdgeList(BrowsableNetwork graph, PrintStream ps) {
 		Hashtable<Vertex, Integer> table = new Hashtable<Vertex, Integer>();
-		int count=0;
-		for(Vertex v: graph.getVertices()){
+		int count = 0;
+		for (Vertex v : graph.getVertices()) {
 			table.put(v, count);
 			count++;
 		}
-		for(Edge e: graph.getEdges()){
-			ps.println(table.get(graph.getSource(e)) + "\t"+table.get(graph.getDest(e)));
+		for (Edge e : graph.getEdges()) {
+			ps.println(table.get(graph.getSource(e)) + "\t"
+					+ table.get(graph.getDest(e)));
 		}
-		
+
 	}
-	
+
 	/**
 	 * Creates a local version of a file contained in the jar
-	 * @param fileName name of the file in the jar
-	 * @param object usually the object that calls createLocalFile and has the
-	 * reference to the file
+	 * 
+	 * @param fileName
+	 *            name of the file in the jar
+	 * @param object
+	 *            usually the object that calls createLocalFile and has the
+	 *            reference to the file
 	 * @return exact local copy of the file
 	 */
-	public static File createLocalFile(String fileName, Object object)
-	{
+	public static File createLocalFile(String fileName, Object object) {
 		InputStream inStream = object.getClass().getResourceAsStream(fileName);
-		//TODO: careful! This does not work in Windows
-		File copyFile = new File(fileName.substring(fileName.lastIndexOf('/')+1).concat("_aux"));
-		
+		// TODO: careful! This does not work in Windows
+		File copyFile = new File(fileName.substring(
+				fileName.lastIndexOf('/') + 1).concat("_aux"));
+
 		OutputStream outStream;
 		try {
 			outStream = new FileOutputStream(copyFile);
-			byte buf[]=new byte[1024];
+			byte buf[] = new byte[1024];
 			int len;
-			while((len=inStream.read(buf))>0)
-				outStream.write(buf,0,len);
+			while ((len = inStream.read(buf)) > 0)
+				outStream.write(buf, 0, len);
 			inStream.close();
 			outStream.close();
 			copyFile.deleteOnExit();
-		}
-		catch (FileNotFoundException fileEx) {
-			JOptionPane.showMessageDialog(null,fileEx.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
-			System.err.println("Error: "+ fileName +" not found");
+		} catch (FileNotFoundException fileEx) {
+			JOptionPane.showMessageDialog(null, fileEx.getMessage(), "Error",
+					JOptionPane.ERROR_MESSAGE);
+			Cuttlefish.err("Error: " + fileName + " not found");
 			fileEx.printStackTrace();
 		} catch (IOException ioEx) {
-			JOptionPane.showMessageDialog(null,ioEx.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
-			System.err.println("Error: problem in " + fileName );
+			JOptionPane.showMessageDialog(null, ioEx.getMessage(), "Error",
+					JOptionPane.ERROR_MESSAGE);
+			Cuttlefish.err("Error: problem in " + fileName);
 			ioEx.printStackTrace();
 		}
 		return copyFile;
-	} 
+	}
 
 	/**
-	 * Ensures that the string representaton of the number is not exponential. 5 digits before "."
+	 * Ensures that the string representaton of the number is not exponential. 5
+	 * digits before "."
+	 * 
 	 * @param num
 	 * @return String with a decimal notation of the number
 	 */
-	public static String ensureDecimal(double num)
-	{
-			return (new DecimalFormat("#####.#######################").format((num)));
+	public static String ensureDecimal(double num) {
+		return (new DecimalFormat("#####.#######################")
+				.format((num)));
 	}
 
 	/**
 	 * Erases the multiple edges of a graph
+	 * 
 	 * @param graph
 	 */
-	public static void deleteDoubleEdges(BrowsableNetwork graph){
+	public static void deleteDoubleEdges(BrowsableNetwork graph) {
 		HashSet<Edge> toDelete = new HashSet<Edge>();
 		for (Edge edge1 : graph.getEdges()) {
 			for (Edge edge2 : graph.getEdges()) {
-				if(graph.getSource(edge1) == graph.getDest(edge2) 
+				if (graph.getSource(edge1) == graph.getDest(edge2)
 						&& graph.getSource(edge2) == graph.getDest(edge1)
 						&& !toDelete.contains(edge1)
-						&& graph.getSource(edge1).toString().compareTo(graph.getDest(edge1).toString()) > 0){
+						&& graph.getSource(edge1).toString()
+								.compareTo(graph.getDest(edge1).toString()) > 0) {
 					toDelete.add(edge1);
 				}
 			}
@@ -146,33 +163,34 @@ public class Utils {
 		System.out.println(toDelete.size());
 		for (Edge edge : toDelete) {
 			System.out.println(graph.getEdges().contains(edge));
-			graph.removeEdge(edge);	
-		}	
+			graph.removeEdge(edge);
+		}
 	}
-	
+
 	/**
-	 * This method checks if there are duplicated vertices with the
-	 * same ID. If there are duplicated IDs then we cannot save the
-	 * network before reassigning unique IDs
+	 * This method checks if there are duplicated vertices with the same ID. If
+	 * there are duplicated IDs then we cannot save the network before
+	 * reassigning unique IDs
+	 * 
 	 * @return true if there are duplicated IDs, false otherwise.
 	 */
 	public static boolean checkForDuplicatedVertexIds(BrowsableNetwork network) {
-		Set<Integer> ids = new HashSet<Integer>(); 
-		for(Vertex vertex : network.getVertices() ) {
-			if(ids.contains(vertex.getId())) {
+		Set<Integer> ids = new HashSet<Integer>();
+		for (Vertex vertex : network.getVertices()) {
+			if (ids.contains(vertex.getId())) {
 				return true;
 			}
 			ids.add(vertex.getId());
 		}
 		return false;
 	}
-	
+
 	/**
 	 * This method assigns unique IDs to vertices.
 	 */
 	public static void reassignVertexIds(BrowsableNetwork network) {
 		int curId = 0;
-		for(Vertex vertex : network.getVertices() )
+		for (Vertex vertex : network.getVertices())
 			vertex.setId(curId++);
 	}
 }

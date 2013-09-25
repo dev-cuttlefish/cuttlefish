@@ -24,6 +24,7 @@ package ch.ethz.sg.cuttlefish.gui;
 
 import java.awt.BorderLayout;
 import java.awt.image.BufferedImage;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -271,14 +272,28 @@ public class NetworkPanel extends JPanel implements Subject, INetworkBrowser,
 				"Not implemented yet for the Gephi Toolkit!");
 	}
 
+	private Set<Vertex> pickedVertices = new HashSet<Vertex>();
+
 	@Override
 	public Set<Vertex> getPickedVertices() {
-		throw new NotImplementedException("Not implemented yet!");
+		return pickedVertices;
 	}
+	
+	public void selectVertex(Vertex v) {
+		pickedVertices.clear();
+		pickedVertices.add(v);
+	}
+
+	private Set<Edge> pickedEdges = new HashSet<Edge>();
 
 	@Override
 	public Set<Edge> getPickedEdges() {
-		throw new NotImplementedException("Not implemented yet!");
+		return pickedEdges;
+	}
+	
+	public void selectEdge(Edge e) {
+		pickedEdges.clear();
+		pickedEdges.add(e);
 	}
 
 	@Override

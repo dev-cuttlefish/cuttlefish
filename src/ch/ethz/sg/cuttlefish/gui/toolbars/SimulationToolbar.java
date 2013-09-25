@@ -31,6 +31,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
+import ch.ethz.sg.cuttlefish.Cuttlefish;
 import ch.ethz.sg.cuttlefish.gui.NetworkPanel;
 import ch.ethz.sg.cuttlefish.layout.arf.WeightedARFLayout;
 import ch.ethz.sg.cuttlefish.misc.Observer;
@@ -159,8 +160,8 @@ public class SimulationToolbar extends AbstractToolbar implements Observer {
 									JOptionPane.showMessageDialog(null,
 											iEx.getMessage(), "Error",
 											JOptionPane.ERROR_MESSAGE);
-									System.err
-											.println("Interrupted simulation process");
+									Cuttlefish
+											.err("Interrupted simulation process");
 									iEx.printStackTrace();
 								}
 							}

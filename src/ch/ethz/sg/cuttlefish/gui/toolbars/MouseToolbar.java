@@ -18,10 +18,11 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  
-*/
+ */
 
 package ch.ethz.sg.cuttlefish.gui.toolbars;
 
+import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -37,11 +38,11 @@ public class MouseToolbar extends AbstractToolbar {
 	private JButton transformingButton;
 	private JButton pickingButton;
 	private JButton editingButton;
-	
+
 	private static String transformingIconFile = "icons/transforming.png";
 	private static String pickingIconFile = "icons/picking.png";
 	private static String editingIconFile = "icons/editing.png";
-	
+
 	public MouseToolbar(NetworkPanel networkPanel) {
 		super(networkPanel);
 		initialize();
@@ -49,44 +50,55 @@ public class MouseToolbar extends AbstractToolbar {
 		editingButton.doClick();
 		transformingButton.doClick();
 	}
-	
+
 	private void initialize() {
-		transformingButton = new JButton(new ImageIcon(getClass().getResource(transformingIconFile)));
-		pickingButton = new JButton(new ImageIcon(getClass().getResource(pickingIconFile)));
-		editingButton = new JButton(new ImageIcon(getClass().getResource(editingIconFile)));
-		
+		transformingButton = new JButton(new ImageIcon(getClass().getResource(
+				transformingIconFile)));
+		pickingButton = new JButton(new ImageIcon(getClass().getResource(
+				pickingIconFile)));
+		editingButton = new JButton(new ImageIcon(getClass().getResource(
+				editingIconFile)));
+
 		this.add(transformingButton);
 		this.add(pickingButton);
 		this.add(editingButton);
-		
-		transformingButton.setToolTipText("Mouse mode used to move the network around the screen");
+
+		transformingButton
+				.setToolTipText("Mouse mode used to move the network and the nodes around the screen");
 		pickingButton.setToolTipText("Mouse mode used to select nodes");
-		editingButton.setToolTipText("Mouse mode used to add new nodes");		
-		
-		transformingButton.addActionListener(new ActionListener() {			
+		editingButton
+				.setToolTipText("Mouse mode used to add new nodes and edges");
+
+		transformingButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				networkPanel.getMouse().setMode(GraphMouse.Mode.TRANSFORMING);
+				networkPanel.setCursor(Cursor
+						.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 				transformingButton.setEnabled(false);
 				pickingButton.setEnabled(true);
 				editingButton.setEnabled(true);
 			}
 		});
-		
-		pickingButton.addActionListener(new ActionListener() {			
+
+		pickingButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				networkPanel.getMouse().setMode(GraphMouse.Mode.INTERACTING);
+				networkPanel.getMouse().setMode(GraphMouse.Mode.SELECTING);
+				networkPanel.setCursor(Cursor
+						.getPredefinedCursor(Cursor.HAND_CURSOR));
 				transformingButton.setEnabled(true);
 				pickingButton.setEnabled(false);
 				editingButton.setEnabled(true);
 			}
 		});
-		
-		editingButton.addActionListener(new ActionListener() {			
+
+		editingButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				networkPanel.getMouse().setMode(GraphMouse.Mode.EDITING);
+				networkPanel.setCursor(Cursor
+						.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
 				transformingButton.setEnabled(true);
 				pickingButton.setEnabled(true);
 				editingButton.setEnabled(false);

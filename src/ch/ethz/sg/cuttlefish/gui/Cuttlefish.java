@@ -27,7 +27,7 @@ import java.io.File;
 
 import javax.swing.JFrame;
 
-import ch.ethz.sg.cuttlefish.testing.FilteredErrorStream;
+import ch.ethz.sg.cuttlefish.misc.FilteredErrorStream;
 
 public class Cuttlefish extends JFrame {
 

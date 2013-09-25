@@ -130,10 +130,12 @@ public class DBExploreNode extends JFrame {
 		int distance = -1;
 		distanceInputValid = false;
 		try {
-			distance = Integer.parseInt(distanceField.getText());			
+			if (!distanceField.getText().isEmpty())
+				distance = Integer.parseInt(distanceField.getText());			
 		} catch (NumberFormatException numEx) {
 			System.out.println("Distance is not a number");
 		}
+		
 		if(distance <= 0) {
 			distanceInputValid = false;
 			distanceField.setBorder(BorderFactory.createLineBorder(Color.red));
