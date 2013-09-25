@@ -18,7 +18,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  
-*/
+ */
 
 package ch.ethz.sg.cuttlefish.gui;
 
@@ -27,27 +27,30 @@ import java.io.File;
 
 import javax.swing.JFrame;
 
+import ch.ethz.sg.cuttlefish.testing.FilteredErrorStream;
+
 public class Cuttlefish extends JFrame {
-	
+
 	private static final long serialVersionUID = 2232589699110179555L;
 	public static File currentDirectory = null;
 	private CuttlefishMenu mainMenu = null;
 	private CuttlefishToolbars toolbars = null;
 	private NetworkPanel networkPanel = null;
-	
+
 	public Cuttlefish() {
 		super();
 		initialize();
 		this.setVisible(true);
 	}
-	
 
 	/**
 	 * This method initializes this
+	 * 
 	 * @return void
 	 */
-	private void initialize() {		
-		this.setSize(1000, 700);  //The initial size of the user interface is slightly smaller than 1024x768
+	private void initialize() {
+		this.setSize(1000, 700); // The initial size of the user interface is
+									// slightly smaller than 1024x768
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setJMenuBar(getMainMenu());
 		this.setLayout(new BorderLayout());
@@ -57,7 +60,7 @@ public class Cuttlefish extends JFrame {
 		toolbars.getMouseToolbar().addObserver(mainMenu.getViewMenu());
 		toolbars.getZoomToolbar().addObserver(mainMenu.getViewMenu());
 		toolbars.getDBToolbar().addObserver(mainMenu.getViewMenu());
-		
+
 		toolbars.getSimulationToolbar().setVisible(true);
 		toolbars.getMouseToolbar().setVisible(true);
 		toolbars.getZoomToolbar().setVisible(true);
@@ -65,22 +68,35 @@ public class Cuttlefish extends JFrame {
 		getNetworkPanel().addObserver(mainMenu.getLayoutMenu());
 		this.add(getNetworkPanel(), BorderLayout.CENTER);
 		this.setTitle("Cuttlefish 2.5 (beta)");
+
+		filterErrorStream();
 	}
-	
+
+	/**
+	 * The FPSAnimator class generates a series of 'err' prints when it is
+	 * running, which can be annoying for the user, since their purpose is only
+	 * debugging. The FilteredErrorStream filters out such prints.
+	 */
+	private void filterErrorStream() {
+		// redirect err stream
+		FilteredErrorStream filteredErr = new FilteredErrorStream(System.err);
+		filteredErr.addFilter("FPSAnimator");
+		System.setErr(filteredErr);
+	}
+
 	private CuttlefishToolbars getToolbars() {
-		if(toolbars == null) {
+		if (toolbars == null) {
 			toolbars = new CuttlefishToolbars(getNetworkPanel());
 		}
 		return toolbars;
 	}
-	
+
 	private CuttlefishMenu getMainMenu() {
-		if(mainMenu == null) {
+		if (mainMenu == null) {
 			mainMenu = new CuttlefishMenu(getNetworkPanel(), getToolbars());
 		}
 		return mainMenu;
 	}
-	
 
 	private NetworkPanel getNetworkPanel() {
 		if (networkPanel == null) {
@@ -88,7 +104,7 @@ public class Cuttlefish extends JFrame {
 		}
 		return networkPanel;
 	}
-	
+
 	public static void main(String[] args) {
 		new ch.ethz.sg.cuttlefish.gui.Cuttlefish();
 	}
