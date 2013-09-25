@@ -39,6 +39,8 @@ import java.util.Set;
 
 import javax.swing.JOptionPane;
 
+import ch.ethz.sg.cuttlefish.Cuttlefish;
+
 
 /**
  * Network class that loads data from a database and sets the graph
@@ -127,31 +129,31 @@ public class DBNetwork extends BrowsableNetwork {
 			connected = false;
 			JOptionPane.showMessageDialog(null, cnfEx.getMessage(), "Error",
 					JOptionPane.ERROR_MESSAGE);
-			System.err.println("Class com.mysql.jdc.Driver not found");
+			Cuttlefish.err("Class com.mysql.jdc.Driver not found");
 			// cnfEx.printStackTrace();
 		} catch (IllegalAccessException iaEx) {
 			connected = false;
 			JOptionPane.showMessageDialog(null, iaEx.getMessage(), "Error",
 					JOptionPane.ERROR_MESSAGE);
-			System.err.println("Illegal access in database connection");
+			Cuttlefish.err("Illegal access in database connection");
 			// iaEx.printStackTrace();
 		} catch (InstantiationException iEx) {
 			connected = false;
 			JOptionPane.showMessageDialog(null, iEx.getMessage(), "Error",
 					JOptionPane.ERROR_MESSAGE);
-			System.err.println("Instantation exception");
+			Cuttlefish.err("Instantation exception");
 			// iEx.printStackTrace();
 		} catch (SQLException sqlEx) {
 			connected = false;
 			JOptionPane.showMessageDialog(null, sqlEx.getMessage(), "Error",
 					JOptionPane.ERROR_MESSAGE);
-			System.err.println("SQL error");
+			Cuttlefish.err("SQL error");
 			// sqlEx.printStackTrace();
 		} catch (HeadlessException hEx) {
 			connected = false;
 			JOptionPane.showMessageDialog(null, hEx.getMessage(), "Error",
 					JOptionPane.ERROR_MESSAGE);
-			System.err.println("SQL error");
+			Cuttlefish.err("SQL error");
 			// hEx.printStackTrace();
 		}
 		if (connected) {
@@ -299,7 +301,11 @@ public class DBNetwork extends BrowsableNetwork {
 	 * Returns the name of the nodes table, prepended with the schema name
 	 */
 	public String getFullNodeTableName() {
-		return schemaName+"."+nodeTable;
+		if (schemaName != null && !schemaName.isEmpty())
+			return schemaName+"."+nodeTable;
+		
+		else
+			return nodeTable;
 	}
 
 	/**
@@ -317,7 +323,11 @@ public class DBNetwork extends BrowsableNetwork {
 	 * @return
 	 */
 	public String getFullEdgeTableName() {
-		return schemaName+"."+edgeTable;
+		if (schemaName != null && !schemaName.isEmpty())
+			return schemaName+"."+edgeTable;
+		
+		else
+			return edgeTable;
 	}
 
 	/**
@@ -352,7 +362,7 @@ public class DBNetwork extends BrowsableNetwork {
 		} catch (SQLException sqlEx) {
 			JOptionPane.showMessageDialog(null, sqlEx.getMessage(), "Error",
 					JOptionPane.ERROR_MESSAGE);
-			System.err.println("SQL error");
+			Cuttlefish.err("SQL error");
 			sqlEx.printStackTrace();
 		}
 	}
@@ -412,7 +422,7 @@ public class DBNetwork extends BrowsableNetwork {
 	 * Checks if the provided node id exists in the database
 	 */
 	public boolean checkNodeId(String nodeId) {
-		String queryString = "SELECT * FROM " + schemaName+"."+nodeTable + " WHERE id = '"
+		String queryString = "SELECT * FROM " + getFullNodeTableName() + " WHERE id = '"
 				+ nodeId + "'";
 		Statement st;
 		try {
@@ -530,7 +540,7 @@ public class DBNetwork extends BrowsableNetwork {
 		} catch (SQLException sqlEx) {
 			JOptionPane.showMessageDialog(null, sqlEx.getMessage(), "Error",
 					JOptionPane.ERROR_MESSAGE);
-			System.err.println("SQL error");
+			Cuttlefish.err("SQL error");
 			sqlEx.printStackTrace();
 		}
 		// remove vertices that are not visited, i.e. not present in the
@@ -578,7 +588,7 @@ public class DBNetwork extends BrowsableNetwork {
 		// first read the vertex
 		try {
 			if (!derivedNodeTable) {
-				String queryString = "select * from " + schemaName+"."+nodeTable + " where id = " + id + ";";
+				String queryString = "select * from " + getFullNodeTableName() + " where id = " + id + ";";
 				queryString = applyFilter(queryString, nodeFilter);
 				Statement st = conn.createStatement();
 				ResultSet rs = st.executeQuery(queryString);
@@ -651,7 +661,7 @@ public class DBNetwork extends BrowsableNetwork {
 		} catch (SQLException sqlEx) {
 			JOptionPane.showMessageDialog(null, sqlEx.getMessage(),
 					"Error", JOptionPane.ERROR_MESSAGE);
-			System.err.println("Node not found");
+			Cuttlefish.err("Node not found");
 			sqlEx.printStackTrace();
 		}
 		//check if we need to add the node or simply update its attributes
@@ -668,7 +678,7 @@ public class DBNetwork extends BrowsableNetwork {
 		
 		if (forward == true && distance > 0) {
 			try {
-				String queryString = "select * from " + schemaName+"."+edgeTable + " where id_origin =" + v.getId() + ";";
+				String queryString = "select * from " + getFullEdgeTableName() + " where id_origin =" + v.getId() + ";";
 				queryString = applyFilter(queryString, edgeFilter);
 				Statement st = conn.createStatement();
 				ResultSet rs = st.executeQuery(queryString);
@@ -728,13 +738,13 @@ public class DBNetwork extends BrowsableNetwork {
 				}
 			} catch (SQLException sqlEx) {
 				JOptionPane.showMessageDialog(null, sqlEx.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-				System.err.println("SQL error");
+				Cuttlefish.err("SQL error");
 				sqlEx.printStackTrace();
 			}
 		}
 		if ((forward == false) && (distance > 0)) {
 			try {
-				String queryString = "select * from " + schemaName+"."+edgeTable + " where id_dest =" + v.getId() + ";";
+				String queryString = "select * from " + getFullEdgeTableName() + " where id_dest =" + v.getId() + ";";
 				queryString = applyFilter(queryString, edgeFilter);
 				Statement st = conn.createStatement();
 				ResultSet rs = st.executeQuery(queryString);
@@ -794,7 +804,7 @@ public class DBNetwork extends BrowsableNetwork {
 				}
 			} catch (SQLException sqlEx) {
 				JOptionPane.showMessageDialog(null, sqlEx.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-				System.err.println("SQL error");
+				Cuttlefish.err("SQL error");
 				sqlEx.printStackTrace();
 			}
 		}
@@ -878,7 +888,7 @@ public class DBNetwork extends BrowsableNetwork {
 	 * @return
 	 */
 	public Set<Integer> getSelectedNodes() {
-		String sqlQuery = "SELECT id FROM " + schemaName+"."+nodeTable;
+		String sqlQuery = "SELECT id FROM " + getFullNodeTableName();
 		sqlQuery = applyFilter(sqlQuery, nodeFilter);
 		Statement st;
 		Set<Integer> selectedNodes = new HashSet<Integer>();
@@ -915,7 +925,7 @@ public class DBNetwork extends BrowsableNetwork {
 	 */
 	private Set<Integer> getEdgeFilteredNodes(String type) {
 		Set<Integer> nodeSet = new HashSet<Integer>();
-		String sqlQuery = "SELECT id FROM " + schemaName+"."+nodeTable;
+		String sqlQuery = "SELECT id FROM " + getFullNodeTableName();
 		Statement st;
 		ResultSet rs;
 		String idField = "id_"+type; // Either "id_origin" or "id_dest"
@@ -964,7 +974,7 @@ public class DBNetwork extends BrowsableNetwork {
 			nodesList.append(Integer.toString(nodeId) + ',');
 		}
 		nodesList.setCharAt(nodesList.length() - 1, ')');
-		String sqlQuery = "SELECT id_dest FROM " + schemaName+"."+edgeTable
+		String sqlQuery = "SELECT id_dest FROM " + getFullEdgeTableName()
 				+ " WHERE id_origin IN " + nodesList;
 		Statement st;
 		try {
@@ -1007,7 +1017,7 @@ public class DBNetwork extends BrowsableNetwork {
 			destNodesList.append(Integer.toString(nodeId) + ',');
 		}
 		destNodesList.setCharAt(destNodesList.length() - 1, ')');
-		String sqlQuery = "SELECT count(*) as edgeCount FROM " + schemaName+"."+edgeTable
+		String sqlQuery = "SELECT count(*) as edgeCount FROM " + getFullEdgeTableName()
 				+ " WHERE id_origin IN " + originNodesList + " AND id_dest IN "
 				+ destNodesList;
 		Statement st;
@@ -1030,7 +1040,7 @@ public class DBNetwork extends BrowsableNetwork {
 		Set<Edge> visitedEdges = new HashSet<Edge>();
 		for (Vertex v : getVertices()) {
 			try {
-				String queryString = "select * from " + schemaName+"."+edgeTable + " where id_origin =" + v.getId() + ";";
+				String queryString = "select * from " + getFullEdgeTableName() + " where id_origin =" + v.getId() + ";";
 				queryString = applyFilter(queryString, edgeFilter);
 				Statement st = conn.createStatement();
 				ResultSet rs = st.executeQuery(queryString);
@@ -1090,7 +1100,7 @@ public class DBNetwork extends BrowsableNetwork {
 			} catch (SQLException sqlEx) {
 				JOptionPane.showMessageDialog(null, sqlEx.getMessage(),
 						"Error", JOptionPane.ERROR_MESSAGE);
-				System.err.println("SQL error");
+				Cuttlefish.err("SQL error");
 				sqlEx.printStackTrace();
 			}
 

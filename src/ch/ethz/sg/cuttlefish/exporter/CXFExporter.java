@@ -101,13 +101,6 @@ public class CXFExporter implements GraphExporter, CharacterExporter,
 
 		for (Edge edge : network.getEdges())
 			printEdge(edge);
-
-		// } catch (FileNotFoundException fnfEx) {
-		// JOptionPane.showMessageDialog(null, fnfEx.getMessage(), "Error",
-		// JOptionPane.ERROR_MESSAGE);
-		// System.err.println("File not found while saving network");
-		// fnfEx.printStackTrace();
-		// }
 	}
 
 	/**
@@ -131,9 +124,12 @@ public class CXFExporter implements GraphExporter, CharacterExporter,
 
 		if (vertex.getBorderColor() != null)
 			writer.append(" borderColor{"
-					+ ((double) (vertex.getBorderColor()).getRed() / 256.d) + ","
-					+ ((double) (vertex.getBorderColor()).getGreen() / 256.d) + ","
-					+ ((double) (vertex.getBorderColor()).getBlue() / 256.d) + "}");
+					+ ((double) (vertex.getBorderColor()).getRed() / 256.d)
+					+ ","
+					+ ((double) (vertex.getBorderColor()).getGreen() / 256.d)
+					+ ","
+					+ ((double) (vertex.getBorderColor()).getBlue() / 256.d)
+					+ "}");
 
 		writer.append(" size{" + vertex.getSize() + "}");
 

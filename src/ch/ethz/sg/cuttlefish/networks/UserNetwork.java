@@ -31,6 +31,8 @@ import java.util.HashMap;
 
 import javax.swing.JOptionPane;
 
+import ch.ethz.sg.cuttlefish.Cuttlefish;
+
 
 public class UserNetwork extends BrowsableNetwork {
 
@@ -65,11 +67,11 @@ public class UserNetwork extends BrowsableNetwork {
 			
 			} catch (FileNotFoundException fnfEx) {
 				JOptionPane.showMessageDialog(null,fnfEx.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
-				System.err.println("cff network file not found");
+				Cuttlefish.err("cff network file not found");
 				fnfEx.printStackTrace();
 			} catch (IOException ioEx) {
 				JOptionPane.showMessageDialog(null,ioEx.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
-				System.err.println("Input problem in cff file");
+				Cuttlefish.err("Input problem in cff file");
 				ioEx.printStackTrace();
 			}
 	}

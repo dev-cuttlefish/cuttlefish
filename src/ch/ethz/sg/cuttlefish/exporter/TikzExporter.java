@@ -177,7 +177,7 @@ public class TikzExporter implements GraphExporter, CharacterExporter,
 
 		// } catch (FileNotFoundException fnfEx) {
 		// JOptionPane.showMessageDialog(null,fnfEx.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
-		// System.err.println("Error trying to save in Tikz");
+		// Cuttlefish.err.println("Error trying to save in Tikz");
 		// fnfEx.printStackTrace();
 		// }
 	}

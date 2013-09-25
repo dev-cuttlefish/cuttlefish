@@ -9,6 +9,7 @@ import java.util.Collection;
 
 import javax.swing.JOptionPane;
 
+import ch.ethz.sg.cuttlefish.Cuttlefish;
 import ch.ethz.sg.cuttlefish.networks.BrowsableNetwork;
 import ch.ethz.sg.cuttlefish.networks.Edge;
 import ch.ethz.sg.cuttlefish.networks.Vertex;
@@ -45,7 +46,7 @@ public class PSTricksExporter {
 			exportGraphToPSTricks(network, p, true);
 		} catch (FileNotFoundException fnfEx) {
 			JOptionPane.showMessageDialog(null,fnfEx.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
-			System.err.println("Error trying to save in PSTricks");
+			Cuttlefish.err("Error trying to save in PSTricks");
 			fnfEx.printStackTrace();
 		}
 	}

@@ -431,7 +431,7 @@ public class Vertex implements Comparable<Vertex> {
 		this.internalNode.getNodeData().setY((float) y);
 		this.internalNode.getNodeData().setZ(0);
 	}
-
+	
 	public String toString() {
 		return Integer.toString(getId());
 	}

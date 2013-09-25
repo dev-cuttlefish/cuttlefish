@@ -25,12 +25,12 @@ import sun.misc.SignalHandler;
 import ch.ethz.sg.cuttlefish.exporter.NetworkExportController;
 import ch.ethz.sg.cuttlefish.layout.LayoutLoader;
 import ch.ethz.sg.cuttlefish.layout.kcore.WeightedKCoreLayout;
+import ch.ethz.sg.cuttlefish.misc.NetworkStatistics;
 import ch.ethz.sg.cuttlefish.networks.BrowsableNetwork;
 import ch.ethz.sg.cuttlefish.networks.CxfNetwork;
 import ch.ethz.sg.cuttlefish.networks.GraphMLNetwork;
 import ch.ethz.sg.cuttlefish.networks.JsonNetwork;
 import ch.ethz.sg.cuttlefish.networks.PajekNetwork;
-import ch.ethz.sg.cuttlefish.testing.NetworkStatistics;
 
 public class Cuttlefish {
 
@@ -115,6 +115,10 @@ public class Cuttlefish {
 
 	public static void out(String s) {
 		System.out.println("[" + sdf.format(cal.getTime()) + "] " + s);
+	}
+
+	public static void err(String s) {
+		System.err.println("[ERROR] " + s);
 	}
 
 	private static void parseOptions(String[] args) {

@@ -31,6 +31,7 @@ import java.util.List;
 
 import javax.swing.JOptionPane;
 
+import ch.ethz.sg.cuttlefish.Cuttlefish;
 import ch.ethz.sg.cuttlefish.layout.LayoutLoader;
 import ch.ethz.sg.cuttlefish.misc.Observer;
 import ch.ethz.sg.cuttlefish.misc.Subject;
@@ -64,7 +65,7 @@ public class InteractiveCxfNetwork extends CxfNetwork implements ISimulation,
 		} catch (FileNotFoundException fnfEx) {
 			JOptionPane.showMessageDialog(null, fnfEx.getMessage(), "Error",
 					JOptionPane.ERROR_MESSAGE);
-			System.err.println("cxf network file not found");
+			Cuttlefish.err("cxf network file not found");
 			fnfEx.printStackTrace();
 		}
 
@@ -112,7 +113,7 @@ public class InteractiveCxfNetwork extends CxfNetwork implements ISimulation,
 			if (hash.containsKey(token.id)) {
 				Vertex v = hash.get(token.id);
 
-				if (directed) {
+				if (isDirected()) {
 					for (Edge e : getOutEdges(v))
 						removeEdge(e);
 					for (Edge e : getInEdges(v))
@@ -371,7 +372,7 @@ public class InteractiveCxfNetwork extends CxfNetwork implements ISimulation,
 		} catch (FileNotFoundException fnfEx) {
 			JOptionPane.showMessageDialog(null, fnfEx.getMessage(), "Error",
 					JOptionPane.ERROR_MESSAGE);
-			System.err.println("Network file not found");
+			Cuttlefish.err("Network file not found");
 			fnfEx.printStackTrace();
 		}
 

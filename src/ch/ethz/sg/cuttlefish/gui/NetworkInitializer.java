@@ -88,7 +88,7 @@ public class NetworkInitializer {
 
 		} catch (FileNotFoundException e) {
 			network = null;
-			System.err.println("File not found! "
+			ch.ethz.sg.cuttlefish.Cuttlefish.err("File not found! "
 					+ networkFile.getAbsolutePath());
 
 		} catch (IOException e) {

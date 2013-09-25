@@ -1,4 +1,4 @@
-package ch.ethz.sg.cuttlefish.testing;
+package ch.ethz.sg.cuttlefish.misc;
 
 import java.awt.Color;
 import java.awt.Font;

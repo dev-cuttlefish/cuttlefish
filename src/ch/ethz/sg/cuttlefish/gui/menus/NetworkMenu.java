@@ -42,11 +42,11 @@ import ch.ethz.sg.cuttlefish.gui.NetworkPanel;
 import ch.ethz.sg.cuttlefish.gui.undoable.UndoableControl;
 import ch.ethz.sg.cuttlefish.layout.LayoutLoader;
 import ch.ethz.sg.cuttlefish.misc.FileChooser;
+import ch.ethz.sg.cuttlefish.misc.NetworkStatistics;
 import ch.ethz.sg.cuttlefish.misc.Observer;
 import ch.ethz.sg.cuttlefish.misc.Subject;
 import ch.ethz.sg.cuttlefish.networks.BrowsableNetwork;
 import ch.ethz.sg.cuttlefish.networks.CxfNetwork;
-import ch.ethz.sg.cuttlefish.testing.NetworkStatistics;
 
 public class NetworkMenu extends AbstractMenu implements Observer,
 		java.util.Observer {
@@ -195,7 +195,8 @@ public class NetworkMenu extends AbstractMenu implements Observer,
 					} catch (Exception ioEx) {
 						JOptionPane.showMessageDialog(null, ioEx.getMessage(),
 								"Error", JOptionPane.ERROR_MESSAGE);
-						System.err.println("Impossible to write");
+						ch.ethz.sg.cuttlefish.Cuttlefish
+								.err("Impossible to write");
 						ioEx.printStackTrace();
 					}
 				}

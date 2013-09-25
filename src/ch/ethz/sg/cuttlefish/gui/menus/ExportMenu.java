@@ -37,6 +37,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import org.gephi.io.exporter.preview.SVGExporter;
 import org.gephi.io.exporter.spi.Exporter;
 
+import ch.ethz.sg.cuttlefish.Cuttlefish;
 import ch.ethz.sg.cuttlefish.exporter.AppletExporter;
 import ch.ethz.sg.cuttlefish.exporter.JPEGExporter;
 import ch.ethz.sg.cuttlefish.exporter.NetworkExportController;
@@ -590,7 +591,7 @@ public class ExportMenu extends AbstractMenu {
 	private void errorPopup(Exception e, String msg) {
 		JOptionPane.showMessageDialog(null, e.getMessage(), "Error",
 				JOptionPane.ERROR_MESSAGE);
-		System.err.println(msg);
+		Cuttlefish.err(msg);
 		e.printStackTrace();
 	}
 

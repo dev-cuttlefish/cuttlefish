@@ -1,6 +1,5 @@
 package ch.ethz.sg.cuttlefish.gui.visualization.mouse;
 
-import java.awt.Cursor;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.geom.Point2D;
@@ -33,7 +32,6 @@ public final class GraphMouseImpl implements GraphMouse {
 	private NetworkRenderer renderer = null;
 	private PickSupport pickSupport = null;
 
-	private static final double ZOOM_SENSITIVITY = 20;
 	private static final boolean ANIMATE_LABELS = true;
 
 	public GraphMouseImpl(NetworkPanel networkPanel) {
@@ -128,16 +126,33 @@ public final class GraphMouseImpl implements GraphMouse {
 		if (e.getButton() == MouseEvent.BUTTON1) {
 
 			if (mouseInMode(Mode.TRANSFORMING)) {
-				isPanning = true;
-				panStart = p;
-
-			} else if (mouseInMode(Mode.INTERACTING)) {
 				grabbed = pickSupport.pickVertex(renderer.screenToWorld(p));
-				isMoving = (grabbed != null);
+
+				if (grabbed != null) {
+					isMoving = true;
+
+				} else {
+					isPanning = true;
+					panStart = p;
+				}
+
+			} else if (mouseInMode(Mode.SELECTING)) {
+				Vertex vertex = pickSupport.pickVertex(renderer
+						.screenToWorld(p));
+
+				if (vertex != null) {
+					networkPanel.selectVertex(vertex);
+
+				} else {
+					Edge edge = pickSupport.pickEdge(renderer.screenToWorld(p));
+
+					if (edge != null)
+						networkPanel.selectEdge(edge);
+				}
 
 			} else if (mouseInMode(Mode.EDITING)) {
-				e.getComponent().setCursor(
-						Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
+				// e.getComponent().setCursor(
+				// Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
 				grabbed = pickSupport.pickVertex(renderer.screenToWorld(p));
 
 				if (grabbed != null) {
@@ -149,8 +164,8 @@ public final class GraphMouseImpl implements GraphMouse {
 
 			renderer.animate((isPanning || isMoving || isCreatingEdge),
 					ANIMATE_LABELS);
-			e.getComponent().setCursor(
-					Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
+			// e.getComponent().setCursor(
+			// Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
 		}
 	}
 
@@ -181,17 +196,17 @@ public final class GraphMouseImpl implements GraphMouse {
 			}
 
 			renderer.animate(false, ANIMATE_LABELS);
-			e.getComponent().setCursor(
-					Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+			// e.getComponent().setCursor(
+			// Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 
-			if (isMoving && mouseInMode(Mode.INTERACTING)) {
+			if (isMoving) {
 				UndoableAction action = new SetVertexPositionUndoableAction(
 						grabbed, grabbed.getPosition(), oldPosition);
 				action.execute();
 				UndoableControl.getController().actionExecuted(action);
 				oldPosition = null;
 			}
-			
+
 			// vertex moved; must recompute layout
 			if (isMoving || isCreatingEdge || isCreatingVertex)
 				networkPanel.resumeLayout();
@@ -211,6 +226,7 @@ public final class GraphMouseImpl implements GraphMouse {
 	 */
 
 	private Point2D oldPosition;
+
 	public void mouseDragged(MouseEvent e) {
 		Point2D p = e.getPoint();
 		Point2D s = renderer.screenToWorld(p);
@@ -222,8 +238,8 @@ public final class GraphMouseImpl implements GraphMouse {
 			panStart.setLocation(p);
 		}
 
-		if (isMoving && mouseInMode(Mode.INTERACTING)) {
-			
+		if (isMoving) {
+
 			if (oldPosition == null)
 				oldPosition = grabbed.getPosition();
 			grabbed.setPosition(s);
@@ -243,9 +259,17 @@ public final class GraphMouseImpl implements GraphMouse {
 	 */
 
 	public void mouseWheelMoved(MouseWheelEvent e) {
-		int wheelRotation = e.getWheelRotation();
-		zoom += (double) wheelRotation / ZOOM_SENSITIVITY;
+		double rotation = e.getWheelRotation();
+		double sensitivity = 0.05;
+		double zx, zy;
+		double scaling = zoom > 1 ? 1 : renderer.getScaleFactor();
+
+		zoom += rotation * sensitivity * scaling;
 		zoomPos = renderer.screenToWorld(e.getPoint());
+		zx = zoomPos.getX() * scaling;
+		zy = zoomPos.getY() * scaling;
+		zoomPos.setLocation(zx, zy);
+
 		renderer.scale(zoom, zoomPos);
 		renderer.repaint();
 	}

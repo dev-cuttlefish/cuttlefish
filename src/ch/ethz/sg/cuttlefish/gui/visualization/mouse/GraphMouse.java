@@ -18,7 +18,7 @@ public interface GraphMouse extends MouseListener, MouseMotionListener,
 	 * 
 	 */
 	public enum Mode {
-		NONE, TRANSFORMING, INTERACTING, EDITING
+		NONE, TRANSFORMING, SELECTING, EDITING
 	};
 
 	public Point2D getPanning();
