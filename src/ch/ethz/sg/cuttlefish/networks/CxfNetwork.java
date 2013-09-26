@@ -658,7 +658,7 @@ public class CxfNetwork extends BrowsableNetwork {
 			if (token.size != null)
 				e.setWidth(token.size);
 			if (token.color != null)
-				;//TODO ilias: e.setColor(token.color);
+				e.setColor(token.color);
 			if (token.var1 != null)
 				e.setVar1(token.var1);
 			if (token.var2 != null)

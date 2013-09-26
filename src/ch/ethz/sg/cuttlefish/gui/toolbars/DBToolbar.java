@@ -44,10 +44,8 @@ import ch.ethz.sg.cuttlefish.networks.Vertex;
 
 public class DBToolbar extends AbstractToolbar {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 479370821385607442L;
+
 	private JButton exploreNetwork = null;
 	private JButton exploreNode = null;
 	private JButton expand = null;
@@ -60,7 +58,7 @@ public class DBToolbar extends AbstractToolbar {
 	private boolean running = false;
 	private long sleepTime = 200; // in milliseconds
 	private JComboBox networkNames = null;
-	private DBExploreNode exploreNodeFrame = new DBExploreNode(networkPanel);;
+	private DBExploreNode exploreNodeFrame = new DBExploreNode(networkPanel);
 	private DBExploreNetwork exploreNetworkFrame = null;
 	private boolean enabled = false;
 	private Icon runIcon = null;
@@ -80,11 +78,11 @@ public class DBToolbar extends AbstractToolbar {
 
 	@Override
 	public void setVisible(boolean b) {
-		if (networkPanel.getNetwork() instanceof DBNetwork) {			
+		if (networkPanel.getNetwork() instanceof DBNetwork) {
 			super.setVisible(b);
 			networkNames.setVisible(true);
-			if(networkPanel.getNetwork() instanceof ExploreNetwork) {
-				networkNames.setVisible(false);				
+			if (networkPanel.getNetwork() instanceof ExploreNetwork) {
+				networkNames.setVisible(false);
 				setExploreButtonsEnabled(true);
 				setNetworkButtonsEnabled(true);
 			}
@@ -123,7 +121,7 @@ public class DBToolbar extends AbstractToolbar {
 
 	private DBExploreNode getExploreNodeFrame() {
 		if (exploreNodeFrame == null)
-			exploreNodeFrame = new DBExploreNode(networkPanel);			
+			exploreNodeFrame = new DBExploreNode(networkPanel);
 		return exploreNodeFrame;
 	}
 
@@ -145,6 +143,19 @@ public class DBToolbar extends AbstractToolbar {
 			networkNames.insertItemAt(networkName, itemCount);
 			itemCount++;
 		}
+
+		// No valid network was found, display a warning
+		if (itemCount == 1) {
+			String db = ((DBNetwork) networkPanel.getNetwork()).getDBName();
+			String warning = "<html><body><p style='width: 400px;'>"
+					+ "Database <i>" + db + "</i> does not contain tables "
+					+ "that can be interpreted to a network.<br><br>"
+					+ "For the nodes table, the required column is \"id\", "
+					+ "and for the edges table the required columns are "
+					+ "\"id_origin\" and \"id_dest\".</p></body></html>";
+			JOptionPane.showMessageDialog(networkPanel, warning,
+					"Network not found", JOptionPane.WARNING_MESSAGE);
+		}
 	}
 
 	private void initialize() {
@@ -164,27 +175,30 @@ public class DBToolbar extends AbstractToolbar {
 		networkNames.setEditable(false);
 		settingsButton = new JButton("Settings");
 		settingsButton.setToolTipText("Change the update time interval");
-				
+
 		expand.setToolTipText("Expand node (add all nodes connected to the selected node)");
-		expandBack.setToolTipText("Expand back node (add all nodes that are connected to the selected node");
+		expandBack
+				.setToolTipText("Expand back node (add all nodes that are connected to the selected node");
 		shrink.setToolTipText("Shrink node (remove all nodes connected to the selected node)");
-		shrinkBack.setToolTipText("Shrink back node (remove all nodes that are connected to the selected node)");
-		exploreNetwork.setToolTipText("Filter a network using node and edge filters");
+		shrinkBack
+				.setToolTipText("Shrink back node (remove all nodes that are connected to the selected node)");
+		exploreNetwork
+				.setToolTipText("Filter a network using node and edge filters");
 		exploreNode.setToolTipText("Explore the neighborhood of a node");
 		run.setToolTipText("Update the network upon data changes");
 		step.setToolTipText("Check the data for changes");
-		
-		run.addActionListener(new ActionListener() {			
+
+		run.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				runButtonEvent();	
+				runButtonEvent();
 			}
 		});
-		
-		step.addActionListener(new ActionListener() {			
+
+		step.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				stepButtonEvent();	
+				stepButtonEvent();
 			}
 		});
 
@@ -199,11 +213,22 @@ public class DBToolbar extends AbstractToolbar {
 						((DBNetwork) networkPanel.getNetwork())
 								.setNetwork((String) networkNames
 										.getSelectedItem());
-						if (((DBNetwork) networkPanel.getNetwork()).nodeTableIsDerived()) {
-							Object selected = JOptionPane.showInputDialog(networkPanel, "Could not find a matching table with nodes for the selected network.\n\nSelect a table with nodes from the drop down menu,\nor click Cancel if there isn't one", "Could not find a table with nodes", JOptionPane.QUESTION_MESSAGE, null, ((DBNetwork)networkPanel.getNetwork()).availableNodeTables().toArray(), null);
-							String selectedNodeTable = (String)selected;
-							if(selectedNodeTable != null)
-								((DBNetwork)networkPanel.getNetwork()).setNodeTable(selectedNodeTable);
+						if (((DBNetwork) networkPanel.getNetwork())
+								.nodeTableIsDerived()) {
+							Object selected = JOptionPane
+									.showInputDialog(
+											networkPanel,
+											"Could not find a matching table with nodes for the selected network.\n\nSelect a table with nodes from the drop down menu,\nor click Cancel if there isn't one",
+											"Could not find a table with nodes",
+											JOptionPane.QUESTION_MESSAGE, null,
+											((DBNetwork) networkPanel
+													.getNetwork())
+													.availableNodeTables()
+													.toArray(), null);
+							String selectedNodeTable = (String) selected;
+							if (selectedNodeTable != null)
+								((DBNetwork) networkPanel.getNetwork())
+										.setNodeTable(selectedNodeTable);
 						}
 					}
 				} else {
@@ -238,23 +263,24 @@ public class DBToolbar extends AbstractToolbar {
 		this.add(exploreNetwork);
 		this.add(exploreNode);
 		this.add(run);
-		this.add(step);	
+		this.add(step);
 		this.add(settingsButton);
-		
-		settingsButton.addActionListener(new ActionListener() {			
+
+		settingsButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				settingsButtonEvent();	
+				settingsButtonEvent();
 			}
 		});
-		
+
 		expand.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(java.awt.event.ActionEvent e) {
 				checkPickedVertices();
 				for (Vertex vertex : networkPanel.getPickedVertices())
 					((DBNetwork) networkPanel.getNetwork()).extendNeighborhood(
-							vertex.getId(), 1, true, new HashSet<Vertex>(), new HashSet<Edge>());
+							vertex.getId(), 1, true, new HashSet<Vertex>(),
+							new HashSet<Edge>());
 				networkPanel.onNetworkChange();
 				networkPanel.repaintViewer();
 			}
@@ -266,7 +292,8 @@ public class DBToolbar extends AbstractToolbar {
 				checkPickedVertices();
 				for (Vertex vertex : networkPanel.getPickedVertices())
 					((DBNetwork) networkPanel.getNetwork()).extendNeighborhood(
-							vertex.getId(), 1, false, new HashSet<Vertex>(), new HashSet<Edge>());
+							vertex.getId(), 1, false, new HashSet<Vertex>(),
+							new HashSet<Edge>());
 				networkPanel.onNetworkChange();
 				networkPanel.repaintViewer();
 			}
@@ -297,17 +324,17 @@ public class DBToolbar extends AbstractToolbar {
 		});
 
 	}
-	
+
 	private void runButtonEvent() {
-		if(!running) {
+		if (!running) {
 			// go to running mode
 			running = true;
 			step.setEnabled(false);
 			run.setIcon(getPauseIcon());
-			new Thread(new Runnable() {				
-				@Override			
+			new Thread(new Runnable() {
+				@Override
 				public void run() {
-					while(running) {
+					while (running) {
 						try {
 							Thread.sleep(sleepTime);
 						} catch (InterruptedException e) {
@@ -324,51 +351,59 @@ public class DBToolbar extends AbstractToolbar {
 			step.setEnabled(true);
 		}
 	}
-	
+
 	private DBNetwork getDBNetwork() {
-		if(networkPanel.getNetwork() instanceof DBNetwork) {
-			return (DBNetwork)networkPanel.getNetwork();
+		if (networkPanel.getNetwork() instanceof DBNetwork) {
+			return (DBNetwork) networkPanel.getNetwork();
 		} else {
-			// this is a special case when the network is delegated to a forest... required for the
-			// tree layouts			
-			BrowsableForestNetwork forest = (BrowsableForestNetwork)networkPanel.getNetwork();
-			return (DBNetwork)forest.getOriginalNetwork();
+			// this is a special case when the network is delegated to a
+			// forest... required for the
+			// tree layouts
+			BrowsableForestNetwork forest = (BrowsableForestNetwork) networkPanel
+					.getNetwork();
+			return (DBNetwork) forest.getOriginalNetwork();
 		}
 	}
 
-	private void stepButtonEvent() {		
-		if(getDBNetwork().getLastAction().compareToIgnoreCase("exploreNode") == 0) {
+	private void stepButtonEvent() {
+		if (getDBNetwork().getLastAction().compareToIgnoreCase("exploreNode") == 0) {
 			getExploreNodeFrame().refresh();
-		} else if(getDBNetwork().getLastAction().compareToIgnoreCase("exploreNetwork") == 0) {
+		} else if (getDBNetwork().getLastAction().compareToIgnoreCase(
+				"exploreNetwork") == 0) {
 			getExploreNetworkFrame().refresh();
 		}
 	}
-	
-	public DBExploreNode exploreNodeFrame(){
+
+	public DBExploreNode exploreNodeFrame() {
 		return exploreNodeFrame;
 	}
-	
+
 	private Icon getRunIcon() {
-		if(runIcon == null)
+		if (runIcon == null)
 			runIcon = new ImageIcon(getClass().getResource(runIconFile));
 		return runIcon;
 	}
-	
+
 	private Icon getPauseIcon() {
-		if(pauseIcon == null)
+		if (pauseIcon == null)
 			pauseIcon = new ImageIcon(getClass().getResource(pauseIconFile));
 		return pauseIcon;
 	}
-	
+
 	private void settingsButtonEvent() {
-		String sleepTimeStr = (String)JOptionPane.showInputDialog(networkPanel, "Enter time between updates in milliseconds", "Time between updates", JOptionPane.QUESTION_MESSAGE, null, null, sleepTime);
-		if(sleepTimeStr != null) {
+		String sleepTimeStr = (String) JOptionPane.showInputDialog(
+				networkPanel, "Enter time between updates in milliseconds",
+				"Time between updates", JOptionPane.QUESTION_MESSAGE, null,
+				null, sleepTime);
+		if (sleepTimeStr != null) {
 			try {
 				sleepTime = Long.parseLong(sleepTimeStr);
 			} catch (NumberFormatException ex) {
-				JOptionPane.showMessageDialog(networkPanel, "The value that you enter is not an integer", "Incorrect input", JOptionPane.WARNING_MESSAGE, null);
+				JOptionPane.showMessageDialog(networkPanel,
+						"The value that you enter is not an integer",
+						"Incorrect input", JOptionPane.WARNING_MESSAGE, null);
 			}
 		}
 	}
-	
+
 }
