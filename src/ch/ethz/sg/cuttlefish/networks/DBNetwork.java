@@ -65,6 +65,7 @@ public class DBNetwork extends BrowsableNetwork {
 	private Map<String, String> networkNodetableMap;
 	private Map<String, Set<String>> tableAvailableColumnsMap;
 	private String lastAction = "";
+	private String fullDBName;
 
 	private String edgeTable = "";
 	private String nodeTable = "";
@@ -110,6 +111,7 @@ public class DBNetwork extends BrowsableNetwork {
 			disConnect();
 		try {
 			Class.forName(driverName).newInstance();
+			fullDBName = dbName + "/" + schemaName;
 			String url = urlName + dbName + "/" + schemaName;
 			conn = DriverManager.getConnection(url, userName, password);
 			this.schemaName = schemaName;
@@ -422,6 +424,10 @@ public class DBNetwork extends BrowsableNetwork {
 	 * Checks if the provided node id exists in the database
 	 */
 	public boolean checkNodeId(String nodeId) {
+		
+		if (nodeId.isEmpty())
+			return false;
+		
 		String queryString = "SELECT * FROM " + getFullNodeTableName() + " WHERE id = '"
 				+ nodeId + "'";
 		Statement st;
@@ -1162,6 +1168,10 @@ public class DBNetwork extends BrowsableNetwork {
 	public void setNodeTable(String selectedNodeTable) {
 		derivedNodeTable = false;
 		nodeTable = selectedNodeTable;
+	}
+	
+	public String getDBName() {
+		return fullDBName;
 	}
 
 }
