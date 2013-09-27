@@ -152,6 +152,7 @@ public class CxfNetwork extends BrowsableNetwork {
 	 * @param graphFile
 	 * @throws FileNotFoundException
 	 */
+	@Override
 	public void load(File graphFile) throws FileNotFoundException {
 		this.graphFile = graphFile;
 		hash = new HashMap<Integer, Vertex>();

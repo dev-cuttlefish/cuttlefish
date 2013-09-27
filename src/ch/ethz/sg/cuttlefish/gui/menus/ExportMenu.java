@@ -34,7 +34,6 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import org.gephi.io.exporter.preview.SVGExporter;
 import org.gephi.io.exporter.spi.Exporter;
 
 import ch.ethz.sg.cuttlefish.Cuttlefish;
@@ -58,22 +57,26 @@ public class ExportMenu extends AbstractMenu {
 
 	private static final long serialVersionUID = 3697550568255024207L;
 
-	private JMenuItem toJpeg;
-	private JMenuItem toTikz;
 	private TikzDialog tikzDialog;
 	private JMenuItem toAdjMatrix;
 	private JMenuItem toEdgeList;
-	private JMenuItem toSVG;
 	private JMenuItem dumpToDB;
 	private JMenuItem toCMX;
-	private JMenuItem toGraphml;
 
+	private JMenuItem toJpeg;
+	private JMenuItem toTikz;
+	private JMenuItem toApplet;
+
+	private JMenuItem toGraphml;
+	private JMenuItem toSVG;
 	private JMenuItem toPDF;
 	private JMenuItem toPNG;
+	private JMenuItem toPajek;
+	private JMenuItem toGexf;
+	private JMenuItem toCsv;
+	private JMenuItem toJson;
 
-	private JMenuItem toApplet;
 	private JFileChooser snapshotFileChooser;
-	private JFileChooser svgFileChooser;
 	private JFileChooser appletFileChooser;
 	private JFileChooser datFileChooser;
 	private JFileChooser cmxFileChooser;
@@ -83,13 +86,13 @@ public class ExportMenu extends AbstractMenu {
 		initialize();
 		this.setText("Export");
 	}
-	
+
 	private String getOutputName(String extension) {
-		String output = networkPanel.getNetwork().getNetworkFileName(); 
-		
+		String output = networkPanel.getNetwork().getNetworkFileName();
+
 		if (output == null || output.isEmpty())
-			output = "network";			
-		
+			output = "network";
+
 		return output + "." + extension;
 	}
 
@@ -100,29 +103,35 @@ public class ExportMenu extends AbstractMenu {
 		toEdgeList = new JMenuItem("Edge list");
 		dumpToDB = new JMenuItem("Dump to database");
 		toCMX = new JMenuItem("Commetrix csv");
-		toApplet = new JMenuItem("To Applet");
-		toSVG = new JMenuItem("To interactive SVG");
-		toGraphml = new JMenuItem("To GraphML");
-		toPDF = new JMenuItem("To PDF");
-		toPNG = new JMenuItem("To PNG");
+		toApplet = new JMenuItem("Applet");
+		toSVG = new JMenuItem("Interactive SVG");
+		toGraphml = new JMenuItem("GraphML");
+		toPDF = new JMenuItem("PDF");
+		toPNG = new JMenuItem("PNG");
+		toPajek = new JMenuItem("Pajek");
+		toGexf = new JMenuItem("GEXF");
+		toCsv = new JMenuItem("CSV");
+		toJson = new JMenuItem("JSON");
 
+		this.add(toTikz);
 		this.add(toGraphml);
-		this.add(toAdjMatrix);
-		this.add(toEdgeList);
+		this.add(toPajek);
+		this.add(toJson);
+		this.add(toGexf);
+		this.add(toCsv);
 
 		this.addSeparator();
 		this.add(toJpeg);
 		this.add(toSVG);
-		this.add(toTikz);
-		this.add(toApplet);
-
-		this.addSeparator();
-		this.add(dumpToDB);
-		this.add(toCMX);
-
-		this.addSeparator();
 		this.add(toPDF);
 		this.add(toPNG);
+
+		this.addSeparator();
+		this.add(toApplet);
+		this.add(toAdjMatrix);
+		this.add(toEdgeList);
+		this.add(toCMX);
+		this.add(dumpToDB);
 
 		dumpToDB.addActionListener(new ActionListener() {
 			@Override
@@ -143,47 +152,42 @@ public class ExportMenu extends AbstractMenu {
 		toGraphml.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				JFileChooser graphmlFileChooser = new FileChooser();
-				graphmlFileChooser
-						.setDialogTitle("Exporting cuttlefish network to GraphML");
-				graphmlFileChooser.setSelectedFile(new File(getOutputName("graphml")));
-				graphmlFileChooser.setFileFilter(new FileNameExtensionFilter(
-						".graphml files", "graphml"));
-				if (graphmlFileChooser.showSaveDialog(networkPanel) == JFileChooser.APPROVE_OPTION) {
+				doExport("GraphML", "graphml");
+			}
+		});
 
-					try {
-						Exporter exporter = NetworkExportController
-								.getExporter("graphml");
-						NetworkExportController.export(
-								networkPanel.getNetwork(),
-								graphmlFileChooser.getSelectedFile(), exporter);
-					} catch (Exception ex) {
-						errorPopup(ex, "Output error when saving in GraphML!");
-					}
-				}
+		toPajek.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				doExport("Pajek", "net");
+			}
+		});
+
+		toGexf.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				doExport("GEXF", "gexf");
+			}
+		});
+
+		toCsv.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				doExport("CSV", "csv");
+			}
+		});
+
+		toJson.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				doExport("Json", "json");
 			}
 		});
 
 		toSVG.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				String svgFilename = getOutputName("svg");
-				JFileChooser fc = getSVGFileChooser();
-				fc.setSelectedFile(new File(svgFilename));
-				int returnVal = fc.showSaveDialog(networkPanel);
-
-				if (returnVal == JFileChooser.APPROVE_OPTION) {
-					try {
-						SVGExporter svg = (SVGExporter) NetworkExportController
-								.getExporter("svg");
-						NetworkExportController.export(
-								networkPanel.getNetwork(),
-								fc.getSelectedFile(), svg);
-
-					} catch (Exception ex) {
-						errorPopup(ex, "Output error when saving in SVG!");
-					}
-				}
+				doExport("SVG", "svg");
 			}
 		});
 
@@ -212,6 +216,7 @@ public class ExportMenu extends AbstractMenu {
 						networkFilename = fc.getSelectedFile().getName();
 						AppletExporter applet = (AppletExporter) NetworkExportController
 								.getExporter("applet");
+						applet.setNetwork(networkPanel.getNetwork());
 						applet.exportToDynamicApplet(fc.getSelectedFile());
 					}
 					fc = getAppletChooser();
@@ -220,6 +225,7 @@ public class ExportMenu extends AbstractMenu {
 					if (returnVal == JFileChooser.APPROVE_OPTION) {
 						AppletExporter applet = (AppletExporter) NetworkExportController
 								.getExporter("applet");
+						applet.setNetwork(networkPanel.getNetwork());
 						applet.exportInitialPage(fc.getSelectedFile(),
 								imageFilename, networkFilename, imageWidth,
 								imageHeight);
@@ -246,7 +252,8 @@ public class ExportMenu extends AbstractMenu {
 							@Override
 							public void run() {
 								JFileChooser fc = getSnapshotFileChooser();
-								fc.setSelectedFile(new File(getOutputName("jpg")));
+								fc.setSelectedFile(new File(
+										getOutputName("jpg")));
 								int returnVal = fc.showSaveDialog(null);
 								if (returnVal != JFileChooser.APPROVE_OPTION)
 									return;
@@ -335,9 +342,8 @@ public class ExportMenu extends AbstractMenu {
 					}
 				} else {
 					JFileChooser fc = getSnapshotFileChooser();
-					fc.setSelectedFile(new File(
-							((BrowsableNetwork) networkPanel.getNetwork())
-									.getName() + ".jpg"));
+					fc.setSelectedFile(new File(networkPanel.getNetwork()
+							.getNetworkFileName() + ".jpg"));
 					int returnVal = fc.showSaveDialog(null);
 
 					if (returnVal == JFileChooser.APPROVE_OPTION) {
@@ -434,24 +440,7 @@ public class ExportMenu extends AbstractMenu {
 		toPDF.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				JFileChooser pdfFileChooser = new FileChooser();
-				pdfFileChooser
-						.setDialogTitle("Exporting cuttlefish network to PDF");
-				pdfFileChooser.setSelectedFile(new File(getOutputName("pdf")));
-				pdfFileChooser.setFileFilter(new FileNameExtensionFilter(
-						".pdf files", "pdf"));
-				if (pdfFileChooser.showSaveDialog(networkPanel) == JFileChooser.APPROVE_OPTION) {
-
-					try {
-						Exporter exporter = NetworkExportController
-								.getExporter("pdf");
-						NetworkExportController.export(
-								networkPanel.getNetwork(),
-								pdfFileChooser.getSelectedFile(), exporter);
-					} catch (Exception ex) {
-						errorPopup(ex, "Output error when saving in PDF!");
-					}
-				}
+				doExport("PDF", "pdf");
 			}
 		});
 
@@ -459,24 +448,7 @@ public class ExportMenu extends AbstractMenu {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				JFileChooser pngFileChooser = new FileChooser();
-				pngFileChooser
-						.setDialogTitle("Exporting cuttlefish network to PNG");
-				pngFileChooser.setSelectedFile(new File(getOutputName("png")));
-				pngFileChooser.setFileFilter(new FileNameExtensionFilter(
-						".png files", "png"));
-				if (pngFileChooser.showSaveDialog(networkPanel) == JFileChooser.APPROVE_OPTION) {
-
-					try {
-						Exporter exporter = NetworkExportController
-								.getExporter("png");
-						NetworkExportController.export(
-								networkPanel.getNetwork(),
-								pngFileChooser.getSelectedFile(), exporter);
-					} catch (Exception ex) {
-						errorPopup(ex, "Output error when saving in PNG!");
-					}
-				}
+				doExport("PNG", "png");
 			}
 		});
 	}
@@ -506,20 +478,6 @@ public class ExportMenu extends AbstractMenu {
 		snapshotFileChooser.setFileFilter(new FileNameExtensionFilter(
 				".jpg files", "jpeg", "jpg"));
 		return snapshotFileChooser;
-	}
-
-	/**
-	 * This method initializes the file chooser for the SVG export button.
-	 * 
-	 * @return javax.swing.JFileChooser
-	 */
-	private JFileChooser getSVGFileChooser() {
-		svgFileChooser = new FileChooser();
-		svgFileChooser
-				.setDialogTitle("Saving cuttlefish network to interactive SVG...");
-		svgFileChooser.setFileFilter(new FileNameExtensionFilter(".svg files",
-				"svg"));
-		return svgFileChooser;
 	}
 
 	/**
@@ -572,6 +530,8 @@ public class ExportMenu extends AbstractMenu {
 		try {
 			JPEGExporter jpeg = (JPEGExporter) NetworkExportController
 					.getExporter("jpg");
+			jpeg.setDimensions(networkPanel.getWidth(),
+					networkPanel.getHeight());
 			NetworkExportController.export(networkPanel.getNetwork(), file,
 					jpeg);
 		} catch (Exception e) {
@@ -593,6 +553,25 @@ public class ExportMenu extends AbstractMenu {
 				JOptionPane.ERROR_MESSAGE);
 		Cuttlefish.err(msg);
 		e.printStackTrace();
+	}
+
+	private void doExport(String name, String extension) {
+		JFileChooser fc = new FileChooser();
+		fc.setDialogTitle("Exporting cuttlefish network to " + name);
+		fc.setSelectedFile(new File(getOutputName(extension)));
+		fc.setFileFilter(new FileNameExtensionFilter(
+				"." + extension + " files", extension));
+		if (fc.showSaveDialog(networkPanel) == JFileChooser.APPROVE_OPTION) {
+
+			try {
+				Exporter exporter = NetworkExportController
+						.getExporter(extension);
+				NetworkExportController.export(networkPanel.getNetwork(),
+						fc.getSelectedFile(), exporter);
+			} catch (Exception ex) {
+				errorPopup(ex, "Output error when saving in GraphML!");
+			}
+		}
 	}
 
 }

@@ -108,6 +108,7 @@ public class AppletExporter implements GraphExporter, CharacterExporter,
 	public void exportToDynamicApplet(File file) throws IOException {
 		JsonExporter json = (JsonExporter) NetworkExportController
 				.getExporter("json");
+		json.setNetwork(network);
 		writer = new BufferedWriter(new FileWriter(file));
 		json.setWriter(writer);
 

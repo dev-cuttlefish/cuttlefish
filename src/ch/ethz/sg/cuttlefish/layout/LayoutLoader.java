@@ -25,7 +25,6 @@ import ch.ethz.sg.cuttlefish.layout.arf.ARFLayoutBuilder;
 import ch.ethz.sg.cuttlefish.layout.arf.WeightedARFLayout;
 import ch.ethz.sg.cuttlefish.layout.arf.WeightedARFLayoutBuilder;
 import ch.ethz.sg.cuttlefish.layout.circle.CircleLayoutBuilder;
-import ch.ethz.sg.cuttlefish.layout.fixed.FixedLayout;
 import ch.ethz.sg.cuttlefish.layout.fixed.FixedLayoutBuilder;
 import ch.ethz.sg.cuttlefish.layout.kcore.KCoreLayoutBuilder;
 import ch.ethz.sg.cuttlefish.layout.kcore.WeightedKCoreLayout;
@@ -86,10 +85,18 @@ public class LayoutLoader {
 	}
 
 	public static LayoutLoader getInstance() {
-		return getInstance(null);
+		return initGUI(null);
 	}
 
-	public static LayoutLoader getInstance(NetworkPanel panel) {
+	public static LayoutLoader initNoGUI(BrowsableNetwork network) {
+		if (instance == null) {
+			instance = new LayoutLoader(network);
+		}
+
+		return instance;
+	}
+
+	public static LayoutLoader initGUI(NetworkPanel panel) {
 		if (instance == null) {
 			instance = new LayoutLoader(panel);
 		}
@@ -114,6 +121,7 @@ public class LayoutLoader {
 
 	private LayoutModel layoutModel = null;
 	private NetworkPanel networkPanel = null;
+	private BrowsableNetwork network = null;
 
 	private final boolean LIMIT_LAYOUT_ITERATIONS = false;
 	private int layoutIterationLimit = 0;
@@ -123,10 +131,21 @@ public class LayoutLoader {
 
 	private LayoutLoader(NetworkPanel panel) {
 		networkPanel = panel;
+
 		layoutModel = Lookup.getDefault().lookup(LayoutController.class)
 				.getModel();
-
 		layoutModel.addPropertyChangeListener(new LayoutChangeListener());
+	}
+
+	private LayoutLoader(BrowsableNetwork net) {
+		network = net;
+		layoutModel = Lookup.getDefault().lookup(LayoutController.class)
+				.getModel();
+		layoutModel.addPropertyChangeListener(new LayoutChangeListener());
+	}
+	
+	public void setNetwork(BrowsableNetwork network) {
+		this.network = network;
 	}
 
 	public void setLayoutByName(String selectedLayout) {
@@ -145,18 +164,16 @@ public class LayoutLoader {
 
 		layoutIterationLimit = 0;
 		if (LIMIT_LAYOUT_ITERATIONS)
-			layoutIterationLimit = networkPanel.getNetwork().getVertexCount();
+			layoutIterationLimit = network.getVertexCount();
 
 		if (newLayout instanceof ARFLayout) {
 			ARFLayout arf = (ARFLayout) newLayout;
-			arf.setIncremental(((BrowsableNetwork) networkPanel.getNetwork())
-					.isIncremental());
+			arf.setIncremental(network.isIncremental());
 			arf.keepInitialPostitions(true);
 
 		} else if (newLayout instanceof WeightedARFLayout) {
 			WeightedARFLayout weightedArf = (WeightedARFLayout) newLayout;
-			weightedArf.setIncremental(((BrowsableNetwork) networkPanel
-					.getNetwork()).isIncremental());
+			weightedArf.setIncremental(network.isIncremental());
 			weightedArf.keepInitialPostitions(true);
 
 		} else if (newLayout instanceof WeightedKCoreLayout) {
@@ -213,16 +230,17 @@ public class LayoutLoader {
 
 		layoutController.setLayout(layout);
 
-		if (!networkPanel.getNetwork().isEmpty()
-				&& layoutController.canExecute()) {
+		if (!network.isEmpty() && layoutController.canExecute()) {
 			if (layoutIterationLimit > 0)
 				layoutController.executeLayout(layoutIterationLimit);
 			else
 				layoutController.executeLayout();
 
-			networkPanel.getStatusBar().setBusyMessage(
-					"Setting layout to " + layout.getBuilder().getName(),
-					layoutController);
+			if (isGUI()) {
+				networkPanel.getStatusBar().setBusyMessage(
+						"Setting layout to " + layout.getBuilder().getName(),
+						layoutController);
+			}
 		}
 	}
 
@@ -290,13 +308,23 @@ public class LayoutLoader {
 
 			v.setPosition(x - oldBounds.getMinX(), y - oldBounds.getMinY());
 		}
+
+		centerLayout(true);
+	}
+
+	private boolean isGUI() {
+		return networkPanel != null;
 	}
 
 	public void centerLayout(boolean forceRepaint) {
-		networkPanel.getNetworkRenderer().centerNetwork();
 
-		if (forceRepaint)
-			networkPanel.getNetworkRenderer().repaint();
+		// Center layout only when in GUI mode
+		if (isGUI()) {
+			networkPanel.getNetworkRenderer().centerNetwork();
+
+			if (forceRepaint)
+				networkPanel.getNetworkRenderer().repaint();
+		}
 	}
 
 	// LayoutChangeListener inner class
@@ -317,12 +345,12 @@ public class LayoutLoader {
 
 		private void layoutSelectedChanged() {
 			// Selected layout changed
-			if (networkPanel != null && !networkPanel.getNetwork().isEmpty()) {
+			if (isGUI() && !networkPanel.getNetwork().isEmpty()) {
 
 				// Network might be too large to animate
 				int renderLimit = 4000;
-				boolean animate = networkPanel.getNetwork().getVertexCount() < renderLimit
-						&& networkPanel.getNetwork().getEdgeCount() < renderLimit;
+				boolean animate = network.getVertexCount() < renderLimit
+						&& network.getEdgeCount() < renderLimit;
 
 				networkPanel.getNetworkRenderer().animate(animate, true);
 			}
@@ -334,16 +362,7 @@ public class LayoutLoader {
 			boolean layoutStopped = (Boolean) evt.getOldValue()
 					&& !(Boolean) evt.getNewValue();
 
-			if (networkPanel == null) {
-				// Command line execution
-
-				if (layoutStopped && shouldNormalize()) {
-					normalizeLayout();
-				}
-
-			} else {
-				// GUI execution
-
+			if (isGUI()) {
 				if (layoutStopped) {
 					networkPanel.getNetworkRenderer().animate(false, true);
 					networkPanel.getStatusBar().setMessage(
@@ -352,18 +371,9 @@ public class LayoutLoader {
 											.getName());
 				}
 
-				if (shouldNormalize())
-					normalizeLayout();
-
 				centerLayout(true);
 
 			}
-		}
-
-		private boolean shouldNormalize() {
-			boolean isFixed = layoutModel.getSelectedLayout() instanceof FixedLayout;
-
-			return !isFixed;
 		}
 	}
 }

@@ -23,7 +23,6 @@ public class JPEGExporter implements VectorExporter, ByteExporter {
 	private Workspace workspace;
 	private OutputStream outputStream;
 
-	// TODO ilias: Do something with the dimensions!
 	private int width = 800;
 	private int height = 600;
 	private float margin = 4;
@@ -33,8 +32,8 @@ public class JPEGExporter implements VectorExporter, ByteExporter {
 		try {
 			exportData();
 
-		} catch (Exception e) {
-			throw new RuntimeException(e);
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 
 		return true;
@@ -55,15 +54,22 @@ public class JPEGExporter implements VectorExporter, ByteExporter {
 		this.outputStream = outputStream;
 	}
 
+	public void setMargin(float margin) {
+		this.margin = margin;
+	}
+
 	public void setDimensions(int width, int height) {
 		this.width = width;
 		this.height = height;
 	}
 
-	public void setMargin(float margin) {
-		this.margin = margin;
-	}
-
+	/*
+	 * TODO: JPEG improvement
+	 * 
+	 * This method utilizes the Gephi Exporter API, which does not consider
+	 * extra vertex and edge attributes introduced by Cuttlefish. It should be
+	 * replaced with a native version.
+	 */
 	private void exportData() throws IOException {
 		PreviewController controller = Lookup.getDefault().lookup(
 				PreviewController.class);
@@ -75,7 +81,7 @@ public class JPEGExporter implements VectorExporter, ByteExporter {
 		props.putValue("height", height);
 		props.putValue(PreviewProperty.MARGIN, margin);
 		// props.putValue(PreviewProperty.EDGE_CURVED, false);
-		
+
 		controller.refreshPreview(workspace);
 
 		ProcessingTarget target = (ProcessingTarget) controller

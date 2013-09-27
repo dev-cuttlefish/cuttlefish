@@ -12,6 +12,7 @@ import org.gephi.io.exporter.api.ExportController;
 import org.gephi.io.exporter.spi.Exporter;
 import org.openide.util.Lookup;
 
+import ch.ethz.sg.cuttlefish.layout.LayoutLoader;
 import ch.ethz.sg.cuttlefish.networks.BrowsableNetwork;
 
 public class NetworkExportController {
@@ -53,6 +54,10 @@ public class NetworkExportController {
 
 		ExportController ec = Lookup.getDefault()
 				.lookup(ExportController.class);
+
+		// Certain Gephi exporters need a normalized layout i.e., all vertices
+		// are translated near the origin
+		LayoutLoader.getInstance().normalizeLayout();
 
 		if (!file.exists())
 			file.createNewFile();

@@ -23,6 +23,8 @@ package ch.ethz.sg.cuttlefish.networks;
 
 import java.awt.Color;
 import java.awt.geom.Point2D;
+import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -34,6 +36,12 @@ import org.gephi.graph.api.Graph;
 import org.gephi.graph.api.GraphController;
 import org.gephi.graph.api.GraphModel;
 import org.gephi.graph.api.Node;
+import org.gephi.io.importer.api.Container;
+import org.gephi.io.importer.api.EdgeDefault;
+import org.gephi.io.importer.api.ImportController;
+import org.gephi.io.processor.plugin.DefaultProcessor;
+import org.gephi.project.api.ProjectController;
+import org.gephi.project.api.Workspace;
 import org.openide.util.Lookup;
 
 import ch.ethz.sg.cuttlefish.gui.visualization.Constants;
@@ -519,6 +527,28 @@ public class BrowsableNetwork implements Serializable {
 
 	public String getEdgeShape() {
 		return edgeShape;
+	}
+
+	/**
+	 * Will load a network file, based on the Gephi ImportController
+	 * 
+	 * @param netFile
+	 * @throws IOException
+	 */
+	public void load(File netFile) throws IOException {
+		Workspace workspace = Lookup.getDefault()
+				.lookup(ProjectController.class).getCurrentWorkspace();
+
+		ImportController importController = Lookup.getDefault().lookup(
+				ImportController.class);
+
+		// Import file
+		Container container;
+		container = importController.importFile(netFile);
+		container.getLoader().setEdgeDefault(EdgeDefault.DIRECTED);
+
+		// Append imported data to GraphAPI
+		importController.process(container, new DefaultProcessor(), workspace);
 	}
 
 	public void printNetwork() {

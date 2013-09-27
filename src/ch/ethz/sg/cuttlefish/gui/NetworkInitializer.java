@@ -26,10 +26,8 @@ import ch.ethz.sg.cuttlefish.networks.BrowsableNetwork;
 import ch.ethz.sg.cuttlefish.networks.CxfNetwork;
 import ch.ethz.sg.cuttlefish.networks.DBNetwork;
 import ch.ethz.sg.cuttlefish.networks.ExploreNetwork;
-import ch.ethz.sg.cuttlefish.networks.GraphMLNetwork;
 import ch.ethz.sg.cuttlefish.networks.InteractiveCxfNetwork;
 import ch.ethz.sg.cuttlefish.networks.JsonNetwork;
-import ch.ethz.sg.cuttlefish.networks.PajekNetwork;
 import ch.ethz.sg.cuttlefish.networks.UserNetwork;
 
 public class NetworkInitializer {
@@ -47,40 +45,39 @@ public class NetworkInitializer {
 
 	}
 
-	public BrowsableNetwork initNetwork(String className) {
+	public BrowsableNetwork initNetwork(String selected) {
 		BrowsableNetwork network = null;
 
 		try {
-			if (className.equalsIgnoreCase(CxfNetwork.class.getSimpleName())) {
+			if (selected.equalsIgnoreCase("cxf")) {
 				network = initCxfNetwork();
 
-			} else if (className.equalsIgnoreCase(PajekNetwork.class
-					.getSimpleName())) {
-				network = initPajekNetwork();
+			} else if (selected.equalsIgnoreCase("pajek")) {
+				network = initFileNetwork("Pajek", "net");
 
-			} else if (className.equalsIgnoreCase(InteractiveCxfNetwork.class
-					.getSimpleName())) {
+			} else if (selected.equalsIgnoreCase("interactive")) {
 				network = initInteractiveCxfNetwork();
 
-			} else if (className.equalsIgnoreCase(GraphMLNetwork.class
-					.getSimpleName())) {
-				network = initGraphMLNetwork();
+			} else if (selected.equalsIgnoreCase("graphml")) {
+				network = initFileNetwork("GraphML", "graphml");
 
-			} else if (className.equalsIgnoreCase(UserNetwork.class
-					.getSimpleName())) {
+			} else if (selected.equalsIgnoreCase("user")) {
 				network = initUserNetwork();
 
-			} else if (className.equalsIgnoreCase(ExploreNetwork.class
-					.getSimpleName())) {
+			} else if (selected.equalsIgnoreCase("explore")) {
 				network = initCxfDBNetwork();
 
-			} else if (className.equalsIgnoreCase(DBNetwork.class
-					.getSimpleName())) {
+			} else if (selected.equalsIgnoreCase("db")) {
 				network = initDBNetwork();
 
-			} else if (className.equalsIgnoreCase(JsonNetwork.class
-					.getSimpleName())) {
+			} else if (selected.equalsIgnoreCase("json")) {
 				network = initJsonNetwork();
+
+			} else if (selected.equalsIgnoreCase("gexf")) {
+				network = initFileNetwork("GEXF", "gexf");
+
+			} else if (selected.equalsIgnoreCase("csv")) {
+				network = initFileNetwork("CSV", "csv");
 
 			} else {
 				network = initBrowsableNetwork();
@@ -106,6 +103,71 @@ public class NetworkInitializer {
 		return network;
 	}
 
+	private BrowsableNetwork initFileNetwork(String name, String extension)
+			throws IOException {
+		BrowsableNetwork network = null;
+
+		JFileChooser fc = new FileChooser();
+		fc.setDialogTitle("Select a " + name + " file");
+
+		if (extension != null && !extension.isEmpty()) {
+			fc.setFileFilter(new FileNameExtensionFilter("." + extension
+					+ " files", extension));
+		}
+
+		int returnVal = fc.showOpenDialog(null);
+
+		if (returnVal == JFileChooser.APPROVE_OPTION) {
+			networkFile = fc.getSelectedFile();
+			network = new BrowsableNetwork();
+			network.load(networkFile);
+			network.setNetworkLoaded(true);
+		} else {
+			System.out.println("Input cancelled by user");
+		}
+
+		return network;
+	}
+
+	private JsonNetwork initJsonNetwork() throws IOException {
+		JsonNetwork jsonNetwork = null;
+
+		JFileChooser fc = new FileChooser();
+		fc.setDialogTitle("Select a JSON file");
+		int returnVal = fc.showOpenDialog(null);
+
+		if (returnVal == JFileChooser.APPROVE_OPTION) {
+			networkFile = fc.getSelectedFile();
+			jsonNetwork = new JsonNetwork();
+			jsonNetwork.load(networkFile);
+			jsonNetwork.setNetworkLoaded(true);
+		} else {
+			System.out.println("Input cancelled by user");
+		}
+
+		return jsonNetwork;
+	}
+
+	private UserNetwork initUserNetwork() {
+		UserNetwork userNetwork = null;
+
+		JFileChooser fc = new FileChooser();
+		fc.setDialogTitle("Select a CFF file");
+		fc.setFileFilter(new FileNameExtensionFilter(".cff files", "cff"));
+		int returnVal = fc.showOpenDialog(null);
+
+		if (returnVal == JFileChooser.APPROVE_OPTION) {
+			networkFile = fc.getSelectedFile();
+			userNetwork = new UserNetwork();
+			userNetwork.load(networkFile);
+			userNetwork.setNetworkLoaded(true);
+		} else {
+			System.out.println("Input cancelled by user");
+		}
+
+		return userNetwork;
+	}
+
 	private CxfNetwork initCxfNetwork() throws FileNotFoundException {
 		CxfNetwork cxfNetwork = null;
 
@@ -128,25 +190,6 @@ public class NetworkInitializer {
 		}
 
 		return cxfNetwork;
-	}
-
-	private PajekNetwork initPajekNetwork() throws FileNotFoundException {
-		PajekNetwork pajekNetwork = null;
-
-		JFileChooser fc = new FileChooser();
-		fc.setDialogTitle("Select a Pajek file");
-		int returnVal = fc.showOpenDialog(null);
-
-		if (returnVal == JFileChooser.APPROVE_OPTION) {
-			networkFile = fc.getSelectedFile();
-			pajekNetwork = new PajekNetwork();
-			pajekNetwork.load(networkFile);
-			pajekNetwork.setNetworkLoaded(true);
-		} else {
-			System.out.println("Input cancelled by user");
-		}
-
-		return pajekNetwork;
 	}
 
 	private InteractiveCxfNetwork initInteractiveCxfNetwork()
@@ -185,47 +228,6 @@ public class NetworkInitializer {
 		}
 
 		return interactiveCxfNetwork;
-	}
-
-	private GraphMLNetwork initGraphMLNetwork() throws FileNotFoundException {
-		GraphMLNetwork graphmlNetwork = null;
-
-		JFileChooser fc = new FileChooser();
-		fc.setDialogTitle("Select a GraphML file");
-		fc.setFileFilter(new FileNameExtensionFilter(".graphml files",
-				"graphml"));
-		int returnVal = fc.showOpenDialog(null);
-
-		if (returnVal == JFileChooser.APPROVE_OPTION) {
-			networkFile = fc.getSelectedFile();
-			graphmlNetwork = new GraphMLNetwork();
-			graphmlNetwork.load(networkFile);
-			graphmlNetwork.setNetworkLoaded(true);
-		} else {
-			System.out.println("Input cancelled by user");
-		}
-
-		return graphmlNetwork;
-	}
-
-	private UserNetwork initUserNetwork() {
-		UserNetwork userNetwork = null;
-
-		JFileChooser fc = new FileChooser();
-		fc.setDialogTitle("Select a CFF file");
-		fc.setFileFilter(new FileNameExtensionFilter(".cff files", "cff"));
-		int returnVal = fc.showOpenDialog(null);
-
-		if (returnVal == JFileChooser.APPROVE_OPTION) {
-			networkFile = fc.getSelectedFile();
-			userNetwork = new UserNetwork();
-			userNetwork.load(networkFile);
-			userNetwork.setNetworkLoaded(true);
-		} else {
-			System.out.println("Input cancelled by user");
-		}
-
-		return userNetwork;
 	}
 
 	private ExploreNetwork initCxfDBNetwork() throws FileNotFoundException {
@@ -521,24 +523,4 @@ public class NetworkInitializer {
 
 		return dbNetwork;
 	}
-
-	private JsonNetwork initJsonNetwork() throws IOException {
-		JsonNetwork jsonNetwork = null;
-
-		JFileChooser fc = new FileChooser();
-		fc.setDialogTitle("Select a Pajek file");
-		int returnVal = fc.showOpenDialog(null);
-
-		if (returnVal == JFileChooser.APPROVE_OPTION) {
-			networkFile = fc.getSelectedFile();
-			jsonNetwork = new JsonNetwork();
-			jsonNetwork.load(networkFile);
-			jsonNetwork.setNetworkLoaded(true);
-		} else {
-			System.out.println("Input cancelled by user");
-		}
-
-		return jsonNetwork;
-	}
-
 }

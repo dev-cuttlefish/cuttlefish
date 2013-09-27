@@ -10,11 +10,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import junit.framework.Assert;
-
 import org.gephi.graph.api.Node;
 import org.gephi.io.exporter.spi.Exporter;
-import org.junit.Test;
 
 import ch.ethz.sg.cuttlefish.exporter.NetworkExportController;
 import ch.ethz.sg.cuttlefish.layout.LayoutLoader;
@@ -42,7 +39,6 @@ public class TestWeightedKCore {
 	 * 
 	 * @throws Exception
 	 */
-	@Test
 	public void testWithValidationFiles() throws Exception {
 		if (!TEST_WITH_VALIDATION_FILES) {
 			return;
@@ -68,9 +64,9 @@ public class TestWeightedKCore {
 			}
 		}
 
-		Assert.assertEquals(networkFiles.length, successCount);
-		log("   " + successCount + "/" + networkFiles.length
-				+ " networks were validated successfully!\n");
+		if (networkFiles.length == successCount)
+			log("   " + successCount + "/" + networkFiles.length
+					+ " networks were validated successfully!\n");
 
 	}
 
@@ -84,7 +80,6 @@ public class TestWeightedKCore {
 	 * The test is successful if the two core assignments returned by the two
 	 * algorithms are identical.
 	 */
-	@Test
 	public void testCompareWithKCore() {
 		if (!TEST_COMPARE_WITH_KCORE) {
 			return;
@@ -123,8 +118,16 @@ public class TestWeightedKCore {
 
 		log("   Validating the match of layouts with unit weights...");
 		for (Node v : kcoreness.keySet()) {
-			Assert.assertTrue(wcoreness.containsKey(v));
-			Assert.assertEquals(kcoreness.get(v), wcoreness.get(v));
+			if (!wcoreness.containsKey(v)) {
+				System.err.println("Node doesn't exist: " + v);
+				System.exit(-1);
+			}
+
+			if (kcoreness.get(v) != wcoreness.get(v)) {
+				System.err.println("Different coreness for node " + v);
+				System.exit(-1);
+			}
+
 			indices.add(wcoreness.get(v));
 		}
 
@@ -135,8 +138,8 @@ public class TestWeightedKCore {
 			sequence.add(i);
 		}
 
-		Assert.assertEquals(sequence, indices);
-		log("   Completed successfully!\n");
+		if (sequence == indices) 
+			log("   Completed successfully!\n");
 	}
 
 	private void log(String message) {

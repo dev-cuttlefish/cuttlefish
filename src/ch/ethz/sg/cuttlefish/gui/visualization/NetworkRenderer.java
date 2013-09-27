@@ -345,4 +345,8 @@ public class NetworkRenderer implements GLEventListener {
 	public EdgeRenderer getEdgeRenderer() {
 		return edgeRenderer;
 	}
+	
+	public GLAutoDrawable getDrawable() {
+		return drawable;
+	}
 }

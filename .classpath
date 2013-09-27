@@ -2,14 +2,13 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.USER_LIBRARY/JOGL"/>
 	<classpathentry exported="true" kind="lib" path="lib/collections-generic-4.01.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/commons-cli-1.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/gson-1.7.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/mysql-connector-java-5.1.9-bin.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/postgresql-9.1-901.jdbc4.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/sqlite-jdbc-3.7.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/gephi-toolkit.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/commons-cli-1.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
