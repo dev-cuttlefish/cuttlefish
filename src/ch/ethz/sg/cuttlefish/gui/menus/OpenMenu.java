@@ -55,9 +55,10 @@ public class OpenMenu extends AbstractMenu implements Subject {
 	private JMenuItem jsonNetwork;
 	private JMenuItem testSimulation;
 	private JMenuItem baSimulation;
+	private JMenuItem gexfNetwork;
 	private List<Observer> observers;
 
-	private HashMap<JMenuItem, Class<?>> networkClassMap;
+	private HashMap<JMenuItem, String> networkMap;
 
 	public OpenMenu(NetworkPanel networkPanel, CuttlefishToolbars toolbars) {
 		super(networkPanel, toolbars);
@@ -76,6 +77,7 @@ public class OpenMenu extends AbstractMenu implements Subject {
 		jsonNetwork = new JMenuItem("Json network");
 		testSimulation = new JMenuItem("Test simulation");
 		baSimulation = new JMenuItem("BA simulation");
+		gexfNetwork = new JMenuItem("GEXF network");
 
 		cxfNetwork.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C,
 				ActionEvent.ALT_MASK));
@@ -86,39 +88,22 @@ public class OpenMenu extends AbstractMenu implements Subject {
 		dbNetwork.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D,
 				ActionEvent.ALT_MASK));
 		dbNetwork.setMnemonic('D');
-		
+
 		interactiveNetwork.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_I,
 				ActionEvent.ALT_MASK));
 		interactiveNetwork.setMnemonic('I');
 
-		networkClassMap = new HashMap<JMenuItem, Class<?>>();
-		try {
-			networkClassMap.put(cxfNetwork,
-					Class.forName("ch.ethz.sg.cuttlefish.networks.CxfNetwork"));
-			networkClassMap.put(exploreNetwork, Class
-					.forName("ch.ethz.sg.cuttlefish.networks.ExploreNetwork"));
-			networkClassMap.put(dbNetwork,
-					Class.forName("ch.ethz.sg.cuttlefish.networks.DBNetwork"));
-			networkClassMap
-					.put(interactiveNetwork,
-							Class.forName("ch.ethz.sg.cuttlefish.networks.InteractiveCxfNetwork"));
-			networkClassMap.put(pajekNetwork, Class
-					.forName("ch.ethz.sg.cuttlefish.networks.PajekNetwork"));
-			networkClassMap.put(graphmlNetwork, Class
-					.forName("ch.ethz.sg.cuttlefish.networks.GraphMLNetwork"));
-			networkClassMap
-					.put(jsonNetwork,
-							Class.forName("ch.ethz.sg.cuttlefish.networks.JsonNetwork"));
-			networkClassMap.put(testSimulation, Class
-					.forName("ch.ethz.sg.cuttlefish.networks.TestSimulation"));
-			networkClassMap.put(baSimulation, Class
-					.forName("ch.ethz.sg.cuttlefish.networks.BASimulation"));
-		} catch (ClassNotFoundException e1) {
-			JOptionPane.showMessageDialog(null,
-					"Could not find a class for network",
-					"Network class error", JOptionPane.ERROR_MESSAGE);
-			e1.printStackTrace();
-		}
+		networkMap = new HashMap<JMenuItem, String>();
+		networkMap.put(cxfNetwork, "cxf");
+		networkMap.put(exploreNetwork, "explore");
+		networkMap.put(dbNetwork, "db");
+		networkMap.put(interactiveNetwork, "interactive");
+		networkMap.put(pajekNetwork, "pajek");
+		networkMap.put(graphmlNetwork, "graphml");
+		networkMap.put(jsonNetwork, "json");
+		networkMap.put(testSimulation, "test");
+		networkMap.put(baSimulation, "ba-simulation");
+		networkMap.put(gexfNetwork, "gexf");
 
 		this.setMnemonic('O');
 		cxfNetwork.setMnemonic('C');
@@ -133,9 +118,11 @@ public class OpenMenu extends AbstractMenu implements Subject {
 		this.add(exploreNetwork);
 		this.add(dbNetwork);
 		this.add(interactiveNetwork);
+		this.addSeparator();
 		this.add(pajekNetwork);
 		this.add(graphmlNetwork);
 		this.add(jsonNetwork);
+		this.add(gexfNetwork);
 		this.addSeparator();
 		this.add(baSimulation);
 		this.add(testSimulation);
@@ -214,14 +201,22 @@ public class OpenMenu extends AbstractMenu implements Subject {
 				notifyObservers();
 			}
 		});
+		gexfNetwork.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				networkSelected(gexfNetwork);
+				toolbars.getSimulationToolbar().setVisible(false);
+				toolbars.getDBToolbar().setVisible(false);
+				notifyObservers();
+			}
+		});
 	}
 
 	private void networkSelected(JMenuItem selected) {
 		BrowsableNetwork network = null;
-		String networkClass = networkClassMap.get(selected).getSimpleName();
+		String networkSelected = networkMap.get(selected);
 
 		try {
-			network = new NetworkInitializer().initNetwork(networkClass);
+			network = new NetworkInitializer().initNetwork(networkSelected);
 
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null,
@@ -250,12 +245,7 @@ public class OpenMenu extends AbstractMenu implements Subject {
 		}
 
 		networkPanel.setNetwork(network);
-		//networkPanel.onNetworkChange();
 		networkPanel.repaintViewer();
-		// networkPanel.getNetworkLayout().resetPropertiesValues();
-		// networkPanel.stopLayout();
-		// new OpenNetworkTask(networkPanel, network).execute();
-
 	}
 
 	@Override

@@ -33,8 +33,8 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.events.XMLEvent;
 
+import ch.ethz.sg.cuttlefish.networks.BrowsableNetwork;
 import ch.ethz.sg.cuttlefish.networks.Edge;
-import ch.ethz.sg.cuttlefish.networks.GraphMLNetwork;
 import ch.ethz.sg.cuttlefish.networks.Vertex;
 
 /**
@@ -81,13 +81,13 @@ public class GraphMLImporter {
 	private static final String GRAPH_EDGEDEFAULT = "edgedefault";
 
 	private File graphmlFile;
-	private GraphMLNetwork network;
+	private BrowsableNetwork network;
 
 	public GraphMLImporter(File graphmlFile) {
 		this.graphmlFile = graphmlFile;
 	}
 
-	public boolean importGraph(GraphMLNetwork network)
+	public boolean importGraph(BrowsableNetwork network)
 			throws FileNotFoundException {
 
 		if (network != null) {

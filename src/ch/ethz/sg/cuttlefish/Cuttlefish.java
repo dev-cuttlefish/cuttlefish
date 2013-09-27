@@ -20,17 +20,12 @@ import org.gephi.layout.spi.Layout;
 import org.gephi.project.api.ProjectController;
 import org.openide.util.Lookup;
 
-import sun.misc.Signal;
-import sun.misc.SignalHandler;
 import ch.ethz.sg.cuttlefish.exporter.NetworkExportController;
 import ch.ethz.sg.cuttlefish.layout.LayoutLoader;
-import ch.ethz.sg.cuttlefish.layout.kcore.WeightedKCoreLayout;
 import ch.ethz.sg.cuttlefish.misc.NetworkStatistics;
 import ch.ethz.sg.cuttlefish.networks.BrowsableNetwork;
 import ch.ethz.sg.cuttlefish.networks.CxfNetwork;
-import ch.ethz.sg.cuttlefish.networks.GraphMLNetwork;
 import ch.ethz.sg.cuttlefish.networks.JsonNetwork;
-import ch.ethz.sg.cuttlefish.networks.PajekNetwork;
 
 public class Cuttlefish {
 
@@ -88,18 +83,32 @@ public class Cuttlefish {
 				exit(0, "");
 			}
 
-			// Add a handler to Ctrl+C (SIGINT)
-			Signal ctrlC = new Signal("INT");
-			Signal.handle(ctrlC, new SignalHandler() {
+			Runtime.getRuntime().addShutdownHook(new Thread() {
 
 				@Override
-				public void handle(Signal sig) {
+				public void run() {
 					shouldStop = true;
 
 					// inserts a new line after the "^C" character
 					System.out.println();
 				}
+
 			});
+
+			// Add a handler to Ctrl+C (SIGINT)
+			// NOTE: Not compatible with Java 1.6!
+
+			// Signal ctrlC = new Signal("INT");
+			// Signal.handle(ctrlC, new SignalHandler() {
+			//
+			// @Override
+			// public void handle(Signal sig) {
+			// shouldStop = true;
+			//
+			// // inserts a new line after the "^C" character
+			// System.out.println();
+			// }
+			// });
 
 			parseOptions(args);
 
@@ -142,6 +151,9 @@ public class Cuttlefish {
 
 	private static void startCmd() {
 
+		getNetwork();
+		LayoutLoader.initNoGUI(network);
+
 		if (opts.hasOption("stats")) {
 			stats();
 		}
@@ -167,29 +179,13 @@ public class Cuttlefish {
 
 	private static void loadSelectedLayout() {
 		LayoutLoader loader = LayoutLoader.getInstance();
-		String layoutName = opts.getOptionValue("layout", "fixed");
+		String layoutName = opts.getOptionValue("layout", "arf");
 		Layout layout = loader.getLayout(layoutName);
 
 		if (layout == null) {
 			exit(-200, "Unsupported layout: " + layoutName);
 		} else {
-			setLayoutParameters(layout);
 			setLayout(layout);
-		}
-	}
-
-	private static void setLayoutParameters(Layout layout) {
-		String paramString = opts.getOptionValue("layout-params");
-		String[] layoutParams = null;
-		if (paramString != null) {
-			layoutParams = paramString.split(",");
-		}
-
-		if (layout instanceof WeightedKCoreLayout && layoutParams != null) {
-			double alpha = Double.parseDouble(layoutParams[0]);
-			double beta = Double.parseDouble(layoutParams[1]);
-			((WeightedKCoreLayout) layout).setAlpha(alpha);
-			((WeightedKCoreLayout) layout).setBeta(beta);
 		}
 	}
 
@@ -236,12 +232,16 @@ public class Cuttlefish {
 		try {
 			if (format.equalsIgnoreCase("cxf")) {
 				network = new CxfNetwork(new File(file));
-			} else if (format.equalsIgnoreCase("graphml")) {
-				network = new GraphMLNetwork(new File(file));
-			} else if (format.equalsIgnoreCase("pajek")) {
-				network = new PajekNetwork(new File(file));
+
+			} else if (format.equalsIgnoreCase("graphml")
+					|| format.equalsIgnoreCase("pajek")
+					|| format.equalsIgnoreCase("gexf")) {
+				network = new BrowsableNetwork();
+				network.load(new File(file));
+
 			} else if (format.equalsIgnoreCase("json")) {
 				network = new JsonNetwork(new File(file));
+
 			} else {
 				out("Unsupported input format: " + format);
 				printUsage();
@@ -264,12 +264,6 @@ public class Cuttlefish {
 		String format = opts.getOptionValue("out-format", "tikz");
 		String outfile = opts.getOptionValue("output");
 
-		if (format.equalsIgnoreCase("all")) {
-			debug(Cuttlefish.class, "Debugging ALL output formats");
-			exportAllFormats();
-			exit(0, "Debug finished!");
-		}
-
 		try {
 			out("Selected output format: " + format);
 			Exporter exporter = NetworkExportController.getExporter(format);
@@ -277,25 +271,8 @@ public class Cuttlefish {
 			out("Network exported to file: " + outfile);
 
 		} catch (Exception e) {
-			exit(-300, "Error while exporting network to " + format
-					+ "\nError: " + e.getLocalizedMessage());
-		}
-	}
-
-	private static void exportAllFormats() {
-		String outfile = "/home/ilias/Desktop/export_test/output.";
-		for (String format : NetworkExportController.getExporterList()) {
-			String name = outfile + format.toLowerCase();
-			try {
-				// out("Network output format: " + format);
-				Exporter exporter = NetworkExportController.getExporter(format);
-				NetworkExportController.export(getNetwork(), name, exporter);
-				out("Network exported to file: " + name);
-			} catch (Exception ex) {
-				String msg = ex.getLocalizedMessage().toString();
-				out(msg);
-				// exit(-300, msg);
-			}
+			e.printStackTrace();
+			exit(-300, "Error while exporting network to " + format);
 		}
 	}
 
@@ -309,7 +286,7 @@ public class Cuttlefish {
 		Option inputFormat = OptionBuilder
 				.withValueSeparator()
 				.withDescription(
-						"input format: cxf (default), json, graphml, pajek")
+						"input format: cxf (default), json, graphml, pajek, gexf")
 				.withLongOpt("in-format").withArgName("input format").hasArg()
 				.create();
 		Option output = OptionBuilder.withValueSeparator()
@@ -319,13 +296,10 @@ public class Cuttlefish {
 				.withValueSeparator()
 				.withDescription(
 						"output format: tikz (default), cxf, applet, "
-								+ "svg, json, cmx, graphml, jpg")
+								+ "cmx, graphml, json, gexf, csv, pajek "
+								+ "jpg, svg, pdf, png")
 				.withLongOpt("out-format").withArgName("format").hasArg()
 				.create();
-		Option imgSize = OptionBuilder.withValueSeparator()
-				.withDescription("image size: e.g. 1000x1000")
-				.withArgName("<width>x<height>").withLongOpt("out-size")
-				.hasArg().create();
 		Option gui = OptionBuilder
 				.withDescription("start the graphical interface")
 				.withLongOpt("gui").create("g");
@@ -334,13 +308,6 @@ public class Cuttlefish {
 				.withDescription("network layout: " + LayoutLoader.getKeyList())
 				.withLongOpt("layout").hasArg().withArgName("layout")
 				.create("l");
-		Option params = OptionBuilder
-				.withValueSeparator()
-				.withDescription(
-						"layout parameters in a comma separated list, "
-								+ "e.g. \"--layout-params 3.14,4\"")
-				.withArgName("x,y,...").withLongOpt("layout-params").hasArg()
-				.create();
 		Option stats = OptionBuilder.withLongOpt("stats")
 				.withDescription("prints network statistics report")
 				.create("s");
@@ -352,8 +319,6 @@ public class Cuttlefish {
 		options.addOption(outputFormat);
 		options.addOption(gui);
 		options.addOption(layout);
-		options.addOption(params);
-		options.addOption(imgSize);
 		options.addOption(stats);
 	}
 

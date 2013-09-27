@@ -113,7 +113,7 @@ public class NetworkPanel extends JPanel implements Subject, INetworkBrowser,
 
 		BrowsableNetwork network = new BrowsableNetwork();
 		networkRenderer = new NetworkRenderer(this, width, height);
-		layoutLoader = LayoutLoader.getInstance(this);
+		layoutLoader = LayoutLoader.initGUI(this);
 
 		setNetwork(network);
 
@@ -153,7 +153,7 @@ public class NetworkPanel extends JPanel implements Subject, INetworkBrowser,
 	@Override
 	public void setNetwork(BrowsableNetwork network) {
 		this.network = network;
-
+		layoutLoader.setNetwork(network);
 		/*
 		 * Default layout: ARF If the network is not a forest and the layout is
 		 * a tree layout, change the layout to the default ARF layout.

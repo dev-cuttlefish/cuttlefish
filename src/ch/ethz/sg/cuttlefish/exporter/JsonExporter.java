@@ -24,7 +24,7 @@ public class JsonExporter implements GraphExporter, CharacterExporter,
 			exportData();
 
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			e.printStackTrace();
 		}
 
 		return true;
