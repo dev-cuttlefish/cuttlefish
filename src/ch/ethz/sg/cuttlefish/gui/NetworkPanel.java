@@ -220,7 +220,6 @@ public class NetworkPanel extends JPanel implements Subject, INetworkBrowser,
 
 	@Override
 	public void stopLayout() {
-		// TODO ilias: lock all nodes if fixed here!
 		layoutLoader.stopLayout();
 	}
 
@@ -234,7 +233,6 @@ public class NetworkPanel extends JPanel implements Subject, INetworkBrowser,
 
 		layoutLoader.resetLayout();
 
-		// TODO ilias: lock all nodes if fixed here!
 		// boolean fixed = getNetworkLayout() instanceof FixedLayout;
 		// getNetwork().fixVertices(!fixed);
 	}
@@ -278,7 +276,7 @@ public class NetworkPanel extends JPanel implements Subject, INetworkBrowser,
 	public Set<Vertex> getPickedVertices() {
 		return pickedVertices;
 	}
-	
+
 	public void selectVertex(Vertex v) {
 		pickedVertices.clear();
 		pickedVertices.add(v);
@@ -290,7 +288,7 @@ public class NetworkPanel extends JPanel implements Subject, INetworkBrowser,
 	public Set<Edge> getPickedEdges() {
 		return pickedEdges;
 	}
-	
+
 	public void selectEdge(Edge e) {
 		pickedEdges.clear();
 		pickedEdges.add(e);

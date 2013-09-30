@@ -95,7 +95,7 @@ public class TikzExporter implements GraphExporter, CharacterExporter,
 
 	@Override
 	public void setExportVisible(boolean exportVisible) {
-		// TODO ilias: always exports visible graph
+
 	}
 
 	@Override
@@ -138,7 +138,7 @@ public class TikzExporter implements GraphExporter, CharacterExporter,
 			}
 		}
 
-		// TODO ilias: why this??
+		// is this necessary??
 		// nodeSizeFactor = 0.75 * k;
 
 		writer.append("\\documentclass{minimal}").append("\n");
@@ -264,8 +264,7 @@ public class TikzExporter implements GraphExporter, CharacterExporter,
 			coordinates = vertex.getPosition();
 			s = 1;
 		}
-		// TODO ilias: sometimes the coordinates are much bigger than tikz can
-		// handle
+
 		writer.append("\\node at ("
 				+ formatter.format(coordinates.getX()
 						* (coordinateFactor / 10.0))

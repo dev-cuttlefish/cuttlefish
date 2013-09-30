@@ -47,7 +47,7 @@ public class JsonExporter implements GraphExporter, CharacterExporter,
 
 	@Override
 	public void setExportVisible(boolean exportVisible) {
-		// TODO ilias: always exports visible graph
+
 	}
 
 	@Override

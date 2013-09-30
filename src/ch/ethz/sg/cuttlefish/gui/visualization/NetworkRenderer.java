@@ -113,7 +113,7 @@ public class NetworkRenderer implements GLEventListener {
 				gl.glHint(GL2.GL_LINE_SMOOTH_HINT, GL2.GL_NICEST);
 			}
 
-			// TODO ilias: This AA config creates transparency in GLU polygons
+			// TODO: This AA method creates "transparency" in GLU polygons
 			if (AA_SMOOTH_POLYGONS) {
 				gl.glEnable(GL2.GL_POLYGON_SMOOTH);
 				gl.glHint(GL2.GL_POLYGON_SMOOTH_HINT, GL2.GL_NICEST);

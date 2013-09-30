@@ -116,7 +116,6 @@ public class Conversion {
 
 	}
 
-	// TODO ilias: unused
 	@Deprecated
 	public static BrowsableNetwork matrixToGraph(double[][] matrix) {
 		BrowsableNetwork graph = new BrowsableNetwork();

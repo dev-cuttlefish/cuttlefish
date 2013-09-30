@@ -91,7 +91,7 @@ public class StatusBar extends JPanel {
 		terminateTask.setEnabled(true);
 	}
 
-	// TODO ilias: For compatibility; remove!
+	// Compatibility method
 	public synchronized void setBusyMessage(String message,
 			SwingWorker<?, ?> task) {
 		// currentTask = task;

@@ -249,7 +249,6 @@ public class BrowsableForestNetwork extends BrowsableNetwork implements
 		return roots;
 	}
 
-	// TODO ilias: Check these two methods
 	public boolean update(long passedTime) {
 		boolean result = false;
 		if (originalNetwork instanceof ISimulation) {

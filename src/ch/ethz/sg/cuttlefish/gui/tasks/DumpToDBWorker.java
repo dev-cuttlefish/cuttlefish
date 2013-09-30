@@ -183,7 +183,6 @@ public class DumpToDBWorker extends SwingWorker<Object, Object> {
 		
 		@Override
 		protected Object doInBackground() throws Exception {
-			// TODO ilias: must be changed to layoutController!
 			networkPanel.getStatusBar().setBusyMessage("Dumping the network to a database", this);
 			if (!createTables() ) {
 				return null;

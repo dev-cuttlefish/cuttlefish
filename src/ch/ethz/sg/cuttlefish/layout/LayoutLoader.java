@@ -193,7 +193,6 @@ public class LayoutLoader {
 
 		}
 
-		// TODO ilias: check that fixed vertices remain fixed during layout
 		layoutName = selectedLayout;
 		setLayout(newLayout);
 	}

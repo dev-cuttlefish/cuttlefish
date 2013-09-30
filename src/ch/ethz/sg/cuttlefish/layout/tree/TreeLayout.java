@@ -50,7 +50,6 @@ public class TreeLayout implements Layout {
 
 	@Override
 	public boolean canAlgo() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
@@ -74,7 +73,6 @@ public class TreeLayout implements Layout {
 
 	@Override
 	public void resetPropertiesValues() {
-		// TODO Auto-generated method stub
 
 	}
 

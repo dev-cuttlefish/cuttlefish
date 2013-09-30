@@ -227,7 +227,7 @@ public class ARFLayout implements Layout {
 			}
 
 		} else if (c > change) {
-			// TODO ilias: what to do when change increases continuously?
+			// TODO: what to do when change increases continuously?
 
 		} else if (c < change) {
 			converged = change <= threshold;

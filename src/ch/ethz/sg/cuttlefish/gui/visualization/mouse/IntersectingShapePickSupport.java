@@ -72,7 +72,7 @@ public class IntersectingShapePickSupport implements PickSupport {
 			edgeShape = new QuadCurve2D.Double(fx, fy, cx, cy, tx, ty);
 
 		} else if (edge.getShape().equalsIgnoreCase(Constants.LINE_LOOP)) {
-			// TODO ilias: Calculate shape for loop
+			// TODO: Calculate shape for loop to enable picking of loop edges
 		}
 
 		// Create a small rectangular area around point, and use it
