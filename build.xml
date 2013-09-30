@@ -15,56 +15,73 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>. -->
 
-	<project name="cuttlefish" default="dist" basedir=".">
-    <description>
-        simple example build file
-    </description>
-  <!-- set global properties for this build -->
+<project name="cuttlefish" default="dist" basedir=".">
+
   <property name="src" location="src"/>
   <property name="javadoc" location="doc"/>
   <property name="lib" location="lib"/>
   <property name="build" location="bin"/>
   <property name="dist"  location="dist"/>
-  <property name="classes"  location="bin"/>
+  
+  <property name="main-class" value="ch.ethz.sg.cuttlefish.Cuttlefish"/>
+  
+  <fileset id="libs" dir="${lib}">
+    <include name="*.jar"/>
+    <include name="jogl-all-platforms/gluegen-rt.jar"/>
+    <include name="jogl-all-platforms/jogl-all.jar"/>
+  </fileset>
+  
+  <fileset id="natives-linux-i586" dir="${lib}/jogl-all-platforms">
+    <include name="gluegen-rt-natives-linux-i586.jar"/>
+    <include name="jogl-all-natives-linux-i586.jar"/>
+  </fileset>
+  
+  <fileset id="icons" dir="${src}">
+    <include name="ch/ethz/sg/cuttlefish/gui/toolbars/icons/*.png"/>
+    <include name="ch/ethz/sg/cuttlefish/gui/toolbars/icons/*.gif" />
+ </fileset>
+  
+  <path id="classpath">
+    <fileset refid="libs"/>
+    <fileset refid="natives-linux-i586"/>
+  </path>
 		
-  <target name="init">
-    <!-- Create the time stamp -->
+  <target name="build" description="compile the source ">
     <tstamp/>
-    <!-- Create the build directory structure used by compile -->
     <mkdir dir="${build}"/>
+    <javac includeantruntime="false" target="1.6" source="1.6" srcdir="${src}" destdir="${build}" classpathref="classpath"/>
+  </target>
+  
+  <target name="jar" depends="build">
+    <jar destfile="${dist}/${ant.project.name}.jar">
+      <manifest>
+        <attribute name="Main-Class" value="${main-class}"/>
+      </manifest>
+  	  <fileset dir="${build}"/>
+  	  <fileset refid="icons"/>
+  	  <zipgroupfileset refid="libs"/>
+    </jar>
+  </target>
+  
+  <target name="natives-linux-i586">
+    <jar destfile="${dist}/${ant.project.name}-natives-linux-i586.jar">
+      <zipgroupfileset refid="natives-linux-i586"/>
+    </jar>
+  </target>
+  
+  <target name="clean">
+    <delete dir="${build}"/>
+  </target>
+  
+  <target name="dist" depends="build, jar, natives-linux-i586"/>
+  
+  <target name="run">
+    <java fork="true" classname="${main-class}">
+      <classpath>
+        <path refid="classpath"/>
+        <path location="${dist}/${ant.project.name}.jar"/>
+      </classpath>
+    </java>
   </target>
 
-  <target name="compile" depends="init"
-        description="compile the source " >
-    <!-- Compile the java code from ${src} into ${build} -->
-    <javac srcdir="${src}" destdir="${build}"/>
-  </target>
-
-  <target name="dist" depends="compile"
-        description="generate the distribution" >
-    <!-- Create the distribution directory -->
-    <mkdir dir="${dist}"/>
-
-    <!-- Put everything in ${build} into the MyProject-${DSTAMP}.jar file -->
-    <delete file="${dist}/cuttlefish.jar" />
-  	
-  	<jar destfile="${dist}/cuttlefish.jar"
-      basedir="${build}"
-  	  index="true"
-  	  filesetmanifest="merge"
-  	  duplicate="preserve">
-          <manifest>
-            <attribute name="Main-Class" value="ch.ethz.sg.cuttlefish.Cuttlefish"/>
-          </manifest>
-  	  <fileset dir="${classes}"/>
-  	  <fileset dir="${src}">
-		<include name="ch/ethz/sg/cuttlefish/gui2/toolbars/icons/*.png" />
-  	  </fileset> 
-  	  <zipgroupfileset dir="${lib}" includes="*.jar" />
-  	</jar>
-
-  	<!-- jar jarfile="${dist}/cuttlefish.jar" basedir="${build}" manifest="META-INF/MANIFEST.MF" -->
-
-  </target>
-		  
 </project>
