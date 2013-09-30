@@ -64,7 +64,6 @@ public class MinimumSpanningForest {
 			this.roots.remove(root);
 			System.out.println("MST Root Vertex: " + root);
 		} else {
-			// TODO ilias: remove exception
 			throw new RuntimeException("No root(s) specified for the MST!");
 		}
 
@@ -91,7 +90,7 @@ public class MinimumSpanningForest {
 		return Arrays.asList(forest.getEdgesTree().toArray());
 	}
 
-	// TODO ilias: needs testing
+	// TODO: needs testing
 	protected void updateForest(Collection<Node> tv) {
 		Edge nextEdge = null;
 		Node nextVertex = null;
@@ -125,7 +124,7 @@ public class MinimumSpanningForest {
 			allNodes.remove(currentVertex);
 
 			forest.addNode(nextVertex, currentVertex);
-			// TODO ilias: this creates a new edge so the old one will be
+			// TODO: this creates a new edge so the old one will be
 			// discarded. might need to change this to maintain edge
 			// attributes!!
 			forest.addEdge(currentVertex, nextVertex);

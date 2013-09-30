@@ -327,7 +327,7 @@ public class LayoutMenu extends AbstractMenu implements Observer {
 		return true;
 	}
 
-	// TODO ilias: Replace dfs with Gephi's ConnectedComponents
+	// TODO: Replace dfs with Gephi's ConnectedComponents
 	private boolean checkKCoreLayout() {
 		List<Set<Vertex>> cores = new LinkedList<Set<Vertex>>();
 		Set<Vertex> visited = new HashSet<Vertex>();

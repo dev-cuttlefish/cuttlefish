@@ -68,7 +68,6 @@ public class EditVertexMenu {
 		menu.add(mDelete);
 
 		addListeners();
-		// TODO ilias: undoable actions
 	}
 
 	private void addListeners() {

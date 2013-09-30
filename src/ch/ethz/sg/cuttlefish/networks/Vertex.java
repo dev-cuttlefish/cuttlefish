@@ -149,13 +149,6 @@ public class Vertex implements Comparable<Vertex> {
 		this.internalNode = node;
 	}
 
-	// TODO ilias: Static access to internal node?
-	/*
-	 * It might be useful to provide static access to a node's attributes by
-	 * passing the Node argument to a static method. For example, when the
-	 * BrowsableNetwork needs to modify Nodes.
-	 */
-
 	/**
 	 * @param id
 	 *            the id to set

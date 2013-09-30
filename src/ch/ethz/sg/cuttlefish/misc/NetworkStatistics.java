@@ -24,7 +24,6 @@ import org.openide.util.Lookup;
 
 import ch.ethz.sg.cuttlefish.networks.CxfNetwork;
 
-// TODO ilias: Improve & Add to menu!
 public class NetworkStatistics {
 
 	private StatisticsController controller;

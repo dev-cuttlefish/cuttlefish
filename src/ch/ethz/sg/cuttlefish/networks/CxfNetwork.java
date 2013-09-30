@@ -404,8 +404,8 @@ public class CxfNetwork extends BrowsableNetwork {
 		return token;
 	}
 
-	// TODO ilias: remove
-	public boolean USE_PARAMS = true;
+	// used to enable CEF layout parameters
+	private static final boolean USE_LAYOUT_PARAMS = true;
 
 	private Token parseLayout(Token token, String preField, Iterator<String> it) {
 		int i = preField.indexOf(":");
@@ -413,7 +413,7 @@ public class CxfNetwork extends BrowsableNetwork {
 		token.type = preField.substring(0, i); // type: layout
 		token.var1 = it.next(); // var1: layout name
 
-		if (USE_PARAMS) {
+		if (USE_LAYOUT_PARAMS) {
 			if (it.hasNext() && token.params == null) {
 				token.params = new HashMap<String, String>();
 			}
