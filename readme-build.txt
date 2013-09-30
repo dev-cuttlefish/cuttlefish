@@ -11,6 +11,21 @@
     30 Sept. 2013
 
 
+    0. Execution instructions
+In order to run Cuttlefish, download the file 'cuttlefish-bundle.zip', and 
+unzip it in any directory. The contents of the zip file are the following:
+
+~ cuttlefish.jar
+    The main jar file of Cuttlefish
+
+~ cuttlefish_lib
+    A directory containing all library dependencies of Cuttlefish
+
+The two files should always be located in the same directory, in order for the
+libraries to be loaded properly. Simply run Cuttlefish by executing:
+
+    java -jar /path/to/jar/cuttlefish.jar
+    
 
     I. Build description
 
