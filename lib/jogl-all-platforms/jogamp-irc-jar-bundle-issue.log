@@ -1,0 +1,177 @@
+<xranby> ilias: sure ark and you may be answered when people get online and read the backlog
+<xranby> ask
+* hharrison (~chatzilla@66-46-114-130.dedicated.allstream.net) has joined #jogamp
+* monsieur_max has quit (Quit: Leaving.)
+ Tcl interface unloaded
+ Python interface unloaded
+* Now talking on #jogamp
+* Topic for #jogamp is: http://jogamp.org | Hacking 3D Graphics, Multimedia and Processing across Devices
+* Topic for #jogamp set by rmk0 at Thu Jan 17 00:58:04 2013
+-jogamp- This channel is logged @ http://jogamp.org/log/irc/jogamp_20130929050530.html
+<ilias> hello all
+<ilias> I'm using JOGL in my project and I'm trying to create a jar for it; however I can't use WebStart, and it doesn't seem possible to build a single jar with all native libraries included...
+<ilias> would it be possible though to build several jars, each for a single architecture?
+* monsieur_max (~maxime@ip-247.net-80-236-36.suresnes.rev.numericable.fr) has joined #jogamp
+* monsieur_max (~maxime@ip-247.net-80-236-36.suresnes.rev.numericable.fr) has left #jogamp
+<sgothel> http://jogamp.org/wiki/index.php/JogAmp_JAR_File_Handling <- seems we have a regression regarding Test-2, but we shall fix this.
+<sgothel> WebStart ofc allows you to use multiple jnlp/jar ..
+<sgothel> http://jogamp.org/wiki/index.php/Using_JOGL_in_Java_Web_Start
+* odin_ has quit (Ping timeout: 260 seconds)
+* odin_ (~Odin@2a01:348:261:32:edfb:cfbd:ae1c:6083) has joined #jogamp
+* jk4 has quit (Ping timeout: 248 seconds)
+* jk4 (~jk4@pdpc/supporter/professional/jk4) has joined #jogamp
+* juank_prada (~juank_pra@190.12.157.230) has joined #jogamp
+* jk4 has quit (Ping timeout: 245 seconds)
+* monsieur_max (~maxime@ip-247.net-80-236-36.suresnes.rev.numericable.fr) has joined #jogamp
+<ilias> yes, I've noticed the regression in Test-2, thanks for mentioning! it would be very interesting to fix this actually
+<ilias> but there's also probably something I don't get right: I'm trying to build a jar of my project, that will contain only the natives of my platform (linux-i586) and nothing else; however I can't get this to work
+* monsieur_max has quit (Quit: Leaving.)
+<ilias> is this something possible?
+<sgothel> sure is
+<sgothel> and it is recommended .. i.e. 1:1 == java-jar : native-jar
+<sgothel> as long you keep-up w/ that native-jar naming convention, you are fine
+<sgothel> i.e. a.jar a-natives-.....jar
+<sgothel> our code gets the java-jar basename w/ base-uri, and adds the natives-<os.and.arch> .. done
+<sgothel> as described in the wiki .. / or html doc ..
+<sgothel> the regression is mention in the forum already .. if you maybe like to 'hunt it down' .. thank you in advance
+<ilias> sgothel, thanks for all the info -- this is what I'm trying to do now, but I still seem to can't include the native libs, even if they appear properly in the jar
+<sgothel> i.e you have merged: gluegen-rt + jogl-all + your-stuff -> lala.jar
+<sgothel> then you have to merge the above natives to lala-natives-os.and.arch.jar
+<sgothel> done
+<ilias> I've merged gluegen-rt + gluegen-rt-natives-linux-i586 jogl-all jogl-all-natives-linux-i586 + my stuff
+<sgothel> 'merge' -> unpack and create jar w/ the content of all
+<sgothel> nope .. you still have to split java-jar and native-jar
+<ilias> aha -- so I'll need a generic jar, and one for the natives
+<sgothel> why is this better ? b/c you don't want users to load all native jars of all other platforms
+<sgothel> .. and one native jar for each supported platform .. yes!
+<ilias> yes I see -- however users will need to download both jars
+<sgothel> yup
+<sgothel> if test-2 will work .. (issue fixed) .. only one :)
+<sgothel> i.e. your-app.jar may include lala.jar and lala-natives-os.and.arch.jar
+<ilias> yeah this would be good actually...I wish I had time to look into it, but unfortunately I can't handle it, that's why I'm turning to the irc
+<ilias> o_O
+<ilias> still, I think I can live with two jars for the moment
+<ilias> it's way better than the approach of test-1, having all native libs in a folder next to the jar
+<ilias> the naming has to be exactly like this right?           lala.jar, lala-natives-linux-i586.jar
+<sgothel> yup
+<ilias> but is it enough for the two jars to be next to each other? it seems that lala.jar can't find stuff that already exist in lala-natives.jar 
+<sgothel> sorry have to go .. but that is how it work .. lala-natives-os.and.arch.jar ofc .. the latter only contains the natives
+<ilias> ok sgothel, thanks a million for all the help
+<ilias> you've cleared it out for me, I'll try to fix it now
+* Now talking on #jogamp
+* Topic for #jogamp is: http://jogamp.org | Hacking 3D Graphics, Multimedia and Processing across Devices
+* Topic for #jogamp set by rmk0 at Thu Jan 17 00:58:04 2013
+-NickServ- You are now identified for ilias.
+-jogamp- This channel is logged @ http://jogamp.org/log/irc/jogamp_20130929050530.html
+* Now talking on #jogamp
+* Topic for #jogamp is: http://jogamp.org | Hacking 3D Graphics, Multimedia and Processing across Devices
+* Topic for #jogamp set by rmk0 at Thu Jan 17 00:58:04 2013
+-NickServ- You are now identified for ilias.
+-jogamp- This channel is logged @ http://jogamp.org/log/irc/jogamp_20130930050530.html
+<ilias> hello all
+<ilias> I'm still experiencing some problems regarding deployment of my jogl project in jars, i.e. in its own jar including all its libraries plus an additional one for the native libs
+<xranby> ilias: what is the unexpected behaviour?
+<ilias> I'm building a jar containing my project + gluegen-rt + jogl-all, and another next to it, named project-native-linux-i586.jar that contains the gluegen-rt and jogl natives. the problem is that while the native jar is found, it can't load the libnativewindow_awt.so library (even if it's still in the correct jar)
+<xranby> ilias: did you place unpack the contents of gluegen-rt.jar and jogl-all.jar into your project jar?
+<ilias> yes
+<ilias> I'm building everything through ant, so my main jar consists of my stuff plus the two jars you're mentioning, and the second jar is just a merge of the two native libs I need
+<xranby> check ldd libnativewindow_awt.so on this system to verify that this library can resolve its symbols
+<ilias> I get (as expected) "ldd: ./libnativewindow_awt.so: No such file or directory"
+<ilias> however the natives jar does contain this file
+<xranby> please run ldd on the unpacked file to verify if the library can be used on this system
+<xranby> i want to make sure the file is ok and not in a compressed state
+<ilias> if I unpack the jar, I can both ldd and also run my project without problems
+<xranby> some webbrowsers downloads and stores files from the jogamp server in .gz form
+<xranby> ok
+<ilias> actually if I start my project with an extracted native jar, the program starts but I get some catched zipexceptions regarding the (unzipped now) natives jar file
+<ilias> but still, ldd displays properly the libs so it should be fine
+<ilias> I noticed this just now, from ldd: libjawt.so => not found
+<ilias> the rest of the contents seem fine
+<xranby> libjawt.so is part of the java jre and is traditionally loaded dynamically by invoking java.awt.Toolkit.getDefaultToolkit()
+<ilias> so it should be fine then
+<ilias> what is the problem though? could it be the way I'm creating the natives jar?
+<xranby> libjawt.so  can still be the issue.. depending on how you initialize your appication.  according to http://mail.openjdk.java.net/pipermail/jdk7-dev/2011-August/002257.html is java.awt.Toolkit.getDefaultToolkit()  no longer sufficient to load libjawt.so
+<xranby> on java 7 systems
+<xranby> ilias: i would like you to run your application with more debug output enabled
+<xranby> in order to see the exact paths used to load the librarys
+<xranby> ilias: is awt a requirement for your project?
+<xranby> ilias: the reason i ask is because jogl can operate without using awt and instead use the newt window and input system
+<xranby> Discussion from jul 2012: http://web.archiveorange.com/archive/v/rp9RwolB2idA9so0qVe3 - <AWT Dev> JAWT Breakage in OpenJDK 7/8
+<xranby> thus the fix that got added back then was one update to the RPATH used by the traditional java launchers: http://hg.openjdk.java.net/jdk8/awt/jdk/rev/f003387c33ad
+<xranby> ilias: how do you launch your application?
+<xranby> ilias: jogamp's solution is to load jawt using JAWTJNILibLoader
+<xranby> JAWTJNILibLoader.initSingleton();
+<xranby> this gets loaded if you use JAWTUtil in your code
+<ilias> xranby: sorry, I was away shortly
+<ilias> xranby: I'm using awt for some cases, but mostly using swing
+<ilias> and also, my application is launched typically by launching the jar; I'm not sure if I'm answering your question
+<xranby> ilias: it may help if you publish your ant scripts and a toy example project how to setup a reproducer
+<xranby> something that we can test here
+<xranby> also debug logs is of interest http://jogamp.org/wiki/index.php/Jogl_FAQ#Detailed_Debug_Log
+<ilias> xranby: thanks for the help -- my project actually is hosted on sourceforge. for example, my ant script is located here: http://sourceforge.net/p/cuttlefish/code/HEAD/tree/build.xml
+<ilias> I'll try to get hold of debug logs
+<xranby> ilias: i try build it here and see if i run into the same issue
+<xranby> using revision 282
+<ilias> xranby: that would be awesome! this script is only for the linux-i586 architecture though, you could easily modify it for your architecture if different
+<ilias> running target dist should do the jar building/deploying. target run successfully runs my project, but when I try to run it with java -jar it fails
+<xranby> ilias: ok .. looks like I reproduced it https://gist.github.com/xranby/a95192dd6c3d7c35447a
+<xranby> and.. ant run work
+<ilias> yes, indeed
+<ilias> xranby: I've also got the debug log that you mentioned
+<ilias> xranby: my exception is slightly different: http://pastebin.com/0jc8eyXE
+<ilias> and my test_dbg.log: https://dl.dropboxusercontent.com/u/4500209/test_dbg.log
+<xranby> this is the cuttlefish debug log https://gist.github.com/xranby/a95192dd6c3d7c35447a#file-java-djnlp-newt-debug-all-djnlp-nativewindow-debug-all-djnlp-jogl-debug-all-jar-cuttlefish-jar
+<xranby> java -Djnlp.newt.debug=all -Djnlp.nativewindow.debug=all -Djnlp.jogl.debug=all -jar cuttlefish.jar
+<ilias> so does this mean that I'm indeed doing something wrong with initialization?
+<ilias> that's weird, since I can run the project fine through ant or eclipse...
+<ilias> (my cuttlefish debug log: https://dl.dropboxusercontent.com/u/4500209/cuttlefish_dbg.log )
+<xranby> ilias: i do not see anything suspicious yet.. i am still investigating
+<ilias> thanks a lot, I'm also looking into it
+<monsieur_max> not jogamp related but still somewhat interesting : https://fr.dolphin-emu.org/blog/2013/09/26/dolphin-emulator-and-opengl-drivers-hall-fameshame/?cr=fr
+<xranby> monsieur_max: interesting how nvidia is both at the top and the bottom (dolphin is not working using the mobile nvidia tegra 2 & 3 at all)
+<monsieur_max> haha, yes, did not really noticed it
+<xranby> ilias: the reason why ant run work is because it is placing all jars on the classpath like this: java -classpath /home/xranby/cuttlefish-code/lib/collections-generic-4.01.jar:/home/xranby/cuttlefish-code/lib/commons-cli-1.2.jar:/home/xranby/cuttlefish-code/lib/gephi-toolkit.jar:/home/xranby/cuttlefish-code/lib/gson-1.7.1.jar:/home/xranby/cuttlefish-code/lib/jogl-all-platforms/gluegen-rt.jar:/home/xranby/cuttlefish-code/lib/jogl-all-platforms/jogl-al
+<ilias> but what about the native libs?
+<xranby> ant run placed the native libs on the classpath as well
+<xranby> i think eclipse run do the same
+<ilias> hmm
+<ilias> I noticed that if I extract the .so files cuttlefish runs normally
+<ilias> so there seems to be a problem with the classloader and the jar'ed .so files
+<ilias> it looks like I should avoid this approach, right?
+<xranby> eclipse "export runnable jar" actually adds the native jar to the manifest
+<ilias> I've also tried adding it to the manifest of the main jar, still same luck
+<ilias> you mean, in the class-path
+<xranby> indeed
+<ilias> xranby: even so, I get exactly the same behaviour...I
+<ilias> xranby: I'll have to try it again a bit later, I'll be afk for an hour or so...but thanks for all the support!
+<xranby> ilias: thank you for publishing the code, its easier to understand when i have the issue in my face :)
+<ilias> xranby: yeah, I completely understand! thanks for the great support! :)
+<xranby> ilias: please help investigating run java -Djogamp.debug=all -jar cuttlefish.jar      it will debug the JNILibLoaderBase class that do the actual loading
+<xranby> sgothel: can you explain this? https://gist.github.com/xranby/a95192dd6c3d7c35447a#file-java-djogamp-debug-all-jar-cuttlefish-jar   JNILibLoaderBase: loaded nativewindow_x11  yet i still run into the Exception in thread "main" java.lang.UnsatisfiedLinkError: jogamp.nativewindow.x11.X11Lib.QueryExtension0(JLjava/lang/String;)Z
+<xranby> sgothel: ilias's http://sourceforge.net/p/cuttlefish/code/HEAD/tree/ src archive is a good reproducer for this bug, on my machine it triggers early in the code during GLProfile.getDefault() which should imho work
+<xranby> ilias: i am not sure why your machine fail to load nativewindow_awt , at least that library loaded fine here on my machine
+<xranby> ilias: actually.. if i use jamvm, java -jamvm ,... i also fail to load nativewindow_awt like on your machine
+<ilias> xranby: I ran cuttlefish with all debug on, here's the output https://dl.dropboxusercontent.com/u/4500209/jogamp_dbg_all.log
+<ilias> also, I'm not using jamvm (at least not to my knowledge!)
+<xranby> the obvious error IMHO is TempJarCache: null
+<xranby> if i understand this correctly this prevents loading the library from the unpacked location
+<xranby> instead it sometime loads using "mode 3"
+<ilias> what is mode 3? I've seen mode 4 used in the libraries loaded propery
+<ilias> what is mode 3? I've seen mode 4 used in the libraries loaded properly
+<xranby> gluegen src/java/com/jogamp/common/jvm/JNILibLoaderBase.java
+<xranby> http://jogamp.org/git/?p=gluegen.git;a=blob;f=src/java/com/jogamp/common/jvm/JNILibLoaderBase.java;h=caa8702336d3625c8c66d632dc7a45846a02946c;hb=HEAD#l458
+<xranby> this is the code for JNILibLoaderBase.loadLibraryInternal mode 3 is System.loadLibrary( name )
+<xranby> mode 2 is System.load( TempJarCache )
+<xranby> thus mode 2 is somehow broken
+<ilias> yes I see this now
+<ilias> thanks for pointing it out...however, is this dependent on my system? were you able to run cuttlefish normally on yours?
+<xranby> its broken on my system as well. i have added all java -jar logs using the hotspot server and jamvm jvm here: https://gist.github.com/xranby/a95192dd6c3d7c35447a
+<xranby> when i use jamvm i hit the same exception like on your system
+<xranby> https://gist.github.com/xranby/a95192dd6c3d7c35447a/raw/3153f87f429d701f3b07f97eceda1a9625c909d2/java+-jamvm+-Djogamp.debug%3Dall+-jar+cuttlefish.jar+.txt
+<ilias> hmm I see, it is the same
+<xranby> ilias: on the same machine.. if i instead use hotspot, both nativewindow_awt and nativewindow_x11 is loaded using mode 3 https://gist.github.com/xranby/a95192dd6c3d7c35447a/raw/112257a06df5e22c652457d3d98c1096f71aca33/java+-Djogamp.debug%3Dall+-jar+cuttlefish.jar+.txt
+<xranby> and then later run into a new issue
+<xranby> mode 3 is actually prefferd since then jogl do not need to unpack the library into a tmp dir, instead it loads the library directly from inside the jar
+<xranby> the differences between you and my system are, you are using IcedTea6 1.12.6
+<xranby> I am using IcedTea 2.3.10
+<xranby> and we still do not know the root cause of the issue

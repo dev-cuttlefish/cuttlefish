@@ -21,19 +21,19 @@
   <property name="javadoc" location="doc"/>
   <property name="lib" location="lib"/>
   <property name="build" location="bin"/>
-  <property name="dist"  location="dist"/>
+  <property name="dist" location="dist"/>
   
   <property name="main-class" value="ch.ethz.sg.cuttlefish.Cuttlefish"/>
   
   <fileset id="libs" dir="${lib}">
     <include name="*.jar"/>
-    <include name="jogl-all-platforms/gluegen-rt.jar"/>
-    <include name="jogl-all-platforms/jogl-all.jar"/>
   </fileset>
   
-  <fileset id="natives-linux-i586" dir="${lib}/jogl-all-platforms">
-    <include name="gluegen-rt-natives-linux-i586.jar"/>
-    <include name="jogl-all-natives-linux-i586.jar"/>
+  <fileset id="jogl-libs" dir="${lib}/jogl-all-platforms">
+    <include name="gluegen-rt.jar"/>
+    <include name="jogl-all.jar"/>
+    <include name="gluegen-rt-natives-*.jar"/>
+    <include name="jogl-all-natives-*.jar"/>
   </fileset>
   
   <fileset id="icons" dir="${src}">
@@ -43,10 +43,10 @@
   
   <path id="classpath">
     <fileset refid="libs"/>
-    <fileset refid="natives-linux-i586"/>
+    <fileset refid="jogl-libs"/>
   </path>
 		
-  <target name="build" description="compile the source ">
+  <target name="build">
     <tstamp/>
     <mkdir dir="${build}"/>
     <javac includeantruntime="false" target="1.6" source="1.6" srcdir="${src}" destdir="${build}" classpathref="classpath"/>
@@ -56,32 +56,37 @@
     <jar destfile="${dist}/${ant.project.name}.jar">
       <manifest>
         <attribute name="Main-Class" value="${main-class}"/>
+        <attribute name="Class-Path" value=". ${ant.project.name}_lib/gluegen-rt-natives-linux-amd64.jar ${ant.project.name}_lib/gluegen-rt-natives-linux-armv6.jar ${ant.project.name}_lib/gluegen-rt-natives-linux-armv6hf.jar ${ant.project.name}_lib/gluegen-rt-natives-linux-i586.jar ${ant.project.name}_lib/gluegen-rt-natives-macosx-universal.jar ${ant.project.name}_lib/gluegen-rt-natives-solaris-amd64.jar ${ant.project.name}_lib/gluegen-rt-natives-solaris-i586.jar ${ant.project.name}_lib/gluegen-rt-natives-windows-amd64.jar ${ant.project.name}_lib/gluegen-rt-natives-windows-i586.jar ${ant.project.name}_lib/gluegen-rt.jar ${ant.project.name}_lib/jogl-all-natives-linux-amd64.jar ${ant.project.name}_lib/jogl-all-natives-linux-armv6.jar ${ant.project.name}_lib/jogl-all-natives-linux-armv6hf.jar ${ant.project.name}_lib/jogl-all-natives-linux-i586.jar ${ant.project.name}_lib/jogl-all-natives-macosx-universal.jar ${ant.project.name}_lib/jogl-all-natives-solaris-amd64.jar ${ant.project.name}_lib/jogl-all-natives-solaris-i586.jar ${ant.project.name}_lib/jogl-all-natives-windows-amd64.jar ${ant.project.name}_lib/jogl-all-natives-windows-i586.jar ${ant.project.name}_lib/jogl-all.jar ${ant.project.name}_lib/collections-generic-4.01.jar ${ant.project.name}_lib/gson-1.7.1.jar ${ant.project.name}_lib/mysql-connector-java-5.1.9-bin.jar ${ant.project.name}_lib/postgresql-9.1-901.jdbc4.jar ${ant.project.name}_lib/sqlite-jdbc-3.7.2.jar ${ant.project.name}_lib/gephi-toolkit.jar ${ant.project.name}_lib/commons-cli-1.2.jar"/>
       </manifest>
   	  <fileset dir="${build}"/>
   	  <fileset refid="icons"/>
-  	  <zipgroupfileset refid="libs"/>
     </jar>
   </target>
   
-  <target name="natives-linux-i586">
-    <jar destfile="${dist}/${ant.project.name}-natives-linux-i586.jar">
-      <zipgroupfileset refid="natives-linux-i586"/>
-    </jar>
+  <target name="copy-libs">
+    <mkdir dir="${dist}/${ant.project.name}_lib"/>
+    <copy todir="${dist}/${ant.project.name}_lib">
+      <fileset refid="libs"/>
+      <fileset refid="jogl-libs"/>
+    </copy>
+  </target>
+  
+  <target name="create-bundle">
+    <zip destfile="${dist}/${ant.project.name}-bundle.zip">
+      <zipfileset dir="${dist}">
+        <include name="${ant.project.name}_lib/**"/>
+        <include name="${ant.project.name}.jar"/>
+      </zipfileset>
+    </zip>
   </target>
   
   <target name="clean">
     <delete dir="${build}"/>
+    <delete dir="${dist}/${ant.project.name}_lib"/>
+    <delete file="${dist}/${ant.project.name}.jar"/>
+    <delete file="${dist}/${ant.project.name}-bundle.zip"/>
   </target>
   
-  <target name="dist" depends="build, jar, natives-linux-i586"/>
-  
-  <target name="run">
-    <java fork="true" classname="${main-class}">
-      <classpath>
-        <path refid="classpath"/>
-        <path location="${dist}/${ant.project.name}.jar"/>
-      </classpath>
-    </java>
-  </target>
+  <target name="dist" depends="clean, build, jar, copy-libs, create-bundle"/>
 
 </project>
