@@ -166,4 +166,29 @@ layout{arf} sensitivity{1000} keep_centered{true}
 
 
 
+    IV. TODOs
 
+a. Spatial indexing for mouse interactions
+
+At the moment, mouse interacts with the visualisation panel by a
+linear search to all vertices and edges that could match. For the size
+of networks supported so far, this does not pose any noticeable overhead
+by the user. However, for increased scalability of mouse interaction,
+a more complex spatial indexing technique should be used. E.g. R-Trees,
+octrees.
+
+b. Polygon antialiasing
+
+The polygon antialiasing technique used currently in Cuttlefish is a
+simple one, based on polygon smoothing. There other techniques, such as
+multisampling, can be used for improved visualisation results.
+
+c. Layouts
+
+Due to incompatibility with the new Gephi Toolkit library, some of the
+layouts supported previously in Cuttlefish are not ported to the latest
+version:
+
+    - (Radial) Tree Layout
+    - Kamada Kawai
+    - ISO-M
