@@ -1,9 +1,9 @@
 # Cuttlefish
-Cuttlefish aims to be a highly extensible visualization and analysis platform for all kinds of network data
+Cuttlefish aims to be a highly extensible visualisation and analysis platform for all kinds of network data
 
-# Download and Exectution
+# Download and Execution
 
-To run the most resent version of Cuttlefish download `cuttlefish-bundle.zip` from the [release page](https://github.com/dev-cuttlefish/cuttlefish/releases/tag/v2.5-beta) of version 2.5, extract the contents of the zip file and run `cuttlefish.jar` within the extracted cuttlefish-bundle folder using the command:
+To run the most recent version of Cuttlefish download `cuttlefish-bundle.zip` from the [release page](https://github.com/dev-cuttlefish/cuttlefish/releases/tag/v2.5-beta) of version 2.5, extract the contents of the zip file and run `cuttlefish.jar` within the extracted cuttlefish-bundle folder using the command:
 ```
 java -jar cuttlefish.jar
 ```
