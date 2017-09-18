@@ -13,16 +13,15 @@ You may download older versions of Cuttlefish from the [releases](https://github
 
 # Build
     
-    This readme is intended to help users and developers in building, deploying
-    and running Cuttlefish. It also provides detailed information on a series
-    of problems encountered when trying to deploy Cuttlefish in a single jar
-    file, which for the moment has not been achieved.
+    This section of the readme is intended to help users and developers in 
+    building, deploying and running Cuttlefish. It also provides detailed 
+    information on a series of problems encountered when trying to deploy 
+    Cuttlefish in a single jar file, which for the moment has not been 
+    achieved.
     
     
     Ilias Rinis (iliasr -at- gmail.com)
     30 Sept. 2013
-
-    
 
 ## Build description
 
@@ -61,11 +60,11 @@ finally create the .zip project bundle. The project can be simply run with
 For the moment, JOGL does not encourage, neither fully support the building of
 a single, fat jar of applications that use JOGL. They recommend using Java
 WebStart (JNLP) to launch applications. For more information:
--> http://jogamp.org/jogl/doc/deployment/JOGL-DEPLOYMENT.html
+http://jogamp.org/jogl/doc/deployment/JOGL-DEPLOYMENT.html
 
 However, there have been some tests that demonstrate that it is possible to
 build a single fat jar through Eclipse, as seen in:
--> http://jogamp.org/wiki/index.php/JogAmp_JAR_File_Handling
+http://jogamp.org/wiki/index.php/JogAmp_JAR_File_Handling
 
 
 Still, lately there has been a regression of Test-2 (which shows the creation
@@ -73,12 +72,11 @@ of a single jar), and until this is fixed, it might not be possible to create
 a single jar for Cuttlefish. It is recommended to follow the progress of this
 bug. I have posted a related question in the forums of jogamp, which might shed 
 some light.
--> http://forum.jogamp.org/Packaging-JOGL-into-single-generated-JAR-in-Eclipse-td4030045.html
+http://forum.jogamp.org/Packaging-JOGL-into-single-generated-JAR-in-Eclipse-td4030045.html
 
 There have been several discussions in the freenode IRC channel of jogamp, the
 log of which might be also useful to the developers, and is saved in the
-repository in
--> lib/jogl-all-platforms/jogamp-irc-jar-bundle-issue.log
+repository in `lib/jogl-all-platforms/jogamp-irc-jar-bundle-issue.log`
 
 This log follows several debug attempts by me and members of the channel, that
 generally locate the problem in the internal loading of native libraries within
@@ -86,14 +84,12 @@ jogl -- without however discovering the root cause. It has been suggested
 (and actually, this is how JOGL intended it) that a project that uses JOGL must
 consist of two jars:
 
-~ cuttlefish.jar
-with cuttlefish, all lib dependencies, gluegen-rt.jar, jogl-all.jar
+* cuttlefish.jar, with cuttlefish, all lib dependencies, gluegen-rt.jar, jogl-all.jar
 
-~ cuttlefish-natives-os.and.arch.jar (e.g. cuttlefish-natives-linux-i586.jar)
+* cuttlefish-natives-os.and.arch.jar (e.g. cuttlefish-natives-linux-i586.jar), 
 with jogl-all-natives-os.and.arch.jar, gluegen-rt-natives-os.and.arch.jar
 
 
 Finally, there are numerous attempts from people trying to achieve this, and 
-the jogl forums may have some interesting discussions.
--> http://forum.jogamp.com
+the jogl forums may have some interesting discussions http://forum.jogamp.com.
 
